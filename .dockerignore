@@ -1,0 +1,74 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+test_results/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files
+.env
+.env.*
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.circleci/
+
+# Docker
+docker/
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Other
+.editorconfig
+.pre-commit-config.yaml
+.flake8
+setup.cfg
+Makefile
+
+# IMPORTANT: pyproject.toml is needed for pip install
+# Do NOT add pyproject.toml to .dockerignore

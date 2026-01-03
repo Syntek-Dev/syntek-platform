@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: docker/test/Dockerfile
+    command: pytest
+    volumes:
+      - ../..:/app
+    env_file:
+      - ../../.env.test
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.test
+      - DATABASE_URL=postgres://backend_template:backend_template@db:5432/backend_template_test
+      - REDIS_URL=redis://redis:6379/1
+      - EMAIL_HOST=mailpit
+      - EMAIL_PORT=1025
+    depends_on:
+      - db
+      - redis
+      - mailpit
+
+  db:
+    image: postgres:18.1-alpine
+    environment:
+      - POSTGRES_USER=backend_template
+      - POSTGRES_PASSWORD=backend_template
+      - POSTGRES_DB=backend_template_test
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+
+  mailpit:
+    image: axllent/mailpit
+
+volumes: {}
