@@ -1,0 +1,27 @@
+---
+extends: default
+
+rules:
+  line-length:
+    max: 120
+    level: warning
+  indentation:
+    spaces: 2
+    indent-sequences: true
+  document-start: disable
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no']
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: {}
+  empty-lines:
+    max: 2
+
+ignore: |
+  .venv/
+  venv/
+  node_modules/
+  staticfiles/
+  media/
+  build/
+  dist/
