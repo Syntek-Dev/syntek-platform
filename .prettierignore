@@ -1,0 +1,87 @@
+# Prettier Ignore File
+# Exclude files and directories from Prettier formatting
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+ENV/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+/staticfiles/
+/media/
+/migrations/
+local_settings.py
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Docker
+.dockerignore
+
+# CI/CD
+.github/workflows/
+
+# Git
+.git/
+.gitignore
+
+# Documentation generated files
+docs/_build/
+docs/.doctrees/
+
+# Wagtail
+wagtailsearch/
+
+# Environment files (don't format)
+.env*
+!.env*.example
+
+# Lock files (don't format)
+*.lock
+Pipfile.lock
+poetry.lock
+
+# Compiled files
+*.min.js
+*.min.css
+*.bundle.js
+*.bundle.css
+
+# Generated files
+CHANGELOG.md

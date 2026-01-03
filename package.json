@@ -1,0 +1,35 @@
+{
+  "name": "backend-template",
+  "version": "0.1.0",
+  "description": "Django/Wagtail backend with PostgreSQL and GraphQL API",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "format:staged": "prettier --write $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\\.(json|yaml|yml|md|html|css|js|graphql)$' | xargs)",
+    "lint:prettier": "prettier --check .",
+    "precommit": "npm run format:staged"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "prettier-plugin-jinja-template": "^2.0.0"
+  },
+  "keywords": [
+    "django",
+    "wagtail",
+    "graphql",
+    "postgresql",
+    "backend",
+    "api"
+  ],
+  "author": "Syntek Studio",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syntek-studio/backend-template"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}
