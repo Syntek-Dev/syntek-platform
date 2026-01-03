@@ -1,0 +1,55 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "useTabs": false,
+  "trailingComma": "es5",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "arrowParens": "always",
+  "printWidth": 100,
+  "endOfLine": "lf",
+  "plugins": ["prettier-plugin-jinja-template"],
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "jinja-template",
+        "printWidth": 120,
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": "*.md",
+      "options": {
+        "proseWrap": "preserve"
+      }
+    },
+    {
+      "files": "*.css",
+      "options": {
+        "singleQuote": false
+      }
+    },
+    {
+      "files": ["*.json", ".prettierrc"],
+      "options": {
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": ["*.yml", "*.yaml"],
+      "options": {
+        "tabWidth": 2,
+        "singleQuote": false
+      }
+    },
+    {
+      "files": "*.graphql",
+      "options": {
+        "parser": "graphql",
+        "tabWidth": 2
+      }
+    }
+  ]
+}

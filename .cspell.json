@@ -1,0 +1,153 @@
+{
+  "version": "0.2",
+  "language": "en-GB",
+  "enabled": true,
+  "allowCompoundWords": true,
+  "dictionaries": [
+    "python",
+    "django",
+    "npm",
+    "node",
+    "html",
+    "css",
+    "bash",
+    "sql"
+  ],
+  "words": [
+    // Django/Python Framework Terms
+    "wagtail",
+    "graphql",
+    "strawberry",
+    "graphene",
+    "postgresql",
+    "postgres",
+    "pytest",
+    "django",
+    "pylint",
+    "mypy",
+    "bandit",
+    "flake8",
+    "isort",
+    "docstring",
+    "docstrings",
+    "pyproject",
+    "pyright",
+    "pylance",
+
+    // Database & Cache
+    "valkey",
+    "redis",
+
+    // Email & Testing
+    "mailpit",
+
+    // Project Management
+    "syntek",
+    "clickup",
+
+    // Development Tools
+    "dockerignore",
+    "editorconfig",
+    "markdownlint",
+    "yamllint",
+    "hadolint",
+    "shellcheck",
+    "commitlint",
+    "prettierrc",
+    "prettierignore",
+    "browserslist",
+    "husky",
+
+    // Common Python/Django Terms
+    "middlewares",
+    "serializers",
+    "queryset",
+    "querysets",
+    "makemigrations",
+    "createsuperuser",
+    "staticfiles",
+    "wsgi",
+    "asgi",
+
+    // Git & CI/CD
+    "gitlens",
+    "gitattributes",
+    "gitmodules",
+    "githooks",
+
+    // Common Abbreviations
+    "dev",
+    "prod",
+    "env",
+    "envrc",
+    "deps"
+  ],
+  "ignoreWords": [],
+  "ignorePaths": [
+    // Build & Dependencies
+    "**/__pycache__/**",
+    "**/*.pyc",
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/venv/**",
+    "**/.venv/**",
+    "**/staticfiles/**",
+    "**/media/**",
+
+    // Test Coverage & Reports
+    "**/.pytest_cache/**",
+    "**/.coverage",
+    "**/htmlcov/**",
+    "**/.mypy_cache/**",
+
+    // Django Migrations (auto-generated)
+    "**/migrations/**",
+
+    // Lock files and package files
+    "**/package-lock.json",
+    "**/yarn.lock",
+    "**/pnpm-lock.yaml",
+    "**/poetry.lock",
+    "**/Pipfile.lock",
+
+    // Compiled/minified files
+    "**/*.min.js",
+    "**/*.min.css",
+    "**/*.bundle.js",
+
+    // Docker
+    "**/Dockerfile*",
+    "**/docker-compose*.yml"
+  ],
+  "ignoreRegExpList": [
+    // Ignore URLs
+    "https?://[^\\s]+",
+    // Ignore file paths
+    "/[a-zA-Z0-9_/.-]+",
+    // Ignore environment variable patterns
+    "\\$\\{[A-Z_]+\\}",
+    // Ignore hex colours
+    "#[0-9a-fA-F]{3,8}",
+    // Ignore Python type hints with | (union types)
+    "[A-Za-z]+\\s*\\|\\s*[A-Za-z]+"
+  ],
+  "languageSettings": [
+    {
+      "languageId": "python",
+      "dictionaries": ["python", "django"],
+      "includeRegExpList": [
+        "/#.*/",
+        "/('''|\"\"\")[^\\1]+?\\1/g",
+        "/\"\"\"[^\"]+\"\"\"/g"
+      ]
+    },
+    {
+      "languageId": "markdown",
+      "dictionaries": ["en-GB"]
+    },
+    {
+      "languageId": "html",
+      "dictionaries": ["html", "css"]
+    }
+  ]
+}
