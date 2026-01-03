@@ -1,0 +1,195 @@
+name: ClickUp Sync
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - dev
+      - testing
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - closed
+      - reopened
+  workflow_dispatch:
+    inputs:
+      sync_direction:
+        description: 'Sync direction'
+        required: true
+        default: 'github_to_clickup'
+        type: choice
+        options:
+          - github_to_clickup
+          - clickup_to_github
+          - bidirectional
+
+jobs:
+  sync-to-clickup:
+    name: Sync to ClickUp
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event.inputs.sync_direction != 'clickup_to_github'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Extract task ID from branch name
+        id: task-info
+        run: |
+          BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+          # Extract task ID from branch name (e.g., us123/feature-name -> 123)
+          if [[ $BRANCH_NAME =~ ^us([0-9]+)/ ]]; then
+            TASK_NUMBER="${BASH_REMATCH[1]}"
+            echo "task_number=$TASK_NUMBER" >> $GITHUB_OUTPUT
+            echo "has_task_id=true" >> $GITHUB_OUTPUT
+            echo "Found task number: $TASK_NUMBER"
+          else
+            echo "has_task_id=false" >> $GITHUB_OUTPUT
+            echo "No task ID found in branch name"
+          fi
+
+      - name: Load ClickUp task mapping
+        id: mapping
+        if: steps.task-info.outputs.has_task_id == 'true'
+        run: |
+          # Try to load the task mapping file if it exists
+          if [ -f "config/clickup-story-mapping.json" ]; then
+            STORY_ID="US-${{ steps.task-info.outputs.task_number }}"
+            TASK_ID=$(jq -r --arg story_id "$STORY_ID" '.[$story_id] // empty' config/clickup-story-mapping.json)
+
+            if [ -n "$TASK_ID" ]; then
+              echo "clickup_task_id=$TASK_ID" >> $GITHUB_OUTPUT
+              echo "Found ClickUp task ID: $TASK_ID"
+            else
+              echo "No mapping found for $STORY_ID"
+            fi
+          else
+            echo "No task mapping file found"
+          fi
+
+      - name: Determine target status based on event
+        id: status
+        run: |
+          EVENT="${{ github.event_name }}"
+          BRANCH="${{ steps.task-info.outputs.branch_name }}"
+
+          if [ "$EVENT" == "pull_request" ]; then
+            PR_ACTION="${{ github.event.action }}"
+
+            if [ "$PR_ACTION" == "opened" ]; then
+              echo "status=in review" >> $GITHUB_OUTPUT
+              echo "Status: in review (PR opened)"
+            elif [ "$PR_ACTION" == "closed" ] && [ "${{ github.event.pull_request.merged }}" == "true" ]; then
+              # Determine status based on target branch
+              TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+
+              if [ "$TARGET_BRANCH" == "main" ]; then
+                echo "status=Closed" >> $GITHUB_OUTPUT
+                echo "Status: Closed (merged to main)"
+              elif [ "$TARGET_BRANCH" == "staging" ]; then
+                echo "status=accepted" >> $GITHUB_OUTPUT
+                echo "Status: accepted (merged to staging)"
+              elif [ "$TARGET_BRANCH" == "dev" ]; then
+                echo "status=in progress" >> $GITHUB_OUTPUT
+                echo "Status: in progress (merged to dev)"
+              fi
+            fi
+          elif [ "$EVENT" == "push" ]; then
+            # Map branch to status
+            if [ "$BRANCH" == "main" ]; then
+              echo "status=Closed" >> $GITHUB_OUTPUT
+            elif [ "$BRANCH" == "staging" ]; then
+              echo "status=accepted" >> $GITHUB_OUTPUT
+            elif [ "$BRANCH" == "dev" ]; then
+              echo "status=in progress" >> $GITHUB_OUTPUT
+            elif [ "$BRANCH" == "testing" ]; then
+              echo "status=in review" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Update ClickUp task status
+        if: steps.mapping.outputs.clickup_task_id != '' && steps.status.outputs.status != ''
+        env:
+          CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
+          TASK_ID: ${{ steps.mapping.outputs.clickup_task_id }}
+          STATUS: ${{ steps.status.outputs.status }}
+        run: |
+          python3 - <<EOF
+          import os
+          import requests
+          import sys
+
+          api_key = os.environ['CLICKUP_API_KEY']
+          task_id = os.environ['TASK_ID']
+          status = os.environ['STATUS']
+
+          url = f"https://api.clickup.com/api/v2/task/{task_id}"
+          headers = {
+              "Authorization": api_key,
+              "Content-Type": "application/json"
+          }
+          data = {"status": status}
+
+          response = requests.put(url, headers=headers, json=data)
+
+          if response.status_code == 200:
+              print(f"Successfully updated task {task_id} to status: {status}")
+          else:
+              print(f"Failed to update task: {response.status_code}")
+              print(response.text)
+              sys.exit(1)
+          EOF
+
+      - name: Add PR comment to ClickUp task
+        if: github.event_name == 'pull_request' && steps.mapping.outputs.clickup_task_id != ''
+        env:
+          CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
+          TASK_ID: ${{ steps.mapping.outputs.clickup_task_id }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_ACTION: ${{ github.event.action }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          python3 - <<EOF
+          import os
+          import requests
+
+          api_key = os.environ['CLICKUP_API_KEY']
+          task_id = os.environ['TASK_ID']
+          pr_number = os.environ['PR_NUMBER']
+          pr_title = os.environ['PR_TITLE']
+          pr_url = os.environ['PR_URL']
+          pr_action = os.environ['PR_ACTION']
+          actor = os.environ['ACTOR']
+
+          comment_text = f"**PR #{pr_number} {pr_action}** by {actor}\n\n"
+          comment_text += f"[{pr_title}]({pr_url})"
+
+          url = f"https://api.clickup.com/api/v2/task/{task_id}/comment"
+          headers = {
+              "Authorization": api_key,
+              "Content-Type": "application/json"
+          }
+          data = {"comment_text": comment_text}
+
+          response = requests.post(url, headers=headers, json=data)
+
+          if response.status_code == 200:
+              print(f"Added comment to task {task_id}")
+          else:
+              print(f"Failed to add comment: {response.status_code}")
+          EOF

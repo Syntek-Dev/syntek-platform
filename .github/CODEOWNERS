@@ -1,0 +1,36 @@
+# Code Owners for Backend Template
+
+# Global owners - apply to everything unless overridden
+* @syntek-studio/backend-team
+
+# Django settings and configuration
+/config/ @syntek-studio/backend-leads
+/config/settings/ @syntek-studio/backend-leads
+
+# Database migrations
+*/migrations/ @syntek-studio/backend-leads
+
+# Docker and deployment
+/docker/ @syntek-studio/devops
+docker-compose*.yml @syntek-studio/devops
+Dockerfile* @syntek-studio/devops
+
+# CI/CD workflows
+/.github/workflows/ @syntek-studio/devops
+
+# GraphQL schema
+/apps/*/schema.py @syntek-studio/backend-team @syntek-studio/frontend-team
+schema.graphql @syntek-studio/backend-team @syntek-studio/frontend-team
+
+# Wagtail models and admin
+/apps/*/wagtail_hooks.py @syntek-studio/content-team
+/apps/*/models.py @syntek-studio/backend-team
+
+# Documentation
+/docs/ @syntek-studio/backend-team
+*.md @syntek-studio/backend-team
+
+# Security-sensitive files
+.env*.example @syntek-studio/backend-leads
+pyproject.toml @syntek-studio/backend-leads
+requirements*.txt @syntek-studio/backend-leads

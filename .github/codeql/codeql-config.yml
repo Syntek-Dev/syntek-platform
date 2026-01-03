@@ -1,0 +1,31 @@
+name: "CodeQL Configuration"
+
+disable-default-queries: false
+
+queries:
+  - uses: security-extended
+  - uses: security-and-quality
+
+paths-ignore:
+  - '**/migrations/**'
+  - '**/tests/**'
+  - '**/test_*.py'
+  - '**/*_test.py'
+  - '**/staticfiles/**'
+  - '**/media/**'
+  - '**/node_modules/**'
+  - '**/.venv/**'
+  - '**/venv/**'
+
+paths:
+  - apps/
+  - api/
+  - config/
+
+query-filters:
+  - exclude:
+      id: py/unused-import
+      # Django often requires imports for registration
+  - exclude:
+      id: py/similar-function
+      # Django views can be similar by design

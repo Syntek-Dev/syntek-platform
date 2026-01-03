@@ -1,0 +1,40 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Commit message validation hook
+# Ensures commit messages follow Conventional Commits format
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Conventional Commits pattern: type(scope?): subject
+PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|deps)(\(.+\))?: .{1,}"
+
+if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
+  echo "❌ Invalid commit message format"
+  echo ""
+  echo "Commit message must follow Conventional Commits format:"
+  echo "  type(scope?): subject"
+  echo ""
+  echo "Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert, deps"
+  echo ""
+  echo "Examples:"
+  echo "  feat: Add user authentication"
+  echo "  fix(api): Resolve GraphQL query timeout"
+  echo "  docs: Update installation instructions"
+  echo ""
+  echo "Your message:"
+  echo "  $COMMIT_MSG"
+  exit 1
+fi
+
+# Check message length
+SUBJECT_LINE=$(echo "$COMMIT_MSG" | head -n 1)
+SUBJECT_LENGTH=${#SUBJECT_LINE}
+
+if [ $SUBJECT_LENGTH -gt 100 ]; then
+  echo "⚠️  Warning: Commit subject is longer than 100 characters ($SUBJECT_LENGTH)"
+fi
+
+echo "✅ Commit message format is valid"
+exit 0
