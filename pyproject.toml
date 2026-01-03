@@ -1,0 +1,331 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "backend-template"
+version = "0.1.0"
+description = "Django/Wagtail backend with PostgreSQL and GraphQL API"
+readme = "README.md"
+requires-python = ">=3.14"
+license = {text = "MIT"}
+authors = [
+    {name = "Syntek Studio", email = "team@syntek.studio"}
+]
+keywords = ["django", "wagtail", "graphql", "postgresql", "api"]
+dependencies = [
+    # Django Framework (v5.2 as per VERSIONS.md)
+    "Django>=5.2,<6.0",
+    "django-environ>=0.11.2",
+
+    # Wagtail CMS (v7 as per VERSIONS.md)
+    "wagtail>=7.0,<8.0",
+
+    # Database (PostgreSQL 18.1)
+    "psycopg[binary]>=3.2.3",
+
+    # Cache & Queue
+    "redis>=5.2.1",
+    "hiredis>=3.0.0",
+
+    # GraphQL
+    "strawberry-graphql[debug-server]>=0.252.3",
+    "strawberry-graphql-django>=0.50.0",
+
+    # API & REST
+    "djangorestframework>=3.15.2",
+    "django-cors-headers>=4.6.0",
+
+    # Image Processing (for Wagtail)
+    "Pillow>=11.0.0",
+    "willow[heif]>=1.9.1",
+
+    # Utilities
+    "python-dateutil>=2.9.0",
+    "pytz>=2024.2",
+    "requests>=2.31.0",  # For ClickUp API integration
+
+    # Static files (needed in base for dev too)
+    "whitenoise>=6.8.2",
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Django :: 5.2",
+    "Framework :: Wagtail :: 7",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Development Tools
+    "django-debug-toolbar>=4.4.6",
+    "django-extensions>=3.2.3",
+    "ipython>=8.31.0",
+    "ipdb>=0.13.13",
+    # Testing
+    "pytest>=8.3.4",
+    "pytest-django>=4.9.0",
+    "pytest-cov>=6.0.0",
+    "pytest-xdist>=3.6.1",
+    "factory-boy>=3.3.1",
+    "faker>=33.1.0",
+    "coverage[toml]>=7.6.10",
+    # Code Quality
+    "ruff>=0.8.6",
+    "black>=24.10.0",
+    "isort>=5.13.2",
+    "mypy>=1.14.1",
+    "django-stubs>=5.1.1",
+    "djangorestframework-stubs>=3.15.1",
+    # Security
+    "bandit>=1.8.0",
+    # Documentation
+    "sphinx>=8.1.3",
+    "sphinx-rtd-theme>=3.0.2",
+]
+production = [
+    # Production Server
+    "gunicorn>=23.0.0",
+    # Monitoring & Error Tracking
+    "sentry-sdk>=2.19.2",
+    # Performance
+    "django-redis>=5.4.0",
+    # Security
+    "django-csp>=3.8",
+]
+
+[project.urls]
+Homepage = "https://github.com/syntek-studio/backend-template"
+Repository = "https://github.com/syntek-studio/backend-template"
+Documentation = "https://github.com/syntek-studio/backend-template/docs"
+
+# Black configuration
+[tool.black]
+line-length = 100
+target-version = ['py314']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.git
+  | \.venv
+  | venv
+  | build
+  | dist
+  | migrations
+  | node_modules
+  | staticfiles
+  | media
+)/
+'''
+
+# isort configuration
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+skip_gitignore = true
+skip_glob = ["*/migrations/*", "*/staticfiles/*", "*/media/*"]
+known_django = ["django"]
+known_wagtail = ["wagtail"]
+known_graphene = ["graphene", "graphene_django"]
+sections = ["FUTURE", "STDLIB", "DJANGO", "WAGTAIL", "GRAPHENE", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+# mypy configuration
+[tool.mypy]
+python_version = "3.14"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+follow_imports = "normal"
+ignore_missing_imports = true
+strict_equality = true
+plugins = ["mypy_django_plugin.main"]
+
+[[tool.mypy.overrides]]
+module = "*.migrations.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "*.tests.*"
+ignore_errors = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings.dev"
+
+# pytest configuration
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+testpaths = ["tests"]
+addopts = [
+    "--verbose",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=.",
+    "--cov-report=html",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-branch",
+    "--no-cov-on-fail",
+    "--ds=config.settings.test",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "graphql: marks tests for GraphQL API",
+    "wagtail: marks tests for Wagtail CMS",
+]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning",
+]
+
+# coverage configuration
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/.venv/*",
+    "*/staticfiles/*",
+    "*/media/*",
+    "*/node_modules/*",
+    "manage.py",
+    "*/wsgi.py",
+    "*/asgi.py",
+    "*/settings/*.py",
+]
+branch = true
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "def __str__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "if settings.DEBUG",
+    "@abstractmethod",
+    "@abc.abstractmethod",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+# bandit configuration
+[tool.bandit]
+exclude_dirs = [
+    "/tests/",
+    "/migrations/",
+    "/.venv/",
+    "/venv/",
+]
+skips = ["B101", "B601"]
+
+# pylint configuration
+[tool.pylint.main]
+py-version = "3.14"
+ignore = ["migrations", "tests", ".venv", "venv"]
+load-plugins = ["pylint_django"]
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint.messages_control]
+disable = [
+    "C0111",  # missing-docstring
+    "C0103",  # invalid-name
+    "R0903",  # too-few-public-methods
+]
+
+[tool.pylint.django]
+django-settings-module = "config.settings.dev"
+
+# Ruff configuration (alternative to flake8)
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    "migrations",
+    "staticfiles",
+    "media",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "DJ",  # flake8-django
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # do not perform function calls in argument defaults
+    "W191",  # indentation contains tabs
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"settings/*.py" = ["F405", "F403"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["backend", "apps", "config"]
+section-order = ["future", "standard-library", "django", "wagtail", "third-party", "first-party", "local-folder"]
+
+[tool.ruff.lint.isort.sections]
+django = ["django"]
+wagtail = ["wagtail"]
+
+# Pyright/Pylance configuration
+[tool.pyright]
+pythonVersion = "3.14"
+typeCheckingMode = "basic"
+reportMissingImports = "warning"
+reportMissingModuleSource = false
+venvPath = "."
+venv = ".venv"
+exclude = [
+    "**/migrations/**",
+    "**/__pycache__/**",
+    ".venv",
+    "venv",
+    "staticfiles",
+    "media",
+]
