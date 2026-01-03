@@ -1,0 +1,36 @@
+# Hadolint configuration for Dockerfile linting
+# https://github.com/hadolint/hadolint
+
+ignored:
+  # DL3008: Pin versions in apt-get install (we use requirements.txt for Python packages)
+  - DL3008
+  # DL3013: Pin versions in pip install (we use requirements.txt)
+  - DL3013
+  # DL3059: Multiple consecutive RUN commands (sometimes necessary for clarity)
+  - DL3059
+
+trustedRegistries:
+  - docker.io
+  - gcr.io
+  - ghcr.io
+
+failure-threshold: warning
+
+override:
+  error:
+    - DL3001  # Avoid sudo
+    - DL3002  # User should not be root
+    - DL3020  # Use COPY instead of ADD
+  warning:
+    - DL3003  # Use WORKDIR
+    - DL3004  # Multiple COPY commands
+  info:
+    - DL3006  # Always tag version of FROM image
+    - DL3007  # Always use latest version
+
+format: json
+
+no-color: false
+no-fail: false
+
+inline-ignore: false
