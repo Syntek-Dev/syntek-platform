@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/workflows/**'
   workflow_dispatch:
     inputs:
       skip-tests:
@@ -21,7 +25,7 @@ jobs:
     name: Pre-Deployment Checks
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.event.inputs.skip-tests != 'true'
+    if: github.event.inputs.skip-tests != 'true' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout repository
@@ -52,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [pre-deployment-checks]
-    if: always() && (needs.pre-deployment-checks.result == 'success' || needs.pre-deployment-checks.result == 'skipped')
+    if: always() && (needs.pre-deployment-checks.result == 'success' || needs.pre-deployment-checks.result == 'skipped') && github.ref == 'refs/heads/main'
     environment: production
 
     outputs:

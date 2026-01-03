@@ -1,5 +1,13 @@
 # GitHub Repository Secrets for ClickUp Integration
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 This document lists all GitHub repository secrets required for ClickUp integration to work properly.
 
 ## Table of Contents

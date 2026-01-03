@@ -1,5 +1,13 @@
 # Security Implementation Summary
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 > **Implementation Date:** 2026-01-03
 > **Django Version:** 5.2
 > **Wagtail Version:** 7.0

@@ -1,5 +1,13 @@
 # Custom Validators
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 Custom form and field validators for data validation.
 
 ## Table of Contents

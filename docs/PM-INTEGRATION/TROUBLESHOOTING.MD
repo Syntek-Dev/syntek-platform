@@ -1,5 +1,13 @@
 # ClickUp Integration Troubleshooting
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 Common issues and solutions for the ClickUp project management integration.
 
 ## Table of Contents

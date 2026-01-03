@@ -1,5 +1,13 @@
 # ClickUp Integration Scripts
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 Python scripts for syncing user stories, sprints, and tasks between this Django project and ClickUp project management tool.
 
 ## Table of Contents

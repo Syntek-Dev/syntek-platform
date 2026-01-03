@@ -11,10 +11,8 @@ updates:
     labels:
       - "dependencies"
       - "python"
-    reviewers:
-      - "syntek-studio/backend-team"
     assignees:
-      - "syntek-studio/backend-team"
+      - "backend-team"
     commit-message:
       prefix: "deps"
       include: "scope"

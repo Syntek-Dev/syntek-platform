@@ -1,5 +1,13 @@
 # ClickUp Integration Setup Guide
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 Step-by-step instructions for setting up ClickUp integration with this Django backend project.
 
 ## Table of Contents

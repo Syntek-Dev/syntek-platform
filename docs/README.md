@@ -1,5 +1,13 @@
 # Project Documentation
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 > **Backend Template - Django/Wagtail Documentation**
 
 ## Table of Contents

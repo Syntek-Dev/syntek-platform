@@ -1,5 +1,13 @@
 # CI/CD PIPELINE - GITHUB ACTIONS
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 > **Platform:** GitHub Actions
 > **Container Runtime:** Docker Compose
 > **Last Updated:** 2026-01-03

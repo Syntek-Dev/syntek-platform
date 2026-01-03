@@ -1,6 +1,6 @@
 {
   "name": "backend-template",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Django/Wagtail backend with PostgreSQL and GraphQL API",
   "private": true,
   "scripts": {

@@ -1,5 +1,13 @@
 # backend_template
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 A reusable backend template using Django, Wagtail, PostgreSQL and GraphQL with environment-specific
 setups for dev, staging, production, and test.
 

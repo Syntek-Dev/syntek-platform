@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - staging
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 concurrency:
@@ -15,6 +19,7 @@ jobs:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    if: github.ref == 'refs/heads/staging'
     environment: staging
 
     outputs:

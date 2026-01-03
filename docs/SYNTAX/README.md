@@ -1,5 +1,13 @@
 # Syntax and Code Quality
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 ## Table of Contents
 
 - [Syntax and Code Quality](#syntax-and-code-quality)

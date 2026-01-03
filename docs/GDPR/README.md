@@ -1,5 +1,13 @@
 # GDPR and Data Protection
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 ## Table of Contents
 
 - [GDPR and Data Protection](#gdpr-and-data-protection)

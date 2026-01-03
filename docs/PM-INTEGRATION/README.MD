@@ -1,5 +1,13 @@
 # ClickUp Project Management Integration
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 Complete integration between this Django backend project and ClickUp for project management, task tracking, and workflow automation.
 
 ## Table of Contents

@@ -1,5 +1,13 @@
 # ClickUp Integration Summary
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 Complete ClickUp project management integration for backend_template Django project.
 
 **Date:** 2026-01-03

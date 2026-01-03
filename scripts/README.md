@@ -1,5 +1,13 @@
 # Scripts Directory
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 Helper scripts for CI/CD setup and local development.
 
 ## Table of Contents

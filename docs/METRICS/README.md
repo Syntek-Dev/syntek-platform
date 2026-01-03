@@ -1,5 +1,13 @@
 # Syntek Dev Suite - Self-Learning Metrics
 
+**Last Updated**: 03/01/2026
+**Version**: 0.2.0
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
 This folder contains data for the self-learning system that improves agent performance over time.
 
 ## Table of Contents
