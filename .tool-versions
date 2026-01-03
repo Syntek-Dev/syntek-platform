@@ -1,0 +1,6 @@
+# asdf version manager configuration
+# Install asdf: https://asdf-vm.com/
+
+python 3.14
+nodejs 24.12.0
+postgres 18.1

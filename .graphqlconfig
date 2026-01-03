@@ -1,0 +1,41 @@
+{
+  "name": "Backend Template GraphQL Schema",
+  "schemaPath": "schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "dev": {
+        "url": "http://localhost:8000/graphql",
+        "headers": {
+          "user-agent": "GraphQL Config"
+        },
+        "introspect": true
+      },
+      "staging": {
+        "url": "https://staging-api.example.com/graphql",
+        "headers": {
+          "user-agent": "GraphQL Config"
+        },
+        "introspect": false
+      },
+      "production": {
+        "url": "https://api.example.com/graphql",
+        "headers": {
+          "user-agent": "GraphQL Config"
+        },
+        "introspect": false
+      }
+    }
+  },
+  "includes": [
+    "apps/*/schema.py",
+    "apps/*/queries.py",
+    "apps/*/mutations.py"
+  ],
+  "excludes": [
+    "node_modules",
+    "venv",
+    ".venv",
+    "staticfiles",
+    "media"
+  ]
+}

@@ -1,0 +1,16 @@
+# ShellCheck configuration
+# https://www.shellcheck.net/
+
+# Exclude specific rules
+disable=SC2034  # Variable appears unused
+disable=SC2086  # Double quote to prevent globbing
+disable=SC1091  # Not following sourced files
+
+# Enable optional checks
+enable=all
+
+# Severity threshold
+severity=warning
+
+# External sources
+source-path=SCRIPTDIR
