@@ -1,0 +1,68 @@
+{
+  "tool": "clickup",
+  "api_version": "v2",
+  "sync_enabled": true,
+  "bidirectional": true,
+  "auto_create_tasks": true,
+  "workspace": {
+    "team_id": "${CLICKUP_TEAM_ID}",
+    "space_id": "${CLICKUP_SPACE_ID}",
+    "space_name": "Syntek"
+  },
+  "folders": {
+    "sprints": {
+      "id": "${CLICKUP_SPRINTS_FOLDER_ID}",
+      "name": "Sprint - Backend Template"
+    },
+    "backlog": {
+      "id": "${CLICKUP_BACKLOG_FOLDER_ID}",
+      "name": "Backlog - Backend Template",
+      "list_id": "${CLICKUP_BACKLOG_LIST_ID}"
+    }
+  },
+  "status_mapping": {
+    "backlog": ["Open"],
+    "ready": ["pending"],
+    "in_progress": ["in progress"],
+    "review": ["in review"],
+    "accepted": ["accepted", "accepted customer"],
+    "rejected": ["rejected", "rejected customer"],
+    "blocked": ["blocked"],
+    "completed": ["completed"],
+    "done": ["Closed", "client accepted"]
+  },
+  "branch_to_status_mapping": {
+    "main": "Closed",
+    "staging": "accepted",
+    "dev": "in progress",
+    "testing": "in review"
+  },
+  "field_mapping": {
+    "story_points": "points",
+    "priority": "priority",
+    "sprint": "list",
+    "assignee": "assignee"
+  },
+  "priority_mapping": {
+    "must_have": "1",
+    "should_have": "2",
+    "could_have": "3",
+    "wont_have": "4"
+  },
+  "labels": {
+    "must_have": "must-have",
+    "should_have": "should-have",
+    "could_have": "could-have",
+    "wont_have": "wont-have"
+  },
+  "branch_naming": {
+    "pattern": "us{task_id}/{feature_name}",
+    "examples": ["us123/add-user-authentication", "us456/fix-database-migration"]
+  },
+  "notifications": {
+    "on_status_change": true,
+    "on_assignment": true,
+    "on_pr_created": true,
+    "on_pr_merged": true
+  }
+}
