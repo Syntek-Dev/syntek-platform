@@ -1,0 +1,30 @@
+[MAIN]
+py-version=3.13
+ignore=CVS,migrations,tests,.venv,venv
+load-plugins=pylint_django,pylint_django.checkers.migrations
+
+[MESSAGES CONTROL]
+disable=
+    C0111,  # missing-docstring
+    C0103,  # invalid-name
+    R0903,  # too-few-public-methods
+    W0212,  # protected-access
+    E1101,  # no-member (Django models)
+    R0901,  # too-many-ancestors (Django views)
+    R0913,  # too-many-arguments
+    W0511,  # fixme
+
+[FORMAT]
+max-line-length=100
+indent-string='    '
+indent-after-paren=4
+
+[DESIGN]
+max-parents=13
+max-attributes=10
+
+[DJANGO]
+django-settings-module=config.settings.dev
+
+[TYPECHECK]
+generated-members=objects,DoesNotExist,id,pk,_meta,MultipleObjectsReturned
