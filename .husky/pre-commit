@@ -1,0 +1,38 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Pre-commit hook for Django backend
+# This hook runs linting and formatting checks before allowing commits
+
+echo "Running pre-commit checks..."
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+  echo "⚠️  Docker is not running. Falling back to local pre-commit hooks."
+  pre-commit run --all-files
+  exit $?
+fi
+
+# Run formatting checks in Docker
+echo "Checking code formatting with Black..."
+if ! docker compose -f docker/test/docker-compose.yml run --rm web black --check . 2>/dev/null; then
+  echo "❌ Black formatting check failed"
+  echo "Run: docker compose -f docker/test/docker-compose.yml run --rm web black ."
+  exit 1
+fi
+
+echo "Checking import sorting with isort..."
+if ! docker compose -f docker/test/docker-compose.yml run --rm web isort --check-only . 2>/dev/null; then
+  echo "❌ isort check failed"
+  echo "Run: docker compose -f docker/test/docker-compose.yml run --rm web isort ."
+  exit 1
+fi
+
+echo "Running flake8 linting..."
+if ! docker compose -f docker/test/docker-compose.yml run --rm web flake8 . 2>/dev/null; then
+  echo "❌ flake8 linting failed"
+  exit 1
+fi
+
+echo "✅ All pre-commit checks passed"
+exit 0

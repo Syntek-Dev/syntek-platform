@@ -1,0 +1,37 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Pre-push hook for Django backend
+# This hook runs tests before allowing pushes
+
+echo "Running pre-push checks..."
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+  echo "⚠️  Docker is not running. Skipping Docker-based tests."
+  exit 0
+fi
+
+# Run tests in Docker
+echo "Running test suite in Docker..."
+if ! docker compose -f docker/test/docker-compose.yml up -d db redis mailpit 2>/dev/null; then
+  echo "❌ Failed to start test services"
+  exit 1
+fi
+
+# Wait for database
+echo "Waiting for database to be ready..."
+sleep 5
+
+# Run tests
+if ! docker compose -f docker/test/docker-compose.yml run --rm web pytest -x --maxfail=3 2>/dev/null; then
+  echo "❌ Tests failed"
+  docker compose -f docker/test/docker-compose.yml down -v 2>/dev/null
+  exit 1
+fi
+
+# Cleanup
+docker compose -f docker/test/docker-compose.yml down -v 2>/dev/null
+
+echo "✅ All pre-push checks passed"
+exit 0

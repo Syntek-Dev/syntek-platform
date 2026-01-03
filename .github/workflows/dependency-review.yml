@@ -1,0 +1,214 @@
+name: Dependency Review
+
+on:
+  pull_request:
+    branches:
+      - main
+      - staging
+  schedule:
+    # Run weekly on Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  dependency-review:
+    name: Review Dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+          fail-on-scopes: runtime
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, PostgreSQL, Python-2.0
+          deny-licenses: GPL-3.0, AGPL-3.0
+          comment-summary-in-pr: always
+
+  check-outdated-dependencies:
+    name: Check Outdated Dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+
+      - name: Install pip-audit
+        run: |
+          pip install pip-audit pip-tools
+
+      - name: Check for outdated dependencies
+        run: |
+          # Check all requirements files
+          for req_file in requirements/*.txt; do
+            echo "Checking $req_file for outdated dependencies"
+            pip list --outdated --format=json > outdated.json || true
+
+            if [ -s outdated.json ]; then
+              echo "Outdated packages found in $req_file:"
+              cat outdated.json
+            fi
+          done
+
+      - name: Audit dependencies for vulnerabilities
+        run: |
+          pip-audit --requirement requirements/base.txt --format json --output audit-base.json || true
+          pip-audit --requirement requirements/production.txt --format json --output audit-production.json || true
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-audit-results
+          path: |
+            audit-*.json
+            outdated.json
+          retention-days: 30
+
+      - name: Check for critical vulnerabilities
+        run: |
+          # Fail if critical vulnerabilities are found
+          pip-audit --requirement requirements/production.txt --vulnerability-service osv --strict
+
+  license-scan:
+    name: License Compliance Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install pip-licenses
+        run: |
+          pip install pip-licenses
+
+      - name: Install project dependencies
+        run: |
+          pip install -r requirements/base.txt
+
+      - name: Generate license report
+        run: |
+          pip-licenses --format=json --output-file=licenses.json
+          pip-licenses --format=markdown --output-file=licenses.md
+
+      - name: Check for incompatible licenses
+        run: |
+          # Check for GPL and AGPL licenses (incompatible with some uses)
+          if grep -iE "(GPL|AGPL)" licenses.md; then
+            echo "⚠️ Warning: GPL/AGPL licenses detected"
+            echo "Please review licenses.md for compatibility"
+            # Don't fail, just warn
+          else
+            echo "✅ No incompatible licenses detected"
+          fi
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: |
+            licenses.json
+            licenses.md
+          retention-days: 90
+
+  docker-base-image-scan:
+    name: Scan Docker Base Images
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Scan python:3.14-slim base image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: python:3.14-slim
+          format: 'sarif'
+          output: 'trivy-base-image.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+
+      - name: Upload base image scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-base-image.sarif'
+          category: 'base-image-scan'
+
+  dependency-update-check:
+    name: Check for Available Updates
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test container
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/test/Dockerfile
+          push: false
+          load: true
+          tags: backend-template:test
+
+      - name: Check for available updates
+        run: |
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            pip list --outdated
+
+      - name: Create issue for outdated dependencies
+        if: github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'Weekly Dependency Update Check';
+            const body = `Automated dependency check completed.
+
+            Please review the workflow run for outdated packages and security vulnerabilities.
+
+            Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+
+            // Check if issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'dependencies'
+            });
+
+            const existingIssue = issues.data.find(issue => issue.title === title);
+
+            if (!existingIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['dependencies', 'automated']
+              });
+            }

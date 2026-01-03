@@ -1,0 +1,270 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - dev
+      - testing
+  pull_request:
+    branches:
+      - main
+      - staging
+      - dev
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-format:
+    name: Lint and Format Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test container
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/test/Dockerfile
+          push: false
+          load: true
+          tags: backend-template:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Black formatting check
+        run: |
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            black --check --diff .
+
+      - name: Run isort import sorting check
+        run: |
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            isort --check-only --diff .
+
+      - name: Run flake8 linting
+        run: |
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            flake8 .
+
+      - name: Run pylint
+        run: |
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            pylint apps/ api/ config/
+        continue-on-error: true
+
+  type-check:
+    name: Type Checking
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test container
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/test/Dockerfile
+          push: false
+          load: true
+          tags: backend-template:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run mypy type checking
+        run: |
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            mypy .
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test container
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/test/Dockerfile
+          push: false
+          load: true
+          tags: backend-template:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Bandit security checks
+        run: |
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            bandit -r apps/ api/ config/ -f json -o bandit-report.json
+        continue-on-error: true
+
+      - name: Upload Bandit results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bandit-security-report
+          path: bandit-report.json
+          retention-days: 7
+
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test container
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/test/Dockerfile
+          push: false
+          load: true
+          tags: backend-template:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Start test services
+        run: |
+          docker compose -f docker/test/docker-compose.yml up -d db redis mailpit
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            bash -c "while ! nc -z db 5432; do sleep 1; done"
+
+      - name: Run migrations
+        run: |
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            python manage.py migrate --noinput
+
+      - name: Run pytest with coverage
+        run: |
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            pytest --cov=apps --cov=api --cov=config \
+            --cov-report=xml --cov-report=html --cov-report=term-missing
+
+      - name: Upload coverage report (XML)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report-xml
+          path: coverage.xml
+          retention-days: 7
+
+      - name: Upload coverage report (HTML)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report-html
+          path: htmlcov/
+          retention-days: 7
+
+      - name: Display coverage summary
+        run: |
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            coverage report
+
+      - name: Shutdown test services
+        if: always()
+        run: |
+          docker compose -f docker/test/docker-compose.yml down -v
+
+  dockerfile-lint:
+    name: Dockerfile Linting
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run hadolint on all Dockerfiles
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: docker/dev/Dockerfile
+          failure-threshold: warning
+
+      - name: Lint test Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: docker/test/Dockerfile
+          failure-threshold: warning
+
+      - name: Lint staging Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: docker/staging/Dockerfile
+          failure-threshold: warning
+
+      - name: Lint production Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: docker/production/Dockerfile
+          failure-threshold: warning
+
+  validate-config:
+    name: Validate Configuration Files
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate YAML files
+        run: |
+          find . -name "*.yml" -o -name "*.yaml" | while read file; do
+            echo "Validating $file"
+            python -c "import yaml; yaml.safe_load(open('$file'))"
+          done
+
+      - name: Validate JSON files
+        run: |
+          find . -name "*.json" | while read file; do
+            echo "Validating $file"
+            python -c "import json; json.load(open('$file'))"
+          done
+
+  ci-summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, type-check, security-scan, test, dockerfile-lint, validate-config]
+    if: always()
+
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [ "${{ needs.lint-and-format.result }}" != "success" ] || \
+             [ "${{ needs.type-check.result }}" != "success" ] || \
+             [ "${{ needs.test.result }}" != "success" ] || \
+             [ "${{ needs.dockerfile-lint.result }}" != "success" ] || \
+             [ "${{ needs.validate-config.result }}" != "success" ]; then
+            echo "❌ CI pipeline failed"
+            exit 1
+          else
+            echo "✅ All CI checks passed"
+          fi

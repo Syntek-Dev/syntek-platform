@@ -1,0 +1,303 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      skip-tests:
+        description: 'Skip pre-deployment tests (use with caution)'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+jobs:
+  pre-deployment-checks:
+    name: Pre-Deployment Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event.inputs.skip-tests != 'true'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test container
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/test/Dockerfile
+          push: false
+          load: true
+          tags: backend-template:test
+          cache-from: type=gha
+
+      - name: Run critical tests
+        run: |
+          docker compose -f docker/test/docker-compose.yml up -d
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            pytest -m "not slow" --maxfail=1
+          docker compose -f docker/test/docker-compose.yml down -v
+
+  build-and-push:
+    name: Build and Push Production Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [pre-deployment-checks]
+    if: always() && (needs.pre-deployment-checks.result == 'success' || needs.pre-deployment-checks.result == 'skipped')
+    environment: production
+
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version
+        id: version
+        run: |
+          # Try to get version from git tag, fallback to commit SHA
+          VERSION=$(git describe --tags --always --dirty)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Production version: $VERSION"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.CONTAINER_REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.CONTAINER_REGISTRY }}/backend-template
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=prod-
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=production-latest
+            type=raw,value=${{ steps.version.outputs.version }}
+
+      - name: Build and push production image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/production/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILD_DATE=${{ steps.meta.outputs.created }}
+            VERSION=${{ steps.version.outputs.version }}
+            ENVIRONMENT=production
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ secrets.CONTAINER_REGISTRY }}/backend-template:production-latest
+          format: cyclonedx-json
+          output-file: sbom.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json
+          retention-days: 90
+
+  security-scan:
+    name: Security Scan Production Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: build-and-push
+
+    steps:
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.CONTAINER_REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ needs.build-and-push.outputs.image-tag }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Fail on critical vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ needs.build-and-push.outputs.image-tag }}
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL'
+
+  approve-deployment:
+    name: Approve Production Deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 1440  # 24 hours
+    needs: [build-and-push, security-scan]
+    environment:
+      name: production-approval
+
+    steps:
+      - name: Wait for approval
+        run: |
+          echo "Production deployment approved"
+          echo "Version: ${{ needs.build-and-push.outputs.version }}"
+          echo "Image: ${{ needs.build-and-push.outputs.image-tag }}"
+
+  deploy-production:
+    name: Deploy to Production Environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [build-and-push, security-scan, approve-deployment]
+    environment:
+      name: production
+      url: ${{ secrets.PRODUCTION_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.PRODUCTION_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Create database backup
+        env:
+          PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+          PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+        run: |
+          ssh ${PRODUCTION_USER}@${PRODUCTION_HOST} << 'EOF'
+            BACKUP_FILE="/opt/backups/db-backup-$(date +%Y%m%d-%H%M%S).sql"
+            docker compose -f /opt/backend-template/docker/production/docker-compose.yml \
+              exec -T db pg_dump -U backend_template backend_template > "$BACKUP_FILE"
+            echo "Database backup created: $BACKUP_FILE"
+          EOF
+
+      - name: Deploy via SSH
+        env:
+          PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+          PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image-tag }}
+        run: |
+          ssh ${PRODUCTION_USER}@${PRODUCTION_HOST} << 'EOF'
+            set -e
+
+            # Navigate to application directory
+            cd /opt/backend-template
+
+            # Pull latest image
+            docker pull ${{ needs.build-and-push.outputs.image-tag }}
+
+            # Update docker-compose configuration
+            export IMAGE_TAG=${{ needs.build-and-push.outputs.image-tag }}
+            export ENVIRONMENT=production
+
+            # Run database migrations (with backup already created)
+            docker compose -f docker/production/docker-compose.yml run --rm web \
+              python manage.py migrate --noinput
+
+            # Collect static files
+            docker compose -f docker/production/docker-compose.yml run --rm web \
+              python manage.py collectstatic --noinput --clear
+
+            # Perform rolling update (zero-downtime deployment)
+            docker compose -f docker/production/docker-compose.yml up -d --scale web=2
+            sleep 30  # Wait for new containers to be healthy
+
+            # Remove old containers
+            docker compose -f docker/production/docker-compose.yml up -d --scale web=1 --remove-orphans
+
+            # Health check
+            sleep 10
+            curl -f http://localhost:8000/health || exit 1
+
+            echo "Production deployment completed successfully"
+          EOF
+
+      - name: Run smoke tests
+        run: |
+          # Wait for application to stabilise
+          sleep 30
+
+          # Run critical smoke tests
+          curl -f ${{ secrets.PRODUCTION_URL }}/health
+          curl -f ${{ secrets.PRODUCTION_URL }}/admin/login/
+          curl -f ${{ secrets.PRODUCTION_URL }}/api/graphql
+
+      - name: Notify deployment success
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: |
+            ✅ Production Deployment Successful
+            Version: ${{ needs.build-and-push.outputs.version }}
+            Commit: ${{ github.sha }}
+            URL: ${{ secrets.PRODUCTION_URL }}
+            Deployed by: ${{ github.actor }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify deployment failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: |
+            ❌ Production Deployment Failed
+            Version: ${{ needs.build-and-push.outputs.version }}
+            Commit: ${{ github.sha }}
+            Please check the logs and consider rollback
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  rollback-on-failure:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [deploy-production]
+    if: failure()
+    environment: production
+
+    steps:
+      - name: Trigger rollback
+        env:
+          PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+          PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+        run: |
+          echo "Deployment failed. Manual rollback may be required."
+          echo "Check deployment logs and restore from backup if necessary."
+          # Automated rollback logic can be added here

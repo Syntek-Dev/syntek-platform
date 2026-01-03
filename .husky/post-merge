@@ -1,0 +1,29 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Post-merge hook for Django backend
+# Runs after git merge or git pull to update dependencies
+
+echo "Running post-merge checks..."
+
+# Check if requirements files changed
+CHANGED_FILES=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)
+
+if echo "$CHANGED_FILES" | grep -q "requirements/"; then
+  echo "📦 Requirements files changed"
+  echo "Please rebuild Docker containers:"
+  echo "  docker compose -f docker/dev/docker-compose.yml build"
+fi
+
+if echo "$CHANGED_FILES" | grep -q "migrations/"; then
+  echo "🔄 Migration files changed"
+  echo "Please run migrations:"
+  echo "  docker compose -f docker/dev/docker-compose.yml run --rm web python manage.py migrate"
+fi
+
+if echo "$CHANGED_FILES" | grep -q "package.json\|package-lock.json"; then
+  echo "📦 Node.js dependencies changed"
+  echo "Please run: npm install"
+fi
+
+exit 0

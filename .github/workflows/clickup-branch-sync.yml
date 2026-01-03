@@ -1,0 +1,146 @@
+name: ClickUp Branch Status Sync
+
+on:
+  create:
+    branches:
+      - 'us*/**'
+  delete:
+    branches:
+      - 'us*/**'
+
+jobs:
+  sync-branch-creation:
+    name: Update ClickUp on Branch Events
+    runs-on: ubuntu-latest
+    if: github.event_name == 'create' && startsWith(github.ref_name, 'us')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Extract task information from branch name
+        id: task-info
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+          # Extract task number (e.g., us123/feature-name -> 123)
+          if [[ $BRANCH_NAME =~ ^us([0-9]+)/ ]]; then
+            TASK_NUMBER="${BASH_REMATCH[1]}"
+            echo "task_number=$TASK_NUMBER" >> $GITHUB_OUTPUT
+            echo "story_id=US-$TASK_NUMBER" >> $GITHUB_OUTPUT
+            echo "has_task_id=true" >> $GITHUB_OUTPUT
+            echo "Found task: US-$TASK_NUMBER"
+          else
+            echo "has_task_id=false" >> $GITHUB_OUTPUT
+            echo "Branch name doesn't match pattern us{number}/..."
+            exit 0
+          fi
+
+          # Extract feature name
+          if [[ $BRANCH_NAME =~ ^us[0-9]+/(.+)$ ]]; then
+            FEATURE_NAME="${BASH_REMATCH[1]}"
+            echo "feature_name=$FEATURE_NAME" >> $GITHUB_OUTPUT
+            echo "Feature: $FEATURE_NAME"
+          fi
+
+      - name: Load ClickUp task mapping
+        id: mapping
+        if: steps.task-info.outputs.has_task_id == 'true'
+        run: |
+          if [ -f "config/clickup-story-mapping.json" ]; then
+            STORY_ID="${{ steps.task-info.outputs.story_id }}"
+            TASK_ID=$(jq -r --arg story_id "$STORY_ID" '.[$story_id] // empty' config/clickup-story-mapping.json)
+
+            if [ -n "$TASK_ID" ]; then
+              echo "clickup_task_id=$TASK_ID" >> $GITHUB_OUTPUT
+              echo "Found ClickUp task ID: $TASK_ID"
+            else
+              echo "No mapping found for $STORY_ID"
+              echo "You may need to run: python scripts/clickup/pull_tasks.py"
+            fi
+          else
+            echo "Task mapping file not found at config/clickup-story-mapping.json"
+            echo "Run: python scripts/clickup/pull_tasks.py to generate it"
+          fi
+
+      - name: Update task status to "in progress"
+        if: steps.mapping.outputs.clickup_task_id != ''
+        env:
+          CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
+          TASK_ID: ${{ steps.mapping.outputs.clickup_task_id }}
+        run: |
+          python3 - <<EOF
+          import os
+          import requests
+          import sys
+
+          api_key = os.environ['CLICKUP_API_KEY']
+          task_id = os.environ['TASK_ID']
+
+          url = f"https://api.clickup.com/api/v2/task/{task_id}"
+          headers = {
+              "Authorization": api_key,
+              "Content-Type": "application/json"
+          }
+          data = {"status": "in progress"}
+
+          response = requests.put(url, headers=headers, json=data)
+
+          if response.status_code == 200:
+              print(f"Updated task {task_id} to 'in progress'")
+          else:
+              print(f"Failed to update task: {response.status_code}")
+              print(response.text)
+              sys.exit(1)
+          EOF
+
+      - name: Add branch creation comment
+        if: steps.mapping.outputs.clickup_task_id != ''
+        env:
+          CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
+          TASK_ID: ${{ steps.mapping.outputs.clickup_task_id }}
+          BRANCH_NAME: ${{ steps.task-info.outputs.branch_name }}
+          FEATURE_NAME: ${{ steps.task-info.outputs.feature_name }}
+          ACTOR: ${{ github.actor }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          python3 - <<EOF
+          import os
+          import requests
+
+          api_key = os.environ['CLICKUP_API_KEY']
+          task_id = os.environ['TASK_ID']
+          branch_name = os.environ['BRANCH_NAME']
+          feature_name = os.environ['FEATURE_NAME']
+          actor = os.environ['ACTOR']
+          repo_url = os.environ['REPO_URL']
+
+          comment_text = f"**Branch created** by {actor}\n\n"
+          comment_text += f"Branch: `{branch_name}`\n"
+          comment_text += f"Feature: {feature_name}\n\n"
+          comment_text += f"[View in GitHub]({repo_url}/tree/{branch_name})"
+
+          url = f"https://api.clickup.com/api/v2/task/{task_id}/comment"
+          headers = {
+              "Authorization": api_key,
+              "Content-Type": "application/json"
+          }
+          data = {"comment_text": comment_text}
+
+          response = requests.post(url, headers=headers, json=data)
+
+          if response.status_code == 200:
+              print(f"Added branch creation comment to task {task_id}")
+          else:
+              print(f"Failed to add comment: {response.status_code}")
+          EOF
