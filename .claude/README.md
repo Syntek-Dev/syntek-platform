@@ -54,7 +54,7 @@ This directory contains configuration specific to Claude Code and the Syntek Dev
 
 This is the primary configuration file for the project. It defines:
 
-- **Project Stack:** Django + Wagtail + PostgreSQL + GraphQL
+- **Project Stack:** Django + PostgreSQL + GraphQL
 - **Container Setup:** Docker Compose per environment
 - **Development Conventions:** Code style, docstring formats, type hints
 - **Documentation Standards:** Markdown requirements, file organization

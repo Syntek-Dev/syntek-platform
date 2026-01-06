@@ -52,78 +52,78 @@ The Syntek Dev Suite provides specialised agents for different development tasks
 
 ### Most Common Commands
 
-| Command | Purpose |
-|---------|---------|
-| `/syntek-dev-suite:plan` | Create architectural plans for features |
-| `/syntek-dev-suite:backend` | API, database, and server logic |
-| `/syntek-dev-suite:test-writer` | Generate tests (TDD/BDD) |
-| `/syntek-dev-suite:review` | Code review for security and style |
-| `/syntek-dev-suite:debug` | Deep-dive debugging |
+| Command                         | Purpose                                 |
+| ------------------------------- | --------------------------------------- |
+| `/syntek-dev-suite:plan`        | Create architectural plans for features |
+| `/syntek-dev-suite:backend`     | API, database, and server logic         |
+| `/syntek-dev-suite:test-writer` | Generate tests (TDD/BDD)                |
+| `/syntek-dev-suite:review`      | Code review for security and style      |
+| `/syntek-dev-suite:debug`       | Deep-dive debugging                     |
 
 ## Available Agents
 
 ### Planning & Architecture
 
-| Agent | Command | Use For |
-|-------|---------|---------|
-| Planner | `/syntek-dev-suite:plan` | High-level system architecture |
-| Setup | `/syntek-dev-suite:setup` | Project scaffolding and configuration |
+| Agent   | Command                     | Use For                                 |
+| ------- | --------------------------- | --------------------------------------- |
+| Planner | `/syntek-dev-suite:plan`    | High-level system architecture          |
+| Setup   | `/syntek-dev-suite:setup`   | Project scaffolding and configuration   |
 | Stories | `/syntek-dev-suite:stories` | Generate user stories from requirements |
-| Sprint | `/syntek-dev-suite:sprint` | Organise stories into sprints |
+| Sprint  | `/syntek-dev-suite:sprint`  | Organise stories into sprints           |
 
 ### Development
 
-| Agent | Command | Use For |
-|-------|---------|---------|
-| Backend | `/syntek-dev-suite:backend` | APIs, DB schemas, server logic |
-| Frontend | `/syntek-dev-suite:frontend` | UI/UX, CSS, accessibility |
-| Database | `/syntek-dev-suite:database` | DB administration, optimisation |
+| Agent    | Command                      | Use For                            |
+| -------- | ---------------------------- | ---------------------------------- |
+| Backend  | `/syntek-dev-suite:backend`  | APIs, DB schemas, server logic     |
+| Frontend | `/syntek-dev-suite:frontend` | UI/UX, CSS, accessibility          |
+| Database | `/syntek-dev-suite:database` | DB administration, optimisation    |
 | Refactor | `/syntek-dev-suite:refactor` | Code modernisation, technical debt |
 
 ### Quality & Security
 
-| Agent | Command | Use For |
-|-------|---------|---------|
-| Test Writer | `/syntek-dev-suite:test-writer` | Generate tests and stubs (TDD) |
-| QA Tester | `/syntek-dev-suite:qa-tester` | Find bugs, security flaws, edge cases |
-| Code Reviewer | `/syntek-dev-suite:review` | Security, performance, style review |
-| Security | `/syntek-dev-suite:security` | Access control, security hardening |
-| Syntax | `/syntek-dev-suite:syntax` | Linting and language fixes |
+| Agent         | Command                         | Use For                               |
+| ------------- | ------------------------------- | ------------------------------------- |
+| Test Writer   | `/syntek-dev-suite:test-writer` | Generate tests and stubs (TDD)        |
+| QA Tester     | `/syntek-dev-suite:qa-tester`   | Find bugs, security flaws, edge cases |
+| Code Reviewer | `/syntek-dev-suite:review`      | Security, performance, style review   |
+| Security      | `/syntek-dev-suite:security`    | Access control, security hardening    |
+| Syntax        | `/syntek-dev-suite:syntax`      | Linting and language fixes            |
 
 ### DevOps & Infrastructure
 
-| Agent | Command | Use For |
-|-------|---------|---------|
-| CI/CD | `/syntek-dev-suite:cicd` | GitHub Actions, Docker, deployments |
-| Git | `/syntek-dev-suite:git` | Branch management, commits, PRs |
-| Logging | `/syntek-dev-suite:logging` | Sentry, file-based logging |
+| Agent   | Command                     | Use For                             |
+| ------- | --------------------------- | ----------------------------------- |
+| CI/CD   | `/syntek-dev-suite:cicd`    | GitHub Actions, Docker, deployments |
+| Git     | `/syntek-dev-suite:git`     | Branch management, commits, PRs     |
+| Logging | `/syntek-dev-suite:logging` | Sentry, file-based logging          |
 
 ### Documentation
 
-| Agent | Command | Use For |
-|-------|---------|---------|
-| Doc Writer | `/syntek-dev-suite:docs` | Developer docs, API docs, READMEs |
-| Support Articles | `/syntek-dev-suite:support-articles` | User-facing help documentation |
+| Agent            | Command                              | Use For                           |
+| ---------------- | ------------------------------------ | --------------------------------- |
+| Doc Writer       | `/syntek-dev-suite:docs`             | Developer docs, API docs, READMEs |
+| Support Articles | `/syntek-dev-suite:support-articles` | User-facing help documentation    |
 
 ### Compliance & SEO
 
-| Agent | Command | Use For |
-|-------|---------|---------|
-| GDPR | `/syntek-dev-suite:gdpr` | Data protection, consent management |
-| SEO | `/syntek-dev-suite:seo` | Meta tags, structured data, sitemaps |
+| Agent | Command                  | Use For                              |
+| ----- | ------------------------ | ------------------------------------ |
+| GDPR  | `/syntek-dev-suite:gdpr` | Data protection, consent management  |
+| SEO   | `/syntek-dev-suite:seo`  | Meta tags, structured data, sitemaps |
 
 ### Other
 
-| Agent | Command | Use For |
-|-------|---------|---------|
-| Auth | `/syntek-dev-suite:auth` | Authentication with MFA |
-| Notifications | `/syntek-dev-suite:notifications` | Email, SMS, push notifications |
-| Export | `/syntek-dev-suite:export` | File export (PDF, Excel, CSV, JSON) |
-| Reporting | `/syntek-dev-suite:reporting` | Data queries and aggregations |
-| Data Scientist | `/syntek-dev-suite:data` | Python, Pandas, SQL analysis |
-| Debugger | `/syntek-dev-suite:debug` | Complex runtime issues |
-| Version | `/syntek-dev-suite:version` | Semantic versioning, changelogs |
-| Completion | `/syntek-dev-suite:completion` | Mark stories/sprints complete |
+| Agent          | Command                           | Use For                             |
+| -------------- | --------------------------------- | ----------------------------------- |
+| Auth           | `/syntek-dev-suite:auth`          | Authentication with MFA             |
+| Notifications  | `/syntek-dev-suite:notifications` | Email, SMS, push notifications      |
+| Export         | `/syntek-dev-suite:export`        | File export (PDF, Excel, CSV, JSON) |
+| Reporting      | `/syntek-dev-suite:reporting`     | Data queries and aggregations       |
+| Data Scientist | `/syntek-dev-suite:data`          | Python, Pandas, SQL analysis        |
+| Debugger       | `/syntek-dev-suite:debug`         | Complex runtime issues              |
+| Version        | `/syntek-dev-suite:version`       | Semantic versioning, changelogs     |
+| Completion     | `/syntek-dev-suite:completion`    | Mark stories/sprints complete       |
 
 ## Typical Workflow
 
@@ -217,15 +217,16 @@ docs/METRICS/
 ### Backend Agent
 
 Use for:
+
 - Creating Django models
 - Building GraphQL schemas (Strawberry/Graphene)
-- Wagtail page models and snippets
 - Django REST Framework viewsets
 - Custom management commands
 
 ### Database Agent
 
 Use for:
+
 - PostgreSQL query optimisation
 - Migration planning
 - Index recommendations
@@ -234,6 +235,7 @@ Use for:
 ### Test Writer Agent
 
 Use for:
+
 - pytest test generation
 - Factory Boy factories
 - Django test client tests

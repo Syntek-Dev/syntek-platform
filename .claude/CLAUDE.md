@@ -8,7 +8,7 @@
 
 ---
 
-> **Stack:** Django + Wagtail + PostgreSQL + GraphQL
+> **Stack:** Django + PostgreSQL + GraphQL
 > **Container:** Docker Compose
 > **Package:** backend-template
 > **Last Updated:** 2026-01-03
@@ -27,7 +27,7 @@
   - [Key Conventions](#key-conventions)
     - [Django Apps](#django-apps)
     - [GraphQL API](#graphql-api)
-    - [Wagtail CMS](#wagtail-cms)
+    - [CMS Content Management](#cms-content-management)
   - [Documentation Standards](#documentation-standards)
     - [Docstring Requirements](#docstring-requirements)
     - [Google-Style Docstring Format](#google-style-docstring-format)
@@ -36,12 +36,17 @@
     - [Django Views](#django-views)
     - [Django Serializers](#django-serializers)
     - [GraphQL Resolvers](#graphql-resolvers)
-    - [Wagtail Page Models](#wagtail-page-models)
-    - [Wagtail Snippets](#wagtail-snippets)
     - [Comments: When to Use Them](#comments-when-to-use-them)
     - [Module-Level Docstrings](#module-level-docstrings)
     - [Examples of What NOT to Document](#examples-of-what-not-to-document)
   - [Markdown Documentation Standards](#markdown-documentation-standards)
+    - [File Naming Convention](#file-naming-convention)
+    - [Required VS Code Extension](#required-vs-code-extension)
+    - [Markdown All in One Commands](#markdown-all-in-one-commands)
+    - [Table of Contents Requirements](#table-of-contents-requirements)
+    - [Document Structure](#document-structure)
+    - [Markdown Formatting Rules](#markdown-formatting-rules)
+    - [Link Validation](#link-validation)
   - [Command Execution Requirements](#command-execution-requirements)
     - [Environment Scripts](#environment-scripts)
     - [Script Command Examples](#script-command-examples)
@@ -57,16 +62,30 @@
 
 ## Project Overview
 
-This is a reusable backend template using Django, Wagtail, PostgreSQL, and GraphQL with environment-specific setups (dev, staging, prod, test). Each environment has dedicated Docker containers to prevent interference.
+This is a comprehensive Django CMS platform that serves as the backend for a multi-repository architecture supporting web and mobile applications. It provides content management, design tokens, multi-tenancy, SaaS integrations, and enterprise-grade security features.
+
+**Platform Vision:** This backend is part of the Syntek CMS Platform - a comprehensive system enabling businesses to build and manage websites/apps with integrated business tools, consistent branding, and multi-platform deployment. See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the complete architectural plan.
 
 ### Architecture
 
-- **Framework:** Django with Wagtail CMS
+- **Framework:** Django with custom CMS
 - **Database:** PostgreSQL (containerised for dev/test, managed for staging/prod)
-- **API:** GraphQL
+- **API:** GraphQL (Strawberry)
 - **Cache:** Redis or Valkey
 - **Email:** Mailpit (dev/test simulation)
 - **Containers:** Docker Compose per environment
+- **Multi-Tenancy:** Organisation-based with isolated data
+- **Security:** 2FA, audit logging, encrypted secrets, IP encryption
+
+### Platform Components
+
+This backend integrates with:
+
+- **ui_design** - Shared React component library for web and mobile
+- **frontend_web** - React web application consuming this GraphQL API
+- **frontend_mobile** - React Native mobile app for iOS/Android
+
+For complete platform architecture and phase breakdown, see [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md).
 
 ## Project Structure
 
@@ -87,6 +106,14 @@ backend-template/
 │   ├── urls.py
 │   └── wsgi.py
 ├── apps/                    # Django applications
+│   ├── core/               # Users, organisations, auth (Phase 1)
+│   ├── design/             # Design tokens (Phase 2)
+│   ├── cms/                # Pages, content, media (Phase 3)
+│   ├── templates/          # Site templates (Phase 4)
+│   ├── integrations/       # Third-party integrations (Phase 11)
+│   ├── ai/                 # AI integration (Phase 12)
+│   ├── secrets/            # Environment variable management (Phase 13)
+│   └── setup/              # Initial setup wizard (Phase 14)
 ├── api/                     # GraphQL API
 ├── docker/                  # Docker configurations
 │   ├── dev/
@@ -94,15 +121,17 @@ backend-template/
 │   ├── staging/
 │   └── production/
 ├── docs/                    # Documentation
+│   ├── ARCHITECTURE/       # Platform architecture plans
+│   │   └── CMS-PLATFORM-PLAN.md  # Comprehensive platform plan
 │   └── METRICS/            # Self-learning metrics
 ├── manage.py
-├── requirements/
-│   ├── base.txt
-│   ├── dev.txt
-│   ├── test.txt
-│   └── production.txt
+├── pyproject.toml            # Python dependencies and project config
 └── docker-compose.yml
 ```
+
+**Note:** The apps structure reflects the phased implementation plan. See
+[docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the
+complete 16-phase development roadmap.
 
 ## Development Workflow
 
@@ -136,12 +165,12 @@ docker compose -f docker/test/docker-compose.yml run --rm web pytest --cov=apps
 
 ## Environment Configuration
 
-| Environment | Database | Cache | Email |
-|-------------|----------|-------|-------|
-| dev | PostgreSQL (container) | Redis (container) | Mailpit |
-| test | PostgreSQL (container) | Redis (container) | Mailpit |
-| staging | PostgreSQL (AWS/DO) | Redis (managed) | SMTP |
-| production | PostgreSQL (AWS/DO) | Redis (managed) | SMTP |
+| Environment | Database               | Cache             | Email   |
+| ----------- | ---------------------- | ----------------- | ------- |
+| dev         | PostgreSQL (container) | Redis (container) | Mailpit |
+| test        | PostgreSQL (container) | Redis (container) | Mailpit |
+| staging     | PostgreSQL (AWS/DO)    | Redis (managed)   | SMTP    |
+| production  | PostgreSQL (AWS/DO)    | Redis (managed)   | SMTP    |
 
 ## Key Conventions
 
@@ -150,18 +179,27 @@ docker compose -f docker/test/docker-compose.yml run --rm web pytest --cov=apps
 - Each app should be self-contained in `apps/`
 - Use `apps.app_name` for imports
 - Models should include `created_at` and `updated_at` fields
+- All models must support multi-tenancy via `organisation` foreign key
 
 ### GraphQL API
 
 - Schema defined in `api/schema.py`
-- Use Strawberry or Graphene for GraphQL
+- Use Strawberry for GraphQL (preferred over Graphene)
 - Mutations should return the modified object
+- All queries/mutations must respect organisation boundaries
+- Implement query depth limiting and complexity analysis
 
-### Wagtail CMS
+### CMS Content Management
 
-- Page models in respective apps
-- Snippets for reusable content blocks
-- Images and documents in Wagtail media
+- Page models use JSON content structure for flexibility
+- Block-based content system for reusable components
+- Content branching workflow: feature → testing → dev → staging → production
+- Version history maintained per branch
+- Design tokens stored in database and served via GraphQL
+- Template system supports 9 site types (e-commerce, blog, corporate, etc.)
+
+See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md)
+for detailed CMS architecture.
 
 ## Documentation Standards
 
@@ -170,6 +208,7 @@ This project uses **Google-style docstrings** for all Python code. Documentation
 ### Docstring Requirements
 
 Docstrings are **required** for:
+
 - All modules (top-level file docstrings)
 - All classes (including Django models, views, serializers)
 - All public functions and methods
@@ -177,9 +216,10 @@ Docstrings are **required** for:
 - Complex private methods (those containing business logic)
 
 Docstrings are **optional** for:
+
 - Simple getter/setter methods
 - Methods that override parent class methods with no change in behaviour
-- Magic methods (__str__, __repr__) if behaviour is obvious
+- Magic methods (**str**, **repr**) if behaviour is obvious
 
 ### Google-Style Docstring Format
 
@@ -519,118 +559,10 @@ class Query:
         ]
 ```
 
-### Wagtail Page Models
-
-Wagtail page models should document their purpose, fields, and admin customisations:
-
-```python
-from wagtail.models import Page
-from wagtail.fields import RichTextField
-from wagtail.admin.panels import FieldPanel, PublishingPanel
-from django.db import models
-
-
-class BlogPage(Page):
-    """A page model for publishing blog articles with rich text content.
-
-    This page type supports featured images, rich text body content, and
-    automatic publication date tracking. BlogPage instances appear in
-    the Wagtail admin with simplified content editing interface.
-
-    Attributes:
-        intro: Brief introduction or summary of the blog post.
-        body: The main article content using Wagtail's rich text editor.
-        featured_image: Optional image to display at the top of the article.
-        publication_date: Automatically set when the page is first published.
-
-    Admin Features:
-        - Simple tab organisation with Content and Publishing tabs.
-        - Rich text editing for article body.
-        - Image selection panel for featured images.
-    """
-
-    intro = models.CharField(max_length=250, help_text="Brief introduction")
-    body = RichTextField(help_text="Main article content")
-    featured_image = models.ForeignKey(
-        "wagtailimages.Image",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-    )
-    publication_date = models.DateTimeField(auto_now_add=True)
-
-    content_panels = Page.content_panels + [
-        FieldPanel("intro"),
-        FieldPanel("body"),
-        FieldPanel("featured_image"),
-    ]
-
-    promote_panels = Page.promote_panels + [
-        PublishingPanel(),
-    ]
-
-    def get_reading_time(self) -> int:
-        """Calculate estimated reading time in minutes.
-
-        Estimates based on average reading speed of 200 words per minute.
-        Counts words in both title and body.
-
-        Returns:
-            Estimated reading time in minutes (minimum 1 minute).
-        """
-        word_count = len(self.title.split()) + len(self.body.split())
-        reading_time = max(1, word_count // 200)
-        return reading_time
-```
-
-### Wagtail Snippets
-
-Snippet models should be documented with their purpose and usage:
-
-```python
-from wagtail.snippets.models import register_snippet
-from django.db import models
-
-
-@register_snippet
-class SocialMediaLink(models.Model):
-    """A reusable snippet representing a social media platform link.
-
-    This snippet allows content editors to define social media links once
-    and reuse them across multiple pages and content blocks. Commonly used
-    in footer sections and author profiles.
-
-    Attributes:
-        platform: The name of the social media platform (Twitter, LinkedIn, etc.).
-        url: The full URL to the social media profile or page.
-
-    Admin Behaviour:
-        Listed in Wagtail's snippet interface with filtering by platform.
-    """
-
-    PLATFORM_CHOICES = [
-        ("twitter", "Twitter/X"),
-        ("linkedin", "LinkedIn"),
-        ("github", "GitHub"),
-        ("instagram", "Instagram"),
-    ]
-
-    platform = models.CharField(max_length=50, choices=PLATFORM_CHOICES)
-    url = models.URLField(help_text="Full URL to the social media profile")
-
-    class Meta:
-        ordering = ["platform"]
-        unique_together = [["platform"]]
-
-    def __str__(self) -> str:
-        """Return the platform name."""
-        return self.get_platform_display()
-```
-
 ### Comments: When to Use Them
 
 **Add comments when:**
+
 - Explaining business logic that isn't obvious from the code.
 - Documenting workarounds or hacks with explanation of why they exist.
 - Noting performance considerations or optimisations.
@@ -652,6 +584,7 @@ def calculate_shipping_cost(weight: float, distance: int) -> float:
 ```
 
 **Avoid comments when:**
+
 - The code is self-documenting (clear variable/function names explain intent).
 - The comment simply restates what the code does.
 - Using a comment when a well-named variable or function would be clearer.
@@ -732,12 +665,119 @@ for item in items:
 
 ## Markdown Documentation Standards
 
-When writing or editing Markdown files (.md):
-- Use **Markdown All in One** VS Code extension features
-- Generate proper Table of Contents with links
-- Use auto-formatting for consistent structure
-- Follow standard Markdown conventions (headings, lists, code blocks)
-- Ensure all internal links are valid and properly formatted
+This project uses comprehensive Markdown standards for all documentation files.
+
+### File Naming Convention
+
+All Markdown files MUST follow this naming pattern:
+
+```
+UPPERCASE-NAME.md
+```
+
+**Examples:**
+
+- `README.md` - Project readme
+- `CLAUDE.md` - Claude configuration
+- `CHANGELOG.md` - Version changelog
+- `SETUP-GUIDE.md` - Setup instructions
+- `API-REFERENCE.md` - API documentation
+- `CMS-PLATFORM-PLAN.md` - Architecture plan
+
+**Rules:**
+
+- File name in UPPERCASE with hyphens separating words
+- Extension always lowercase `.md`
+- No spaces or underscores in file names
+- Use descriptive, concise names
+
+### Required VS Code Extension
+
+Install the **Markdown All in One** extension for VS Code:
+
+- Extension ID: `yzhang.markdown-all-in-one`
+- Install: `code --install-extension yzhang.markdown-all-in-one`
+
+### Markdown All in One Commands
+
+Use these keyboard shortcuts and commands when editing `.md` files:
+
+| Command                    | Shortcut                                    | Description                       |
+| -------------------------- | ------------------------------------------- | --------------------------------- |
+| Create/Update TOC          | `Ctrl+Shift+P` → "Create Table of Contents" | Generate linked TOC from headings |
+| Update TOC on Save         | Automatic                                   | TOC updates when file is saved    |
+| Format Table               | `Alt+Shift+F`                               | Auto-align table columns          |
+| Toggle Bold                | `Ctrl+B`                                    | Wrap selection in `**bold**`      |
+| Toggle Italic              | `Ctrl+I`                                    | Wrap selection in `*italic*`      |
+| Toggle Code                | `Ctrl+`` `                                  | Wrap selection in backticks       |
+| Toggle Strikethrough       | `Alt+S`                                     | Wrap selection in `~~strike~~`    |
+| Check/Uncheck Task         | `Alt+C`                                     | Toggle `[ ]` ↔ `[x]`              |
+| Promote Heading            | `Ctrl+Shift+]`                              | Decrease heading level (## → #)   |
+| Demote Heading             | `Ctrl+Shift+[`                              | Increase heading level (# → ##)   |
+| Add/Update Section Numbers | Command Palette                             | Number headings automatically     |
+| Print to HTML              | Command Palette                             | Export markdown to HTML           |
+
+### Table of Contents Requirements
+
+Every documentation file with more than 3 sections MUST include a Table of Contents:
+
+1. Place TOC after the document header/metadata
+2. Use "Markdown All in One: Create Table of Contents" command
+3. TOC will auto-update on save when configured
+
+**VS Code Settings for Auto-Update:**
+
+```json
+{
+  "markdown.extension.toc.updateOnSave": true,
+  "markdown.extension.toc.levels": "2..4"
+}
+```
+
+### Document Structure
+
+All Markdown documentation files should follow this structure:
+
+```markdown
+# Document Title
+
+**Last Updated**: DD/MM/YYYY
+**Version**: X.Y.Z
+**Maintained By**: Team/Person Name
+
+---
+
+## Table of Contents
+
+- [Section 1](#section-1)
+- [Section 2](#section-2)
+
+## Section 1
+
+Content...
+
+## Section 2
+
+Content...
+```
+
+### Markdown Formatting Rules
+
+- Use **ATX-style headers** (`#`, `##`, `###`) not Setext-style
+- Use **fenced code blocks** with language identifiers (` ```python `)
+- Use **reference-style links** for repeated URLs
+- Use **tables** for structured data (format with `Alt+Shift+F`)
+- Use **task lists** for checklists (`- [ ]` and `- [x]`)
+- Leave **one blank line** before and after headings, code blocks, and lists
+- Use **British English** spelling (colour, organise, behaviour)
+
+### Link Validation
+
+Before committing, validate all internal links:
+
+- Use "Markdown All in One: Check for broken links" if available
+- Manually verify relative paths: `[Link](../docs/FILE.md)`
+- Ensure anchor links match heading slugs: `[Section](#section-name)`
 
 ## Command Execution Requirements
 
@@ -747,12 +787,12 @@ When writing or editing Markdown files (.md):
 
 Use the environment-specific helper scripts in `scripts/env/` for all operations:
 
-| Script | Purpose | When to Use |
-|--------|---------|-------------|
-| `scripts/env/dev.sh` | Development environment | Daily development work, debugging |
-| `scripts/env/test.sh` | Test environment | Running tests, CI pipeline, quality checks |
-| `scripts/env/staging.sh` | Staging environment | Pre-production testing, staging deployments |
-| `scripts/env/production.sh` | Production environment | Live deployments (use with extreme caution) |
+| Script                      | Purpose                 | When to Use                                 |
+| --------------------------- | ----------------------- | ------------------------------------------- |
+| `scripts/env/dev.sh`        | Development environment | Daily development work, debugging           |
+| `scripts/env/test.sh`       | Test environment        | Running tests, CI pipeline, quality checks  |
+| `scripts/env/staging.sh`    | Staging environment     | Pre-production testing, staging deployments |
+| `scripts/env/production.sh` | Production environment  | Live deployments (use with extreme caution) |
 
 ### Script Command Examples
 
@@ -872,43 +912,93 @@ docker compose -f docker/dev/docker-compose.yml exec web python manage.py migrat
 
 ### Quick Reference
 
-| Task | Command |
-|------|---------|
-| Start development | `./scripts/env/dev.sh start` |
-| Run all tests | `./scripts/env/test.sh run` |
-| Run tests with coverage | `./scripts/env/test.sh coverage` |
-| Run linters | `./scripts/env/test.sh lint` |
-| Format code | `./scripts/env/dev.sh format` |
-| Run migrations | `./scripts/env/dev.sh migrate` |
-| Create migrations | `./scripts/env/dev.sh makemigrations` |
-| Open Django shell | `./scripts/env/dev.sh shell` |
-| View logs | `./scripts/env/dev.sh logs` |
-| Database backup | `./scripts/env/dev.sh backup` |
-| Health check | `./scripts/env/dev.sh health` |
-| Environment URLs | `./scripts/env/dev.sh urls` |
+| Task                    | Command                               |
+| ----------------------- | ------------------------------------- |
+| Start development       | `./scripts/env/dev.sh start`          |
+| Run all tests           | `./scripts/env/test.sh run`           |
+| Run tests with coverage | `./scripts/env/test.sh coverage`      |
+| Run linters             | `./scripts/env/test.sh lint`          |
+| Format code             | `./scripts/env/dev.sh format`         |
+| Run migrations          | `./scripts/env/dev.sh migrate`        |
+| Create migrations       | `./scripts/env/dev.sh makemigrations` |
+| Open Django shell       | `./scripts/env/dev.sh shell`          |
+| View logs               | `./scripts/env/dev.sh logs`           |
+| Database backup         | `./scripts/env/dev.sh backup`         |
+| Health check            | `./scripts/env/dev.sh health`         |
+| Environment URLs        | `./scripts/env/dev.sh urls`           |
 
 ## Syntek Dev Suite Agents
 
 Use these agents for development tasks:
 
-| Agent | Purpose |
-|-------|---------|
-| `/syntek-dev-suite:backend` | API and database work |
-| `/syntek-dev-suite:database` | Database optimisation |
-| `/syntek-dev-suite:test-writer` | Generate tests |
-| `/syntek-dev-suite:security` | Security hardening |
-| `/syntek-dev-suite:docs` | Documentation |
+| Agent                           | Purpose               |
+| ------------------------------- | --------------------- |
+| `/syntek-dev-suite:backend`     | API and database work |
+| `/syntek-dev-suite:database`    | Database optimisation |
+| `/syntek-dev-suite:test-writer` | Generate tests        |
+| `/syntek-dev-suite:security`    | Security hardening    |
+| `/syntek-dev-suite:docs`        | Documentation         |
 
 ## Project Management
 
 - **Tool:** ClickUp
-- **Workspace:** Syntek (ID: 90156744333)
-- **Team ID:** 90151635198
-- **Sprints Folder:** Sprint - Backend Template (ID: 901512938483)
-- **Backlog Folder:** Backlog - Backend Template (ID: 901512938469)
+- **Workspace:** Syntek
+- **Space:** Syntek
+- **Sprints Folder:** Sprint - Backend Template
+- **Backlog Folder:** Backlog - Backend Template
 - **Sync:** Enabled via GitHub Actions
 - **Branch Pattern:** us{number}/feature-name
 - **Documentation:** docs/PM-INTEGRATION/
+
+**Environment Variables:**
+All ClickUp IDs are configured via environment variables. See `.env.*.example` files for required variables:
+
+- `CLICKUP_API_TOKEN` - Your ClickUp API token from Settings > Apps
+- `CLICKUP_WORKSPACE_ID` - ClickUp workspace ID
+- `CLICKUP_SPACE_ID` - ClickUp space ID
+- `CLICKUP_SPRINT_FOLDER_ID` - Sprint folder ID
+- `CLICKUP_BACKLOG_FOLDER_ID` - Backlog folder ID
+- `CLICKUP_BACKLOG_LIST_ID` - Backlog list ID
+
+## Platform Architecture
+
+This backend is part of a comprehensive CMS platform architecture. For complete details:
+
+**See:** [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md)
+
+### Key Platform Features
+
+- **Multi-Repository Architecture:** Backend, UI library, Web frontend, Mobile app
+- **Multi-Tenancy:** Organisation-based isolation with encrypted data
+- **Design Token System:** Database-driven theming for consistent branding
+- **Content Branching:** Git-like workflow (feature → testing → dev → staging → production)
+- **9 Site Templates:** E-commerce, Blog, Corporate, Church, Charity, SaaS, Sole Trader,
+  Estate Agent, Single Page
+- **SaaS Integrations:** Email service, Cloud documents (OnlyOffice), Password manager
+  (Vaultwarden)
+- **AI Integration:** Anthropic Claude across all systems (content, SEO, code assistance)
+- **Environment Variable Management:** Encrypted secrets with versioning and audit logs
+- **Initial Setup Wizard:** Guided deployment and configuration
+- **Platform Upgrade System:** Managed updates through testing → dev → staging → production
+
+### Development Phases
+
+The platform is being built in 16 phases. Current status:
+
+| Phase | Name                               | Status      |
+| ----- | ---------------------------------- | ----------- |
+| 1     | Core Foundation (Auth, 2FA, Audit) | In Progress |
+| 2     | Design Token System                | Planned     |
+| 3     | CMS Content Engine                 | Planned     |
+| 4     | Template System (9 templates)      | Planned     |
+| 5-7   | UI Library, Frontend Web/Mobile    | Planned     |
+| 8-10  | SaaS Products (Email, Docs, Vault) | Planned     |
+| 11    | Third-Party Integrations           | Planned     |
+| 12    | AI Integration (Anthropic Claude)  | Planned     |
+| 13    | Environment Variable Management    | Planned     |
+| 14    | Initial Setup Wizard               | Planned     |
+| 15    | Deployment Pipeline                | Planned     |
+| 16    | Platform Upgrade System            | Planned     |
 
 ## Notes
 
@@ -917,3 +1007,5 @@ Use these agents for development tasks:
 - Mailpit simulates email in dev/test environments
 - Each environment has isolated containers
 - ClickUp integration syncs tasks with Git workflow automatically
+- **Architecture:** Refer to [CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md)
+  for the complete system design
