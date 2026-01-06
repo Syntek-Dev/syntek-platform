@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   web:
@@ -32,7 +32,7 @@ services:
       - POSTGRES_PASSWORD=backend_template
       - POSTGRES_DB=backend_template_dev
     ports:
-      - "5434:5432"  # Map to host port 5434 to avoid conflicts
+      - "5434:5432" # Map to host port 5434 to avoid conflicts
 
   redis:
     image: redis:7-alpine
@@ -42,8 +42,8 @@ services:
   mailpit:
     image: axllent/mailpit
     ports:
-      - "8126:8025"  # Web UI on host port 8126
-      - "1127:1025"  # SMTP on host port 1127 (1126 was in use)
+      - "8126:8025" # Web UI on host port 8126
+      - "1127:1025" # SMTP on host port 1127 (1126 was in use)
 
 volumes:
   postgres_data_dev:
