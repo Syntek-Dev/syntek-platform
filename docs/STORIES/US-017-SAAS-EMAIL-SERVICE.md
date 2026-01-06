@@ -15,6 +15,9 @@
 - **Could Have:** Email scheduling, automation rules, advanced analytics
 - **Won't Have:** Complex workflow automation in Phase 8
 
+
+**Sprint:** Sprint 19
+
 ## Repository Coverage
 
 | Repository      | Required | Notes                                                      |

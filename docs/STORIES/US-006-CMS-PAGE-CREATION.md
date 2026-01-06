@@ -15,6 +15,9 @@
 - **Could Have:** AI-assisted content writing, SEO suggestions, A/B testing variants
 - **Won't Have:** Advanced design blocks in Phase 3
 
+
+**Sprint:** Sprint 08
+
 ## Repository Coverage
 
 | Repository      | Required | Notes                                                       |

@@ -15,6 +15,9 @@
 - **Could Have:** Advanced cache analytics, predictive cache warming
 - **Won't Have:** Distributed caching across multiple regions in Phase 1
 
+
+**Sprint:** Sprint 03
+
 ## Repository Coverage
 
 | Repository      | Required | Notes                                                     |

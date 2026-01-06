@@ -15,6 +15,9 @@
 - **Could Have:** Hardware security key support, biometric unlock, custom password policies per team, emergency access procedures
 - **Won't Have:** Advanced 2FA integration (MFA) until Phase 13
 
+
+**Sprint:** Sprint 23
+
 ## Repository Coverage
 
 | Repository        | Required | Notes                                                                    |

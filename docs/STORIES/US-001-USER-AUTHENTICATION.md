@@ -15,6 +15,9 @@
 - **Could Have:** Social login integration (OAuth), pre-filled profile suggestions
 - **Won't Have:** Third-party account federation in Phase 1
 
+
+**Sprint:** Sprint 01
+
 ## Repository Coverage
 
 | Repository      | Required | Notes                                                     |

@@ -323,6 +323,36 @@ class ClickUpClient:
         data = {"list_id": list_id}
         return self._request("PUT", f"task/{task_id}", json=data)
 
+    def add_task_to_list(self, task_id: str, list_id: str) -> Dict[str, Any]:
+        """Add a task to an additional list (link without moving).
+
+        This creates a reference to the task in the target list while keeping
+        the task in its original list. The task will appear in both lists.
+
+        Args:
+            task_id: ClickUp task ID.
+            list_id: Target list ID to link the task to.
+
+        Returns:
+            Response data from the API.
+        """
+        return self._request("POST", f"list/{list_id}/task/{task_id}")
+
+    def remove_task_from_list(self, task_id: str, list_id: str) -> Dict[str, Any]:
+        """Remove a task from an additional list (unlink).
+
+        This removes the task reference from the specified list. If this is
+        the task's only list, the operation will fail.
+
+        Args:
+            task_id: ClickUp task ID.
+            list_id: List ID to remove the task from.
+
+        Returns:
+            Response data from the API.
+        """
+        return self._request("DELETE", f"list/{list_id}/task/{task_id}")
+
     def add_task_comment(
         self, task_id: str, comment_text: str
     ) -> Dict[str, Any]:

@@ -15,6 +15,9 @@
 - **Could Have:** SEO pre-flight checks, performance optimisation on publish
 - **Won't Have:** CDN edge caching in Phase 3
 
+
+**Sprint:** Sprint 11
+
 ## Repository Coverage
 
 | Repository      | Required | Notes                                              |

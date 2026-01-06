@@ -15,6 +15,9 @@
 - **Could Have:** Sub-organisations, custom domain CNAMEs, white-label setup
 - **Won't Have:** Organisation hierarchy in Phase 1
 
+
+**Sprint:** Sprint 22
+
 ## Repository Coverage
 
 | Repository      | Required | Notes                                                       |

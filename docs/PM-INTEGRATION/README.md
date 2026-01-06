@@ -37,12 +37,17 @@ Complete integration between this Django backend project and ClickUp for project
   - [Status Mapping Reference](#status-mapping-reference)
     - [Branch/Event to ClickUp Status](#branchevent-to-clickup-status)
   - [Scripts Reference](#scripts-reference)
-    - [Pull Tasks from ClickUp](#pull-tasks-from-clickup)
-    - [Sync Stories to ClickUp](#sync-stories-to-clickup)
+    - [Complete Workflow: Sync Stories and Sprints](#complete-workflow-sync-stories-and-sprints)
+    - [Alternative: Individual Scripts](#alternative-individual-scripts)
+      - [1. Sync Stories to Backlog](#1-sync-stories-to-backlog)
+      - [2. Sync Sprints and Move Stories](#2-sync-sprints-and-move-stories)
+      - [3. Pull Tasks from ClickUp](#3-pull-tasks-from-clickup)
+    - [Story File Format](#story-file-format)
   - [GitHub Actions Workflows](#github-actions-workflows)
     - [clickup-sync.yml](#clickup-syncyml)
     - [clickup-branch-sync.yml](#clickup-branch-syncyml)
   - [Troubleshooting](#troubleshooting)
+    - [Stories Not Moving to Sprint Lists](#stories-not-moving-to-sprint-lists)
     - [Task Not Found in Mapping](#task-not-found-in-mapping)
     - [Status Update Fails](#status-update-fails)
     - [API Authentication Fails](#api-authentication-fails)
@@ -270,7 +275,67 @@ When staging is merged to `main` branch:
 
 ## Scripts Reference
 
-### Pull Tasks from ClickUp
+### Complete Workflow: Sync Stories and Sprints
+
+The recommended workflow uses the integrated script that handles both stories and sprint assignments:
+
+```bash
+# Full sync: Create stories in backlog, create sprint lists, move stories to sprints
+python scripts/clickup/sync_sprint_stories.py
+
+# Preview changes without syncing
+python scripts/clickup/sync_sprint_stories.py --dry-run
+
+# Sync specific sprint only
+python scripts/clickup/sync_sprint_stories.py --sprint SPRINT-01
+```
+
+**What this script does:**
+
+1. Reads sprint files from `docs/SPRINTS/` to identify story assignments
+2. Updates story markdown files with `**Sprint:**` metadata
+3. Creates or finds sprint lists in ClickUp
+4. Moves stories from backlog to their assigned sprint lists
+5. Updates mapping files with ClickUp IDs
+
+**This is the script to use** if you have sprints defined and want stories moved to the correct sprint lists.
+
+### Alternative: Individual Scripts
+
+If you need more control, you can use the individual scripts:
+
+#### 1. Sync Stories to Backlog
+
+Create/update stories in the backlog list:
+
+```bash
+# Sync all stories to backlog (with custom fields and subtasks)
+python scripts/clickup/sync_stories_enhanced.py
+
+# Preview changes
+python scripts/clickup/sync_stories_enhanced.py --dry-run
+
+# Force update existing stories
+python scripts/clickup/sync_stories_enhanced.py --force
+```
+
+#### 2. Sync Sprints and Move Stories
+
+Create sprint lists and move assigned stories:
+
+```bash
+# Create sprint lists and move stories
+python scripts/clickup/sync_sprints.py
+
+# Preview changes
+python scripts/clickup/sync_sprints.py --dry-run
+```
+
+**Note:** `sync_sprints.py` requires stories to already exist in ClickUp (run
+`sync_stories_enhanced.py` first) and will only move stories if they have `**Sprint:**`
+metadata in their markdown files.
+
+#### 3. Pull Tasks from ClickUp
 
 Fetch all tasks and create ID mapping:
 
@@ -290,38 +355,54 @@ Output files:
 - `config/clickup-tasks.json` - Full task data
 - `config/clickup-story-mapping.json` - Story ID to task ID mapping
 
-### Sync Stories to ClickUp
+### Story File Format
 
-Upload local story files to ClickUp:
-
-```bash
-# Sync all stories
-python scripts/clickup/sync_stories.py
-
-# Preview changes without syncing
-python scripts/clickup/sync_stories.py --dry-run
-
-# Sync specific folder
-python scripts/clickup/sync_stories.py --folder-path docs/STORIES/SPRINT-01
-```
-
-Story file format (`docs/STORIES/US-XXX.md`):
+Stories in `docs/STORIES/US-XXX.md` should follow this format:
 
 ```markdown
-# Story Title
+# User Story: Story Title
 
-**Story Points:** 5
-**Priority:** Must Have
+<!-- CLICKUP_ID: 86c7d2kp1 -->
+
+## Story
+
+**As a** user
+**I want** to do something
+**So that** I can achieve a goal
+
+## MoSCoW Priority
+
+- **Must Have:** Core functionality
+- **Should Have:** Nice to have features
+- **Could Have:** Optional enhancements
+- **Won't Have:** Out of scope
+
 **Sprint:** Sprint 01
-**Status:** Open
-
-Description of the user story goes here.
 
 ## Acceptance Criteria
 
-- [ ] Criterion 1
-- [ ] Criterion 2
+### Scenario 1: Success Case
+
+**Given** a condition
+**When** an action occurs
+**Then** the expected result happens
+
+## Story Points (Fibonacci)
+
+**Estimate:** 5
+
+**Complexity factors:**
+
+- Factor 1
+- Factor 2
 ```
+
+**Important fields:**
+
+- `<!-- CLICKUP_ID: xxx -->` - Auto-added by sync scripts
+- `**Sprint:** Sprint XX` - Can be added manually or by `sync_sprint_stories.py`
+- MoSCoW Priority section - Used to set custom field in ClickUp
+- Story Points section - Used to set custom field in ClickUp
 
 ## GitHub Actions Workflows
 
@@ -351,6 +432,33 @@ Description of the user story goes here.
 - Adds branch creation comment
 
 ## Troubleshooting
+
+### Stories Not Moving to Sprint Lists
+
+**Problem:** Sprint lists are created in ClickUp but stories remain in backlog.
+
+**Root Cause:** Stories don't have sprint metadata in their markdown files, so the sync
+script doesn't know which sprint they belong to.
+
+**Solution:**
+
+Use the integrated sync script instead of running scripts separately:
+
+```bash
+# This handles everything: story metadata, sprint creation, and moving stories
+python scripts/clickup/sync_sprint_stories.py --dry-run  # Preview first
+python scripts/clickup/sync_sprint_stories.py            # Apply changes
+```
+
+**Manual Fix:**
+
+If you prefer to do it manually:
+
+1. Add `**Sprint:** Sprint 01` to each story file in the MoSCoW Priority section
+2. Run the sprint sync to move stories:
+   ```bash
+   python scripts/clickup/sync_sprints.py
+   ```
 
 ### Task Not Found in Mapping
 

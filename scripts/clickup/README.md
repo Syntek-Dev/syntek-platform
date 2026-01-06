@@ -1,286 +1,208 @@
 # ClickUp Integration Scripts
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 06/01/2026
+**Version**: 0.2.1
 **Maintained By**: Development Team
-**Language**: British English (en_GB)
-**Timezone**: Europe/London
 
 ---
 
-Python scripts for syncing user stories, sprints, and tasks between this Django project and ClickUp project management tool.
+Collection of Python scripts for syncing user stories, sprints, and tasks between local
+markdown files and ClickUp project management system.
 
 ## Table of Contents
 
 - [ClickUp Integration Scripts](#clickup-integration-scripts)
   - [Table of Contents](#table-of-contents)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Configuration](#configuration)
-    - [Environment Variables](#environment-variables)
-    - [Configuration File](#configuration-file)
+  - [Overview](#overview)
+  - [Quick Start](#quick-start)
   - [Scripts](#scripts)
-    - [1. clickup_client.py](#1-clickup_clientpy)
-    - [2. sync_stories.py](#2-sync_storiespy)
-    - [3. pull_tasks.py](#3-pull_taskspy)
-  - [GitHub Actions Integration](#github-actions-integration)
-    - [clickup-sync.yml](#clickup-syncyml)
-    - [clickup-branch-sync.yml](#clickup-branch-syncyml)
-  - [Branch Naming Convention](#branch-naming-convention)
-  - [Workflow Examples](#workflow-examples)
-    - [Creating a New Feature](#creating-a-new-feature)
-    - [Syncing Stories to ClickUp](#syncing-stories-to-clickup)
-  - [Troubleshooting](#troubleshooting)
-    - [API Key Issues](#api-key-issues)
-    - [Task Not Found in Mapping](#task-not-found-in-mapping)
-    - [Status Update Failures](#status-update-failures)
-  - [API Rate Limits](#api-rate-limits)
-  - [Security](#security)
+    - [sync_sprint_stories.py (Recommended)](#sync_sprint_storiespy-recommended)
+    - [sync_stories_enhanced.py](#sync_stories_enhancedpy)
+    - [sync_sprints.py](#sync_sprintspy)
+    - [pull_tasks.py](#pull_taskspy)
+    - [clickup_client.py](#clickup_clientpy)
+  - [Workflow Comparison](#workflow-comparison)
+    - [Integrated Workflow (Recommended)](#integrated-workflow-recommended)
+    - [Separate Scripts Workflow](#separate-scripts-workflow)
+  - [Common Issues and Solutions](#common-issues-and-solutions)
+    - [Issue: Stories Not Moving to Sprint Lists](#issue-stories-not-moving-to-sprint-lists)
+    - [Issue: Custom Fields Not Set](#issue-custom-fields-not-set)
+    - [Issue: Subtasks Not Created](#issue-subtasks-not-created)
+  - [File Structure](#file-structure)
 
-## Prerequisites
+## Overview
 
-1. Python 3.11 or higher (on your local machine or CI/CD environment)
-2. ClickUp API key with appropriate permissions
-3. Environment variables configured (see Setup below)
+These scripts provide bidirectional synchronisation between:
 
-**Note:** These scripts run on your local machine or in GitHub Actions, NOT inside Docker containers. They interact with the ClickUp API to sync project management data.
+- **Local:** Markdown files in `docs/STORIES/` and `docs/SPRINTS/`
+- **ClickUp:** Tasks in backlog and sprint lists
 
-## Installation
+**Key Features:**
 
-```bash
-# Install dependencies on your local machine
-pip install requests>=2.31.0
+- Create/update stories in ClickUp from markdown files
+- Set custom fields (Story Points, MoSCoW Priority)
+- Create subtasks from Tasks section
+- Create sprint lists in ClickUp
+- Move stories from backlog to sprint lists
+- Pull existing tasks from ClickUp to generate ID mappings
 
-# Or if you have the project's pyproject.toml
-pip install -e .
-```
+## Quick Start
 
-## Configuration
+1. Set up environment variables in `.env.dev`:
 
-### Environment Variables
+   ```bash
+   export CLICKUP_API_TOKEN="your-api-token"
+   export CLICKUP_WORKSPACE_ID="your-workspace-id"
+   export CLICKUP_SPACE_ID="your-space-id"
+   export CLICKUP_SPRINT_FOLDER_ID="sprint-folder-id"
+   export CLICKUP_BACKLOG_FOLDER_ID="backlog-folder-id"
+   export CLICKUP_BACKLOG_LIST_ID="backlog-list-id"
+   ```
 
-Add to your `.env.dev` file:
+2. Install dependencies:
 
-```bash
-CLICKUP_API_TOKEN=pk_your_actual_token_here
-CLICKUP_WORKSPACE_ID=
-CLICKUP_SPACE_ID=
-CLICKUP_SPRINT_FOLDER_ID=
-CLICKUP_BACKLOG_FOLDER_ID=
-CLICKUP_BACKLOG_LIST_ID=
-```
+   ```bash
+   pip install requests
+   ```
 
-### Configuration File
+3. Run the integrated sync:
 
-The ClickUp integration configuration is stored in `config/clickup-config.json`. This file defines:
+   ```bash
+   # Preview changes
+   python scripts/clickup/sync_sprint_stories.py --dry-run
 
-- Workspace and folder IDs
-- Status mappings between local states and ClickUp statuses
-- Branch naming conventions
-- Priority mappings
-- Field mappings for custom fields
+   # Apply changes
+   python scripts/clickup/sync_sprint_stories.py
+   ```
 
 ## Scripts
 
-### 1. clickup_client.py
+### sync_sprint_stories.py (Recommended)
 
-Python client library for ClickUp API v2.
+**Purpose:** Integrated workflow that handles story metadata, sprint creation, and story
+movement in one command.
 
-**Features:**
+**What it does:**
 
-- Task creation, updates, and status management
-- Custom field management (Story Points, MoSCoW Priority)
-- Subtask creation
-- Search and query tasks
-- List and folder management
-
-**Usage:**
-
-```python
-from clickup_client import get_client
-
-# Initialize client (reads CLICKUP_API_TOKEN from environment)
-client = get_client()
-
-# Get folder details
-folder = client.get_folder(os.getenv("CLICKUP_SPRINT_FOLDER_ID"))
-
-# Create a task
-task = client.create_task(
-    list_id=os.getenv("CLICKUP_BACKLOG_LIST_ID"),
-    name="US-001: User Authentication",
-    description="Implement user login and registration",
-    status="Open",
-    priority=2,
-    tags=["must-have"]
-)
-
-# Set custom fields
-points_field = client.find_custom_field_by_name(list_id, "Story Points")
-client.set_custom_field(task["id"], points_field["id"], 5)
-
-moscow_field = client.find_custom_field_by_name(list_id, "MoSCoW Priority")
-client.set_custom_field(task["id"], moscow_field["id"], 0)  # 0 = Must Have
-
-# Create subtasks
-subtask = client.create_subtask(
-    parent_task_id=task["id"],
-    name="[Backend] Create User model",
-    status="Open"
-)
-
-# Update task status
-client.update_task_status(task["id"], "in progress")
-```
-
-### 2. sync_stories_enhanced.py (Recommended)
-
-Enhanced sync for user stories from `docs/STORIES/` directory to ClickUp with full support for:
-
-- Custom fields (Story Points, MoSCoW Priority)
-- Subtasks from the Tasks section
-- ClickUp ID writeback to markdown files
+1. Reads sprint files to identify story assignments
+2. Updates story markdown files with `**Sprint:**` metadata
+3. Syncs stories to ClickUp (creates if missing)
+4. Creates sprint lists in ClickUp
+5. Moves stories from backlog to sprint lists
 
 **Usage:**
 
 ```bash
-# Sync all stories to ClickUp
+# Full sync of all sprints
+python scripts/clickup/sync_sprint_stories.py
+
+# Preview changes without applying
+python scripts/clickup/sync_sprint_stories.py --dry-run
+
+# Sync specific sprint only
+python scripts/clickup/sync_sprint_stories.py --sprint SPRINT-01
+
+# Skip updating story files (if you've already added Sprint metadata manually)
+python scripts/clickup/sync_sprint_stories.py --skip-story-metadata
+```
+
+**When to use:**
+
+- You have sprint files in `docs/SPRINTS/` with story assignments
+- You want stories automatically moved to the correct sprint lists
+- First-time setup or major reorganisation
+
+**Prerequisites:**
+
+- Sprint files must exist in `docs/SPRINTS/` with MoSCoW tables
+- Stories must already be created in ClickUp (run `sync_stories_enhanced.py` first if not)
+
+### sync_stories_enhanced.py
+
+**Purpose:** Create or update stories in the backlog with custom fields and subtasks.
+
+**What it does:**
+
+1. Parses story markdown files
+2. Creates/updates tasks in ClickUp backlog
+3. Sets custom fields (Story Points, MoSCoW Priority)
+4. Creates subtasks from Tasks section
+5. Writes ClickUp task ID back to markdown file
+
+**Usage:**
+
+```bash
+# Sync all stories to backlog
 python scripts/clickup/sync_stories_enhanced.py
 
-# Preview changes without syncing
+# Preview changes
 python scripts/clickup/sync_stories_enhanced.py --dry-run
 
-# Force update existing tasks
+# Force update existing stories
 python scripts/clickup/sync_stories_enhanced.py --force
+
+# Sync specific folder
+python scripts/clickup/sync_stories_enhanced.py --folder-path docs/STORIES
 ```
 
-**Features:**
+**When to use:**
 
-- Parses user story markdown files (US-001-\*.md format)
-- Creates or updates tasks in ClickUp backlog
-- Sets "Story Points" custom field from story file
-- Sets "MoSCoW Priority" custom field (Must Have, Should Have, Could Have, Won't Have)
-- Creates subtasks from the ## Tasks section
-- Writes ClickUp task ID back to the markdown file as HTML comment
-- Saves story ID to ClickUp task ID mapping in `config/clickup-story-mapping.json`
+- Creating new stories in ClickUp
+- Updating story descriptions or acceptance criteria
+- Setting up custom fields for the first time
+- Before running sprint sync (if stories don't exist yet)
 
-**Story File Format:**
+**Output:**
 
-Stories should be markdown files named `US-XXX-DESCRIPTION.md`:
+- Updates `config/clickup-story-mapping.json` with story ID to task ID mappings
+- Adds `<!-- CLICKUP_ID: xxx -->` to story markdown files
 
-```markdown
-# User Story: User Authentication with Email and Password
+### sync_sprints.py
 
-<!-- CLICKUP_ID: abc123 -->
+**Purpose:** Create sprint lists and move stories that already have sprint metadata.
 
-## Story
+**What it does:**
 
-**As a** new user
-**I want** to create an account
-**So that** I can access the platform
-
-## MoSCoW Priority
-
-- **Must Have:** User registration with validation
-- **Should Have:** Welcome email notification
-- **Could Have:** Social login integration
-- **Won't Have:** Third-party federation
-
-## Acceptance Criteria
-
-### Scenario 1: Successful Registration
-
-**Given** the registration page is open
-**When** a user enters valid details
-**Then** an account is created
-
-## Tasks
-
-### Backend Tasks
-
-- [ ] Create User model extending AbstractUser
-- [ ] Implement email verification system
-- [ ] Create registration GraphQL mutation
-
-### Frontend Web Tasks
-
-- [ ] Create registration form component
-- [ ] Implement email verification page
-
-## Story Points (Fibonacci)
-
-**Estimate:** 5
-```
-
-### 3. sync_sprints.py
-
-Sync sprint files from `docs/SPRINTS/` directory to ClickUp.
+1. Parses sprint markdown files
+2. Creates sprint lists in ClickUp
+3. Moves stories to sprint lists (requires `**Sprint:**` metadata in story files)
 
 **Usage:**
 
 ```bash
-# Sync all sprints to ClickUp
+# Sync all sprints
 python scripts/clickup/sync_sprints.py
 
-# Preview changes without syncing
+# Preview changes
 python scripts/clickup/sync_sprints.py --dry-run
 
-# Force update existing sprints
+# Force update existing sprint lists
 python scripts/clickup/sync_sprints.py --force
 ```
 
-**Features:**
+**When to use:**
 
-- Parses sprint markdown files (SPRINT-01-\*.md format)
-- Finds or references sprint lists in ClickUp
-- Links user stories to sprint lists
-- Writes ClickUp list ID back to sprint markdown file
-- Saves sprint ID to ClickUp list ID mapping in `config/clickup-sprint-mapping.json`
+- Stories already have `**Sprint:**` metadata
+- You want more control over the sync process
+- Updating sprint descriptions or goals
 
-**Note:** Sprint lists must be created manually in ClickUp first. This script will link existing stories to the sprint lists.
+**Important:** This script will NOT add sprint metadata to story files. Stories must
+already have `**Sprint:** Sprint XX` in their markdown files.
 
-**Sprint File Format:**
+**Output:**
 
-```markdown
-# Sprint 1: Core Authentication
+- Updates `config/clickup-sprint-mapping.json` with sprint ID to list ID mappings
+- Adds `<!-- CLICKUP_LIST_ID: xxx -->` to sprint markdown files
 
-<!-- CLICKUP_LIST_ID: xyz789 -->
+### pull_tasks.py
 
-**Sprint Duration:** 06/01/2026 - 20/01/2026 (2 weeks)
-**Capacity:** 10/11 points
-**Status:** Planned
+**Purpose:** Fetch existing tasks from ClickUp to generate ID mappings.
 
-## Sprint Goal
+**What it does:**
 
-Establish the foundational authentication system.
-
-## MoSCoW Breakdown
-
-### Must Have (10 points)
-
-| Story ID                                           | Title               | Points | Status  |
-| -------------------------------------------------- | ------------------- | ------ | ------- |
-| [US-001](../STORIES/US-001-USER-AUTHENTICATION.md) | User Authentication | 5      | Pending |
-| [US-003](../STORIES/US-003-PASSWORD-RESET.md)      | Password Reset      | 5      | Pending |
-```
-
-### 4. sync_stories.py (Legacy)
-
-Original sync script for basic user story syncing. Use `sync_stories_enhanced.py` instead for full feature support.
-
-**Usage:**
-
-```bash
-# Sync all stories
-python scripts/clickup/sync_stories.py
-
-# Preview changes without syncing
-python scripts/clickup/sync_stories.py --dry-run
-```
-
-### 5. pull_tasks.py
-
-Pull all tasks from ClickUp and save IDs for local reference.
+1. Fetches all tasks from ClickUp workspace
+2. Extracts story IDs from task names
+3. Creates mapping files for use by other scripts
 
 **Usage:**
 
@@ -288,282 +210,195 @@ Pull all tasks from ClickUp and save IDs for local reference.
 # Pull all open tasks
 python scripts/clickup/pull_tasks.py
 
-# Pull all tasks including closed
+# Include closed tasks
 python scripts/clickup/pull_tasks.py --include-closed
-
-# Output only story ID mapping
-python scripts/clickup/pull_tasks.py --mapping-only
 
 # Save to custom location
 python scripts/clickup/pull_tasks.py --output /tmp/tasks.json
 ```
 
-**Output Files:**
+**When to use:**
+
+- Setting up integration for the first time
+- After manually creating tasks in ClickUp
+- When GitHub Actions can't find task mappings
+- Periodically to refresh mappings
+
+**Output:**
 
 - `config/clickup-tasks.json` - Full task details
-- `config/clickup-story-mapping.json` - Story ID to ClickUp task ID mapping
+- `config/clickup-story-mapping.json` - Story ID to task ID mapping
 
-**Note:** This is useful for pulling back task IDs created outside the sync scripts.
+### clickup_client.py
 
-## GitHub Actions Integration
+**Purpose:** Python client library for ClickUp API v2.
 
-The ClickUp integration includes GitHub Actions workflows for automatic syncing:
+**What it provides:**
 
-### clickup-sync.yml
+- Authentication handling
+- HTTP request wrapper
+- Methods for tasks, lists, folders, custom fields
+- Environment variable resolution for config
 
-Triggers on:
+**Not a standalone script** - imported by other scripts.
 
-- Push to main, staging, dev, testing branches
-- Pull request opened, synchronized, closed
-- Manual workflow dispatch
+## Workflow Comparison
 
-**Behavior:**
+### Integrated Workflow (Recommended)
 
-- Extracts task ID from branch name (e.g., `us123/feature-name`)
-- Updates ClickUp task status based on branch/PR event
-- Adds comments to ClickUp tasks for PR events
-
-**Status Mapping:**
-
-| Event     | Target Branch | ClickUp Status |
-| --------- | ------------- | -------------- |
-| PR opened | any           | in review      |
-| PR merged | main          | Closed         |
-| PR merged | staging       | accepted       |
-| PR merged | dev           | in progress    |
-| Push      | main          | Closed         |
-| Push      | staging       | accepted       |
-| Push      | dev           | in progress    |
-| Push      | testing       | in review      |
-
-### clickup-branch-sync.yml
-
-Triggers on:
-
-- Branch creation matching pattern `us*/**`
-
-**Behavior:**
-
-- Detects task ID from branch name
-- Updates task status to "in progress"
-- Adds branch creation comment to ClickUp task
-
-## Branch Naming Convention
-
-To enable automatic ClickUp sync, use this branch naming pattern:
-
-```
-us{task_number}/{feature_name}
-```
-
-**Examples:**
+**Best for:** First-time setup, sprint planning, major reorganisations
 
 ```bash
-# Good branch names
-git checkout -b us123/add-user-authentication
-git checkout -b us456/fix-database-migration
-git checkout -b us789/update-api-docs
+# Step 1: Create stories in backlog (if not already in ClickUp)
+python scripts/clickup/sync_stories_enhanced.py
 
-# Bad branch names (won't sync)
-git checkout -b feature/user-auth
-git checkout -b bugfix-migration
-git checkout -b US-123-auth  # Wrong format
+# Step 2: Run integrated sync (adds sprint metadata, creates sprint lists, moves stories)
+python scripts/clickup/sync_sprint_stories.py --dry-run  # Preview
+python scripts/clickup/sync_sprint_stories.py            # Apply
 ```
 
-## Quick Start Guide
+**Advantages:**
 
-### First-Time Setup
+- Single command to handle everything
+- Automatically adds sprint metadata to story files
+- Fewer chances for errors
+- Clear preview with dry-run mode
 
-1. **Configure ClickUp Custom Fields** (One-time setup in ClickUp UI):
-   - Go to your ClickUp Space settings
-   - Navigate to Custom Fields
-   - Create two custom fields:
-     - **Story Points** (Type: Number)
-     - **MoSCoW Priority** (Type: Dropdown with options: Must Have, Should Have, Could Have, Won't Have)
-   - Apply these fields to your lists
+### Separate Scripts Workflow
 
-2. **Set Environment Variables**:
-
-   ```bash
-   # Add to your .env.dev file
-   CLICKUP_API_TOKEN=pk_your_token_here
-   CLICKUP_WORKSPACE_ID=your_workspace_id
-   CLICKUP_SPACE_ID=your_space_id
-   CLICKUP_BACKLOG_FOLDER_ID=your_backlog_folder_id
-   CLICKUP_SPRINT_FOLDER_ID=your_sprint_folder_id
-   CLICKUP_BACKLOG_LIST_ID=your_backlog_list_id
-   ```
-
-3. **Install Dependencies**:
-   ```bash
-   pip install requests>=2.31.0
-   ```
-
-### Syncing User Stories to ClickUp
-
-1. **First Sync** (Preview mode):
-
-   ```bash
-   python scripts/clickup/sync_stories_enhanced.py --dry-run
-   ```
-
-2. **Actual Sync**:
-
-   ```bash
-   python scripts/clickup/sync_stories_enhanced.py
-   ```
-
-3. **Check Results**:
-   - User stories are created in your ClickUp backlog
-   - Story Points custom field is set
-   - MoSCoW Priority custom field is set
-   - Subtasks are created from the Tasks section
-   - ClickUp task IDs are written back to story files
-   - Mapping saved to `config/clickup-story-mapping.json`
-
-### Syncing Sprints to ClickUp
-
-1. **Create Sprint Lists in ClickUp** (Manual step):
-   - Go to your Sprint folder in ClickUp
-   - Create a list for each sprint (e.g., "SPRINT-01: Core Authentication")
-
-2. **Sync Sprints** (Preview mode):
-
-   ```bash
-   python scripts/clickup/sync_sprints.py --dry-run
-   ```
-
-3. **Actual Sync**:
-
-   ```bash
-   python scripts/clickup/sync_sprints.py
-   ```
-
-4. **Check Results**:
-   - Sprint list IDs are written back to sprint files
-   - User stories are linked to sprint lists
-   - Mapping saved to `config/clickup-sprint-mapping.json`
-
-## Workflow Examples
-
-### Creating a New Feature
-
-1. Pull latest tasks from ClickUp:
-
-   ```bash
-   python scripts/clickup/pull_tasks.py
-   ```
-
-2. Find your task in `config/clickup-story-mapping.json`
-
-3. Create feature branch:
-
-   ```bash
-   git checkout -b us123/my-feature
-   ```
-
-   This automatically moves the task to "in progress" in ClickUp.
-
-4. Make your changes and push:
-
-   ```bash
-   git add .
-   git commit -m "Implement feature"
-   git push origin us123/my-feature
-   ```
-
-5. Create pull request - this updates task to "in review"
-
-6. When PR is merged to staging - task moves to "accepted"
-
-7. When staging is merged to main - task moves to "Closed"
-
-### Syncing Stories to ClickUp
-
-1. Create story files in `docs/STORIES/`:
-
-   ```bash
-   docs/STORIES/
-   ├── US-001.md
-   ├── US-002.md
-   └── SPRINT-01/
-       ├── US-003.md
-       └── US-004.md
-   ```
-
-2. Preview sync:
-
-   ```bash
-   python scripts/clickup/sync_stories.py --dry-run
-   ```
-
-3. Sync to ClickUp:
-
-   ```bash
-   python scripts/clickup/sync_stories.py
-   ```
-
-4. Pull updated task IDs:
-   ```bash
-   python scripts/clickup/pull_tasks.py
-   ```
-
-## Troubleshooting
-
-### API Key Issues
-
-If you get authentication errors:
+**Best for:** Ongoing maintenance, individual story updates
 
 ```bash
-# Verify API token is set
-echo $CLICKUP_API_TOKEN
+# Step 1: Create/update stories in backlog
+python scripts/clickup/sync_stories_enhanced.py
 
-# Test API access
-curl -H "Authorization: $CLICKUP_API_TOKEN" \
-  https://api.clickup.com/api/v2/team
+# Step 2: Manually add **Sprint:** metadata to story files
+# Edit docs/STORIES/US-XXX.md and add: **Sprint:** Sprint 01
+
+# Step 3: Create sprint lists and move stories
+python scripts/clickup/sync_sprints.py
 ```
 
-### Task Not Found in Mapping
+**Advantages:**
 
-If GitHub Actions can't find your task:
+- More control over each step
+- Update stories without affecting sprint assignments
+- Useful for incremental changes
 
-1. Ensure task exists in ClickUp
-2. Task name should start with `US-XXX:` format
-3. Regenerate mapping:
+## Common Issues and Solutions
+
+### Issue: Stories Not Moving to Sprint Lists
+
+**Symptoms:**
+
+- Sprint lists created in ClickUp
+- Stories remain in backlog
+- No errors reported
+
+**Cause:** Stories don't have `**Sprint:**` metadata in markdown files.
+
+**Solution:**
+
+Use the integrated sync script:
+
+```bash
+python scripts/clickup/sync_sprint_stories.py
+```
+
+Or manually add `**Sprint:** Sprint 01` to each story file and run:
+
+```bash
+python scripts/clickup/sync_sprints.py
+```
+
+### Issue: Custom Fields Not Set
+
+**Symptoms:**
+
+- Stories created in ClickUp
+- Story Points or MoSCoW Priority fields are empty
+
+**Cause:** Story files missing MoSCoW Priority or Story Points sections.
+
+**Solution:**
+
+1. Ensure story files have these sections:
+
+   ```markdown
+   ## MoSCoW Priority
+
+   - **Must Have:** Description
+
+   ## Story Points (Fibonacci)
+
+   **Estimate:** 5
+   ```
+
+2. Re-sync with force flag:
+
    ```bash
-   python scripts/clickup/pull_tasks.py
-   git add config/clickup-story-mapping.json
-   git commit -m "Update ClickUp task mapping"
-   git push
+   python scripts/clickup/sync_stories_enhanced.py --force
    ```
 
-### Status Update Failures
+### Issue: Subtasks Not Created
 
-If status updates fail:
+**Symptoms:**
 
-1. Check that status names match exactly (case-sensitive)
-2. Verify status exists in your ClickUp workspace
-3. View available statuses:
-   ```python
-   from clickup_client import get_client
-   client = get_client()
-   statuses = client.get_space_statuses()
-   for s in statuses:
-       print(f"{s['status']} ({s['type']})")
+- Story created in ClickUp
+- No subtasks appear
+
+**Cause:** Story file missing Tasks section or incorrect format.
+
+**Solution:**
+
+1. Add Tasks section to story file:
+
+   ```markdown
+   ## Tasks
+
+   ### Backend Tasks
+
+   - [ ] Create User model
+   - [ ] Add email verification
+
+   ### Frontend Tasks
+
+   - [ ] Create registration form
    ```
 
-## API Rate Limits
+2. Re-sync with force flag:
 
-ClickUp API has rate limits:
+   ```bash
+   python scripts/clickup/sync_stories_enhanced.py --force
+   ```
 
-- 100 requests per minute per API key
-- 10 requests per second per API key
+## File Structure
 
-The scripts include basic rate limiting, but avoid running bulk operations too frequently.
+```
+scripts/clickup/
+├── README.MD                      # This file
+├── clickup_client.py              # ClickUp API client library
+├── sync_sprint_stories.py         # Integrated sync (recommended)
+├── sync_stories_enhanced.py       # Sync stories to backlog
+├── sync_sprints.py                # Create sprint lists and move stories
+├── pull_tasks.py                  # Fetch tasks from ClickUp
+└── sync_stories.py                # Basic story sync (deprecated)
 
-## Security
+config/
+├── clickup-config.json            # ClickUp configuration
+├── clickup-story-mapping.json     # Story ID to task ID mapping
+├── clickup-sprint-mapping.json    # Sprint ID to list ID mapping
+└── clickup-tasks.json             # Full task data from ClickUp
 
-- Never commit `.env.dev` or files containing API keys
-- Store API keys in GitHub Secrets for Actions
-- Use read-only API keys where possible
-- Rotate API keys periodically
+docs/
+├── STORIES/                       # User story markdown files
+│   ├── US-001-*.md
+│   └── US-002-*.md
+└── SPRINTS/                       # Sprint planning files
+    ├── SPRINT-01-*.md
+    └── SPRINT-02-*.md
+```
+
+---
+
+For complete documentation, see `docs/PM-INTEGRATION/README.MD`.

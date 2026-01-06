@@ -15,6 +15,9 @@
 - **Could Have:** Real-time alerting for suspicious activity, automated compliance reports
 - **Won't Have:** Advanced ML-based anomaly detection in Phase 1
 
+
+**Sprint:** Sprint 23
+
 ## Repository Coverage
 
 | Repository      | Required | Notes                                                |

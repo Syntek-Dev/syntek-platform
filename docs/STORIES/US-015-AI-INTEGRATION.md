@@ -15,6 +15,9 @@
 - **Could Have:** Custom AI models, batch processing, AI-powered analytics
 - **Won't Have:** Fine-tuned models in Phase 12
 
+
+**Sprint:** Sprint 25
+
 ## Repository Coverage
 
 | Repository      | Required | Notes                                                   |

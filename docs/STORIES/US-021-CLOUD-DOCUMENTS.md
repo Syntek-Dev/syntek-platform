@@ -15,6 +15,9 @@
 - **Could Have:** Real-time collaboration indicators, document templates, export to multiple formats, integration with design tokens
 - **Won't Have:** Advanced collaboration features (comments, @mentions) until Phase 11
 
+
+**Sprint:** Sprint 21
+
 ## Repository Coverage
 
 | Repository      | Required | Notes                                                                 |

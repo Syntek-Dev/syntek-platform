@@ -15,6 +15,9 @@
 - **Could Have:** Token templates by industry, AI-generated colour palettes
 - **Won't Have:** Font file hosting in Phase 2
 
+
+**Sprint:** Sprint 20
+
 ## Repository Coverage
 
 | Repository      | Required | Notes                                           |

@@ -15,6 +15,9 @@
 - **Could Have:** AI-generated content suggestions based on template, template marketplace
 - **Won't Have:** User-created templates in Phase 4
 
+
+**Sprint:** Sprint 13
+
 ## Repository Coverage
 
 | Repository      | Required | Notes                                                |
