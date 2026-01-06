@@ -76,7 +76,7 @@ jobs:
       - name: Update task status to "in progress"
         if: steps.mapping.outputs.clickup_task_id != ''
         env:
-          CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
+          CLICKUP_API_TOKEN: ${{ secrets.CLICKUP_API_TOKEN }}
           TASK_ID: ${{ steps.mapping.outputs.clickup_task_id }}
         run: |
           python3 - <<EOF
@@ -84,12 +84,12 @@ jobs:
           import requests
           import sys
 
-          api_key = os.environ['CLICKUP_API_KEY']
+          api_token = os.environ['CLICKUP_API_TOKEN']
           task_id = os.environ['TASK_ID']
 
           url = f"https://api.clickup.com/api/v2/task/{task_id}"
           headers = {
-              "Authorization": api_key,
+              "Authorization": api_token,
               "Content-Type": "application/json"
           }
           data = {"status": "in progress"}
@@ -107,7 +107,7 @@ jobs:
       - name: Add branch creation comment
         if: steps.mapping.outputs.clickup_task_id != ''
         env:
-          CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
+          CLICKUP_API_TOKEN: ${{ secrets.CLICKUP_API_TOKEN }}
           TASK_ID: ${{ steps.mapping.outputs.clickup_task_id }}
           BRANCH_NAME: ${{ steps.task-info.outputs.branch_name }}
           FEATURE_NAME: ${{ steps.task-info.outputs.feature_name }}
@@ -118,7 +118,7 @@ jobs:
           import os
           import requests
 
-          api_key = os.environ['CLICKUP_API_KEY']
+          api_token = os.environ['CLICKUP_API_TOKEN']
           task_id = os.environ['TASK_ID']
           branch_name = os.environ['BRANCH_NAME']
           feature_name = os.environ['FEATURE_NAME']
@@ -132,7 +132,7 @@ jobs:
 
           url = f"https://api.clickup.com/api/v2/task/{task_id}/comment"
           headers = {
-              "Authorization": api_key,
+              "Authorization": api_token,
               "Content-Type": "application/json"
           }
           data = {"comment_text": comment_text}

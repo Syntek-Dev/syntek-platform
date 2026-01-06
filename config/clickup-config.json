@@ -5,13 +5,13 @@
   "bidirectional": true,
   "auto_create_tasks": true,
   "workspace": {
-    "team_id": "${CLICKUP_TEAM_ID}",
+    "workspace_id": "${CLICKUP_WORKSPACE_ID}",
     "space_id": "${CLICKUP_SPACE_ID}",
     "space_name": "Syntek"
   },
   "folders": {
     "sprints": {
-      "id": "${CLICKUP_SPRINTS_FOLDER_ID}",
+      "id": "${CLICKUP_SPRINT_FOLDER_ID}",
       "name": "Sprint - Backend Template"
     },
     "backlog": {
@@ -38,10 +38,20 @@
     "testing": "in review"
   },
   "field_mapping": {
-    "story_points": "points",
-    "priority": "priority",
+    "story_points": "Story Points",
+    "moscow_priority": "MoSCoW Priority",
     "sprint": "list",
     "assignee": "assignee"
+  },
+  "custom_field_types": {
+    "Story Points": "number",
+    "MoSCoW Priority": "drop_down"
+  },
+  "moscow_priority_options": {
+    "Must Have": "must_have",
+    "Should Have": "should_have",
+    "Could Have": "could_have",
+    "Won't Have": "wont_have"
   },
   "priority_mapping": {
     "must_have": "1",

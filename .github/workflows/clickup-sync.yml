@@ -123,7 +123,7 @@ jobs:
       - name: Update ClickUp task status
         if: steps.mapping.outputs.clickup_task_id != '' && steps.status.outputs.status != ''
         env:
-          CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
+          CLICKUP_API_TOKEN: ${{ secrets.CLICKUP_API_TOKEN }}
           TASK_ID: ${{ steps.mapping.outputs.clickup_task_id }}
           STATUS: ${{ steps.status.outputs.status }}
         run: |
@@ -132,13 +132,13 @@ jobs:
           import requests
           import sys
 
-          api_key = os.environ['CLICKUP_API_KEY']
+          api_token = os.environ['CLICKUP_API_TOKEN']
           task_id = os.environ['TASK_ID']
           status = os.environ['STATUS']
 
           url = f"https://api.clickup.com/api/v2/task/{task_id}"
           headers = {
-              "Authorization": api_key,
+              "Authorization": api_token,
               "Content-Type": "application/json"
           }
           data = {"status": status}
@@ -156,7 +156,7 @@ jobs:
       - name: Add PR comment to ClickUp task
         if: github.event_name == 'pull_request' && steps.mapping.outputs.clickup_task_id != ''
         env:
-          CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
+          CLICKUP_API_TOKEN: ${{ secrets.CLICKUP_API_TOKEN }}
           TASK_ID: ${{ steps.mapping.outputs.clickup_task_id }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_TITLE: ${{ github.event.pull_request.title }}
@@ -168,7 +168,7 @@ jobs:
           import os
           import requests
 
-          api_key = os.environ['CLICKUP_API_KEY']
+          api_token = os.environ['CLICKUP_API_TOKEN']
           task_id = os.environ['TASK_ID']
           pr_number = os.environ['PR_NUMBER']
           pr_title = os.environ['PR_TITLE']
@@ -181,7 +181,7 @@ jobs:
 
           url = f"https://api.clickup.com/api/v2/task/{task_id}/comment"
           headers = {
-              "Authorization": api_key,
+              "Authorization": api_token,
               "Content-Type": "application/json"
           }
           data = {"comment_text": comment_text}

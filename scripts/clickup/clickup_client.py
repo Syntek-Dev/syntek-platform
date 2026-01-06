@@ -32,8 +32,8 @@ def _resolve_env_vars(value: Any) -> Any:
         The value with environment variables resolved.
 
     Example:
-        >>> os.environ["CLICKUP_TEAM_ID"] = "12345"
-        >>> _resolve_env_vars("${CLICKUP_TEAM_ID}")
+        >>> os.environ["CLICKUP_WORKSPACE_ID"] = "12345"
+        >>> _resolve_env_vars("${CLICKUP_WORKSPACE_ID}")
         '12345'
     """
     if isinstance(value, str):
@@ -60,7 +60,7 @@ class ClickUpClient:
     Attributes:
         api_key: ClickUp API key for authentication.
         base_url: Base URL for ClickUp API (defaults to v2).
-        team_id: ClickUp team/workspace ID.
+        workspace_id: ClickUp workspace ID.
         space_id: ClickUp space ID.
         config: Configuration dictionary loaded from config file.
     """
@@ -91,7 +91,7 @@ class ClickUpClient:
         # Resolve environment variable placeholders in config
         self.config = _resolve_env_vars(raw_config)
 
-        self.team_id = self.config["workspace"]["team_id"]
+        self.workspace_id = self.config["workspace"]["workspace_id"]
         self.space_id = self.config["workspace"]["space_id"]
 
     def _request(
@@ -148,6 +148,41 @@ class ClickUpClient:
             List data including tasks, statuses, and metadata.
         """
         return self._request("GET", f"list/{list_id}")
+
+    def create_list(
+        self,
+        folder_id: str,
+        name: str,
+        content: Optional[str] = None,
+        due_date: Optional[int] = None,
+        priority: Optional[int] = None,
+        status: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Create a new list in a folder.
+
+        Args:
+            folder_id: ClickUp folder ID.
+            name: List name.
+            content: Optional list description.
+            due_date: Optional due date timestamp.
+            priority: Optional priority (1=urgent, 2=high, 3=normal, 4=low).
+            status: Optional list status.
+
+        Returns:
+            Created list data including ID.
+        """
+        data = {"name": name}
+
+        if content is not None:
+            data["content"] = content
+        if due_date is not None:
+            data["due_date"] = due_date
+        if priority is not None:
+            data["priority"] = priority
+        if status is not None:
+            data["status"] = status
+
+        return self._request("POST", f"folder/{folder_id}/list", json=data)
 
     def get_tasks_in_list(
         self,
@@ -275,6 +310,19 @@ class ClickUpClient:
         """
         return self.update_task(task_id, status=status)
 
+    def move_task_to_list(self, task_id: str, list_id: str) -> Dict[str, Any]:
+        """Move a task to a different list.
+
+        Args:
+            task_id: ClickUp task ID.
+            list_id: Target list ID.
+
+        Returns:
+            Updated task data.
+        """
+        data = {"list_id": list_id}
+        return self._request("PUT", f"task/{task_id}", json=data)
+
     def add_task_comment(
         self, task_id: str, comment_text: str
     ) -> Dict[str, Any]:
@@ -289,6 +337,91 @@ class ClickUpClient:
         """
         data = {"comment_text": comment_text}
         return self._request("POST", f"task/{task_id}/comment", json=data)
+
+    def set_custom_field(
+        self, task_id: str, field_id: str, value: Any
+    ) -> Dict[str, Any]:
+        """Set a custom field value on a task.
+
+        Args:
+            task_id: ClickUp task ID.
+            field_id: Custom field ID (UUID format).
+            value: Value to set (type depends on field type).
+
+        Returns:
+            Updated task data.
+        """
+        return self._request(
+            "POST", f"task/{task_id}/field/{field_id}", json={"value": value}
+        )
+
+    def get_list_custom_fields(self, list_id: str) -> List[Dict[str, Any]]:
+        """Get custom fields for a list.
+
+        Args:
+            list_id: ClickUp list ID.
+
+        Returns:
+            List of custom field definitions.
+        """
+        list_data = self.get_list(list_id)
+        return list_data.get("fields", [])
+
+    def create_subtask(
+        self,
+        parent_task_id: str,
+        name: str,
+        description: Optional[str] = None,
+        status: Optional[str] = None,
+        assignees: Optional[List[int]] = None,
+    ) -> Dict[str, Any]:
+        """Create a subtask under a parent task.
+
+        Args:
+            parent_task_id: Parent task ID.
+            name: Subtask name.
+            description: Optional subtask description.
+            status: Optional status name.
+            assignees: Optional list of user IDs to assign.
+
+        Returns:
+            Created subtask data.
+        """
+        # Get parent task to find its list
+        parent_task = self.get_task(parent_task_id)
+        list_id = parent_task["list"]["id"]
+
+        # Create task as subtask
+        data = {
+            "name": name,
+            "description": description or "",
+            "parent": parent_task_id,
+            "assignees": assignees or [],
+            "status": status,
+        }
+
+        # Remove None values
+        data = {k: v for k, v in data.items() if v is not None}
+
+        return self._request("POST", f"list/{list_id}/task", json=data)
+
+    def find_custom_field_by_name(
+        self, list_id: str, field_name: str
+    ) -> Optional[Dict[str, Any]]:
+        """Find a custom field by name in a list.
+
+        Args:
+            list_id: ClickUp list ID.
+            field_name: Name of the custom field to find.
+
+        Returns:
+            Custom field definition if found, None otherwise.
+        """
+        fields = self.get_list_custom_fields(list_id)
+        for field in fields:
+            if field.get("name", "").lower() == field_name.lower():
+                return field
+        return None
 
     def get_space_statuses(self) -> List[Dict[str, Any]]:
         """Retrieve all statuses for the workspace space.
@@ -313,11 +446,22 @@ class ClickUpClient:
         Returns:
             List of matching tasks.
         """
-        params = {"query": query}
+        # If list_ids provided, search within specific lists
         if list_ids:
-            params["list_ids"] = list_ids
+            all_tasks = []
+            for list_id in list_ids:
+                tasks = self.get_tasks_in_list(list_id, include_closed=True)
+                # Filter by query in task name
+                matching = [
+                    t for t in tasks
+                    if query.lower() in t.get("name", "").lower()
+                ]
+                all_tasks.extend(matching)
+            return all_tasks
 
-        endpoint = f"team/{self.team_id}/task"
+        # Otherwise use team-level search (without list_ids filter)
+        endpoint = f"team/{self.workspace_id}/task"
+        params = {"query": query}
         response = self._request("GET", endpoint, params=params)
         return response.get("tasks", [])
 
@@ -327,7 +471,7 @@ def get_client(api_key: Optional[str] = None) -> ClickUpClient:
 
     Args:
         api_key: Optional API key. If not provided, reads from
-            CLICKUP_API_KEY environment variable.
+            CLICKUP_API_TOKEN environment variable.
 
     Returns:
         Configured ClickUpClient instance.
@@ -336,11 +480,11 @@ def get_client(api_key: Optional[str] = None) -> ClickUpClient:
         ValueError: If API key is not provided and not in environment.
     """
     if api_key is None:
-        api_key = os.environ.get("CLICKUP_API_KEY")
+        api_key = os.environ.get("CLICKUP_API_TOKEN")
 
     if not api_key:
         raise ValueError(
-            "ClickUp API key must be provided or set in CLICKUP_API_KEY "
+            "ClickUp API key must be provided or set in CLICKUP_API_TOKEN "
             "environment variable"
         )
 
