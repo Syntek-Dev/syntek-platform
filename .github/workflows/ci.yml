@@ -54,16 +54,10 @@ jobs:
           docker compose -f docker/test/docker-compose.yml run --rm web \
             isort --check-only --diff .
 
-      - name: Run flake8 linting
+      - name: Run Ruff linting
         run: |
           docker compose -f docker/test/docker-compose.yml run --rm web \
-            flake8 .
-
-      - name: Run pylint
-        run: |
-          docker compose -f docker/test/docker-compose.yml run --rm web \
-            pylint apps/ api/ config/
-        continue-on-error: true
+            ruff check .
 
   type-check:
     name: Type Checking
