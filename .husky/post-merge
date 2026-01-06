@@ -9,8 +9,8 @@ echo "Running post-merge checks..."
 # Check if requirements files changed
 CHANGED_FILES=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)
 
-if echo "$CHANGED_FILES" | grep -q "requirements/"; then
-  echo "📦 Requirements files changed"
+if echo "$CHANGED_FILES" | grep -q "pyproject.toml"; then
+  echo "📦 Python dependencies changed (pyproject.toml)"
   echo "Please rebuild Docker containers:"
   echo "  docker compose -f docker/dev/docker-compose.yml build"
 fi

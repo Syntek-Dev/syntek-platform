@@ -2,7 +2,7 @@
 # =============================================================================
 # Backend Template - Staging Environment Helper Script
 # =============================================================================
-# Manages Docker-based staging environment for Django/Wagtail application
+# Manages Docker-based staging environment for Django application
 # Usage: ./scripts/env/staging.sh [command]
 # =============================================================================
 
@@ -358,7 +358,6 @@ cmd_urls() {
     header "Staging URLs"
     echo -e "  ${GREEN}Web Application:${NC}  http://localhost:${WEB_PORT}"
     echo -e "  ${GREEN}Django Admin:${NC}     http://localhost:${WEB_PORT}/admin"
-    echo -e "  ${GREEN}Wagtail Admin:${NC}    http://localhost:${WEB_PORT}/cms"
     echo -e "  ${GREEN}GraphQL:${NC}          http://localhost:${WEB_PORT}/graphql"
     echo -e "  ${GREEN}Health Check:${NC}     http://localhost:${WEB_PORT}/health/"
     echo ""

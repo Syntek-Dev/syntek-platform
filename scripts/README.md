@@ -37,6 +37,7 @@ Helper scripts for CI/CD setup and local development.
 **Purpose:** Initial CI/CD setup and validation
 
 **What it does:**
+
 - Checks Docker and Docker Compose availability
 - Builds test container
 - Installs Git hooks
@@ -51,6 +52,7 @@ Helper scripts for CI/CD setup and local development.
 ```
 
 **When to run:**
+
 - Initial project setup
 - After cloning the repository
 - After updating workflow files
@@ -61,6 +63,7 @@ Helper scripts for CI/CD setup and local development.
 **Purpose:** Run CI checks locally before pushing
 
 **What it does:**
+
 - Runs the same checks as GitHub Actions
 - All checks run inside Docker containers
 - Provides quick feedback before pushing
@@ -83,26 +86,28 @@ Helper scripts for CI/CD setup and local development.
 
 **Available checks:**
 
-| Check | Description |
-|-------|-------------|
-| `all` | Run all checks (default) |
-| `lint` | Black, isort, flake8, mypy |
-| `format` | Auto-format with Black and isort |
-| `test` | pytest with coverage |
+| Check      | Description                       |
+| ---------- | --------------------------------- |
+| `all`      | Run all checks (default)          |
+| `lint`     | Black, isort, flake8, mypy        |
+| `format`   | Auto-format with Black and isort  |
+| `test`     | pytest with coverage              |
 | `security` | Bandit and Django security checks |
-| `migrate` | Django migration validation |
+| `migrate`  | Django migration validation       |
 
 ## Docker-First Approach
 
 All scripts use Docker for consistency:
 
 **Benefits:**
+
 - Matches CI/CD environment exactly
 - No local Python dependencies needed
 - Consistent across all developer machines
 - Same tools and versions as production
 
 **Requirements:**
+
 - Docker installed and running
 - Docker Compose available
 

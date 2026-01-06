@@ -2,7 +2,7 @@
 # =============================================================================
 # Backend Template - Production Environment Helper Script
 # =============================================================================
-# Manages Docker-based production environment for Django/Wagtail application
+# Manages Docker-based production environment for Django application
 # Usage: ./scripts/env/production.sh [command]
 #
 # WARNING: This script manages PRODUCTION systems. Use with extreme caution.

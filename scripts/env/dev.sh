@@ -2,7 +2,7 @@
 # =============================================================================
 # Backend Template - Development Environment Helper Script
 # =============================================================================
-# Manages Docker-based development environment for Django/Wagtail application
+# Manages Docker-based development environment for Django application
 # Usage: ./scripts/env/dev.sh [command]
 # =============================================================================
 
@@ -328,7 +328,6 @@ cmd_urls() {
     header "Development URLs"
     echo -e "  ${GREEN}Web Application:${NC}  http://localhost:8000"
     echo -e "  ${GREEN}Django Admin:${NC}     http://localhost:8000/admin"
-    echo -e "  ${GREEN}Wagtail Admin:${NC}    http://localhost:8000/cms"
     echo -e "  ${GREEN}GraphQL:${NC}          http://localhost:8000/graphql"
     echo -e "  ${GREEN}Mailpit:${NC}          http://localhost:8025"
     echo -e "  ${GREEN}PostgreSQL:${NC}       localhost:5432"

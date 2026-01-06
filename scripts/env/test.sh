@@ -2,7 +2,7 @@
 # =============================================================================
 # Backend Template - Test Environment Helper Script
 # =============================================================================
-# Manages Docker-based test environment for Django/Wagtail application
+# Manages Docker-based test environment for Django application
 # Usage: ./scripts/env/test.sh [command]
 # =============================================================================
 
@@ -217,17 +217,6 @@ cmd_run_graphql() {
     dc run --rm ${WEB_SERVICE} pytest -m "graphql" "$@"
 }
 
-cmd_run_wagtail() {
-    header "Running Wagtail Tests Only"
-    check_prerequisites
-
-    if ! dc ps | grep -q "${DB_SERVICE}.*running"; then
-        cmd_up
-    fi
-
-    dc run --rm ${WEB_SERVICE} pytest -m "wagtail" "$@"
-}
-
 cmd_run_failed() {
     header "Re-running Failed Tests"
     check_prerequisites
@@ -432,7 +421,6 @@ cmd_help() {
     echo "  unit               Run unit tests only"
     echo "  integration        Run integration tests only"
     echo "  graphql            Run GraphQL tests only"
-    echo "  wagtail            Run Wagtail tests only"
     echo ""
     echo -e "${YELLOW}Code Quality:${NC}"
     echo "  lint               Run linters (ruff, black, isort)"
@@ -480,7 +468,6 @@ main() {
         unit)           cmd_run_unit "$@" ;;
         integration)    cmd_run_integration "$@" ;;
         graphql)        cmd_run_graphql "$@" ;;
-        wagtail)        cmd_run_wagtail "$@" ;;
 
         # Code Quality
         lint)           cmd_lint ;;

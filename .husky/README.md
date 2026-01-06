@@ -133,7 +133,7 @@ Fixes #123
 
 - Read the message carefully
 - Run migrations if needed: `./scripts/env/dev.sh migrate`
-- Install dependencies if needed: `pip install -r requirements/dev.txt`
+- Install dependencies if needed: `pip install -e ".[dev]"`
 
 ---
 
