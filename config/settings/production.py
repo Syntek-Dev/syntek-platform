@@ -4,9 +4,10 @@ This module contains settings specific to the production environment.
 It extends base.py with production-specific configurations.
 """
 
-from .base import *  # noqa: F403, F401
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+
+from .base import *  # noqa: F403, F401
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False

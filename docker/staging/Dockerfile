@@ -5,21 +5,26 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies and uv
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Add uv to PATH (installed to ~/.local/bin by the install script)
+ENV PATH="/root/.local/bin:$PATH"
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash appuser
 
-# Copy pyproject.toml first for better Docker caching
-COPY pyproject.toml ./
+# Copy dependency files first for better Docker caching
+COPY pyproject.toml uv.lock* ./
 
-# Install Python dependencies from pyproject.toml (base + production extras)
-RUN pip install --no-cache-dir -e ".[production]"
+# Install Python dependencies using uv (base + production extras)
+# --system flag installs packages system-wide in the container
+RUN uv pip install --system -e ".[production]"
 
 COPY . .
 

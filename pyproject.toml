@@ -160,6 +160,11 @@ ignore_errors = true
 module = "*.tests.*"
 ignore_errors = true
 
+[[tool.mypy.overrides]]
+# CLI utility scripts - not core application code
+module = "scripts.clickup.*"
+ignore_errors = true
+
 [tool.django-stubs]
 django_settings_module = "config.settings.dev"
 

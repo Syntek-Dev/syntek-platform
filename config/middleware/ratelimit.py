@@ -100,9 +100,9 @@ class RateLimitMiddleware(MiddlewareMixin):
         x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
         if x_forwarded_for:
             # Take the first IP in the chain (client's real IP)
-            ip = x_forwarded_for.split(",")[0].strip()
+            ip = str(x_forwarded_for).split(",")[0].strip()
         else:
-            ip = request.META.get("REMOTE_ADDR", "unknown")
+            ip = str(request.META.get("REMOTE_ADDR", "unknown"))
         return ip
 
     def _get_rate_limit(self, request: HttpRequest) -> tuple[int, int]:

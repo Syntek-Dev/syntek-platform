@@ -9,9 +9,11 @@ against malicious or resource-intensive queries:
 """
 
 import logging
+from collections.abc import Iterator
 from typing import Any, Optional
 
 from django.conf import settings
+
 from strawberry.extensions import SchemaExtension
 from strawberry.types import ExecutionContext
 
@@ -60,12 +62,16 @@ class QueryDepthLimitExtension(SchemaExtension):
             max_depth: Maximum allowed query depth (overrides settings).
         """
         super().__init__(execution_context=execution_context)
-        self.max_depth = max_depth or getattr(settings, "GRAPHQL_MAX_QUERY_DEPTH", 10)
+        configured_depth = getattr(settings, "GRAPHQL_MAX_QUERY_DEPTH", 10)
+        self.max_depth: int = max_depth if max_depth is not None else (configured_depth or 10)
 
-    def on_execute(self) -> None:
+    def on_execute(self) -> Iterator[None]:
         """Execute before the GraphQL query is processed.
 
         Validates the query depth before execution begins.
+
+        Yields:
+            None after validation completes.
 
         Raises:
             Exception: If query depth exceeds the maximum allowed.
@@ -84,6 +90,7 @@ class QueryDepthLimitExtension(SchemaExtension):
             raise Exception(
                 f"Query depth of {query_depth} exceeds maximum allowed depth of {self.max_depth}"
             )
+        yield
 
     def _calculate_query_depth(self, document: Any, depth: int = 0) -> int:
         """Calculate the maximum depth of a GraphQL query document.
@@ -144,14 +151,18 @@ class QueryComplexityLimitExtension(SchemaExtension):
             max_complexity: Maximum allowed complexity (overrides settings).
         """
         super().__init__(execution_context=execution_context)
-        self.max_complexity = max_complexity or getattr(
-            settings, "GRAPHQL_MAX_QUERY_COMPLEXITY", 1000
+        configured_complexity = getattr(settings, "GRAPHQL_MAX_QUERY_COMPLEXITY", 1000)
+        self.max_complexity: int = (
+            max_complexity if max_complexity is not None else (configured_complexity or 1000)
         )
 
-    def on_execute(self) -> None:
+    def on_execute(self) -> Iterator[None]:
         """Execute before the GraphQL query is processed.
 
         Validates the query complexity before execution begins.
+
+        Yields:
+            None after validation completes.
 
         Raises:
             Exception: If query complexity exceeds the maximum allowed.
@@ -171,6 +182,7 @@ class QueryComplexityLimitExtension(SchemaExtension):
                 f"Query complexity of {query_complexity} exceeds maximum allowed "
                 f"complexity of {self.max_complexity}"
             )
+        yield
 
     def _calculate_query_complexity(self, document: Any, multiplier: int = 1) -> int:
         """Calculate the complexity score of a GraphQL query document.
@@ -240,20 +252,25 @@ class IntrospectionControlExtension(SchemaExtension):
     Introspection is always enabled in development/test environments.
     """
 
-    def on_execute(self) -> None:
+    def on_execute(self) -> Iterator[None]:
         """Execute before the GraphQL query is processed.
 
         Blocks introspection queries in production if disabled.
+
+        Yields:
+            None after validation completes.
 
         Raises:
             Exception: If introspection is disabled and query is introspection.
         """
         # Allow introspection in DEBUG mode
         if getattr(settings, "DEBUG", False):
+            yield
             return
 
         # Check if introspection is explicitly enabled
         if getattr(settings, "GRAPHQL_ENABLE_INTROSPECTION", False):
+            yield
             return
 
         # Check if this is an introspection query
@@ -263,6 +280,7 @@ class IntrospectionControlExtension(SchemaExtension):
                 extra={"query": str(self.execution_context.query)},
             )
             raise Exception("GraphQL introspection is disabled in production")
+        yield
 
     def _is_introspection_query(self, document: Any) -> bool:
         """Check if a query is an introspection query.
