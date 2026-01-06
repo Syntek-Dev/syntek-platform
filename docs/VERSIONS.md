@@ -43,7 +43,7 @@ These are the primary framework versions used in this project, as specified in `
 
 | Framework  | Version | Notes                |
 | ---------- | ------- | -------------------- |
-| Django     | 5.2     | Web framework        |
+| Django     | 6.0     | Web framework        |
 | Python     | 3.14    | Programming language |
 | PostgreSQL | 18.1    | Database             |
 
@@ -227,7 +227,7 @@ requires-python = ">=3.14"
 
 [project]
 classifiers = [
-    "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
     "Programming Language :: Python :: 3.14",
 ]
 
@@ -256,7 +256,7 @@ The following versions are pinned across multiple configuration files to ensure 
 | Python version     | `.python-version`, `pyproject.toml`, `setup.cfg`, Docker | 3.14          |
 | Node.js version    | `.tool-versions`                                         | 24.12.0       |
 | PostgreSQL version | `.tool-versions`, Docker                                 | 18.1          |
-| Django version     | `pyproject.toml` classifiers                             | 5.2           |
+| Django version     | `pyproject.toml` classifiers                             | 6.0           |
 
 ---
 
@@ -366,7 +366,7 @@ For Node.js, PostgreSQL, or other system tools:
 
 This project uses:
 
-- **Pinned major versions** for frameworks (Django 5.2) to prevent breaking changes
+- **Pinned major versions** for frameworks (Django 6.0) to prevent breaking changes
 - **Flexible minor/patch versions** in requirements files (managed by pip during installation)
 - **Specific versions in .tool-versions** for reproducible development environments
 - **Python version pinning** to match team capabilities and library support

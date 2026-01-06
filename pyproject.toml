@@ -14,8 +14,8 @@ authors = [
 ]
 keywords = ["django", "graphql", "postgresql", "api", "cms"]
 dependencies = [
-    # Django Framework (v5.2 as per VERSIONS.md)
-    "Django>=5.2,<6.0",
+    # Django Framework (v6.0 as per VERSIONS.md)
+    "Django>=6.0.1,<7.0",
     "django-environ>=0.11.2",
 
     # Database (PostgreSQL 18.1)
@@ -47,7 +47,7 @@ dependencies = [
 
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
