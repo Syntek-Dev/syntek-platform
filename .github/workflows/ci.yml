@@ -41,6 +41,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Create test environment file
+        run: cp .env.test.example .env.test
+
       - name: Run Black formatting check
         run: |
           docker compose -f docker/test/docker-compose.yml run --rm web \
@@ -85,6 +88,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Create test environment file
+        run: cp .env.test.example .env.test
+
       - name: Run mypy type checking
         run: |
           docker compose -f docker/test/docker-compose.yml run --rm web \
@@ -112,6 +118,9 @@ jobs:
           tags: backend-template:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Create test environment file
+        run: cp .env.test.example .env.test
 
       - name: Run Bandit security checks
         run: |
@@ -149,6 +158,9 @@ jobs:
           tags: backend-template:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Create test environment file
+        run: cp .env.test.example .env.test
 
       - name: Start test services
         run: |

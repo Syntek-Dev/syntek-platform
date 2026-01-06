@@ -101,6 +101,9 @@ jobs:
           tags: backend-template:test
           cache-from: type=gha
 
+      - name: Create test environment file
+        run: cp .env.test.example .env.test
+
       - name: Run Bandit security scan
         run: |
           docker compose -f docker/test/docker-compose.yml run --rm web \
@@ -159,6 +162,9 @@ jobs:
           load: true
           tags: backend-template:test
           cache-from: type=gha
+
+      - name: Create test environment file
+        run: cp .env.test.example .env.test
 
       - name: Start database
         run: |

@@ -44,6 +44,9 @@ jobs:
           tags: backend-template:test
           cache-from: type=gha
 
+      - name: Create test environment file
+        run: cp .env.test.example .env.test
+
       - name: Run critical tests
         run: |
           docker compose -f docker/test/docker-compose.yml up -d
