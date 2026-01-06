@@ -1,5 +1,5 @@
 [MAIN]
-py-version=3.13
+py-version=3.14
 ignore=CVS,migrations,tests,.venv,venv
 load-plugins=pylint_django,pylint_django.checkers.migrations
 

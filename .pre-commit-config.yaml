@@ -1,4 +1,4 @@
-# Pre-commit hooks for Django/Wagtail/PostgreSQL/GraphQL project
+# Pre-commit hooks for Django/PostgreSQL/GraphQL project
 # Install: pip install pre-commit
 # Run: pre-commit install
 # Update: pre-commit autoupdate

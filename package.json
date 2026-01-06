@@ -1,7 +1,7 @@
 {
   "name": "backend-template",
   "version": "0.2.0",
-  "description": "Django/Wagtail backend with PostgreSQL and GraphQL API",
+  "description": "Django backend with PostgreSQL and GraphQL API",
   "private": true,
   "scripts": {
     "format": "prettier --write .",
@@ -16,11 +16,11 @@
   },
   "keywords": [
     "django",
-    "wagtail",
     "graphql",
     "postgresql",
     "backend",
-    "api"
+    "api",
+    "cms"
   ],
   "author": "Syntek Studio",
   "license": "MIT",

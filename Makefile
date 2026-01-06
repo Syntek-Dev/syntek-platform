@@ -1,4 +1,4 @@
-# Makefile for Django/Wagtail/PostgreSQL/GraphQL project
+# Makefile for Django/PostgreSQL/GraphQL project
 .PHONY: help install dev test clean lint format migrate shell superuser docker-up docker-down
 
 # Default target
@@ -25,20 +25,19 @@ help: ## Show this help message
 install: ## Install all dependencies
 	@echo "$(COLOR_BLUE)Installing dependencies...$(COLOR_RESET)"
 	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements.txt
-	$(PIP) install -r requirements-dev.txt
+	$(PIP) install -e ".[dev]"
 	@echo "$(COLOR_GREEN)Dependencies installed successfully!$(COLOR_RESET)"
 
 install-prod: ## Install production dependencies only
 	@echo "$(COLOR_BLUE)Installing production dependencies...$(COLOR_RESET)"
 	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements.txt
+	$(PIP) install -e .
 	@echo "$(COLOR_GREEN)Production dependencies installed!$(COLOR_RESET)"
 
 install-dev: ## Install development dependencies
 	@echo "$(COLOR_BLUE)Installing development dependencies...$(COLOR_RESET)"
 	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements-dev.txt
+	$(PIP) install -e ".[dev]"
 	pre-commit install
 	@echo "$(COLOR_GREEN)Development dependencies installed!$(COLOR_RESET)"
 
@@ -174,12 +173,6 @@ graphql-schema: ## Generate GraphQL schema
 	$(DJANGO) graphql_schema --out schema.graphql
 	@echo "$(COLOR_GREEN)GraphQL schema generated!$(COLOR_RESET)"
 
-# Wagtail
-wagtail-update-index: ## Update Wagtail search index
-	@echo "$(COLOR_BLUE)Updating Wagtail search index...$(COLOR_RESET)"
-	$(DJANGO) update_index
-	@echo "$(COLOR_GREEN)Search index updated!$(COLOR_RESET)"
-
 # Cleanup
 clean: ## Clean up temporary files
 	@echo "$(COLOR_BLUE)Cleaning up...$(COLOR_RESET)"
@@ -198,10 +191,16 @@ clean-all: clean ## Clean everything including virtualenv
 	@echo "$(COLOR_GREEN)Deep cleanup completed!$(COLOR_RESET)"
 
 # Dependencies
-requirements: ## Generate requirements.txt from installed packages
-	@echo "$(COLOR_BLUE)Generating requirements.txt...$(COLOR_RESET)"
-	$(PIP) freeze > requirements.txt
-	@echo "$(COLOR_GREEN)Requirements file generated!$(COLOR_RESET)"
+deps-lock: ## Generate locked dependencies from pyproject.toml
+	@echo "$(COLOR_BLUE)Locking dependencies...$(COLOR_RESET)"
+	$(PIP) install pip-tools
+	pip-compile pyproject.toml -o requirements.lock
+	@echo "$(COLOR_GREEN)Dependencies locked to requirements.lock!$(COLOR_RESET)"
+
+deps-upgrade: ## Upgrade all dependencies
+	@echo "$(COLOR_BLUE)Upgrading dependencies...$(COLOR_RESET)"
+	$(PIP) install --upgrade -e ".[dev]"
+	@echo "$(COLOR_GREEN)Dependencies upgraded!$(COLOR_RESET)"
 
 # CI/CD
 ci-test: ## Run tests for CI/CD

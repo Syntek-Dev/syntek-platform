@@ -4,22 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "backend-template"
-version = "0.1.0"
-description = "Django/Wagtail backend with PostgreSQL and GraphQL API"
+version = "0.2.0"
+description = "Django backend with PostgreSQL and GraphQL API"
 readme = "README.md"
 requires-python = ">=3.14"
 license = {text = "MIT"}
 authors = [
     {name = "Syntek Studio", email = "team@syntek.studio"}
 ]
-keywords = ["django", "wagtail", "graphql", "postgresql", "api"]
+keywords = ["django", "graphql", "postgresql", "api", "cms"]
 dependencies = [
     # Django Framework (v5.2 as per VERSIONS.md)
     "Django>=5.2,<6.0",
     "django-environ>=0.11.2",
-
-    # Wagtail CMS (v7 as per VERSIONS.md)
-    "wagtail>=7.0,<8.0",
 
     # Database (PostgreSQL 18.1)
     "psycopg[binary]>=3.2.3",
@@ -36,9 +33,8 @@ dependencies = [
     "djangorestframework>=3.15.2",
     "django-cors-headers>=4.6.0",
 
-    # Image Processing (for Wagtail)
+    # Image Processing
     "Pillow>=11.0.0",
-    "willow[heif]>=1.9.1",
 
     # Utilities
     "python-dateutil>=2.9.0",
@@ -52,7 +48,6 @@ dependencies = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Framework :: Django :: 5.2",
-    "Framework :: Wagtail :: 7",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -136,9 +131,8 @@ ensure_newline_before_comments = true
 skip_gitignore = true
 skip_glob = ["*/migrations/*", "*/staticfiles/*", "*/media/*"]
 known_django = ["django"]
-known_wagtail = ["wagtail"]
 known_graphene = ["graphene", "graphene_django"]
-sections = ["FUTURE", "STDLIB", "DJANGO", "WAGTAIL", "GRAPHENE", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+sections = ["FUTURE", "STDLIB", "DJANGO", "GRAPHENE", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
 # mypy configuration
 [tool.mypy]
@@ -192,7 +186,6 @@ markers = [
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",
     "graphql: marks tests for GraphQL API",
-    "wagtail: marks tests for Wagtail CMS",
 ]
 filterwarnings = [
     "error",
@@ -307,11 +300,10 @@ ignore = [
 
 [tool.ruff.lint.isort]
 known-first-party = ["backend", "apps", "config"]
-section-order = ["future", "standard-library", "django", "wagtail", "third-party", "first-party", "local-folder"]
+section-order = ["future", "standard-library", "django", "third-party", "first-party", "local-folder"]
 
 [tool.ruff.lint.isort.sections]
 django = ["django"]
-wagtail = ["wagtail"]
 
 # Pyright/Pylance configuration
 [tool.pyright]
