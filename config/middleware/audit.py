@@ -138,9 +138,7 @@ class SecurityAuditMiddleware(MiddlewareMixin):
 
         return response
 
-    def process_exception(
-        self, request: HttpRequest, exception: Exception
-    ) -> HttpResponse | None:
+    def process_exception(self, request: HttpRequest, exception: Exception) -> HttpResponse | None:
         """Log security exceptions.
 
         Args:
