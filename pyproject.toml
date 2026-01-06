@@ -15,7 +15,7 @@ authors = [
 keywords = ["django", "graphql", "postgresql", "api", "cms"]
 dependencies = [
     # Django Framework (v6.0 as per VERSIONS.md)
-    "Django>=6.0.1,<7.0",
+    "Django>=6.0,<7.0",
     "django-environ>=0.11.2",
 
     # Database (PostgreSQL 18.1)
