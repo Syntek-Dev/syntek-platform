@@ -247,19 +247,67 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
       - name: Validate YAML files
         run: |
-          find . -name "*.yml" -o -name "*.yaml" | while read file; do
-            echo "Validating $file"
-            python -c "import yaml; yaml.safe_load(open('$file'))"
-          done
+          find . -type f \( -name "*.yml" -o -name "*.yaml" \) \
+            -not -path "*/node_modules/*" \
+            -not -path "*/.git/*" \
+            -not -path "*/__pycache__/*" \
+            -not -path "*/.pytest_cache/*" \
+            -not -path "*/.mypy_cache/*" \
+            -not -path "*/htmlcov/*" \
+            -not -path "*/.tox/*" \
+            -not -path "*/.nox/*" \
+            -not -path "*/venv/*" \
+            -not -path "*/.venv/*" \
+            -not -path "*/ENV/*" \
+            -not -path "*/.eggs/*" \
+            -not -path "*/*.egg-info/*" \
+            -not -path "*/build/*" \
+            -not -path "*/dist/*" \
+            | while read file; do
+              echo "Validating $file"
+              if ! python -c "import yaml; yaml.safe_load(open('$file'))" 2>&1; then
+                echo "❌ Failed to validate: $file"
+                exit 1
+              fi
+            done
+          echo "✅ All YAML files valid"
 
       - name: Validate JSON files
         run: |
-          find . -name "*.json" | while read file; do
-            echo "Validating $file"
-            python -c "import json; json.load(open('$file'))"
-          done
+          find . -type f -name "*.json" \
+            -not -path "*/node_modules/*" \
+            -not -path "*/.git/*" \
+            -not -path "*/__pycache__/*" \
+            -not -path "*/.pytest_cache/*" \
+            -not -path "*/.mypy_cache/*" \
+            -not -path "*/htmlcov/*" \
+            -not -path "*/.tox/*" \
+            -not -path "*/.nox/*" \
+            -not -path "*/venv/*" \
+            -not -path "*/.venv/*" \
+            -not -path "*/ENV/*" \
+            -not -path "*/.eggs/*" \
+            -not -path "*/*.egg-info/*" \
+            -not -path "*/build/*" \
+            -not -path "*/dist/*" \
+            | while read file; do
+              echo "Validating $file"
+              if ! python -c "import json; json.load(open('$file'))" 2>&1; then
+                echo "❌ Failed to validate: $file"
+                exit 1
+              fi
+            done
+          echo "✅ All JSON files valid"
 
   ci-summary:
     name: CI Summary
