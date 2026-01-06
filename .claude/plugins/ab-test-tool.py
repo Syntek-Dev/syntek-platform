@@ -120,12 +120,14 @@ def create_test(
         # Add variant to existing test
         with open(test_file, "r") as f:
             test_config = json.load(f)
-        test_config["variants"].append({
-            "id": variant_name,
-            "file": f"variants/{agent}/{variant_name}.md",
-            "weight": weight,
-            "description": description,
-        })
+        test_config["variants"].append(
+            {
+                "id": variant_name,
+                "file": f"variants/{agent}/{variant_name}.md",
+                "weight": weight,
+                "description": description,
+            }
+        )
         # Rebalance weights
         total_variants = len(test_config["variants"])
         for v in test_config["variants"]:
@@ -361,7 +363,10 @@ def calculate_significance(test_config: dict) -> dict:
         negative = sat.get("negative", 0)
         total = positive + negative
         if total < 10:
-            return {"calculated": False, "reason": f"Need at least 10 rated runs per variant (have {total} for {v})"}
+            return {
+                "calculated": False,
+                "reason": f"Need at least 10 rated runs per variant (have {total} for {v})",
+            }
         data.append({"variant": v, "positive": positive, "negative": negative, "total": total})
 
     # Calculate rates
@@ -374,7 +379,7 @@ def calculate_significance(test_config: dict) -> dict:
     pooled_rate = pooled_positive / pooled_total
 
     # Standard error
-    se = (pooled_rate * (1 - pooled_rate) * (1/data[0]["total"] + 1/data[1]["total"])) ** 0.5
+    se = (pooled_rate * (1 - pooled_rate) * (1 / data[0]["total"] + 1 / data[1]["total"])) ** 0.5
 
     if se == 0:
         return {"calculated": False, "reason": "Cannot calculate - no variance"}
@@ -385,6 +390,7 @@ def calculate_significance(test_config: dict) -> dict:
     # Approximate p-value (two-tailed)
     # Using rough approximation: p ≈ 2 * e^(-0.5 * z^2) for large z
     import math
+
     p_value = 2 * math.exp(-0.5 * z_score * z_score) if z_score < 4 else 0.0001
 
     significant = p_value < 0.05
@@ -400,7 +406,11 @@ def calculate_significance(test_config: dict) -> dict:
         "p_value": round(p_value, 4),
         "significant": significant,
         "winner": winner,
-        "recommendation": f"Conclude test - {winner} is significantly better" if significant else "Continue collecting data",
+        "recommendation": (
+            f"Conclude test - {winner} is significantly better"
+            if significant
+            else "Continue collecting data"
+        ),
     }
 
 
@@ -477,13 +487,15 @@ def list_tests() -> dict:
     for test_file in active_dir.glob("*.json"):
         with open(test_file, "r") as f:
             test_config = json.load(f)
-        tests.append({
-            "test_id": test_config.get("test_id"),
-            "agent": test_config.get("agent"),
-            "status": test_config.get("status"),
-            "variants": len(test_config.get("variants", [])),
-            "created": test_config.get("created"),
-        })
+        tests.append(
+            {
+                "test_id": test_config.get("test_id"),
+                "agent": test_config.get("agent"),
+                "status": test_config.get("status"),
+                "variants": len(test_config.get("variants", [])),
+                "created": test_config.get("created"),
+            }
+        )
 
     return {"tests": tests, "count": len(tests)}
 
@@ -540,7 +552,13 @@ def main():
             return
 
         # Read variant content from stdin
-        print(json.dumps({"message": "Provide variant content via stdin or use the command to create manually"}))
+        print(
+            json.dumps(
+                {
+                    "message": "Provide variant content via stdin or use the command to create manually"
+                }
+            )
+        )
 
     elif command == "conclude":
         if len(sys.argv) < 3:
@@ -578,10 +596,22 @@ def main():
         print(json.dumps(update_results(agent, variant, satisfaction), indent=2))
 
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["list", "status", "select", "create", "conclude", "update"]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": [
+                        "list",
+                        "status",
+                        "select",
+                        "create",
+                        "conclude",
+                        "update",
+                    ],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":

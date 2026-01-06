@@ -72,18 +72,20 @@ def find_config_files(directory: Optional[str] = None) -> dict:
 
         for match in matches:
             if match.is_file():
-                found_files.append({
-                    "path": str(match),
-                    "name": match.name,
-                    "framework": framework,
-                })
+                found_files.append(
+                    {
+                        "path": str(match),
+                        "name": match.name,
+                        "framework": framework,
+                    }
+                )
                 detected_frameworks.add(framework)
 
     return {
         "files": found_files,
         "frameworks": sorted(detected_frameworks),
         "count": len(found_files),
-        "directory": str(search_dir)
+        "directory": str(search_dir),
     }
 
 
@@ -134,14 +136,14 @@ def detect_database_from_env(env_path: Optional[str] = None) -> dict:
         if path.exists():
             source_file = str(path)
             try:
-                with open(path, 'r', encoding='utf-8') as f:
+                with open(path, "r", encoding="utf-8") as f:
                     for line in f:
                         line = line.strip()
-                        if not line or line.startswith('#'):
+                        if not line or line.startswith("#"):
                             continue
 
-                        if '=' in line:
-                            key, _, value = line.partition('=')
+                        if "=" in line:
+                            key, _, value = line.partition("=")
                             key = key.strip()
                             value = value.strip().strip('"').strip("'")
 
@@ -240,7 +242,7 @@ def detect_orm_framework(directory: Optional[str] = None) -> dict:
         pkg_path = search_dir / pkg_file
         if pkg_path.exists():
             try:
-                content = pkg_path.read_text(encoding='utf-8').lower()
+                content = pkg_path.read_text(encoding="utf-8").lower()
                 if indicator.lower() in content:
                     detected["orm"] = orm
                     detected["migration_tool"] = migration
@@ -263,12 +265,14 @@ def detect_orm_framework(directory: Optional[str] = None) -> dict:
     for dir_path, framework in migration_dirs:
         full_path = search_dir / dir_path
         if full_path.exists() and full_path.is_dir():
-            migrations = list(full_path.glob("*.php")) + \
-                        list(full_path.glob("*.py")) + \
-                        list(full_path.glob("*.ts")) + \
-                        list(full_path.glob("*.js")) + \
-                        list(full_path.glob("*.rb")) + \
-                        list(full_path.glob("*.sql"))
+            migrations = (
+                list(full_path.glob("*.php"))
+                + list(full_path.glob("*.py"))
+                + list(full_path.glob("*.ts"))
+                + list(full_path.glob("*.js"))
+                + list(full_path.glob("*.rb"))
+                + list(full_path.glob("*.sql"))
+            )
 
             detected["migration_directory"] = str(full_path)
             detected["migration_count"] = len(migrations)
@@ -277,7 +281,9 @@ def detect_orm_framework(directory: Optional[str] = None) -> dict:
             if not detected["migration_tool"]:
                 detected["migration_tool"] = framework
 
-    detected["detected"] = detected["orm"] is not None or detected.get("migration_directory") is not None
+    detected["detected"] = (
+        detected["orm"] is not None or detected.get("migration_directory") is not None
+    )
 
     return detected
 
@@ -323,16 +329,18 @@ def find_migrations(directory: Optional[str] = None) -> dict:
                     timestamp = None
 
                     # Common patterns: 2024_01_15_000000_, 20240115000000_, V1__
-                    timestamp_match = re.match(r'^(\d{4}_?\d{2}_?\d{2}_?\d{6}|\d{14}|V\d+)', name)
+                    timestamp_match = re.match(r"^(\d{4}_?\d{2}_?\d{2}_?\d{6}|\d{14}|V\d+)", name)
                     if timestamp_match:
                         timestamp = timestamp_match.group(1)
 
-                    found_migrations.append({
-                        "name": file_path.name,
-                        "path": str(file_path),
-                        "timestamp": timestamp,
-                        "extension": ext,
-                    })
+                    found_migrations.append(
+                        {
+                            "name": file_path.name,
+                            "path": str(file_path),
+                            "timestamp": timestamp,
+                            "extension": ext,
+                        }
+                    )
 
             break
 
@@ -419,10 +427,15 @@ def main():
         print(json.dumps(find_migrations(directory), indent=2))
 
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["detect", "config", "env", "orm", "migrations"]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": ["detect", "config", "env", "orm", "migrations"],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":

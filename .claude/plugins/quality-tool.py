@@ -33,7 +33,12 @@ def detect_stack() -> dict:
         # Check for phpstan
         if (cwd / "phpstan.neon").exists() or (cwd / "phpstan.neon.dist").exists():
             stack["linter"] = "phpstan"
-            stack["linter_command"] = ["vendor/bin/phpstan", "analyse", "--error-format=json", "--no-progress"]
+            stack["linter_command"] = [
+                "vendor/bin/phpstan",
+                "analyse",
+                "--error-format=json",
+                "--no-progress",
+            ]
         elif (cwd / "vendor/bin/pint").exists():
             stack["linter"] = "pint"
             stack["linter_command"] = ["vendor/bin/pint", "--test", "--format=json"]
@@ -65,7 +70,11 @@ def detect_stack() -> dict:
             stack["language"] = "typescript"
 
         # Check for eslint
-        if (cwd / ".eslintrc.js").exists() or (cwd / ".eslintrc.json").exists() or (cwd / "eslint.config.js").exists():
+        if (
+            (cwd / ".eslintrc.js").exists()
+            or (cwd / ".eslintrc.json").exists()
+            or (cwd / "eslint.config.js").exists()
+        ):
             stack["linter"] = "eslint"
             stack["linter_command"] = ["npx", "eslint", "--format=json", "."]
 
@@ -118,12 +127,14 @@ def run_linter(files: Optional[list] = None) -> dict:
                 warnings = data.get("totals", {}).get("warnings", 0)
                 for file_path, file_errors in data.get("files", {}).items():
                     for msg in file_errors.get("messages", []):
-                        details.append({
-                            "file": file_path,
-                            "line": msg.get("line"),
-                            "message": msg.get("message"),
-                            "type": "error" if msg.get("ignorable", True) else "warning",
-                        })
+                        details.append(
+                            {
+                                "file": file_path,
+                                "line": msg.get("line"),
+                                "message": msg.get("message"),
+                                "type": "error" if msg.get("ignorable", True) else "warning",
+                            }
+                        )
             except json.JSONDecodeError:
                 errors = result.returncode
 
@@ -133,12 +144,14 @@ def run_linter(files: Optional[list] = None) -> dict:
                 errors = len([d for d in data if d.get("type") == "error"])
                 warnings = len([d for d in data if d.get("type") == "warning"])
                 for item in data[:20]:  # Limit details
-                    details.append({
-                        "file": item.get("filename"),
-                        "line": item.get("location", {}).get("row"),
-                        "message": item.get("message"),
-                        "code": item.get("code"),
-                    })
+                    details.append(
+                        {
+                            "file": item.get("filename"),
+                            "line": item.get("location", {}).get("row"),
+                            "message": item.get("message"),
+                            "code": item.get("code"),
+                        }
+                    )
             except json.JSONDecodeError:
                 errors = result.returncode
 
@@ -149,12 +162,14 @@ def run_linter(files: Optional[list] = None) -> dict:
                     errors += file_result.get("errorCount", 0)
                     warnings += file_result.get("warningCount", 0)
                     for msg in file_result.get("messages", [])[:5]:
-                        details.append({
-                            "file": file_result.get("filePath"),
-                            "line": msg.get("line"),
-                            "message": msg.get("message"),
-                            "rule": msg.get("ruleId"),
-                        })
+                        details.append(
+                            {
+                                "file": file_result.get("filePath"),
+                                "line": msg.get("line"),
+                                "message": msg.get("message"),
+                                "rule": msg.get("ruleId"),
+                            }
+                        )
             except json.JSONDecodeError:
                 errors = result.returncode
 
@@ -199,8 +214,12 @@ def check_quality(files: Optional[list] = None) -> dict:
         "linting": linter_result,
         "summary": {
             "has_linter": stack["linter"] is not None,
-            "total_errors": linter_result.get("errors", 0) if linter_result.get("success") else None,
-            "total_warnings": linter_result.get("warnings", 0) if linter_result.get("success") else None,
+            "total_errors": (
+                linter_result.get("errors", 0) if linter_result.get("success") else None
+            ),
+            "total_warnings": (
+                linter_result.get("warnings", 0) if linter_result.get("success") else None
+            ),
         },
     }
 
@@ -286,10 +305,15 @@ def main():
         print(json.dumps(detect_stack(), indent=2))
 
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["status", "check", "lint", "stack"]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": ["status", "check", "lint", "stack"],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":

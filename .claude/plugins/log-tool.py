@@ -35,7 +35,7 @@ def find_log_files(directory: Optional[str] = None) -> dict:
         "logs",
         "log",
         "storage/logs",  # Laravel
-        "var/log",       # Symfony
+        "var/log",  # Symfony
         "runtime/logs",  # Yii
         "tmp/logs",
     ]
@@ -50,35 +50,41 @@ def find_log_files(directory: Optional[str] = None) -> dict:
                 if log_file.is_file():
                     try:
                         stat = log_file.stat()
-                        found_files.append({
-                            "name": log_file.name,
-                            "path": str(log_file),
-                            "directory": log_dir,
-                            "size": stat.st_size,
-                            "size_human": _format_size(stat.st_size),
-                            "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
-                        })
+                        found_files.append(
+                            {
+                                "name": log_file.name,
+                                "path": str(log_file),
+                                "directory": log_dir,
+                                "size": stat.st_size,
+                                "size_human": _format_size(stat.st_size),
+                                "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                            }
+                        )
                     except PermissionError:
-                        found_files.append({
-                            "name": log_file.name,
-                            "path": str(log_file),
-                            "directory": log_dir,
-                            "error": "Permission denied",
-                        })
+                        found_files.append(
+                            {
+                                "name": log_file.name,
+                                "path": str(log_file),
+                                "directory": log_dir,
+                                "error": "Permission denied",
+                            }
+                        )
 
     # Also check for log files in root
     for log_file in search_dir.glob("*.log"):
         if log_file.is_file():
             try:
                 stat = log_file.stat()
-                found_files.append({
-                    "name": log_file.name,
-                    "path": str(log_file),
-                    "directory": ".",
-                    "size": stat.st_size,
-                    "size_human": _format_size(stat.st_size),
-                    "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
-                })
+                found_files.append(
+                    {
+                        "name": log_file.name,
+                        "path": str(log_file),
+                        "directory": ".",
+                        "size": stat.st_size,
+                        "size_human": _format_size(stat.st_size),
+                        "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                    }
+                )
             except PermissionError:
                 pass
 
@@ -94,7 +100,7 @@ def find_log_files(directory: Optional[str] = None) -> dict:
 
 def _format_size(size_bytes: int) -> str:
     """Format file size in human-readable format."""
-    for unit in ['B', 'KB', 'MB', 'GB']:
+    for unit in ["B", "KB", "MB", "GB"]:
         if size_bytes < 1024:
             return f"{size_bytes:.1f} {unit}"
         size_bytes /= 1024
@@ -133,7 +139,7 @@ def detect_logging_config(directory: Optional[str] = None) -> dict:
             content = laravel_config.read_text()
             # Extract channels
             channels = re.findall(r"'(\w+)'\s*=>\s*\[", content)
-            detected["log_channels"] = [c for c in channels if c not in ['driver', 'level', 'path']]
+            detected["log_channels"] = [c for c in channels if c not in ["driver", "level", "path"]]
         except Exception:
             pass
 
@@ -190,7 +196,7 @@ def detect_logging_config(directory: Optional[str] = None) -> dict:
     if env_file.exists():
         try:
             content = env_file.read_text()
-            level_match = re.search(r'LOG_LEVEL\s*=\s*(\w+)', content, re.IGNORECASE)
+            level_match = re.search(r"LOG_LEVEL\s*=\s*(\w+)", content, re.IGNORECASE)
             if level_match:
                 detected["log_level"] = level_match.group(1)
         except Exception:
@@ -223,7 +229,7 @@ def read_recent_logs(file_path: str, lines: int = 50, level_filter: Optional[str
 
     try:
         # Read last N lines efficiently
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             # Seek to end and work backwards
             f.seek(0, 2)
             file_size = f.tell()
@@ -240,8 +246,8 @@ def read_recent_logs(file_path: str, lines: int = 50, level_filter: Optional[str
                 read_size = min(chunk_size, position)
                 position -= read_size
                 f.seek(position)
-                chunk = f.read(read_size).decode('utf-8', errors='replace')
-                found_lines = chunk.split('\n') + found_lines[1:]
+                chunk = f.read(read_size).decode("utf-8", errors="replace")
+                found_lines = chunk.split("\n") + found_lines[1:]
 
             log_lines = found_lines[-lines:] if len(found_lines) > lines else found_lines
 
@@ -249,11 +255,11 @@ def read_recent_logs(file_path: str, lines: int = 50, level_filter: Optional[str
         entries = []
         log_patterns = [
             # Laravel/Monolog format
-            r'\[(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[^\]]*)\]\s*(\w+)\.(\w+):\s*(.*)',
+            r"\[(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[^\]]*)\]\s*(\w+)\.(\w+):\s*(.*)",
             # Standard format
-            r'(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})\s+(\w+)\s+(.+)',
+            r"(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})\s+(\w+)\s+(.+)",
             # Simple timestamp
-            r'\[(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})\]\s+\[(\w+)\]\s+(.*)',
+            r"\[(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})\]\s+\[(\w+)\]\s+(.*)",
         ]
 
         for line in log_lines:
@@ -282,10 +288,12 @@ def read_recent_logs(file_path: str, lines: int = 50, level_filter: Optional[str
 
             # If no pattern matched, include as raw line
             if not parsed and line.strip():
-                entries.append({
-                    "raw": line[:500],
-                    "level": "UNKNOWN",
-                })
+                entries.append(
+                    {
+                        "raw": line[:500],
+                        "level": "UNKNOWN",
+                    }
+                )
 
         # Categorise by level
         level_counts = {}
@@ -330,7 +338,7 @@ def analyse_errors(file_path: str, max_entries: int = 100) -> dict:
     for error in errors:
         message = error.get("message", error.get("raw", ""))
         # Simplify message for grouping (remove variable parts)
-        simplified = re.sub(r'\d+', 'N', message)
+        simplified = re.sub(r"\d+", "N", message)
         simplified = re.sub(r'"[^"]*"', '"..."', simplified)
         simplified = simplified[:100]
 
@@ -397,10 +405,12 @@ def check_log_health(directory: Optional[str] = None) -> dict:
     for log_file in logs.get("files", []):
         size = log_file.get("size", 0)
         if size > 100 * 1024 * 1024:  # > 100MB
-            large_logs.append({
-                "name": log_file["name"],
-                "size": log_file["size_human"],
-            })
+            large_logs.append(
+                {
+                    "name": log_file["name"],
+                    "size": log_file["size_human"],
+                }
+            )
 
     if large_logs:
         warnings.append(f"Large log files detected: {len(large_logs)} files over 100MB")
@@ -472,10 +482,15 @@ def main():
         print(json.dumps(check_log_health(directory), indent=2))
 
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["find", "config", "read", "errors", "health"]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": ["find", "config", "read", "errors", "health"],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":

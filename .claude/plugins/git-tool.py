@@ -36,14 +36,16 @@ def is_git_repo(path: Optional[str] = None) -> bool:
             capture_output=True,
             text=True,
             cwd=cwd,
-            timeout=10
+            timeout=10,
         )
         return result.returncode == 0 and result.stdout.strip() == "true"
     except (subprocess.TimeoutExpired, Exception):
         return False
 
 
-def run_git_command(args: list[str], cwd: Optional[str] = None, timeout: int = 30) -> tuple[bool, str, str]:
+def run_git_command(
+    args: list[str], cwd: Optional[str] = None, timeout: int = 30
+) -> tuple[bool, str, str]:
     """
     Execute a Git command and return the result.
 
@@ -57,11 +59,7 @@ def run_git_command(args: list[str], cwd: Optional[str] = None, timeout: int = 3
     """
     try:
         result = subprocess.run(
-            ["git"] + args,
-            capture_output=True,
-            text=True,
-            cwd=cwd,
-            timeout=timeout
+            ["git"] + args, capture_output=True, text=True, cwd=cwd, timeout=timeout
         )
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
@@ -101,14 +99,14 @@ def get_git_status() -> dict:
     # Check for uncommitted changes
     success, stdout, _ = run_git_command(["status", "--porcelain"])
     if success:
-        lines = [l for l in stdout.strip().split('\n') if l]
+        lines = [l for l in stdout.strip().split("\n") if l]
         result["has_changes"] = len(lines) > 0
         result["changes_count"] = len(lines)
 
         # Categorise changes
-        staged = sum(1 for l in lines if l[0] != ' ' and l[0] != '?')
-        unstaged = sum(1 for l in lines if l[1] != ' ' and l[0] != '?')
-        untracked = sum(1 for l in lines if l.startswith('??'))
+        staged = sum(1 for l in lines if l[0] != " " and l[0] != "?")
+        unstaged = sum(1 for l in lines if l[1] != " " and l[0] != "?")
+        untracked = sum(1 for l in lines if l.startswith("??"))
 
         result["staged"] = staged
         result["unstaged"] = unstaged
@@ -123,9 +121,7 @@ def get_git_status() -> dict:
             result["ahead"] = int(parts[1])
 
     # Get last commit info
-    success, stdout, _ = run_git_command([
-        "log", "-1", "--format=%H|%h|%s|%an|%ae|%ai"
-    ])
+    success, stdout, _ = run_git_command(["log", "-1", "--format=%H|%h|%s|%an|%ae|%ai"])
     if success and stdout.strip():
         parts = stdout.strip().split("|")
         if len(parts) >= 6:
@@ -171,18 +167,20 @@ def get_branches(include_remote: bool = False) -> dict:
     current_branch = current_stdout.strip()
 
     branches = []
-    for line in stdout.strip().split('\n'):
+    for line in stdout.strip().split("\n"):
         if not line:
             continue
         parts = line.split("|")
         branch_name = parts[0]
-        branches.append({
-            "name": branch_name,
-            "short_hash": parts[1] if len(parts) > 1 else None,
-            "upstream": parts[2] if len(parts) > 2 and parts[2] else None,
-            "is_current": branch_name == current_branch,
-            "is_remote": branch_name.startswith("remotes/"),
-        })
+        branches.append(
+            {
+                "name": branch_name,
+                "short_hash": parts[1] if len(parts) > 1 else None,
+                "upstream": parts[2] if len(parts) > 2 and parts[2] else None,
+                "is_current": branch_name == current_branch,
+                "is_remote": branch_name.startswith("remotes/"),
+            }
+        )
 
     local = [b for b in branches if not b["is_remote"]]
     remote = [b for b in branches if b["is_remote"]]
@@ -214,7 +212,7 @@ def get_remotes() -> dict:
         return {"error": stderr or "Failed to list remotes"}
 
     remotes = {}
-    for line in stdout.strip().split('\n'):
+    for line in stdout.strip().split("\n"):
         if not line:
             continue
         parts = line.split()
@@ -227,10 +225,7 @@ def get_remotes() -> dict:
                 remotes[name] = {"name": name}
             remotes[name][remote_type] = url
 
-    return {
-        "remotes": list(remotes.values()),
-        "count": len(remotes)
-    }
+    return {"remotes": list(remotes.values()), "count": len(remotes)}
 
 
 def get_recent_commits(count: int = 10) -> dict:
@@ -249,34 +244,32 @@ def get_recent_commits(count: int = 10) -> dict:
     if not is_git_repo():
         return {"error": "Not a Git repository", "is_repo": False}
 
-    success, stdout, stderr = run_git_command([
-        "log", f"-{count}",
-        "--format=%H|%h|%s|%an|%ae|%ai|%D"
-    ])
+    success, stdout, stderr = run_git_command(
+        ["log", f"-{count}", "--format=%H|%h|%s|%an|%ae|%ai|%D"]
+    )
 
     if not success:
         return {"error": stderr or "Failed to get commit history"}
 
     commits = []
-    for line in stdout.strip().split('\n'):
+    for line in stdout.strip().split("\n"):
         if not line:
             continue
         parts = line.split("|")
         if len(parts) >= 6:
-            commits.append({
-                "hash": parts[0],
-                "short_hash": parts[1],
-                "message": parts[2],
-                "author": parts[3],
-                "email": parts[4],
-                "date": parts[5],
-                "refs": parts[6] if len(parts) > 6 and parts[6] else None,
-            })
+            commits.append(
+                {
+                    "hash": parts[0],
+                    "short_hash": parts[1],
+                    "message": parts[2],
+                    "author": parts[3],
+                    "email": parts[4],
+                    "date": parts[5],
+                    "refs": parts[6] if len(parts) > 6 and parts[6] else None,
+                }
+            )
 
-    return {
-        "commits": commits,
-        "count": len(commits)
-    }
+    return {"commits": commits, "count": len(commits)}
 
 
 def get_tags() -> dict:
@@ -292,32 +285,30 @@ def get_tags() -> dict:
     if not is_git_repo():
         return {"error": "Not a Git repository", "is_repo": False}
 
-    success, stdout, stderr = run_git_command([
-        "tag", "-l", "--format=%(refname:short)|%(objectname:short)|%(creatordate:iso)"
-    ])
+    success, stdout, stderr = run_git_command(
+        ["tag", "-l", "--format=%(refname:short)|%(objectname:short)|%(creatordate:iso)"]
+    )
 
     if not success:
         return {"error": stderr or "Failed to list tags"}
 
     tags = []
-    for line in stdout.strip().split('\n'):
+    for line in stdout.strip().split("\n"):
         if not line:
             continue
         parts = line.split("|")
-        tags.append({
-            "name": parts[0],
-            "short_hash": parts[1] if len(parts) > 1 else None,
-            "date": parts[2] if len(parts) > 2 else None,
-        })
+        tags.append(
+            {
+                "name": parts[0],
+                "short_hash": parts[1] if len(parts) > 1 else None,
+                "date": parts[2] if len(parts) > 2 else None,
+            }
+        )
 
     # Sort by date descending (newest first)
     tags.sort(key=lambda x: x.get("date", ""), reverse=True)
 
-    return {
-        "tags": tags,
-        "count": len(tags),
-        "latest": tags[0]["name"] if tags else None
-    }
+    return {"tags": tags, "count": len(tags), "latest": tags[0]["name"] if tags else None}
 
 
 def get_stash_list() -> dict:
@@ -339,22 +330,21 @@ def get_stash_list() -> dict:
         return {"error": stderr or "Failed to list stashes"}
 
     stashes = []
-    for line in stdout.strip().split('\n'):
+    for line in stdout.strip().split("\n"):
         if not line:
             continue
         # Parse stash format: stash@{0}: WIP on branch: message
         if ": " in line:
             parts = line.split(": ", 2)
-            stashes.append({
-                "ref": parts[0],
-                "branch_info": parts[1] if len(parts) > 1 else None,
-                "message": parts[2] if len(parts) > 2 else None,
-            })
+            stashes.append(
+                {
+                    "ref": parts[0],
+                    "branch_info": parts[1] if len(parts) > 1 else None,
+                    "message": parts[2] if len(parts) > 2 else None,
+                }
+            )
 
-    return {
-        "stashes": stashes,
-        "count": len(stashes)
-    }
+    return {"stashes": stashes, "count": len(stashes)}
 
 
 def detect_git_host() -> dict:
@@ -395,7 +385,7 @@ def detect_git_host() -> dict:
     return {
         "host": detected_host,
         "remote_url": stdout.strip(),
-        "detected": detected_host is not None
+        "detected": detected_host is not None,
     }
 
 
@@ -429,15 +419,26 @@ def main():
     elif command == "host":
         print(json.dumps(detect_git_host(), indent=2))
     elif command == "installed":
-        print(json.dumps({
-            "installed": is_git_installed(),
-            "is_repo": is_git_repo()
-        }, indent=2))
+        print(json.dumps({"installed": is_git_installed(), "is_repo": is_git_repo()}, indent=2))
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["status", "branches", "remotes", "commits", "tags", "stash", "host", "installed"]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": [
+                        "status",
+                        "branches",
+                        "remotes",
+                        "commits",
+                        "tags",
+                        "stash",
+                        "host",
+                        "installed",
+                    ],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":

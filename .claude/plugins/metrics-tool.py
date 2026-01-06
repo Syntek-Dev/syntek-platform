@@ -432,7 +432,9 @@ def main():
             print(json.dumps({"error": "Agent name required (--agent)"}))
             return
 
-        result = record_run(agent=agent, command=cmd, variant=variant, status=status, duration=duration)
+        result = record_run(
+            agent=agent, command=cmd, variant=variant, status=status, duration=duration
+        )
         print(json.dumps(result, indent=2))
 
     elif command == "query":
@@ -484,10 +486,22 @@ def main():
             print(json.dumps({"error": "No runs recorded yet"}))
 
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["status", "record", "query", "summary", "aggregate", "last"]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": [
+                        "status",
+                        "record",
+                        "query",
+                        "summary",
+                        "aggregate",
+                        "last",
+                    ],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":

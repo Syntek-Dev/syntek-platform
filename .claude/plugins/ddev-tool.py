@@ -30,12 +30,7 @@ def run_ddev_command(args: list[str], timeout: int = 30) -> tuple[bool, str, str
         Tuple of (success, stdout, stderr)
     """
     try:
-        result = subprocess.run(
-            ["ddev"] + args,
-            capture_output=True,
-            text=True,
-            timeout=timeout
-        )
+        result = subprocess.run(["ddev"] + args, capture_output=True, text=True, timeout=timeout)
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return False, "", "Command timed out"
@@ -65,24 +60,30 @@ def get_ddev_status() -> dict:
         projects = []
 
         for proj in data.get("raw", []):
-            projects.append({
-                "name": proj.get("name"),
-                "status": proj.get("status"),
-                "url": proj.get("httpurl"),
-                "https_url": proj.get("httpsurl"),
-                "type": proj.get("type"),
-                "php_version": proj.get("php_version"),
-                "webserver": proj.get("webserver_type"),
-                "database": proj.get("dbinfo", {}).get("type") if isinstance(proj.get("dbinfo"), dict) else None,
-                "nodejs_version": proj.get("nodejs_version"),
-                "mutagen_enabled": proj.get("mutagen_enabled", False),
-            })
+            projects.append(
+                {
+                    "name": proj.get("name"),
+                    "status": proj.get("status"),
+                    "url": proj.get("httpurl"),
+                    "https_url": proj.get("httpsurl"),
+                    "type": proj.get("type"),
+                    "php_version": proj.get("php_version"),
+                    "webserver": proj.get("webserver_type"),
+                    "database": (
+                        proj.get("dbinfo", {}).get("type")
+                        if isinstance(proj.get("dbinfo"), dict)
+                        else None
+                    ),
+                    "nodejs_version": proj.get("nodejs_version"),
+                    "mutagen_enabled": proj.get("mutagen_enabled", False),
+                }
+            )
 
         return {
             "installed": True,
             "projects": projects,
             "count": len(projects),
-            "running": sum(1 for p in projects if p.get("status") == "running")
+            "running": sum(1 for p in projects if p.get("status") == "running"),
         }
     except json.JSONDecodeError as e:
         return {"error": f"Failed to parse DDEV output: {e}", "installed": True}
@@ -158,34 +159,36 @@ def get_ddev_services() -> dict:
 
         # Core services
         if raw.get("status") == "running":
-            services.append({
-                "name": "web",
-                "type": "webserver",
-                "status": "running",
-                "ports": f"{raw.get('router_http_port', 80)}, {raw.get('router_https_port', 443)}"
-            })
-            services.append({
-                "name": "db",
-                "type": "database",
-                "status": "running",
-                "engine": raw.get("database", {}).get("type")
-            })
+            services.append(
+                {
+                    "name": "web",
+                    "type": "webserver",
+                    "status": "running",
+                    "ports": f"{raw.get('router_http_port', 80)}, {raw.get('router_https_port', 443)}",
+                }
+            )
+            services.append(
+                {
+                    "name": "db",
+                    "type": "database",
+                    "status": "running",
+                    "engine": raw.get("database", {}).get("type"),
+                }
+            )
 
         # Additional services from docker-compose files
         extra_services = raw.get("extra_services", [])
         for svc in extra_services:
-            services.append({
-                "name": svc.get("name"),
-                "type": "custom",
-                "status": svc.get("status", "unknown"),
-                "image": svc.get("image")
-            })
+            services.append(
+                {
+                    "name": svc.get("name"),
+                    "type": "custom",
+                    "status": svc.get("status", "unknown"),
+                    "image": svc.get("image"),
+                }
+            )
 
-        return {
-            "project": raw.get("name"),
-            "services": services,
-            "count": len(services)
-        }
+        return {"project": raw.get("name"), "services": services, "count": len(services)}
     except json.JSONDecodeError as e:
         return {"error": f"Failed to parse services: {e}"}
 
@@ -209,10 +212,15 @@ def main():
     elif command == "installed":
         print(json.dumps({"installed": is_ddev_installed()}, indent=2))
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["status", "config", "services", "installed"]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": ["status", "config", "services", "installed"],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":

@@ -23,12 +23,7 @@ def is_docker_running() -> bool:
     if not is_docker_installed():
         return False
     try:
-        result = subprocess.run(
-            ["docker", "info"],
-            capture_output=True,
-            text=True,
-            timeout=10
-        )
+        result = subprocess.run(["docker", "info"], capture_output=True, text=True, timeout=10)
         return result.returncode == 0
     except (subprocess.TimeoutExpired, Exception):
         return False
@@ -46,12 +41,7 @@ def run_docker_command(args: list[str], timeout: int = 30) -> tuple[bool, str, s
         Tuple of (success, stdout, stderr)
     """
     try:
-        result = subprocess.run(
-            ["docker"] + args,
-            capture_output=True,
-            text=True,
-            timeout=timeout
-        )
+        result = subprocess.run(["docker"] + args, capture_output=True, text=True, timeout=timeout)
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return False, "", "Command timed out"
@@ -74,38 +64,37 @@ def get_docker_status() -> dict:
     if not is_docker_running():
         return {"error": "Docker daemon is not running", "installed": True, "running": False}
 
-    success, stdout, stderr = run_docker_command([
-        "ps", "--format", "{{json .}}"
-    ])
+    success, stdout, stderr = run_docker_command(["ps", "--format", "{{json .}}"])
 
     if not success:
-        return {"error": stderr or "Failed to get Docker status", "installed": True, "running": True}
+        return {
+            "error": stderr or "Failed to get Docker status",
+            "installed": True,
+            "running": True,
+        }
 
     containers = []
-    for line in stdout.strip().split('\n'):
+    for line in stdout.strip().split("\n"):
         if not line:
             continue
         try:
             c = json.loads(line)
-            containers.append({
-                "id": c.get("ID"),
-                "name": c.get("Names"),
-                "image": c.get("Image"),
-                "status": c.get("Status"),
-                "state": c.get("State"),
-                "ports": c.get("Ports"),
-                "created": c.get("CreatedAt"),
-                "networks": c.get("Networks"),
-            })
+            containers.append(
+                {
+                    "id": c.get("ID"),
+                    "name": c.get("Names"),
+                    "image": c.get("Image"),
+                    "status": c.get("Status"),
+                    "state": c.get("State"),
+                    "ports": c.get("Ports"),
+                    "created": c.get("CreatedAt"),
+                    "networks": c.get("Networks"),
+                }
+            )
         except json.JSONDecodeError:
             continue
 
-    return {
-        "installed": True,
-        "running": True,
-        "containers": containers,
-        "count": len(containers)
-    }
+    return {"installed": True, "running": True, "containers": containers, "count": len(containers)}
 
 
 def get_all_containers(include_stopped: bool = True) -> dict:
@@ -134,19 +123,21 @@ def get_all_containers(include_stopped: bool = True) -> dict:
         return {"error": stderr or "Failed to list containers"}
 
     containers = []
-    for line in stdout.strip().split('\n'):
+    for line in stdout.strip().split("\n"):
         if not line:
             continue
         try:
             c = json.loads(line)
-            containers.append({
-                "id": c.get("ID"),
-                "name": c.get("Names"),
-                "image": c.get("Image"),
-                "status": c.get("Status"),
-                "state": c.get("State"),
-                "ports": c.get("Ports"),
-            })
+            containers.append(
+                {
+                    "id": c.get("ID"),
+                    "name": c.get("Names"),
+                    "image": c.get("Image"),
+                    "status": c.get("Status"),
+                    "state": c.get("State"),
+                    "ports": c.get("Ports"),
+                }
+            )
         except json.JSONDecodeError:
             continue
 
@@ -157,7 +148,7 @@ def get_all_containers(include_stopped: bool = True) -> dict:
         "containers": containers,
         "total": len(containers),
         "running": running,
-        "stopped": stopped
+        "stopped": stopped,
     }
 
 
@@ -196,16 +187,15 @@ def get_compose_status(project_name: Optional[str] = None) -> dict:
 
         result = []
         for proj in projects:
-            result.append({
-                "name": proj.get("Name"),
-                "status": proj.get("Status"),
-                "config_files": proj.get("ConfigFiles"),
-            })
+            result.append(
+                {
+                    "name": proj.get("Name"),
+                    "status": proj.get("Status"),
+                    "config_files": proj.get("ConfigFiles"),
+                }
+            )
 
-        return {
-            "projects": result,
-            "count": len(result)
-        }
+        return {"projects": result, "count": len(result)}
     except json.JSONDecodeError as e:
         return {"error": f"Failed to parse compose output: {e}"}
 
@@ -237,25 +227,24 @@ def get_docker_images(filter_dangling: bool = False) -> dict:
 
     images = []
     total_size = 0
-    for line in stdout.strip().split('\n'):
+    for line in stdout.strip().split("\n"):
         if not line:
             continue
         try:
             img = json.loads(line)
-            images.append({
-                "id": img.get("ID"),
-                "repository": img.get("Repository"),
-                "tag": img.get("Tag"),
-                "size": img.get("Size"),
-                "created": img.get("CreatedAt"),
-            })
+            images.append(
+                {
+                    "id": img.get("ID"),
+                    "repository": img.get("Repository"),
+                    "tag": img.get("Tag"),
+                    "size": img.get("Size"),
+                    "created": img.get("CreatedAt"),
+                }
+            )
         except json.JSONDecodeError:
             continue
 
-    return {
-        "images": images,
-        "count": len(images)
-    }
+    return {"images": images, "count": len(images)}
 
 
 def get_docker_networks() -> dict:
@@ -271,32 +260,29 @@ def get_docker_networks() -> dict:
     if not is_docker_running():
         return {"error": "Docker daemon is not running", "installed": True, "running": False}
 
-    success, stdout, stderr = run_docker_command([
-        "network", "ls", "--format", "{{json .}}"
-    ])
+    success, stdout, stderr = run_docker_command(["network", "ls", "--format", "{{json .}}"])
 
     if not success:
         return {"error": stderr or "Failed to list networks"}
 
     networks = []
-    for line in stdout.strip().split('\n'):
+    for line in stdout.strip().split("\n"):
         if not line:
             continue
         try:
             net = json.loads(line)
-            networks.append({
-                "id": net.get("ID"),
-                "name": net.get("Name"),
-                "driver": net.get("Driver"),
-                "scope": net.get("Scope"),
-            })
+            networks.append(
+                {
+                    "id": net.get("ID"),
+                    "name": net.get("Name"),
+                    "driver": net.get("Driver"),
+                    "scope": net.get("Scope"),
+                }
+            )
         except json.JSONDecodeError:
             continue
 
-    return {
-        "networks": networks,
-        "count": len(networks)
-    }
+    return {"networks": networks, "count": len(networks)}
 
 
 def get_docker_volumes() -> dict:
@@ -312,31 +298,28 @@ def get_docker_volumes() -> dict:
     if not is_docker_running():
         return {"error": "Docker daemon is not running", "installed": True, "running": False}
 
-    success, stdout, stderr = run_docker_command([
-        "volume", "ls", "--format", "{{json .}}"
-    ])
+    success, stdout, stderr = run_docker_command(["volume", "ls", "--format", "{{json .}}"])
 
     if not success:
         return {"error": stderr or "Failed to list volumes"}
 
     volumes = []
-    for line in stdout.strip().split('\n'):
+    for line in stdout.strip().split("\n"):
         if not line:
             continue
         try:
             vol = json.loads(line)
-            volumes.append({
-                "name": vol.get("Name"),
-                "driver": vol.get("Driver"),
-                "mountpoint": vol.get("Mountpoint"),
-            })
+            volumes.append(
+                {
+                    "name": vol.get("Name"),
+                    "driver": vol.get("Driver"),
+                    "mountpoint": vol.get("Mountpoint"),
+                }
+            )
         except json.JSONDecodeError:
             continue
 
-    return {
-        "volumes": volumes,
-        "count": len(volumes)
-    }
+    return {"volumes": volumes, "count": len(volumes)}
 
 
 def main():
@@ -354,7 +337,9 @@ def main():
         include_stopped = "--all" in sys.argv or "-a" in sys.argv
         print(json.dumps(get_all_containers(include_stopped), indent=2))
     elif command == "compose":
-        project_name = sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith("-") else None
+        project_name = (
+            sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith("-") else None
+        )
         print(json.dumps(get_compose_status(project_name), indent=2))
     elif command == "images":
         dangling = "--dangling" in sys.argv
@@ -364,15 +349,29 @@ def main():
     elif command == "volumes":
         print(json.dumps(get_docker_volumes(), indent=2))
     elif command == "installed":
-        print(json.dumps({
-            "installed": is_docker_installed(),
-            "running": is_docker_running()
-        }, indent=2))
+        print(
+            json.dumps(
+                {"installed": is_docker_installed(), "running": is_docker_running()}, indent=2
+            )
+        )
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["status", "containers", "compose", "images", "networks", "volumes", "installed"]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": [
+                        "status",
+                        "containers",
+                        "compose",
+                        "images",
+                        "networks",
+                        "volumes",
+                        "installed",
+                    ],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":

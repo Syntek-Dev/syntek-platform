@@ -35,7 +35,13 @@ PM_TOOLS = {
     "jira": {
         "name": "Jira",
         "config_files": [".jira.json", "jira.config.json", ".jirarc", "atlassian.json"],
-        "env_vars": ["JIRA_API_TOKEN", "JIRA_HOST", "JIRA_EMAIL", "JIRA_PROJECT_KEY", "ATLASSIAN_TOKEN"],
+        "env_vars": [
+            "JIRA_API_TOKEN",
+            "JIRA_HOST",
+            "JIRA_EMAIL",
+            "JIRA_PROJECT_KEY",
+            "ATLASSIAN_TOKEN",
+        ],
         "api_type": "REST",
         "tier": 1,
         "docs_url": "https://developer.atlassian.com/cloud/jira/platform/rest/v3/",
@@ -90,7 +96,12 @@ PM_TOOLS = {
     },
     "shortcut": {
         "name": "Shortcut",
-        "config_files": [".shortcut.json", "shortcut.config.json", ".shortcutrc", ".clubhouse.json"],
+        "config_files": [
+            ".shortcut.json",
+            "shortcut.config.json",
+            ".shortcutrc",
+            ".clubhouse.json",
+        ],
         "env_vars": ["SHORTCUT_API_TOKEN", "CLUBHOUSE_TOKEN", "SHORTCUT_WORKSPACE_ID"],
         "api_type": "REST",
         "tier": 3,
@@ -146,11 +157,11 @@ def load_env_file(env_path: Path) -> dict:
         return env_vars
 
     try:
-        with open(env_path, 'r') as f:
+        with open(env_path, "r") as f:
             for line in f:
                 line = line.strip()
-                if line and not line.startswith('#') and '=' in line:
-                    key, _, value = line.partition('=')
+                if line and not line.startswith("#") and "=" in line:
+                    key, _, value = line.partition("=")
                     key = key.strip()
                     value = value.strip().strip('"').strip("'")
                     env_vars[key] = value
@@ -238,7 +249,7 @@ def detect_pm_tool(directory: Optional[str] = None) -> dict:
     generic_config = None
     if has_generic_config:
         try:
-            with open(generic_config_path, 'r') as f:
+            with open(generic_config_path, "r") as f:
                 generic_config = json.load(f)
         except Exception:
             pass
@@ -314,12 +325,14 @@ def list_tools(tier: Optional[int] = None) -> dict:
 
     for key, config in PM_TOOLS.items():
         if tier is None or config["tier"] == tier:
-            tools.append({
-                "key": key,
-                "name": config["name"],
-                "tier": config["tier"],
-                "api_type": config["api_type"],
-            })
+            tools.append(
+                {
+                    "key": key,
+                    "name": config["name"],
+                    "tier": config["tier"],
+                    "api_type": config["api_type"],
+                }
+            )
 
     # Sort by tier, then by name
     tools.sort(key=lambda x: (x["tier"], x["name"]))
@@ -353,9 +366,19 @@ def check_github_integration(directory: Optional[str] = None) -> dict:
         }
 
     pm_keywords = [
-        "pm-sync", "project-sync", "issue-sync",
-        "clickup", "linear", "jira", "monday", "asana", "trello", "notion",
-        "ticket", "story", "sprint",
+        "pm-sync",
+        "project-sync",
+        "issue-sync",
+        "clickup",
+        "linear",
+        "jira",
+        "monday",
+        "asana",
+        "trello",
+        "notion",
+        "ticket",
+        "story",
+        "sprint",
     ]
 
     pm_workflows = []
@@ -365,10 +388,12 @@ def check_github_integration(directory: Optional[str] = None) -> dict:
             content = workflow_file.read_text().lower()
             matched_keywords = [kw for kw in pm_keywords if kw in content]
             if matched_keywords:
-                pm_workflows.append({
-                    "file": workflow_file.name,
-                    "keywords": matched_keywords,
-                })
+                pm_workflows.append(
+                    {
+                        "file": workflow_file.name,
+                        "keywords": matched_keywords,
+                    }
+                )
         except Exception:
             pass
 
@@ -377,10 +402,12 @@ def check_github_integration(directory: Optional[str] = None) -> dict:
             content = workflow_file.read_text().lower()
             matched_keywords = [kw for kw in pm_keywords if kw in content]
             if matched_keywords:
-                pm_workflows.append({
-                    "file": workflow_file.name,
-                    "keywords": matched_keywords,
-                })
+                pm_workflows.append(
+                    {
+                        "file": workflow_file.name,
+                        "keywords": matched_keywords,
+                    }
+                )
         except Exception:
             pass
 
@@ -412,9 +439,9 @@ def get_status() -> dict:
         "has_github_integration": github_integration["has_pm_integration"],
         "github_workflows": [w["file"] for w in github_integration["pm_workflows"]],
         "setup_complete": (
-            detection["primary"] is not None and
-            detection["has_config"] and
-            detection["has_env_vars"]
+            detection["primary"] is not None
+            and detection["has_config"]
+            and detection["has_env_vars"]
         ),
         "recommendations": _get_recommendations(detection, github_integration),
     }
@@ -425,38 +452,48 @@ def _get_recommendations(detection: dict, github_integration: dict) -> list:
     recommendations = []
 
     if not detection["detected"]:
-        recommendations.append({
-            "priority": "high",
-            "message": "No PM tool detected. Run /agent:pm-setup to configure a PM tool.",
-        })
+        recommendations.append(
+            {
+                "priority": "high",
+                "message": "No PM tool detected. Run /agent:pm-setup to configure a PM tool.",
+            }
+        )
         return recommendations
 
     primary = detection["detected"][0] if detection["detected"] else None
 
     if primary and not primary["config_found"]:
-        recommendations.append({
-            "priority": "medium",
-            "message": f"Create a config file for {primary['name']}: {primary['key']}.config.json",
-        })
+        recommendations.append(
+            {
+                "priority": "medium",
+                "message": f"Create a config file for {primary['name']}: {primary['key']}.config.json",
+            }
+        )
 
     if primary and primary["env_vars_missing"]:
         missing = ", ".join(primary["env_vars_missing"][:3])
-        recommendations.append({
-            "priority": "high",
-            "message": f"Set missing environment variables: {missing}",
-        })
+        recommendations.append(
+            {
+                "priority": "high",
+                "message": f"Set missing environment variables: {missing}",
+            }
+        )
 
     if not detection["generic_config"]:
-        recommendations.append({
-            "priority": "low",
-            "message": "Create config/pm-config.json for status mapping and sync settings.",
-        })
+        recommendations.append(
+            {
+                "priority": "low",
+                "message": "Create config/pm-config.json for status mapping and sync settings.",
+            }
+        )
 
     if not github_integration["has_pm_integration"]:
-        recommendations.append({
-            "priority": "medium",
-            "message": "Add GitHub Actions workflow for PM sync: .github/workflows/pm-sync.yml",
-        })
+        recommendations.append(
+            {
+                "priority": "medium",
+                "message": "Add GitHub Actions workflow for PM sync: .github/workflows/pm-sync.yml",
+            }
+        )
 
     return recommendations
 
@@ -483,7 +520,11 @@ def main():
 
     elif command == "info":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "Tool name required. Usage: pm-tool.py info <tool_name>"}, indent=2))
+            print(
+                json.dumps(
+                    {"error": "Tool name required. Usage: pm-tool.py info <tool_name>"}, indent=2
+                )
+            )
             return
         tool_key = sys.argv[2]
         print(json.dumps(get_tool_info(tool_key), indent=2))
@@ -493,18 +534,23 @@ def main():
         print(json.dumps(check_github_integration(directory), indent=2))
 
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["detect", "status", "list", "info", "github"],
-            "examples": [
-                "pm-tool.py detect",
-                "pm-tool.py status",
-                "pm-tool.py list",
-                "pm-tool.py list 1",
-                "pm-tool.py info clickup",
-                "pm-tool.py github",
-            ]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": ["detect", "status", "list", "info", "github"],
+                    "examples": [
+                        "pm-tool.py detect",
+                        "pm-tool.py status",
+                        "pm-tool.py list",
+                        "pm-tool.py list 1",
+                        "pm-tool.py info clickup",
+                        "pm-tool.py github",
+                    ],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":

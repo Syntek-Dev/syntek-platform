@@ -67,6 +67,7 @@ def detect_language(directory: Optional[str] = None) -> dict:
     if primary == "php" and (search_dir / "composer.json").exists():
         try:
             import json as json_mod
+
             with open(search_dir / "composer.json") as f:
                 data = json_mod.load(f)
                 version = data.get("require", {}).get("php")
@@ -293,10 +294,12 @@ def detect_framework(directory: Optional[str] = None) -> dict:
                     pass
 
         if confidence > 0:
-            detected.append({
-                "name": framework,
-                "confidence": confidence,
-            })
+            detected.append(
+                {
+                    "name": framework,
+                    "confidence": confidence,
+                }
+            )
 
     # Sort by confidence
     detected.sort(key=lambda x: x["confidence"], reverse=True)
@@ -305,7 +308,18 @@ def detect_framework(directory: Optional[str] = None) -> dict:
     all_detected = [d["name"] for d in detected]
 
     # Determine if React-based
-    is_react_based = any(f in all_detected for f in ["react", "react-native", "expo", "nextjs", "gatsby", "create-react-app", "vite-react"])
+    is_react_based = any(
+        f in all_detected
+        for f in [
+            "react",
+            "react-native",
+            "expo",
+            "nextjs",
+            "gatsby",
+            "create-react-app",
+            "vite-react",
+        ]
+    )
 
     return {
         "primary": primary,
@@ -338,7 +352,12 @@ def detect_container_type(directory: Optional[str] = None) -> dict:
             "type": "ddev",
         },
         "docker_compose": {
-            "indicators": ["docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"],
+            "indicators": [
+                "docker-compose.yml",
+                "docker-compose.yaml",
+                "compose.yml",
+                "compose.yaml",
+            ],
             "type": "docker-compose",
         },
         "docker": {
@@ -402,18 +421,49 @@ def analyse_structure(directory: Optional[str] = None) -> dict:
 
     # Common directories to look for
     common_dirs = [
-        "src", "app", "lib", "public", "static", "assets",
-        "components", "pages", "views", "templates", "screens",
-        "tests", "test", "spec", "__tests__", "e2e",
-        "config", "configs", "settings",
-        "docs", "documentation",
-        "scripts", "bin", "tools",
-        "api", "routes", "controllers",
-        "models", "entities", "schemas",
-        "services", "utils", "helpers", "hooks",
-        ".github", ".gitlab", ".circleci",
-        "node_modules", "vendor", "venv", ".venv",
-        "ios", "android",  # React Native / mobile
+        "src",
+        "app",
+        "lib",
+        "public",
+        "static",
+        "assets",
+        "components",
+        "pages",
+        "views",
+        "templates",
+        "screens",
+        "tests",
+        "test",
+        "spec",
+        "__tests__",
+        "e2e",
+        "config",
+        "configs",
+        "settings",
+        "docs",
+        "documentation",
+        "scripts",
+        "bin",
+        "tools",
+        "api",
+        "routes",
+        "controllers",
+        "models",
+        "entities",
+        "schemas",
+        "services",
+        "utils",
+        "helpers",
+        "hooks",
+        ".github",
+        ".gitlab",
+        ".circleci",
+        "node_modules",
+        "vendor",
+        "venv",
+        ".venv",
+        "ios",
+        "android",  # React Native / mobile
     ]
 
     found_dirs = []
@@ -426,19 +476,31 @@ def analyse_structure(directory: Optional[str] = None) -> dict:
             except PermissionError:
                 item_count = -1
 
-            found_dirs.append({
-                "name": dir_name,
-                "path": str(path),
-                "items": item_count,
-            })
+            found_dirs.append(
+                {
+                    "name": dir_name,
+                    "path": str(path),
+                    "items": item_count,
+                }
+            )
 
     # Find root-level config files
     config_files = []
     config_patterns = [
-        "*.json", "*.yaml", "*.yml", "*.toml", "*.ini",
-        "*.config.js", "*.config.ts", "*.config.mjs",
-        ".*rc", ".env*", "metro.config.*",
-        "Makefile", "Dockerfile*", "docker-compose*",
+        "*.json",
+        "*.yaml",
+        "*.yml",
+        "*.toml",
+        "*.ini",
+        "*.config.js",
+        "*.config.ts",
+        "*.config.mjs",
+        ".*rc",
+        ".env*",
+        "metro.config.*",
+        "Makefile",
+        "Dockerfile*",
+        "docker-compose*",
     ]
 
     for pattern in config_patterns:
@@ -483,6 +545,7 @@ def get_project_info(directory: Optional[str] = None) -> dict:
                 content = pkg_path.read_text()
                 if pkg_file.endswith(".json"):
                     import json as json_mod
+
                     data = json_mod.loads(content)
                     if "name" in data:
                         project_name = data["name"]
@@ -492,6 +555,7 @@ def get_project_info(directory: Optional[str] = None) -> dict:
                         break
                 elif pkg_file == "Cargo.toml" or pkg_file == "pyproject.toml":
                     import re
+
                     match = re.search(r'name\s*=\s*["\']([^"\']+)["\']', content)
                     if match:
                         project_name = match.group(1)
@@ -546,10 +610,21 @@ def main():
         print(json.dumps(analyse_structure(directory), indent=2))
 
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["info", "language", "framework", "container", "structure"]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": [
+                        "info",
+                        "language",
+                        "framework",
+                        "container",
+                        "structure",
+                    ],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":

@@ -85,17 +85,11 @@ def find_chrome_binary() -> Dict[str, Any]:
                 if os_type == "windows":
                     # Windows version detection
                     result = subprocess.run(
-                        [expanded_path, "--version"],
-                        capture_output=True,
-                        text=True,
-                        timeout=5
+                        [expanded_path, "--version"], capture_output=True, text=True, timeout=5
                     )
                 else:
                     result = subprocess.run(
-                        [expanded_path, "--version"],
-                        capture_output=True,
-                        text=True,
-                        timeout=5
+                        [expanded_path, "--version"], capture_output=True, text=True, timeout=5
                     )
                 if result.returncode == 0:
                     binary_info["version"] = result.stdout.strip()
@@ -134,10 +128,7 @@ def find_chrome_binary() -> Dict[str, Any]:
                 }
                 try:
                     result = subprocess.run(
-                        [which_path, "--version"],
-                        capture_output=True,
-                        text=True,
-                        timeout=5
+                        [which_path, "--version"], capture_output=True, text=True, timeout=5
                     )
                     if result.returncode == 0:
                         binary_info["version"] = result.stdout.strip()
@@ -246,7 +237,9 @@ def check_claude_chrome_extension() -> Dict[str, Any]:
 
     return {
         "chrome_installed": chrome_info.get("found", False),
-        "chrome_path": chrome_info.get("primary", {}).get("path") if chrome_info.get("found") else None,
+        "chrome_path": (
+            chrome_info.get("primary", {}).get("path") if chrome_info.get("found") else None
+        ),
         "requirements": {
             "google_chrome": chrome_info.get("found", False),
             "extension_note": "Install 'Claude in Chrome' extension (v1.0.36+) from Chrome Web Store",
@@ -332,10 +325,15 @@ def main():
         print_help()
 
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["detect", "env", "write", "extension", "status", "help"],
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": ["detect", "env", "write", "extension", "status", "help"],
+                },
+                indent=2,
+            )
+        )
         sys.exit(1)
 
 

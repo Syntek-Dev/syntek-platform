@@ -153,7 +153,11 @@ def analyse_agent(agent: str, days: int = 14) -> dict:
     positive_comments = [f.get("comment") for f in positive_fb if f.get("comment")]
     negative_comments = [f.get("comment") for f in negative_fb if f.get("comment")]
 
-    satisfaction_rate = len(positive_fb) / (len(positive_fb) + len(negative_fb)) if (positive_fb or negative_fb) else None
+    satisfaction_rate = (
+        len(positive_fb) / (len(positive_fb) + len(negative_fb))
+        if (positive_fb or negative_fb)
+        else None
+    )
 
     # Duration analysis
     durations = [r.get("duration_seconds", 0) for r in runs if r.get("duration_seconds")]
@@ -179,7 +183,8 @@ def analyse_agent(agent: str, days: int = 14) -> dict:
     return {
         "agent": agent,
         "period_days": days,
-        "ready_for_optimisation": len(patterns["failure_factors"]) > 0 or len(negative_comments) >= 3,
+        "ready_for_optimisation": len(patterns["failure_factors"]) > 0
+        or len(negative_comments) >= 3,
         "metrics": {
             "total_runs": total_runs,
             "completed": completed,
@@ -277,13 +282,15 @@ def list_proposals(status: str = "pending") -> dict:
     for prop_file in sorted(proposals_dir.glob("*.json"), reverse=True):
         with open(prop_file, "r") as f:
             proposal = json.load(f)
-        proposals.append({
-            "proposal_id": proposal.get("proposal_id"),
-            "agent": proposal.get("agent"),
-            "timestamp": proposal.get("timestamp"),
-            "confidence_score": proposal.get("confidence_score"),
-            "changes_count": len(proposal.get("changes", [])),
-        })
+        proposals.append(
+            {
+                "proposal_id": proposal.get("proposal_id"),
+                "agent": proposal.get("agent"),
+                "timestamp": proposal.get("timestamp"),
+                "confidence_score": proposal.get("confidence_score"),
+                "changes_count": len(proposal.get("changes", [])),
+            }
+        )
 
     return {"proposals": proposals, "count": len(proposals), "status": status}
 
@@ -518,10 +525,24 @@ def main():
         print(json.dumps(rollback_agent(sys.argv[2]), indent=2))
 
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["status", "analyse", "context", "list", "get", "apply", "reject", "rollback"]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": [
+                        "status",
+                        "analyse",
+                        "context",
+                        "list",
+                        "get",
+                        "apply",
+                        "reject",
+                        "rollback",
+                    ],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":

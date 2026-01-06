@@ -230,8 +230,12 @@ def analyse_feedback(agent: Optional[str] = None, days: int = 30) -> dict:
             by_agent[agent_name][rating] += 1
 
     # Extract comments
-    positive_comments = [fb.get("comment") for fb in feedback if fb.get("rating") == "good" and fb.get("comment")]
-    negative_comments = [fb.get("comment") for fb in feedback if fb.get("rating") == "bad" and fb.get("comment")]
+    positive_comments = [
+        fb.get("comment") for fb in feedback if fb.get("rating") == "good" and fb.get("comment")
+    ]
+    negative_comments = [
+        fb.get("comment") for fb in feedback if fb.get("rating") == "bad" and fb.get("comment")
+    ]
 
     return {
         "agent": agent or "all",
@@ -381,10 +385,15 @@ def main():
             print(json.dumps(result, indent=2))
 
     else:
-        print(json.dumps({
-            "error": f"Unknown command: {command}",
-            "available_commands": ["status", "record", "query", "analyse", "prompt"]
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "error": f"Unknown command: {command}",
+                    "available_commands": ["status", "record", "query", "analyse", "prompt"],
+                },
+                indent=2,
+            )
+        )
 
 
 if __name__ == "__main__":
