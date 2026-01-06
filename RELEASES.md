@@ -1,7 +1,7 @@
 # Release Notes
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 06/01/2026
+**Version**: 0.3.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -16,6 +16,107 @@
 ---
 
 ## Latest Release
+
+### Version 0.3.0 - 6 January 2026
+
+This release brings powerful project management integration, comprehensive platform architecture planning, and automated workflow tools that make development faster and more organised.
+
+#### What's New
+
+**Complete Platform Architecture Blueprint**
+
+We've documented the entire vision for the Syntek CMS Platform:
+
+- **16-Phase Development Roadmap**: Clear path from Phase 1 (Core Foundation) through Phase 16 (Platform Upgrade System)
+- **Multi-Platform Design**: One backend powering web applications, mobile apps, and more
+- **9 Ready-to-Use Templates**: E-commerce, Blog, Corporate, Church, Charity, SaaS, Sole Trader, Estate Agent, and Single Page sites
+- **Smart Design System**: Consistent branding across all platforms with database-driven design tokens
+- **Content Branching**: Git-like workflow for managing content changes across environments
+
+This architecture plan serves as the single source of truth for all development work, ensuring everyone understands how the pieces fit together.
+
+**Sprint and Story Management**
+
+Stay organised with integrated sprint planning:
+
+- **Sprint Documentation**: Track sprint goals, timelines, and progress in `docs/SPRINTS/`
+- **User Story Tracking**: Detailed user stories with acceptance criteria in `docs/STORIES/`
+- **ClickUp Integration**: Automatic synchronisation between local documentation and ClickUp tasks
+- **Progress Visibility**: See exactly what's being worked on and what's completed
+
+**Enhanced ClickUp Integration**
+
+Work smarter with improved project management automation:
+
+- **Automatic Sprint Sync**: Sprints defined locally sync automatically to ClickUp
+- **User Story Automation**: Create and update user stories without manual ClickUp data entry
+- **Branch-to-Task Linking**: Git branches automatically link to ClickUp tasks
+- **Status Updates**: Changes in one system reflect in the other
+- **Custom Fields**: Story points, sprint assignments, and priorities sync automatically
+
+**Git Workflow Automation**
+
+New Claude plugin makes Git operations effortless:
+
+- **Smart Branch Creation**: Automatically create branches following project conventions (us123/feature-name)
+- **Environment Management**: Handle testing → dev → staging → main workflow with ease
+- **Version Management**: Automatic version number updates across all files
+- **PR Templates**: Generate pull request templates tailored to each workflow stage
+- **Commit Validation**: Ensure commit messages follow project standards
+
+**Simplified Configuration**
+
+Easier setup with environment-based configuration:
+
+- **No Hardcoded IDs**: All ClickUp workspace, space, and folder IDs now use environment variables
+- **Better Security**: Sensitive configuration stays in `.env` files, not in git
+- **Easier Setup**: Copy `.env.example`, fill in your values, and you're ready to go
+
+#### Why This Matters
+
+**For Developers:**
+
+- **Less Manual Work**: Automated synchronisation between tools saves hours each week
+- **Clear Direction**: Architecture plan shows exactly what to build and when
+- **Faster Workflows**: Git plugin handles repetitive tasks automatically
+- **Better Organisation**: Sprint and story tracking keeps work organised
+
+**For Project Managers:**
+
+- **Better Visibility**: See progress in ClickUp without developers manually updating tasks
+- **Clearer Planning**: Sprint documentation shows exactly what's being delivered
+- **Reduced Overhead**: Automatic sync eliminates double-entry and keeps data consistent
+- **Long-term Vision**: 16-phase architecture plan provides strategic roadmap
+
+**For Teams:**
+
+- **Single Source of Truth**: Architecture documentation ensures everyone understands the system
+- **Consistent Workflows**: Standardised Git and project management processes
+- **Reduced Friction**: Automated tools mean less time on administration, more time building
+- **Better Communication**: Documentation and tracking keep everyone aligned
+
+#### Technical Improvements
+
+Under the hood, this release includes:
+
+- **Enhanced Docker Configurations**: Improved container orchestration across all environments
+- **Updated CI/CD Pipelines**: Better security scanning and code analysis
+- **Code Quality Improvements**: Cleaned up deprecated patterns and unused code
+- **Documentation Standardisation**: All 60+ documentation files follow consistent format
+- **Improved Testing Scripts**: Better coverage reporting and test automation
+
+#### Coming Soon
+
+In our next release, we're working on:
+
+- **Phase 1 Implementation**: Core foundation with authentication, 2FA, and audit logging
+- **Multi-Tenancy System**: Organisation-based data isolation
+- **Initial Django Apps**: User management, organisations, and core functionality
+- **Database Schema**: First database migrations for core models
+
+---
+
+## Previous Releases
 
 ### Version 0.2.0 - 3 January 2026
 

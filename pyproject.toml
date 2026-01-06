@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "backend-template"
-version = "0.2.0"
+version = "0.3.0"
 description = "Django backend with PostgreSQL and GraphQL API"
 readme = "README.md"
 requires-python = ">=3.14"

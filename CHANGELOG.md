@@ -1,7 +1,7 @@
 # Changelog
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 06/01/2026
+**Version**: 0.3.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of Contents
 
 - [Unreleased](#unreleased)
+- [0.3.0 - 06/01/2026](#030---06012026)
 - [0.2.0 - 03/01/2026](#020---03012026)
 - [0.1.0 - 03/01/2026](#010---03012026)
 
@@ -27,6 +28,113 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Nothing yet
+
+---
+
+## [0.3.0] - 06/01/2026
+
+### Added
+
+**Platform Architecture**
+- Comprehensive CMS platform architecture documentation (16-phase development plan)
+- Multi-repository architecture specification (backend, UI library, web, mobile)
+- Design token system architecture
+- Content branching workflow design (git-like for content)
+- 9 site template specifications
+
+**Sprint and User Story Management**
+- Sprint documentation structure in `docs/SPRINTS/`
+- User story documentation structure in `docs/STORIES/`
+- Sprint-to-ClickUp mapping configuration
+- Story-to-ClickUp mapping configuration
+- Integration status tracking documentation
+
+**ClickUp Integration Enhancements**
+- Enhanced ClickUp API client with retry logic and error handling
+- Automated sprint synchronisation script
+- Enhanced user story synchronisation script
+- Custom field mapping (story points, sprint, priority)
+- Branch name to task ID linking automation
+- Commit message to task comment synchronisation
+- Bidirectional status updates
+
+**Git Workflow Plugin**
+- Comprehensive Git workflow management plugin for Claude
+- Automated branch creation following `us###/description` pattern
+- Multi-environment branch strategy management (testing → dev → staging → main)
+- Pre-commit version management integration
+- Pull request template generation
+- Semantic versioning analysis
+- Changelog automation
+- Commit message validation and formatting
+- GitHub CLI integration for PR operations
+
+**Claude Plugins**
+- `git-tool.py` for Git workflow automation
+- `version-tool.py` for version detection
+- `project-tool.py` for project information queries
+
+**Environment Configuration**
+- ClickUp workspace, space, folder, and list ID variables in all `.env.*.example` files
+- Environment variable-based ClickUp configuration (removes hardcoded IDs)
+
+### Changed
+
+**CI/CD and Workflows**
+- Enhanced dependency review workflow with improved security scanning
+- Updated CodeQL configuration for better code analysis
+- Updated CODEOWNERS for new documentation structure
+- Enhanced pull request template with ClickUp integration
+
+**Configuration and Tooling**
+- Updated `pyproject.toml` with new tool configurations
+- Updated `package.json` scripts and dependencies (version 0.3.0)
+- Updated `.python-version` to Python 3.11
+- Updated `.pylintrc` linting rules
+- Updated `.hadolint.yaml` Docker linting configuration
+- Updated `.pre-commit-config.yaml` for new file structure
+- Updated `Makefile` with ClickUp synchronisation targets
+
+**Docker Configuration**
+- Enhanced development service definitions and volume mappings
+- Updated test database configuration
+- Improved staging deployment readiness checks
+- Enhanced production security and performance settings
+
+**Automation Scripts**
+- Enhanced `dev.sh` with new development commands
+- Improved `test.sh` with better test coverage reporting
+- Enhanced `staging.sh` with deployment validation
+- Improved `production.sh` with safety checks and confirmations
+- Updated `.husky/post-merge` for dependency synchronisation
+
+**Documentation**
+- Standardised all markdown file extensions to lowercase `.md` (SETUP-GUIDE.md format)
+- Updated all documentation with platform architecture references
+- Enhanced documentation across all modules (60+ files)
+- Improved cross-referencing between related documents
+- Updated version headers and last modified dates throughout
+
+**Code Quality**
+- Cleaned up Django configuration imports and deprecated patterns
+- Improved password validator documentation
+- Enhanced settings module organisation
+- Removed dead code and unused variables
+
+### Deprecated
+None - All changes are additive.
+
+### Removed
+- Deprecated URL configuration patterns in `config/urls.py`
+- Unused import statements from Django settings
+
+### Fixed
+None - No bug fixes in this release.
+
+### Security
+- Environment variable-based ClickUp configuration prevents ID exposure in git
+- Enhanced pre-commit hooks for new file structure
+- Improved CodeQL analysis configuration for better security scanning
 
 ---
 
