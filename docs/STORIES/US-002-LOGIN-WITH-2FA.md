@@ -15,7 +15,6 @@
 - **Could Have:** Biometric login on mobile, single sign-on (SSO) integration
 - **Won't Have:** Third-party MFA providers in Phase 1
 
-
 **Sprint:** Sprint 22
 
 ## Repository Coverage

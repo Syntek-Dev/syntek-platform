@@ -23,7 +23,9 @@
 
 ## Sprint Goal
 
-Implement the foundation of the Password Manager application using Vaultwarden. This sprint focuses on Vaultwarden integration, password vault interface, password storage/retrieval, SSO integration, and basic password generation capabilities.
+Implement the foundation of the Password Manager application using Vaultwarden. This sprint
+focuses on Vaultwarden integration, password vault interface, password storage/retrieval,
+SSO integration, and basic password generation capabilities.
 
 ---
 

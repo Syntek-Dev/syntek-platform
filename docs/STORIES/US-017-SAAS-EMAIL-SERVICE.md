@@ -15,7 +15,6 @@
 - **Could Have:** Email scheduling, automation rules, advanced analytics
 - **Won't Have:** Complex workflow automation in Phase 8
 
-
 **Sprint:** Sprint 19
 
 ## Repository Coverage
@@ -48,7 +47,7 @@
 **When** an administrator creates an email account
 **Then** they can:
 
-- Specify email address (name@domain.com)
+- Specify email address (<name@domain.com>)
 - Set password with requirements
 - Assign user/role
 - Configure forwarding rules

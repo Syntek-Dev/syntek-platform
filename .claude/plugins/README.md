@@ -10,7 +10,9 @@
 
 ## Overview
 
-This folder contains Python utility tools that agents use to gather information about the development environment. These tools return structured JSON output that agents use to make informed decisions.
+This folder contains Python utility tools that agents use to gather information about the
+development environment. These tools return structured JSON output that agents use to make
+informed decisions.
 
 All tools are executable Python scripts that can be run directly from the command line.
 

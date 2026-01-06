@@ -15,7 +15,6 @@
 - **Could Have:** Video tutorials per step, AI-assisted setup
 - **Won't Have:** One-click deployment in Phase 14
 
-
 **Sprint:** Sprint 28
 
 ## Repository Coverage

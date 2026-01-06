@@ -9,7 +9,9 @@
 
 ## Platform Overview
 
-The Syntek CMS Platform is a comprehensive Django/React/React Native system enabling businesses to build and manage websites and apps with integrated business tools. The platform is being built in 20 user stories covering 15 distinct phases of development.
+The Syntek CMS Platform is a comprehensive Django/React/React Native system enabling businesses
+to build and manage websites and apps with integrated business tools. The platform is being built
+in 20 user stories covering 15 distinct phases of development.
 
 ## Total Effort Estimate
 

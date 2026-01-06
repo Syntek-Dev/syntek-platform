@@ -39,7 +39,8 @@ Automated tests for the Django backend application.
 
 ## Overview
 
-This directory contains the test suite for the backend template project. Tests ensure code quality, prevent regressions, and document expected behavior.
+This directory contains the test suite for the backend template project. Tests ensure code
+quality, prevent regressions, and document expected behavior.
 
 **Tool:** pytest with Django plugin
 **Coverage Target:** 80% or higher

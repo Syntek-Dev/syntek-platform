@@ -15,7 +15,6 @@
 - **Could Have:** Scheduled promotions, branch locking, approval workflows
 - **Won't Have:** Advanced merge strategies in Phase 3
 
-
 **Sprint:** Sprint 10
 
 ## Repository Coverage

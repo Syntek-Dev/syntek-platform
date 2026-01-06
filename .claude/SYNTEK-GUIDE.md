@@ -48,7 +48,8 @@
 
 ## Quick Start
 
-The Syntek Dev Suite provides specialised agents for different development tasks. Each agent has deep expertise in its domain and follows consistent patterns.
+The Syntek Dev Suite provides specialised agents for different development tasks. Each agent has
+deep expertise in its domain and follows consistent patterns.
 
 ### Most Common Commands
 

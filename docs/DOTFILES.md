@@ -144,14 +144,16 @@ Pre-commit hooks that run before each commit:
 
 **Installation:**
 
-Pre-commit hooks are automatically installed inside the Docker container. You do not need to install them locally. They run automatically before each commit inside the container.
+Pre-commit hooks are automatically installed inside the Docker container. You do not need to
+install them locally. They run automatically before each commit inside the container.
 
 ```bash
 # Pre-commit hooks run automatically when committing
 git commit -m "your message"
 ```
 
-**Note:** Do not attempt to install pre-commit locally with `pip install pre-commit`. The Docker container handles all pre-commit hook execution.
+**Note:** Do not attempt to install pre-commit locally with `pip install pre-commit`. The Docker
+container handles all pre-commit hook execution.
 
 ### `.editorconfig`
 
@@ -224,7 +226,8 @@ VS Code workspace settings:
 - 100 character ruler
 - File associations for Django templates
 
-**Note:** All linting and formatting happens inside the Docker container via Makefile commands and pre-commit hooks. Do not configure VS Code to use a local virtual environment.
+**Note:** All linting and formatting happens inside the Docker container via Makefile commands
+and pre-commit hooks. Do not configure VS Code to use a local virtual environment.
 
 ### `.vscode/extensions.json`
 
@@ -354,7 +357,9 @@ direnv configuration file (optional):
 - Historically used for local virtual environment activation
 - **Not required** for this project since development happens in Docker containers
 
-**Note:** This file is kept for teams that use direnv locally for other tools. However, you do not need direnv to develop on this project. The Docker container provides the complete Python environment and dependencies. Simply use the Makefile commands to run tasks inside Docker.
+**Note:** This file is kept for teams that use direnv locally for other tools. However, you do
+not need direnv to develop on this project. The Docker container provides the complete Python
+environment and dependencies. Simply use the Makefile commands to run tasks inside Docker.
 
 ### `.tool-versions`
 
@@ -560,7 +565,8 @@ backend_template/
    make dev
    ```
 
-All Python dependencies, linting, formatting, and pre-commit hooks run automatically inside the Docker container. You do not need to install anything locally except Docker and Docker Compose.
+All Python dependencies, linting, formatting, and pre-commit hooks run automatically inside the
+Docker container. You do not need to install anything locally except Docker and Docker Compose.
 
 ---
 
@@ -613,7 +619,8 @@ make docker-build
 make docker-up
 ```
 
-**Note:** Do not attempt to run `pre-commit autoupdate`, `pre-commit install`, or other pre-commit commands locally. These are handled inside the Docker container automatically.
+**Note:** Do not attempt to run `pre-commit autoupdate`, `pre-commit install`, or other
+pre-commit commands locally. These are handled inside the Docker container automatically.
 
 ### Linting conflicts
 

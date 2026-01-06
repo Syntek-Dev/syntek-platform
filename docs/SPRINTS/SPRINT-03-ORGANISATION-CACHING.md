@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Implement organisation-based multi-tenancy with team management and establish Redis/Valkey caching system for performance optimisation. This sprint creates the organisational structure that isolates customer data and implements caching to support future scalability.
+Implement organisation-based multi-tenancy with team management and establish Redis/Valkey caching
+system for performance optimisation. This sprint creates the organisational structure that isolates
+customer data and implements caching to support future scalability.
 
 ---
 
@@ -23,7 +25,8 @@ Implement organisation-based multi-tenancy with team management and establish Re
 | [US-004](../STORIES/US-004-ORGANISATION-SETUP.md) | Organisation Setup      | 8      | Pending |
 | [US-013](../STORIES/US-013-CACHING-SYSTEM.md)     | Caching System (Part 1) | 3\*    | Pending |
 
-_US-013 split: 3 points for Redis setup and basic caching this sprint, remaining 5 points integrated across Sprints 4-6 as cache strategies evolve_
+_US-013 split: 3 points for Redis setup and basic caching this sprint, remaining 5 points
+integrated across Sprints 4-6 as cache strategies evolve_
 
 ### Should Have (0 points)
 

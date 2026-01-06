@@ -64,7 +64,8 @@ All development happens inside Docker containers. No local Python virtual enviro
 - Git
 - Node.js 24.12.0 (optional, for running frontend tooling outside Docker)
 
-Note: Python, PostgreSQL, and all project dependencies are installed inside Docker containers. You do not need to install them locally.
+Note: Python, PostgreSQL, and all project dependencies are installed inside Docker containers.
+You do not need to install them locally.
 
 ## Quick Start
 
@@ -114,7 +115,9 @@ nano .env.dev  # or use your preferred editor
 
 **Important environment variables to set:**
 
-- `SECRET_KEY`: Generate using `docker compose -f docker/dev/docker-compose.yml exec web python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
+- `SECRET_KEY`: Generate using
+  `docker compose -f docker/dev/docker-compose.yml exec web python -c
+"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
 - `DATABASE_URL`: PostgreSQL connection string (predefined in docker-compose)
 - `DEBUG`: Set to `True` for development
 
@@ -142,9 +145,9 @@ docker compose -f docker/dev/docker-compose.yml exec web python manage.py create
 
 Visit:
 
-- **Django Admin**: http://localhost:8000/admin/
-- **GraphQL Playground**: http://localhost:8000/graphql
-- **Mailpit (Email Simulator)**: http://localhost:8025
+- **Django Admin**: <http://localhost:8000/admin/>
+- **GraphQL Playground**: <http://localhost:8000/graphql>
+- **Mailpit (Email Simulator)**: <http://localhost:8025>
 
 All services are automatically started when you run `make docker-up`.
 
@@ -185,7 +188,8 @@ make test-file FILE=tests/test_models.py
 make test-pattern PATTERN="test_user"
 ```
 
-**Note:** All pytest commands run inside the Docker test container. Do not attempt to run pytest locally - the container provides the correct Python environment, dependencies, and database setup.
+**Note:** All pytest commands run inside the Docker test container. Do not attempt to run pytest
+locally - the container provides the correct Python environment, dependencies, and database setup.
 
 ### Database Migrations
 
@@ -208,7 +212,8 @@ make showmigrations
 make migrate APP=app_name VERSION=migration_name
 ```
 
-**Note:** Do not run `python manage.py` commands locally. Always use the Makefile commands which execute inside the Docker container with the correct database and dependencies.
+**Note:** Do not run `python manage.py` commands locally. Always use the Makefile commands which
+execute inside the Docker container with the correct database and dependencies.
 
 ### Django Shell
 
@@ -440,7 +445,8 @@ make docker-logs
 make db-reset
 ```
 
-**Note:** PostgreSQL runs inside Docker. Do not attempt to use `pg_isready` locally - it won't work since PostgreSQL is not installed on your machine.
+**Note:** PostgreSQL runs inside Docker. Do not attempt to use `pg_isready` locally - it won't
+work since PostgreSQL is not installed on your machine.
 
 ### Migration Conflicts
 
@@ -474,7 +480,9 @@ make docker-logs
 make docker-restart
 ```
 
-**Important:** Do not attempt to activate a virtual environment with `source .venv/bin/activate`. This project uses Docker containers, not local virtual environments. All Python code runs inside the Docker container.
+**Important:** Do not attempt to activate a virtual environment with `source .venv/bin/activate`.
+This project uses Docker containers, not local virtual environments. All Python code runs inside
+the Docker container.
 
 ### Pre-commit Hook Failures
 
@@ -500,7 +508,9 @@ make docker-down
 make docker-up
 ```
 
-**Note:** The Django development server runs inside Docker on port 8000. If you get a "port already in use" error, stop the containers with `make docker-down` and restart them with `make docker-up`. Do not attempt to run `python manage.py runserver` locally.
+**Note:** The Django development server runs inside Docker on port 8000. If you get a "port
+already in use" error, stop the containers with `make docker-down` and restart them with
+`make docker-up`. Do not attempt to run `python manage.py runserver` locally.
 
 ## Environment Variables Reference
 
@@ -517,8 +527,8 @@ make docker-up
 
 ## Additional Resources
 
-- **Django Documentation**: https://docs.djangoproject.com/
-- **GraphQL Documentation**: https://graphql.org/
+- **Django Documentation**: <https://docs.djangoproject.com/>
+- **GraphQL Documentation**: <https://graphql.org/>
 - **Project-specific docs**: See `/docs` directory
 
 ## Getting Help

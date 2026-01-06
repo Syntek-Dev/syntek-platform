@@ -91,7 +91,9 @@
 
 ## Overview
 
-This document describes the CI/CD pipeline implementation for the Django + PostgreSQL + GraphQL backend template. All CI/CD checks run inside Docker containers to ensure complete parity with the local development environment.
+This document describes the CI/CD pipeline implementation for the Django + PostgreSQL + GraphQL
+backend template. All CI/CD checks run inside Docker containers to ensure complete parity with
+the local development environment.
 
 ## Architecture
 

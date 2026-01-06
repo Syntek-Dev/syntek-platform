@@ -15,7 +15,6 @@
 - **Could Have:** Canary deployments, A/B testing deployments
 - **Won't Have:** Multi-region deployments in Phase 15
 
-
 **Sprint:** Sprint 30
 
 ## Repository Coverage

@@ -46,7 +46,7 @@ docker compose -f docker/dev/docker-compose.yml exec web python manage.py create
 
 ## Access Points
 
-- **Web Application:** http://localhost:8000
-- **Admin Panel:** http://localhost:8000/admin
-- **GraphQL Playground:** http://localhost:8000/graphql
-- **Mailpit:** http://localhost:8025
+- **Web Application:** <http://localhost:8000>
+- **Admin Panel:** <http://localhost:8000/admin>
+- **GraphQL Playground:** <http://localhost:8000/graphql>
+- **Mailpit:** <http://localhost:8025>

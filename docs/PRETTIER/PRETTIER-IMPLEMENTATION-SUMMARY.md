@@ -23,7 +23,8 @@
 - **autopep8** - PEP 8 compliance formatter
 - **yapf** - Google's Python formatter
 
-**Conclusion:** For non-Python files (JSON, YAML, Markdown, HTML, CSS, GraphQL), Prettier is the industry standard and best choice.
+**Conclusion:** For non-Python files (JSON, YAML, Markdown, HTML, CSS, GraphQL), Prettier is the
+industry standard and best choice.
 
 ### 2. Best Approach Selected
 
@@ -348,8 +349,8 @@ docs/DEVOPS/README.md
 
 - **Full documentation:** `docs/PRETTIER-SETUP.md`
 - **Quick reference:** `.prettierrc.md`
-- **Prettier docs:** https://prettier.io/docs/
-- **VS Code extension:** https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
+- **Prettier docs:** <https://prettier.io/docs/>
+- **VS Code extension:** <https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode>
 
 ---
 

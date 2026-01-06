@@ -70,7 +70,8 @@
 | Could Have  | 3       | 47 pts       | 18%        | Sprints 18-23                |
 | Won't Have  | 0       | 0 pts        | 0%         | None (all stories scheduled) |
 
-**Note:** All SaaS stories (US-017, US-021, US-022) and large stories (US-019, US-020) have been split across multiple sprints. US-017 was previously in backlog but is now scheduled in Sprints 18-19.
+**Note:** All SaaS stories (US-017, US-021, US-022) and large stories (US-019, US-020) have been split
+across multiple sprints. US-017 was previously in backlog but is now scheduled in Sprints 18-19.
 
 ---
 
@@ -124,7 +125,8 @@ Deployment & Setup Layer (Sprints 27-30):
 
 ### 1. Foundation-First Approach
 
-**Sprints 1-4:** Build the authentication, organisation, GraphQL API, audit logging, and caching infrastructure. This creates a solid foundation for all subsequent work.
+**Sprints 1-4:** Build the authentication, organisation, GraphQL API, audit logging, and caching
+infrastructure. This creates a solid foundation for all subsequent work.
 
 ### 2. Design System Implementation
 
@@ -132,7 +134,8 @@ Deployment & Setup Layer (Sprints 27-30):
 
 ### 3. Content Management Core
 
-**Sprints 7-13:** Build the CMS functionality including page creation, media library, content branching, publication workflow, and template system.
+**Sprints 7-13:** Build the CMS functionality including page creation, media library, content branching,
+publication workflow, and template system.
 
 ### 4. Component Library
 
@@ -174,7 +177,8 @@ Deployment & Setup Layer (Sprints 27-30):
 ### Phase 2: Design & Content Foundation (Sprints 5-13) - 67 points
 
 **Duration:** 18 weeks (4.5 months)
-**Goal:** Build design token system, CMS page creation, media library, content branching, page publication, and template system.
+**Goal:** Build design token system, CMS page creation, media library, content branching,
+page publication, and template system.
 
 **Milestones:**
 
@@ -242,7 +246,8 @@ Deployment & Setup Layer (Sprints 27-30):
 
 ### Dependency Risks
 
-1. **GraphQL API (US-011)** is a dependency for many stories. It must be completed early (Sprint 2) to avoid blocking downstream work.
+1. **GraphQL API (US-011)** is a dependency for many stories. It must be completed early (Sprint 2)
+   to avoid blocking downstream work.
 2. **Organisation Setup (US-004)** blocks most feature development. Prioritised in Sprint 3.
 3. **Design Tokens (US-005)** must be completed before CMS and UI work begins (Sprints 5-6).
 

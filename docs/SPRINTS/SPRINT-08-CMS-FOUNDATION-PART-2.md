@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Complete the CMS page creation system by adding advanced block types, performance optimisation, and polish features. This sprint finalises the content editing experience before adding media library support.
+Complete the CMS page creation system by adding advanced block types, performance optimisation,
+and polish features. This sprint finalises the content editing experience before adding
+media library support.
 
 ---
 

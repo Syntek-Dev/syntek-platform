@@ -10,7 +10,8 @@
 
 ## Sprint Goal
 
-Implement secure environment variable and secrets management system with encryption, versioning, access control, and deployment integration.
+Implement secure environment variable and secrets management system with encryption, versioning,
+access control, and deployment integration.
 
 ---
 

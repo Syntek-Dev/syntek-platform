@@ -23,7 +23,9 @@
 
 ## Sprint Goal
 
-Implement the foundation of the SaaS email service including email account management, SMTP integration, inbox interface, and basic email composition. This sprint focuses on core email functionality with custom domain support and basic email operations.
+Implement the foundation of the SaaS email service including email account management,
+SMTP integration, inbox interface, and basic email composition. This sprint focuses on
+core email functionality with custom domain support and basic email operations.
 
 ---
 

@@ -10,7 +10,10 @@
 
 ## Sprint Goal
 
-Implement two-factor authentication (2FA) for secure login and establish the GraphQL API infrastructure with query depth limiting, complexity analysis, and authentication middleware. This sprint creates critical security features and the API foundation that all future features will depend on.
+Implement two-factor authentication (2FA) for secure login and establish the GraphQL API
+infrastructure with query depth limiting, complexity analysis, and authentication middleware.
+This sprint creates critical security features and the API foundation that all future features
+will depend on.
 
 ---
 

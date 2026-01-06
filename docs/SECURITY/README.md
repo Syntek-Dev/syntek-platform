@@ -25,7 +25,8 @@
 
 ## Overview
 
-This directory contains security documentation for the Django backend template. The implementation follows OWASP best practices and Django security guidelines.
+This directory contains security documentation for the Django backend template. The implementation
+follows OWASP best practices and Django security guidelines.
 
 ## Documents
 

@@ -10,7 +10,8 @@
 
 ## Sprint Goal
 
-Integrate Anthropic Claude AI throughout the platform enabling AI chat, content generation, SEO suggestions, and usage tracking with budget controls.
+Integrate Anthropic Claude AI throughout the platform enabling AI chat, content generation,
+SEO suggestions, and usage tracking with budget controls.
 
 ---
 
@@ -22,7 +23,8 @@ Integrate Anthropic Claude AI throughout the platform enabling AI chat, content 
 | --------------------------------------------- | ----------------------- | ------ | ------- |
 | [US-015](../STORIES/US-015-AI-INTEGRATION.md) | AI Integration (Part 1) | 11     | Pending |
 
-_US-015 split: 11 points for Claude API, chat interface, content generation, and usage tracking this sprint, 2 points for SEO and alt text features in Sprint 25_
+_US-015 split: 11 points for Claude API, chat interface, content generation, and usage tracking
+this sprint, 2 points for SEO and alt text features in Sprint 25_
 
 ---
 

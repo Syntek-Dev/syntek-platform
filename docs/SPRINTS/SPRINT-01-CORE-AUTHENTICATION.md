@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Establish the foundational authentication system enabling users to register, verify their email, and reset forgotten passwords. This sprint creates the core user management infrastructure required for all subsequent features.
+Establish the foundational authentication system enabling users to register, verify their email,
+and reset forgotten passwords. This sprint creates the core user management infrastructure
+required for all subsequent features.
 
 ---
 

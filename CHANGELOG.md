@@ -1,7 +1,7 @@
 # Changelog
 
 **Last Updated**: 06/01/2026
-**Version**: 0.3.0
+**Version**: 0.3.1
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of Contents
 
 - [Unreleased](#unreleased)
+- [0.3.1 - 06/01/2026](#031---06012026)
 - [0.3.0 - 06/01/2026](#030---06012026)
 - [0.2.0 - 03/01/2026](#020---03012026)
 - [0.1.0 - 03/01/2026](#010---03012026)
@@ -27,7 +28,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Nothing yet
+
+---
+
+## [0.3.1] - 06/01/2026
+
+### Added
+
+- Python package lock file (`uv.lock`) for reproducible builds across all environments
+
+### Fixed
+
+- Markdown table alignment in `.claude/CLAUDE.md` (test naming conventions and coverage tables)
+- Extra blank lines in all user story documentation files (`docs/STORIES/*.md`)
+- Blank line consistency in CI workflow review documentation
+- Missing trailing newline in `config/clickup-sprint-mapping.json`
+
+### Changed
+
+- Added clarifying comment in `.gitignore` about `uv.lock` requirement
 
 ---
 
@@ -122,16 +143,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed dead code and unused variables
 
 ### Deprecated
+
 None - All changes are additive.
 
 ### Removed
+
 - Deprecated URL configuration patterns in `config/urls.py`
 - Unused import statements from Django settings
 
 ### Fixed
+
 None - No bug fixes in this release.
 
 ### Security
+
 - Environment variable-based ClickUp configuration prevents ID exposure in git
 - Enhanced pre-commit hooks for new file structure
 - Improved CodeQL analysis configuration for better security scanning
@@ -161,19 +186,24 @@ None - No bug fixes in this release.
 - Consistent version tracking across all project files
 
 ### Changed
+
 - Updated package.json version from 0.1.0 to 0.2.0
 - All markdown files now include standardised metadata headers
 
 ### Deprecated
+
 None - Documentation improvements only.
 
 ### Removed
+
 None - No files removed.
 
 ### Fixed
+
 None - No bug fixes.
 
 ### Security
+
 None - No security changes.
 
 ---
@@ -277,18 +307,23 @@ None - No security changes.
 - Separated development, test, staging, and production settings
 
 ### Changed
+
 None - Initial release.
 
 ### Deprecated
+
 None - Initial release.
 
 ### Removed
+
 None - Initial release.
 
 ### Fixed
+
 None - Initial release.
 
 ### Security
+
 - Implemented JWT authentication for API access
 - Added rate limiting to prevent abuse (100 requests/hour default)
 - Configured security headers (CSP, HSTS, X-Frame-Options)

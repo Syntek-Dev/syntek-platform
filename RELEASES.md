@@ -1,7 +1,7 @@
 # Release Notes
 
 **Last Updated**: 06/01/2026
-**Version**: 0.3.0
+**Version**: 0.3.1
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -17,9 +17,56 @@
 
 ## Latest Release
 
+### Version 0.3.1 - 6 January 2026
+
+This maintenance release focuses on code quality improvements and build reproducibility enhancements.
+
+#### What's New
+
+**Reproducible Builds**
+
+We've added Python package locking to ensure consistent builds:
+
+- **Lock File Added**: `uv.lock` now tracks exact package versions
+- **Consistent Environments**: Development, testing, staging, and production use identical dependencies
+- **Faster Setup**: No more dependency resolution on every install
+- **Better Reliability**: Eliminates "works on my machine" issues caused by version mismatches
+
+**Documentation Quality Improvements**
+
+All project documentation now meets strict formatting standards:
+
+- **Consistent Tables**: Better alignment in technical documentation
+- **Cleaner Formatting**: Removed unnecessary blank lines across 22 user story files
+- **Better Readability**: Improved spacing and structure in CI/CD review documents
+
+#### Why This Matters
+
+**For Developers:**
+
+- **No More Version Conflicts**: Everyone works with the same package versions
+- **Faster Onboarding**: New developers get exactly the right dependencies immediately
+- **Easier Reading**: Consistently formatted documentation is faster to navigate
+
+**For Teams:**
+
+- **Reliable Deployments**: Staging and production match development exactly
+- **Reduced Debugging**: Eliminates package version mismatches as a source of bugs
+- **Professional Standards**: Documentation meets industry best practices
+
+#### Technical Details
+
+This is a patch release with no breaking changes, no database migrations, and no API changes.
+Simply pull the latest code and continue working.
+
+---
+
+## Previous Releases
+
 ### Version 0.3.0 - 6 January 2026
 
-This release brings powerful project management integration, comprehensive platform architecture planning, and automated workflow tools that make development faster and more organised.
+This release brings powerful project management integration, comprehensive platform architecture planning,
+and automated workflow tools that make development faster and more organised.
 
 #### What's New
 
@@ -27,13 +74,17 @@ This release brings powerful project management integration, comprehensive platf
 
 We've documented the entire vision for the Syntek CMS Platform:
 
-- **16-Phase Development Roadmap**: Clear path from Phase 1 (Core Foundation) through Phase 16 (Platform Upgrade System)
+- **16-Phase Development Roadmap**: Clear path from Phase 1 (Core Foundation)
+  through Phase 16 (Platform Upgrade System)
 - **Multi-Platform Design**: One backend powering web applications, mobile apps, and more
-- **9 Ready-to-Use Templates**: E-commerce, Blog, Corporate, Church, Charity, SaaS, Sole Trader, Estate Agent, and Single Page sites
-- **Smart Design System**: Consistent branding across all platforms with database-driven design tokens
+- **9 Ready-to-Use Templates**: E-commerce, Blog, Corporate, Church, Charity, SaaS, Sole Trader,
+  Estate Agent, and Single Page sites
+- **Smart Design System**: Consistent branding across all platforms
+  with database-driven design tokens
 - **Content Branching**: Git-like workflow for managing content changes across environments
 
-This architecture plan serves as the single source of truth for all development work, ensuring everyone understands how the pieces fit together.
+This architecture plan serves as the single source of truth for all development work,
+ensuring everyone understands how the pieces fit together.
 
 **Sprint and Story Management**
 
@@ -116,11 +167,12 @@ In our next release, we're working on:
 
 ---
 
-## Previous Releases
+## Previous Releases (v0.2.x)
 
 ### Version 0.2.0 - 3 January 2026
 
-This release focuses on establishing a professional version management system and documentation standards for the project.
+This release focuses on establishing a professional version management system
+and documentation standards for the project.
 
 #### What's New
 
@@ -177,17 +229,19 @@ Over 60 documentation files throughout the project now follow consistent standar
 
 #### Technical Details
 
-This is a minor version bump (0.1.0 → 0.2.0) because we've added new features (version management documentation) without changing any existing functionality or breaking any APIs.
+This is a minor version bump (0.1.0 → 0.2.0) because we've added new features
+(version management documentation) without changing any existing functionality or breaking any APIs.
 
 The version management system will make future releases more organised and easier to understand.
 
 ---
 
-## Previous Releases
+## Previous Releases (v0.1.x)
 
 ### Version 0.1.0 - 3 January 2026
 
-Welcome to the first release of the Django/Wagtail Backend Template! This template provides everything you need to build modern, secure, and scalable backend applications.
+Welcome to the first release of the Django/Wagtail Backend Template!
+This template provides everything you need to build modern, secure, and scalable backend applications.
 
 #### What's New
 
@@ -311,6 +365,6 @@ In future releases, we're planning to add:
 
 ---
 
-## Previous Releases
+## Previous Releases (Pre-v0.1.0)
 
 None - This is the initial release.

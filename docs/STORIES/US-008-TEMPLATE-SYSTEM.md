@@ -15,7 +15,6 @@
 - **Could Have:** AI-generated content suggestions based on template, template marketplace
 - **Won't Have:** User-created templates in Phase 4
 
-
 **Sprint:** Sprint 13
 
 ## Repository Coverage
@@ -35,16 +34,16 @@
 **When** they navigate to template selection
 **Then** they see 9 template categories:
 
-1.  E-commerce (products, cart, checkout)
-2.  Blog (posts, categories, authors)
-3.  Corporate (about, services, team, contact)
-4.  Church (events, sermons, donations)
-5.  Charity (campaigns, donations, impact)
-6.  SaaS (pricing, features, testimonials)
-7.  Sole Trader (services, portfolio, booking)
-8.  Estate Agent (listings, search, contact)
-9.  Single Page App (sections, smooth scroll)
-    **And** each template shows:
+1. E-commerce (products, cart, checkout)
+2. Blog (posts, categories, authors)
+3. Corporate (about, services, team, contact)
+4. Church (events, sermons, donations)
+5. Charity (campaigns, donations, impact)
+6. SaaS (pricing, features, testimonials)
+7. Sole Trader (services, portfolio, booking)
+8. Estate Agent (listings, search, contact)
+9. Single Page App (sections, smooth scroll)
+   **And** each template shows:
 
 - Category name and icon
 - Template name
@@ -70,14 +69,14 @@
 **When** they click "Select Template"
 **Then** they proceed through a setup wizard:
 
-1.  Site name and tagline
-2.  Design token customisation (colours, fonts)
-3.  Initial content (company name, contact info, etc.)
-4.  Social media links
-5.  Optional: Initial pages and content
-    **And** the wizard shows progress
-    **And** they can skip optional steps
-    **And** they can go back to previous steps
+1. Site name and tagline
+2. Design token customisation (colours, fonts)
+3. Initial content (company name, contact info, etc.)
+4. Social media links
+5. Optional: Initial pages and content
+   **And** the wizard shows progress
+   **And** they can skip optional steps
+   **And** they can go back to previous steps
 
 ### Scenario 4: Template Initialisation
 

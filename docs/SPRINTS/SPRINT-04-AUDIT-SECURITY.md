@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Implement comprehensive audit logging system with IP encryption and complete remaining caching strategies. This sprint establishes security compliance, traceability, and performance optimisation infrastructure.
+Implement comprehensive audit logging system with IP encryption and complete remaining caching
+strategies. This sprint establishes security compliance, traceability, and performance
+optimisation infrastructure.
 
 ---
 

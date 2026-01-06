@@ -182,16 +182,19 @@ Configure these in repository settings → Secrets and variables → Actions:
 Set up the following environments in repository settings:
 
 ### `staging`
+
 - Protection rules: None (auto-deploy)
 - Secrets: Staging-specific secrets
 - URL: Set to staging environment URL
 
 ### `production`
+
 - Protection rules: Required reviewers (1+)
 - Secrets: Production-specific secrets
 - URL: Set to production environment URL
 
 ### `production-approval`
+
 - Protection rules: Required reviewers (1+)
 - Purpose: Manual approval gate before production deployment
 - Timeout: 24 hours

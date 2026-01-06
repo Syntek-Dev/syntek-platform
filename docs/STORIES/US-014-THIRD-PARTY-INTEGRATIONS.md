@@ -15,7 +15,6 @@
 - **Could Have:** Scheduled sync tasks, two-way data sync, integration marketplace
 - **Won't Have:** Real-time sync in Phase 11
 
-
 **Sprint:** Sprint 22
 
 ## Repository Coverage

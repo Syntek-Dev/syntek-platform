@@ -15,7 +15,6 @@
 - **Could Have:** Security questions as additional verification
 - **Won't Have:** SMS-based password reset in Phase 1
 
-
 **Sprint:** Sprint 01
 
 ## Repository Coverage

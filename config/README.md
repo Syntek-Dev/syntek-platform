@@ -36,9 +36,11 @@ Django project-wide configuration, settings, middleware, and validators.
 
 ## Overview
 
-This directory contains the Django project configuration including settings for different environments, middleware implementations, validators, and URL routing.
+This directory contains the Django project configuration including settings for different
+environments, middleware implementations, validators, and URL routing.
 
-**Key Concept:** Environment-specific settings extend the base configuration to handle dev, test, staging, and production requirements.
+**Key Concept:** Environment-specific settings extend the base configuration to handle dev, test,
+staging, and production requirements.
 
 ---
 

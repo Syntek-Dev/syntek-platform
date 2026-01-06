@@ -31,9 +31,12 @@ Configuration files for Claude Code development environment and Syntek Dev Suite
 
 ## Overview
 
-This directory contains configuration specific to Claude Code and the Syntek Dev Suite plugin system. These files control how Claude Code understands your project structure, applies development standards, and integrates with external tools like ClickUp for project management.
+This directory contains configuration specific to Claude Code and the Syntek Dev Suite plugin
+system. These files control how Claude Code understands your project structure, applies development
+standards, and integrates with external tools like ClickUp for project management.
 
-**Key Point:** The `CLAUDE.md` file is the primary source of truth for development conventions and must be read when starting work on this project.
+**Key Point:** The `CLAUDE.md` file is the primary source of truth for development conventions and
+must be read when starting work on this project.
 
 ---
 
@@ -89,7 +92,8 @@ Local settings for the Claude Code editor in this workspace. Contains:
 
 ### commands/
 
-Directory for custom command definitions that extend Claude Code functionality. These allow defining shortcuts and automation for common development tasks.
+Directory for custom command definitions that extend Claude Code functionality. These allow
+defining shortcuts and automation for common development tasks.
 
 ---
 

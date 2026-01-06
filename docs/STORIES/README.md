@@ -1,6 +1,8 @@
 # Syntek CMS Platform - User Stories
 
-This directory contains comprehensive user stories for the entire Syntek CMS Platform. Stories are numbered US-XXX and cover all phases of development from Phase 1 (Core Foundation) through Phase 15 (Deployment Pipeline).
+This directory contains comprehensive user stories for the entire Syntek CMS Platform.
+Stories are numbered US-XXX and cover all phases of development from Phase 1 (Core Foundation)
+through Phase 15 (Deployment Pipeline).
 
 ## Story Index
 

@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint/main/schema/markdownlint-config-schema.json",
   "MD001": false,
   "MD005": false,
   "MD007": false,
@@ -8,6 +9,10 @@
     "tables": false,
     "code_blocks": false,
     "headings": false
+  },
+  "MD022": {
+    "lines_above": 1,
+    "lines_below": 1
   },
   "MD024": {
     "siblings_only": true

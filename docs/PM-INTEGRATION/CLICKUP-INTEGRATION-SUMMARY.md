@@ -578,8 +578,8 @@ git push
 
 ## Support Resources
 
-- **ClickUp API Docs:** https://clickup.com/api
-- **GitHub Actions Docs:** https://docs.github.com/en/actions
+- **ClickUp API Docs:** <https://clickup.com/api>
+- **GitHub Actions Docs:** <https://docs.github.com/en/actions>
 - **Project Docs:** `docs/PM-INTEGRATION/README.MD`
 - **Setup Guide:** `docs/PM-INTEGRATION/SETUP-GUIDE.MD`
 - **Troubleshooting:** `docs/PM-INTEGRATION/TROUBLESHOOTING.MD`
@@ -588,4 +588,7 @@ git push
 
 ## Summary
 
-The ClickUp integration is fully configured and ready to use. All scripts, workflows, and documentation are in place. Simply add your API key to GitHub Secrets and `.env.dev`, pull the task mapping, and start using the branch naming convention. The integration will automatically sync task statuses as you develop, create PRs, and deploy code.
+The ClickUp integration is fully configured and ready to use. All scripts, workflows, and
+documentation are in place. Simply add your API key to GitHub Secrets and `.env.dev`, pull the
+task mapping, and start using the branch naming convention. The integration will automatically
+sync task statuses as you develop, create PRs, and deploy code.

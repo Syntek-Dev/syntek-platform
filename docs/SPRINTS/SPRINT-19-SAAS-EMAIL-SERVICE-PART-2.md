@@ -23,7 +23,10 @@
 
 ## Sprint Goal
 
-Complete the SaaS email service with advanced features including email templates, contact management, email analytics, spam filtering, and mobile email compose functionality. This sprint polishes the email service and adds "Should Have" features to create a fully functional email platform.
+Complete the SaaS email service with advanced features including email templates, contact
+management, email analytics, spam filtering, and mobile email compose functionality.
+This sprint polishes the email service and adds "Should Have" features to create a fully
+functional email platform.
 
 ---
 

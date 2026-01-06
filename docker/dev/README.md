@@ -84,14 +84,14 @@ Development Docker configuration with hot-reloading, debug tools, and convenient
 
 ## Access URLs
 
-| Service  | URL                           |
-| -------- | ----------------------------- |
-| Web App  | http://localhost:8000         |
-| Admin    | http://localhost:8000/admin   |
-| GraphQL  | http://localhost:8000/graphql |
-| Mailpit  | http://localhost:8025         |
-| Database | localhost:5432                |
-| Redis    | localhost:6379                |
+| Service  | URL                             |
+| -------- | ------------------------------- |
+| Web App  | <http://localhost:8000>         |
+| Admin    | <http://localhost:8000/admin>   |
+| GraphQL  | <http://localhost:8000/graphql> |
+| Mailpit  | <http://localhost:8025>         |
+| Database | localhost:5432                  |
+| Redis    | localhost:6379                  |
 
 ---
 

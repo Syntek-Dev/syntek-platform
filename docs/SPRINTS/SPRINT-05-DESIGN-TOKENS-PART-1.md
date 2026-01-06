@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Implement the core design token system enabling organisations to define and manage brand colours, fonts, spacing, and typography. This sprint creates the foundation for consistent branding across all web and mobile applications.
+Implement the core design token system enabling organisations to define and manage brand colours,
+fonts, spacing, and typography. This sprint creates the foundation for consistent branding
+across all web and mobile applications.
 
 ---
 
@@ -22,7 +24,8 @@ Implement the core design token system enabling organisations to define and mana
 | -------------------------------------------------- | ---------------------------- | ------ | ------- |
 | [US-005](../STORIES/US-005-DESIGN-TOKEN-SYSTEM.md) | Design Token System (Part 1) | 11     | Pending |
 
-_US-005 split: 11 points for core token models and basic editor this sprint, 2 points for polish and export features in Sprint 6_
+_US-005 split: 11 points for core token models and basic editor this sprint, 2 points for polish
+and export features in Sprint 6_
 
 ### Should Have (0 points)
 

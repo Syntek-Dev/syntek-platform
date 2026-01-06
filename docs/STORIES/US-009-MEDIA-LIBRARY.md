@@ -15,7 +15,6 @@
 - **Could Have:** Image cropping and editing, video hosting, document preview
 - **Won't Have:** Automatic image generation in Phase 3
 
-
 **Sprint:** Sprint 09
 
 ## Repository Coverage

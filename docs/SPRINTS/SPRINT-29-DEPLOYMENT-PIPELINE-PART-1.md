@@ -10,7 +10,8 @@
 
 ## Sprint Goal
 
-Implement automated CI/CD pipeline with GitHub Actions for testing, building, and deploying backend and frontend web applications with database migrations and health checks.
+Implement automated CI/CD pipeline with GitHub Actions for testing, building, and deploying
+backend and frontend web applications with database migrations and health checks.
 
 ---
 
@@ -22,7 +23,8 @@ Implement automated CI/CD pipeline with GitHub Actions for testing, building, an
 | -------------------------------------------------- | ---------------------------- | ------ | ------- |
 | [US-020](../STORIES/US-020-DEPLOYMENT-PIPELINE.md) | Deployment Pipeline (Part 1) | 11     | Pending |
 
-_US-020 split: 11 points for CI/CD setup, backend deployment, and web deployment this sprint, 10 points for mobile deployment and advanced features in Sprint 24_
+_US-020 split: 11 points for CI/CD setup, backend deployment, and web deployment this sprint,
+10 points for mobile deployment and advanced features in Sprint 24_
 
 ---
 

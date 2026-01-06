@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Implement the site template system providing 9 pre-built templates (e-commerce, blog, corporate, church, charity, SaaS, sole trader, estate agent, single page) with selection UI and initialisation logic. This sprint enables rapid website creation with industry-specific structures.
+Implement the site template system providing 9 pre-built templates (e-commerce, blog, corporate,
+church, charity, SaaS, sole trader, estate agent, single page) with selection UI and initialisation
+logic. This sprint enables rapid website creation with industry-specific structures.
 
 ---
 
@@ -22,7 +24,8 @@ Implement the site template system providing 9 pre-built templates (e-commerce, 
 | ---------------------------------------------- | ------------------------ | ------ | ------- |
 | [US-008](../STORIES/US-008-TEMPLATE-SYSTEM.md) | Template System (Part 1) | 11     | Pending |
 
-_US-008 split: 11 points for template definitions, selection UI, and initialisation logic this sprint, 2 points for customisation wizard and polish in Sprint 13_
+_US-008 split: 11 points for template definitions, selection UI, and initialisation logic this
+sprint, 2 points for customisation wizard and polish in Sprint 13_
 
 ### Should Have (0 points)
 

@@ -10,7 +10,8 @@
 
 ## Sprint Goal
 
-Complete the third-party integrations system by adding OAuth support, additional integrations (Anthropic Claude), and polish features.
+Complete the third-party integrations system by adding OAuth support, additional integrations
+(Anthropic Claude), and polish features.
 
 ---
 

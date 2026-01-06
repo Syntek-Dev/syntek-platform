@@ -10,11 +10,13 @@
 
 ## MoSCoW Priority
 
-- **Must Have:** OnlyOffice integration, document browser UI, document creation/editing, storage (S3/DO Spaces), basic sharing permissions
-- **Should Have:** Version history, document search, bulk operations, folder organisation, access control
-- **Could Have:** Real-time collaboration indicators, document templates, export to multiple formats, integration with design tokens
+- **Must Have:** OnlyOffice integration, document browser UI, document creation/editing,
+  storage (S3/DO Spaces), basic sharing permissions
+- **Should Have:** Version history, document search, bulk operations, folder organisation,
+  access control
+- **Could Have:** Real-time collaboration indicators, document templates, export to multiple
+  formats, integration with design tokens
 - **Won't Have:** Advanced collaboration features (comments, @mentions) until Phase 11
-
 
 **Sprint:** Sprint 21
 

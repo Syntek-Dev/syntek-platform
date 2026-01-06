@@ -22,7 +22,8 @@ Helper scripts for running commands in environment-specific Docker containers.
 
 ## Overview
 
-These scripts provide convenient shortcuts for running Django management commands, tests, and other operations inside Docker containers for each environment (dev, test, staging, production).
+These scripts provide convenient shortcuts for running Django management commands, tests, and
+other operations inside Docker containers for each environment (dev, test, staging, production).
 
 **Key:** All commands run inside Docker, matching the production environment exactly.
 

@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Implement git-like content branching workflow enabling content to flow through feature → testing → dev → staging → production branches with version management and promotion capabilities.
+Implement git-like content branching workflow enabling content to flow through
+feature → testing → dev → staging → production branches with version management
+and promotion capabilities.
 
 ---
 

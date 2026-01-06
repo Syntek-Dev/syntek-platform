@@ -1,7 +1,7 @@
 # Version History
 
 **Last Updated**: 06/01/2026
-**Version**: 0.3.0
+**Version**: 0.3.1
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -11,6 +11,7 @@
 ## Table of Contents
 
 - [Unreleased](#unreleased)
+- [0.3.1 - 06/01/2026](#031---06012026)
 - [0.3.0 - 06/01/2026](#030---06012026)
 - [0.2.0 - 03/01/2026](#020---03012026)
 - [0.1.0 - 03/01/2026](#010---03012026)
@@ -25,11 +26,69 @@
 
 ---
 
+## [0.3.1] - 06/01/2026
+
+### Summary
+
+Code quality improvements including markdown linting fixes, documentation formatting enhancements,
+and addition of uv.lock for reproducible Python builds.
+
+### Breaking Changes
+
+None - All changes are code quality and documentation improvements.
+
+### Database Migrations
+
+None - No database changes.
+
+### API Changes
+
+None - No API changes.
+
+### Files Changed
+
+#### Documentation Formatting (Markdown Lint Fixes)
+
+| File                                             | Changes                                                                           |
+| ------------------------------------------------ | --------------------------------------------------------------------------------- |
+| `.claude/CLAUDE.md`                              | Fixed table column alignment in test naming conventions and coverage requirements |
+| `docs/STORIES/*.md`                              | Removed extra blank lines (22 user story files)                                   |
+| `docs/REVIEWS/REVIEW-CI-WORKFLOWS-2026-01-06.md` | Added blank lines after headings and list items for consistency                   |
+
+#### Build and Configuration
+
+| File                                 | Changes                                                             |
+| ------------------------------------ | ------------------------------------------------------------------- |
+| `uv.lock`                            | Added Python package lock file for reproducible builds (1521 lines) |
+| `.gitignore`                         | Added clarifying comment about uv.lock requirement                  |
+| `config/clickup-sprint-mapping.json` | Added trailing newline for POSIX compliance                         |
+
+### Dependencies
+
+No dependency version changes - only added uv.lock to ensure reproducible builds
+across all environments.
+
+### Developer Notes
+
+- **Markdown Formatting**: All documentation now passes markdownlint validation
+  with consistent table alignment and blank line usage
+- **Reproducible Builds**: uv.lock ensures identical Python package versions
+  across development, testing, staging, and production environments
+- **Code Quality**: Continued focus on linting and formatting standards across the codebase
+
+### Migration Instructions
+
+No migration required. This is a patch release with formatting and documentation improvements only.
+
+---
+
 ## [0.3.0] - 06/01/2026
 
 ### Summary
 
-Platform architecture and project management enhancements. This release adds comprehensive CMS platform documentation, enhanced ClickUp integration with sprint and story synchronisation, Git workflow automation plugin, and improved development tooling across all environments.
+Platform architecture and project management enhancements. This release adds comprehensive CMS platform
+documentation, enhanced ClickUp integration with sprint and story synchronisation, Git workflow automation
+plugin, and improved development tooling across all environments.
 
 ### Breaking Changes
 
@@ -222,13 +281,17 @@ All markdown files standardised to:
 
 This release establishes the complete platform vision:
 
-- **16-Phase Development Plan**: Structured roadmap from Phase 1 (Core Foundation) through Phase 16 (Platform Upgrade System)
+- **16-Phase Development Plan**: Structured roadmap from Phase 1 (Core Foundation)
+  through Phase 16 (Platform Upgrade System)
 - **Multi-Repository Architecture**: Backend, UI library, Web frontend, Mobile app
 - **Multi-Tenancy Design**: Organisation-based isolation with encrypted data
 - **Design Token System**: Database-driven theming for consistent branding
-- **Content Branching**: Git-like workflow for content (feature → testing → dev → staging → production)
-- **9 Site Templates**: E-commerce, Blog, Corporate, Church, Charity, SaaS, Sole Trader, Estate Agent, Single Page
-- **SaaS Integrations**: Email service, Cloud documents (OnlyOffice), Password manager (Vaultwarden)
+- **Content Branching**: Git-like workflow for content
+  (feature → testing → dev → staging → production)
+- **9 Site Templates**: E-commerce, Blog, Corporate, Church, Charity, SaaS, Sole Trader,
+  Estate Agent, Single Page
+- **SaaS Integrations**: Email service, Cloud documents (OnlyOffice),
+  Password manager (Vaultwarden)
 - **AI Integration**: Anthropic Claude integration planned for Phases 12+
 
 ### Git Workflow Plugin Features
@@ -262,7 +325,8 @@ Enhanced integration capabilities:
 
 ### Summary
 
-Version management system initialisation. Added comprehensive versioning documentation, automated markdown header management, and established semantic versioning workflow for the project.
+Version management system initialisation. Added comprehensive versioning documentation,
+automated markdown header management, and established semantic versioning workflow for the project.
 
 ### Breaking Changes
 
@@ -376,7 +440,9 @@ Established semantic versioning workflow:
 
 ### Summary
 
-Initial release of the Django/Wagtail backend template with comprehensive multi-environment Docker setup, CI/CD pipelines, and developer tooling. This release establishes the foundational architecture for building scalable backend applications with Django, Wagtail CMS, PostgreSQL, and GraphQL.
+Initial release of the Django/Wagtail backend template with comprehensive multi-environment Docker setup,
+CI/CD pipelines, and developer tooling. This release establishes the foundational architecture for building
+scalable backend applications with Django, Wagtail CMS, PostgreSQL, and GraphQL.
 
 ### Breaking Changes
 

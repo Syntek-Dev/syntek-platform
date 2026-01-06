@@ -35,7 +35,8 @@
 
 ## Overview
 
-The ClickUp integration is **fully configured and ready to use**. All infrastructure, workflows, and scripts are in place. You only need to add your API token to start using the integration.
+The ClickUp integration is **fully configured and ready to use**. All infrastructure, workflows,
+and scripts are in place. You only need to add your API token to start using the integration.
 
 ## Integration Status: READY
 

@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Build the core shared UI component library with base components, form components, and layout components. This sprint establishes the foundation for consistent interfaces across web and mobile applications.
+Build the core shared UI component library with base components, form components, and layout
+components. This sprint establishes the foundation for consistent interfaces across web
+and mobile applications.
 
 ---
 
@@ -22,7 +24,8 @@ Build the core shared UI component library with base components, form components
 | ------------------------------------------------ | -------------------------- | ------ | ------- |
 | [US-019](../STORIES/US-019-SHARED-UI-LIBRARY.md) | Shared UI Library (Part 1) | 11     | Pending |
 
-_US-019 split: 11 points for base components, form components, and layout components this sprint, 10 points for navigation, data display, and Storybook in Sprint 15_
+_US-019 split: 11 points for base components, form components, and layout components this sprint,
+10 points for navigation, data display, and Storybook in Sprint 15_
 
 ### Should Have (0 points)
 

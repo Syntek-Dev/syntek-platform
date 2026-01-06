@@ -36,7 +36,8 @@ Docker Compose configurations for each environment (dev, test, staging, producti
 
 ## Overview
 
-Docker configurations for managing containerized development, testing, staging, and production environments. Each environment has isolated containers to prevent interference.
+Docker configurations for managing containerized development, testing, staging, and production
+environments. Each environment has isolated containers to prevent interference.
 
 **Principle:** Match production environment as closely as possible in dev and staging.
 
@@ -93,9 +94,9 @@ docker/
 
 **Access:**
 
-- Web: http://localhost:8000
-- Admin: http://localhost:8000/admin
-- Mailpit: http://localhost:8025
+- Web: <http://localhost:8000>
+- Admin: <http://localhost:8000/admin>
+- Mailpit: <http://localhost:8025>
 
 ### Test (test/)
 

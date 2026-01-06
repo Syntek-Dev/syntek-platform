@@ -21,7 +21,9 @@
 
 ## Overview
 
-This directory contains documentation for Prettier code formatting in the Django backend template. Prettier handles formatting for all non-Python files (JSON, YAML, Markdown, HTML templates, CSS, JavaScript, GraphQL).
+This directory contains documentation for Prettier code formatting in the Django backend template.
+Prettier handles formatting for all non-Python files (JSON, YAML, Markdown, HTML templates, CSS,
+JavaScript, GraphQL).
 
 **Python files** are formatted with **Black** (separate configuration).
 

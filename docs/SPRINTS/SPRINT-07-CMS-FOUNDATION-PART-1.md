@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Implement the core CMS page creation system with block-based content editing. This sprint establishes the foundation for content management enabling editors to create pages using reusable content blocks.
+Implement the core CMS page creation system with block-based content editing. This sprint
+establishes the foundation for content management enabling editors to create pages using
+reusable content blocks.
 
 ---
 
@@ -22,7 +24,8 @@ Implement the core CMS page creation system with block-based content editing. Th
 | ------------------------------------------------ | -------------------------- | ------ | ------- |
 | [US-006](../STORIES/US-006-CMS-PAGE-CREATION.md) | CMS Page Creation (Part 1) | 11     | Pending |
 
-_US-006 split: 11 points for core page creation, block editor, and primary block types this sprint, 2 points for additional blocks and polish in Sprint 8_
+_US-006 split: 11 points for core page creation, block editor, and primary block types this sprint,
+2 points for additional blocks and polish in Sprint 8_
 
 ### Should Have (0 points)
 

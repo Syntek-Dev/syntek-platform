@@ -27,14 +27,18 @@
 
 ## Summary
 
-The CI/CD workflow configuration has critical validation issues where JSON/YAML validation searches all directories including `node_modules`, `.git`, `__pycache__`, and other irrelevant locations. This causes false failures and significantly slows down the CI pipeline. The workflows themselves are well-structured with proper Docker integration, caching, and security scanning, but the file validation logic needs to be made more robust and selective.
+The CI/CD workflow configuration has critical validation issues where JSON/YAML validation
+searches all directories including `node_modules`, `.git`, `__pycache__`, and other irrelevant
+locations. This causes false failures and significantly slows down the CI pipeline. The
+workflows themselves are well-structured with proper Docker integration, caching, and security
+scanning, but the file validation logic needs to be made more robust and selective.
 
 ## Files Reviewed
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `.github/workflows/ci.yml` | Main CI pipeline with linting, testing, validation | 283 |
-| `.github/workflows/codeql.yml` | Security analysis with CodeQL, Semgrep, Bandit | 221 |
+| File                           | Purpose                                            | Lines |
+| ------------------------------ | -------------------------------------------------- | ----- |
+| `.github/workflows/ci.yml`     | Main CI pipeline with linting, testing, validation | 283   |
+| `.github/workflows/codeql.yml` | Security analysis with CodeQL, Semgrep, Bandit     | 221   |
 
 ## Critical Issues
 
@@ -43,6 +47,7 @@ The CI/CD workflow configuration has critical validation issues where JSON/YAML 
 **Location**: `.github/workflows/ci.yml` lines 250-262
 
 **Problem**: The validation steps use bare `find` commands that search all directories, including:
+
 - `node_modules/` (contains thousands of JSON files from npm packages)
 - `.git/` (Git internal files)
 - `__pycache__/` (Python cache directories)
@@ -50,6 +55,7 @@ The CI/CD workflow configuration has critical validation issues where JSON/YAML 
 - `*.egg-info/` (Python package metadata)
 
 **Current Code**:
+
 ```yaml
 - name: Validate YAML files
   run: |
@@ -67,6 +73,7 @@ The CI/CD workflow configuration has critical validation issues where JSON/YAML 
 ```
 
 **Why This Is Critical**:
+
 1. **Performance**: Scanning thousands of irrelevant files in `node_modules/` significantly slows CI
 2. **False Failures**: Third-party JSON files may not conform to standard formatting
 3. **Noise**: Makes it difficult to identify actual validation issues in project files
@@ -126,9 +133,11 @@ The CI/CD workflow configuration has critical validation issues where JSON/YAML 
 
 **Location**: `.github/workflows/ci.yml` lines 250-255
 
-**Problem**: The validation step uses Python to parse YAML/JSON, but the job runs on a bare `ubuntu-latest` runner without Python pre-installed or set up.
+**Problem**: The validation step uses Python to parse YAML/JSON, but the job runs on a bare
+`ubuntu-latest` runner without Python pre-installed or set up.
 
 **Why This Might Fail**:
+
 - While `ubuntu-latest` includes Python 3, it's better to be explicit about the Python version
 - The PyYAML library may not be available by default
 - Future Ubuntu versions might not include Python by default
@@ -191,12 +200,14 @@ However, this is tricky with `find` command syntax, so the inline exclusions are
 **Suggestion**: Be more selective about which files to validate. For example:
 
 **YAML Files to Validate**:
+
 - `.github/workflows/*.yml` (GitHub Actions workflows)
 - `docker/*/docker-compose.yml` (Docker Compose files)
 - `.pre-commit-config.yaml` (pre-commit configuration)
 - `.hadolint.yaml`, `.yamllint.yml` (linter configurations)
 
 **JSON Files to Validate**:
+
 - `config/*.json` (project configuration)
 - `.vscode/*.json` (VS Code settings)
 - `.claude/*.json` (Claude configuration)
@@ -204,6 +215,7 @@ However, this is tricky with `find` command syntax, so the inline exclusions are
 - Root-level JSON configs (`.prettierrc`, `.markdownlint.json`, etc.)
 
 **Alternative Approach**:
+
 ```yaml
 - name: Validate YAML files
   run: |
@@ -233,7 +245,8 @@ However, this is tricky with `find` command syntax, so the inline exclusions are
 
 ### Improvement 3: Add Error Handling to Validation Steps
 
-**Current Issue**: If a validation fails partway through, the error message doesn't clearly indicate which file caused the failure.
+**Current Issue**: If a validation fails partway through, the error message doesn't clearly
+indicate which file caused the failure.
 
 **Suggestion**: Improve error reporting:
 
@@ -264,18 +277,23 @@ However, this is tricky with `find` command syntax, so the inline exclusions are
 
 What's done well in these workflows:
 
-1. **Excellent Docker Integration**: Uses Docker Buildx with proper caching (`cache-from: type=gha, cache-to: type=gha,mode=max`) to speed up builds
-2. **Comprehensive Security Scanning**: Includes CodeQL, Semgrep, Bandit, TruffleHog, and Django-specific security checks
+1. **Excellent Docker Integration**: Uses Docker Buildx with proper caching
+   (`cache-from: type=gha, cache-to: type=gha,mode=max`) to speed up builds
+2. **Comprehensive Security Scanning**: Includes CodeQL, Semgrep, Bandit, TruffleHog, and
+   Django-specific security checks
 3. **Proper Concurrency Control**: Uses `cancel-in-progress: true` to avoid wasting resources on outdated builds
 4. **Good Job Dependencies**: The `ci-summary` and `security-summary` jobs properly aggregate results
 5. **Timeout Protection**: All jobs have reasonable timeout limits to prevent runaway processes
 6. **Artifact Retention**: Security reports and coverage data are properly uploaded with sensible retention periods
-7. **Graceful Degradation**: Security scans use `continue-on-error: true` appropriately, allowing the build to complete while flagging issues
-8. **Multiple Validation Layers**: Dockerfile linting with hadolint, Python linting with multiple tools (Black, isort, flake8, pylint, mypy)
+7. **Graceful Degradation**: Security scans use `continue-on-error: true` appropriately,
+   allowing the build to complete while flagging issues
+8. **Multiple Validation Layers**: Dockerfile linting with hadolint, Python linting with
+   multiple tools (Black, isort, flake8, pylint, mypy)
 
 ## Pre-Existing Code Quality Issues (Not Workflow Problems)
 
-These issues were detected by the workflows but are **code issues**, not workflow configuration problems. They should be addressed separately:
+These issues were detected by the workflows but are **code issues**, not workflow configuration
+problems. They should be addressed separately:
 
 1. **Black Formatting Failures**: Code doesn't conform to Black formatting standards
    - **Action Required**: Run `./scripts/env/dev.sh format` to auto-fix
@@ -306,10 +324,12 @@ These issues were detected by the workflows but are **code issues**, not workflo
 - [x] Request changes (critical workflow issues found)
 
 **Critical workflow configuration issues must be fixed**:
+
 1. JSON/YAML validation searches irrelevant directories (node_modules, .git, etc.)
 2. Missing explicit Python setup for validation steps
 
 **Next Steps**:
+
 1. Apply the recommended fixes to `.github/workflows/ci.yml`
 2. Run a test workflow to verify validation works correctly
 3. Address pre-existing code quality issues separately (use `/syntek-dev-suite:backend`, `/syntek-dev-suite:security`)

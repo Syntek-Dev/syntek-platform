@@ -6,15 +6,17 @@
 
 **As a** team member or administrator
 **I want** to securely store and manage passwords within the platform
-**So that** I can access team credentials, manage access policies, and audit password usage without needing external password managers
+**So that** I can access team credentials, manage access policies, and audit password usage
+without needing external password managers
 
 ## MoSCoW Priority
 
-- **Must Have:** Vaultwarden integration, password vault interface, password creation/storage, organisation policies, SSO integration, basic auditing
-- **Should Have:** Browser extension, password strength requirements, auto-fill capability, password sharing, access logs, password rotation reminders
+- **Must Have:** Vaultwarden integration, password vault interface, password creation/storage,
+  organisation policies, SSO integration, basic auditing
+- **Should Have:** Browser extension, password strength requirements, auto-fill capability,
+  password sharing, access logs, password rotation reminders
 - **Could Have:** Hardware security key support, biometric unlock, custom password policies per team, emergency access procedures
 - **Won't Have:** Advanced 2FA integration (MFA) until Phase 13
-
 
 **Sprint:** Sprint 23
 

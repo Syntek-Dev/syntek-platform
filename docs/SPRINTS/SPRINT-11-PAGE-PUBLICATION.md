@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Implement page publication workflow enabling content to go live on public websites with proper routing, SEO metadata, and sitemap generation. This sprint makes content publicly accessible to visitors.
+Implement page publication workflow enabling content to go live on public websites with proper
+routing, SEO metadata, and sitemap generation. This sprint makes content publicly accessible
+to visitors.
 
 ---
 

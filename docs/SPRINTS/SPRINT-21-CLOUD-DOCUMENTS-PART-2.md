@@ -23,7 +23,9 @@
 
 ## Sprint Goal
 
-Complete the Cloud Documents application with advanced features including document permissions, version history, search functionality, folder organisation, and export capabilities. This sprint adds "Should Have" features and polishes the document management experience.
+Complete the Cloud Documents application with advanced features including document permissions,
+version history, search functionality, folder organisation, and export capabilities. This
+sprint adds "Should Have" features and polishes the document management experience.
 
 ---
 

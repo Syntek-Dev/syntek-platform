@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Implement a comprehensive media library system for uploading, organising, and managing images and documents. This sprint enables content editors to maintain a centralised asset repository with search, folders, and metadata management.
+Implement a comprehensive media library system for uploading, organising, and managing images
+and documents. This sprint enables content editors to maintain a centralised asset repository
+with search, folders, and metadata management.
 
 ---
 

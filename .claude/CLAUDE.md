@@ -1,7 +1,7 @@
 # Backend Template - Django Project
 
 **Last Updated**: 06/01/2026
-**Version**: 0.3.0
+**Version**: 0.3.1
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -19,6 +19,7 @@
   - [Table of Contents](#table-of-contents)
   - [Project Overview](#project-overview)
     - [Architecture](#architecture)
+    - [Platform Components](#platform-components)
   - [Project Structure](#project-structure)
   - [Development Workflow](#development-workflow)
     - [Starting Development](#starting-development)
@@ -28,6 +29,9 @@
     - [Django Apps](#django-apps)
     - [GraphQL API](#graphql-api)
     - [CMS Content Management](#cms-content-management)
+  - [Line Length Standards](#line-length-standards)
+    - [Exceptions](#exceptions)
+    - [Running Lint Checks](#running-lint-checks)
   - [Documentation Standards](#documentation-standards)
     - [Docstring Requirements](#docstring-requirements)
     - [Google-Style Docstring Format](#google-style-docstring-format)
@@ -73,13 +77,22 @@
     - [Quick Reference](#quick-reference)
   - [Syntek Dev Suite Agents](#syntek-dev-suite-agents)
   - [Project Management](#project-management)
+  - [Platform Architecture](#platform-architecture)
+    - [Key Platform Features](#key-platform-features)
+    - [Development Phases](#development-phases)
   - [Notes](#notes)
 
 ## Project Overview
 
-This is a comprehensive Django CMS platform that serves as the backend for a multi-repository architecture supporting web and mobile applications. It provides content management, design tokens, multi-tenancy, SaaS integrations, and enterprise-grade security features.
+This is a comprehensive Django CMS platform that serves as the backend for a multi-repository
+architecture supporting web and mobile applications. It provides content management, design tokens,
+multi-tenancy, SaaS integrations, and enterprise-grade security features.
 
-**Platform Vision:** This backend is part of the Syntek CMS Platform - a comprehensive system enabling businesses to build and manage websites/apps with integrated business tools, consistent branding, and multi-platform deployment. See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the complete architectural plan.
+**Platform Vision:** This backend is part of the Syntek CMS Platform - a comprehensive system
+enabling businesses to build and manage websites/apps with integrated business tools, consistent
+branding, and multi-platform deployment.
+See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the
+complete architectural plan.
 
 ### Architecture
 
@@ -216,9 +229,48 @@ docker compose -f docker/test/docker-compose.yml run --rm web pytest --cov=apps
 See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md)
 for detailed CMS architecture.
 
+## Line Length Standards
+
+All files in this project must adhere to consistent line length limits. These are enforced by
+linters and formatters in CI/CD pipelines.
+
+| File Type          | Max Line Length | Enforced By  | Configuration File   |
+| ------------------ | --------------- | ------------ | -------------------- |
+| Python (`.py`)     | 100 characters  | Black, isort | `pyproject.toml`     |
+| Markdown (`.md`)   | 120 characters  | markdownlint | `.markdownlint.json` |
+| JavaScript (`.js`) | 100 characters  | Prettier     | `.prettierrc`        |
+| TypeScript (`.ts`) | 100 characters  | Prettier     | `.prettierrc`        |
+| HTML (`.html`)     | 120 characters  | Prettier     | `.prettierrc`        |
+| CSS (`.css`)       | 100 characters  | Prettier     | `.prettierrc`        |
+| YAML (`.yml`)      | 100 characters  | Prettier     | `.prettierrc`        |
+| JSON (`.json`)     | 100 characters  | Prettier     | `.prettierrc`        |
+
+### Exceptions
+
+- **Tables in Markdown**: Line length is not enforced within tables
+- **Code blocks in Markdown**: Line length is not enforced within fenced code blocks
+- **URLs and links**: Long URLs may exceed the limit if they cannot be shortened
+
+### Running Lint Checks
+
+```bash
+# Check all formatting and linting
+npm run lint
+
+# Check Python formatting
+npm run lint:prettier
+
+# Check Markdown linting
+npm run lint:markdown
+
+# Auto-fix Markdown issues where possible
+npm run lint:markdown:fix
+```
+
 ## Documentation Standards
 
-This project uses **Google-style docstrings** for all Python code. Documentation is essential for code maintainability and team collaboration.
+This project uses **Google-style docstrings** for all Python code. Documentation is essential for
+code maintainability and team collaboration.
 
 ### Docstring Requirements
 
@@ -680,7 +732,8 @@ for item in items:
 
 ## Testing Standards
 
-This project follows a comprehensive testing strategy using TDD, BDD, and E2E testing approaches. The test-writer agent (`/syntek-dev-suite:test-writer`) must adhere to these standards.
+This project follows a comprehensive testing strategy using TDD, BDD, and E2E testing approaches.
+The test-writer agent (`/syntek-dev-suite:test-writer`) must adhere to these standards.
 
 ### Testing Philosophy
 
@@ -756,18 +809,19 @@ tests/
 
 ### Test File Naming Conventions
 
-| Test Type   | Naming Pattern                       | Example                              |
-| ----------- | ------------------------------------ | ------------------------------------ |
-| Unit        | `test_<component>_<functionality>.py` | `test_user_model_validation.py`      |
-| BDD Feature | `<feature_name>.feature`             | `authentication.feature`             |
-| BDD Steps   | `test_<feature>_steps.py`            | `test_authentication_steps.py`       |
-| Integration | `test_<workflow>_integration.py`     | `test_auth_flow_integration.py`      |
-| E2E         | `test_<workflow>_e2e.py`             | `test_user_registration_e2e.py`      |
-| GraphQL     | `test_<operation>_<entity>.py`       | `test_query_users.py`                |
+| Test Type   | Naming Pattern                        | Example                         |
+| ----------- | ------------------------------------- | ------------------------------- |
+| Unit        | `test_<component>_<functionality>.py` | `test_user_model_validation.py` |
+| BDD Feature | `<feature_name>.feature`              | `authentication.feature`        |
+| BDD Steps   | `test_<feature>_steps.py`             | `test_authentication_steps.py`  |
+| Integration | `test_<workflow>_integration.py`      | `test_auth_flow_integration.py` |
+| E2E         | `test_<workflow>_e2e.py`              | `test_user_registration_e2e.py` |
+| GraphQL     | `test_<operation>_<entity>.py`        | `test_query_users.py`           |
 
 ### TDD (Test-Driven Development)
 
 **Principles:**
+
 1. Write the test first (Red)
 2. Write minimal code to pass (Green)
 3. Refactor while keeping tests green (Refactor)
@@ -838,6 +892,7 @@ class TestUserModel:
 ```
 
 **Key Rules for TDD:**
+
 - Test class names: `TestComponentName`
 - Test method names: `test_<what>_<condition>_<expected_result>`
 - Use type hints for all test methods
@@ -849,6 +904,7 @@ class TestUserModel:
 ### BDD (Behaviour-Driven Development)
 
 **Principles:**
+
 - Write scenarios in Gherkin (Given/When/Then)
 - Make tests readable by non-developers
 - Focus on behaviour, not implementation
@@ -1383,13 +1439,13 @@ Run specific test categories:
 
 ### Test Coverage Requirements
 
-| Test Type   | Coverage Target | Purpose                           |
-| ----------- | --------------- | --------------------------------- |
-| Unit        | 90%+            | Core business logic               |
-| Integration | 80%+            | Component interactions            |
-| E2E         | 60%+            | Critical user workflows           |
-| GraphQL     | 85%+            | API queries and mutations         |
-| Overall     | 80%+            | Entire codebase                   |
+| Test Type   | Coverage Target | Purpose                   |
+| ----------- | --------------- | ------------------------- |
+| Unit        | 90%+            | Core business logic       |
+| Integration | 80%+            | Component interactions    |
+| E2E         | 60%+            | Critical user workflows   |
+| GraphQL     | 85%+            | API queries and mutations |
+| Overall     | 80%+            | Entire codebase           |
 
 ### Fixtures and Factory Pattern
 

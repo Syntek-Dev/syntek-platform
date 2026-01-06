@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Implement the third-party integration adapter system enabling connections to popular services (payment processors, email services, CRM, analytics) with encrypted credential storage and webhook support.
+Implement the third-party integration adapter system enabling connections to popular services
+(payment processors, email services, CRM, analytics) with encrypted credential storage
+and webhook support.
 
 ---
 
@@ -22,7 +24,8 @@ Implement the third-party integration adapter system enabling connections to pop
 | ------------------------------------------------------- | ------------------------------- | ------ | ------- |
 | [US-014](../STORIES/US-014-THIRD-PARTY-INTEGRATIONS.md) | Integrations Framework (Part 1) | 11     | Pending |
 
-_US-014 split: 11 points for adapter pattern, core integrations, and webhook system this sprint, 2 points for additional integrations in Sprint 17_
+_US-014 split: 11 points for adapter pattern, core integrations, and webhook system this sprint,
+2 points for additional integrations in Sprint 17_
 
 ---
 

@@ -42,7 +42,8 @@ Container directory for all Django application modules.
 
 ## Overview
 
-This directory contains all Django applications (apps) for the project. Each app is a self-contained module with its own models, views, serializers, and tests.
+This directory contains all Django applications (apps) for the project. Each app is a
+self-contained module with its own models, views, serializers, and tests.
 
 **Key Principle:** Each app should be reusable and not tightly coupled to other apps.
 

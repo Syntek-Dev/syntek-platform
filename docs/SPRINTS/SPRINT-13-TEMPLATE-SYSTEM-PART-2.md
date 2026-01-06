@@ -10,7 +10,8 @@
 
 ## Sprint Goal
 
-Complete the template system by implementing the customisation wizard, template preview refinements, and additional template features. This sprint finalises the rapid website creation experience.
+Complete the template system by implementing the customisation wizard, template preview refinements,
+and additional template features. This sprint finalises the rapid website creation experience.
 
 ---
 

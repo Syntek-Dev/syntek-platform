@@ -23,7 +23,10 @@
 
 ## Sprint Goal
 
-Complete the Password Manager application with advanced features including access history, password policies, password health dashboard, browser extension integration, emergency access procedures, and backup/export functionality. This sprint adds "Should Have" features and polishes the password management experience.
+Complete the Password Manager application with advanced features including access history,
+password policies, password health dashboard, browser extension integration, emergency access
+procedures, and backup/export functionality. This sprint adds "Should Have" features and
+polishes the password management experience.
 
 ---
 

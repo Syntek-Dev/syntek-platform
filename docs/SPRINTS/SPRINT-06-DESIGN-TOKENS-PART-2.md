@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Complete the design token system by implementing export functionality, token templates, and polish features. This sprint finalises the design token foundation enabling full consumption across all platforms.
+Complete the design token system by implementing export functionality, token templates,
+and polish features. This sprint finalises the design token foundation enabling full
+consumption across all platforms.
 
 ---
 

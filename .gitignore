@@ -82,9 +82,13 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
+!package-lock.json
 yarn.lock
 pnpm-lock.yaml
+
+# Python package manager lock files
+# IMPORTANT: uv.lock MUST be committed (do not add it here)
+# uv.lock ensures reproducible builds like package-lock.json
 
 # Docker
 *.log
@@ -98,7 +102,8 @@ pnpm-lock.yaml
 # !docs/METRICS/README.md
 
 # direnv
-.envrc.local
+.envrc
+.envrc.*
 
 # GraphQL
 schema.graphql.bak

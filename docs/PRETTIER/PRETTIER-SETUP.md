@@ -411,10 +411,10 @@ Prettier works alongside:
 
 ## Resources
 
-- **Prettier Docs:** https://prettier.io/docs/en/
-- **Prettier Playground:** https://prettier.io/playground/
-- **Jinja Template Plugin:** https://github.com/davidodenwald/prettier-plugin-jinja-template
-- **VS Code Extension:** https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
+- **Prettier Docs:** <https://prettier.io/docs/en/>
+- **Prettier Playground:** <https://prettier.io/playground/>
+- **Jinja Template Plugin:** <https://github.com/davidodenwald/prettier-plugin-jinja-template>
+- **VS Code Extension:** <https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode>
 
 ---
 
@@ -422,7 +422,7 @@ Prettier works alongside:
 
 If you encounter issues not covered here, check:
 
-1. **Prettier GitHub Issues:** https://github.com/prettier/prettier/issues
+1. **Prettier GitHub Issues:** <https://github.com/prettier/prettier/issues>
 2. **Project CLAUDE.md:** `.claude/CLAUDE.md`
 3. **Team documentation:** `docs/`
 

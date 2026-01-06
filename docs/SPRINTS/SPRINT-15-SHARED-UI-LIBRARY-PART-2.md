@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Complete the shared UI component library by adding navigation components, data display components, Storybook documentation, and mobile (NativeWind) versions. This sprint finalises the comprehensive component library for both web and mobile.
+Complete the shared UI component library by adding navigation components, data display components,
+Storybook documentation, and mobile (NativeWind) versions. This sprint finalises the comprehensive
+component library for both web and mobile.
 
 ---
 

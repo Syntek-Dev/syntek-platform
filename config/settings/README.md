@@ -39,7 +39,8 @@ Environment-specific Django settings for dev, test, staging, and production.
 
 ## Overview
 
-This directory contains Django settings organized by environment. Each environment extends the base settings with environment-specific overrides.
+This directory contains Django settings organized by environment. Each environment extends the
+base settings with environment-specific overrides.
 
 **Pattern:** Single settings module per environment extending shared base configuration.
 

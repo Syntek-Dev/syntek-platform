@@ -15,7 +15,6 @@
 - **Could Have:** Secret validation schema, secret complexity requirements
 - **Won't Have:** Hardware security module (HSM) in Phase 13
 
-
 **Sprint:** Sprint 26
 
 ## Repository Coverage

@@ -164,6 +164,6 @@ python scripts/clickup/pull_tasks.py
 
 ## Support
 
-- ClickUp API: https://clickup.com/api
-- GitHub Actions: https://docs.github.com/en/actions
+- ClickUp API: <https://clickup.com/api>
+- GitHub Actions: <https://docs.github.com/en/actions>
 - Check workflow logs: Actions tab in GitHub

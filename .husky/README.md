@@ -190,7 +190,8 @@ git push --no-verify
 git commit --no-verify -m "message"
 ```
 
-**Warning:** Bypassing hooks means code quality checks won't run. Only do this if you have a very good reason and plan to fix issues immediately.
+**Warning:** Bypassing hooks means code quality checks won't run. Only do this if you have a
+very good reason and plan to fix issues immediately.
 
 ---
 

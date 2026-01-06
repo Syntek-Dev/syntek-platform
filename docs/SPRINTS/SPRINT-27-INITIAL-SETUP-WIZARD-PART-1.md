@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Implement a comprehensive guided setup wizard for rapid Syntek platform deployment with domain configuration, template selection, design token setup, admin creation, and environment variable configuration.
+Implement a comprehensive guided setup wizard for rapid Syntek platform deployment with domain
+configuration, template selection, design token setup, admin creation, and environment
+variable configuration.
 
 ---
 
@@ -22,7 +24,8 @@ Implement a comprehensive guided setup wizard for rapid Syntek platform deployme
 | --------------------------------------------------- | --------------------- | ------ | ------- |
 | [US-018](../STORIES/US-018-INITIAL-SETUP-WIZARD.md) | Setup Wizard (Part 1) | 11     | Pending |
 
-_US-018 split: 11 points for core wizard steps (domain, template, tokens, admin, secrets) this sprint, 2 points for verification and polish in Sprint 22_
+_US-018 split: 11 points for core wizard steps (domain, template, tokens, admin, secrets) this
+sprint, 2 points for verification and polish in Sprint 22_
 
 ---
 

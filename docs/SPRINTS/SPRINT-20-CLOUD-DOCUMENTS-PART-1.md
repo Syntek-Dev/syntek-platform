@@ -23,7 +23,9 @@
 
 ## Sprint Goal
 
-Implement the foundation of the Cloud Documents application using OnlyOffice and S3/DO Spaces storage. This sprint focuses on OnlyOffice integration, document creation/editing, storage infrastructure, and basic document browser interface.
+Implement the foundation of the Cloud Documents application using OnlyOffice and S3/DO Spaces
+storage. This sprint focuses on OnlyOffice integration, document creation/editing, storage
+infrastructure, and basic document browser interface.
 
 ---
 

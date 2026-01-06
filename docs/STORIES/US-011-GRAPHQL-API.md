@@ -15,7 +15,6 @@
 - **Could Have:** Query cost analysis, automatic schema documentation, GraphQL playground
 - **Won't Have:** Federation in Phase 1
 
-
 **Sprint:** Sprint 02
 
 ## Repository Coverage

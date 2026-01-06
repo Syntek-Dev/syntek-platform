@@ -10,7 +10,9 @@
 
 ## Sprint Goal
 
-Complete the deployment pipeline by implementing mobile app deployment (iOS/Android), blue-green deployments, automatic rollback, and comprehensive monitoring. This sprint finalises the 24-sprint development roadmap for the Syntek CMS Platform.
+Complete the deployment pipeline by implementing mobile app deployment (iOS/Android), blue-green
+deployments, automatic rollback, and comprehensive monitoring. This sprint finalises the
+24-sprint development roadmap for the Syntek CMS Platform.
 
 ---
 
