@@ -52,21 +52,19 @@ jobs:
 
       - name: Check for outdated dependencies
         run: |
-          # Check all requirements files
-          for req_file in requirements/*.txt; do
-            echo "Checking $req_file for outdated dependencies"
-            pip list --outdated --format=json > outdated.json || true
+          # Install project dependencies from pyproject.toml
+          pip install -e .
+          echo "Checking for outdated dependencies"
+          pip list --outdated --format=json > outdated.json || true
 
-            if [ -s outdated.json ]; then
-              echo "Outdated packages found in $req_file:"
-              cat outdated.json
-            fi
-          done
+          if [ -s outdated.json ]; then
+            echo "Outdated packages found:"
+            cat outdated.json
+          fi
 
       - name: Audit dependencies for vulnerabilities
         run: |
-          pip-audit --requirement requirements/base.txt --format json --output audit-base.json || true
-          pip-audit --requirement requirements/production.txt --format json --output audit-production.json || true
+          pip-audit --format json --output audit-results.json || true
 
       - name: Upload audit results
         uses: actions/upload-artifact@v4
@@ -74,14 +72,14 @@ jobs:
         with:
           name: dependency-audit-results
           path: |
-            audit-*.json
+            audit-results.json
             outdated.json
           retention-days: 30
 
       - name: Check for critical vulnerabilities
         run: |
           # Fail if critical vulnerabilities are found
-          pip-audit --requirement requirements/production.txt --vulnerability-service osv --strict
+          pip-audit --vulnerability-service osv --strict
 
   license-scan:
     name: License Compliance Scan
@@ -103,7 +101,7 @@ jobs:
 
       - name: Install project dependencies
         run: |
-          pip install -r requirements/base.txt
+          pip install -e .
 
       - name: Generate license report
         run: |

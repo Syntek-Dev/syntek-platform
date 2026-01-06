@@ -8,7 +8,7 @@
 
 ---
 
-This directory contains automated CI/CD workflows for the Django + Wagtail backend template.
+This directory contains automated CI/CD workflows for the Django backend template.
 
 ## Table of Contents
 

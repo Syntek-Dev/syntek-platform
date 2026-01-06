@@ -7,15 +7,15 @@ queries:
   - uses: security-and-quality
 
 paths-ignore:
-  - '**/migrations/**'
-  - '**/tests/**'
-  - '**/test_*.py'
-  - '**/*_test.py'
-  - '**/staticfiles/**'
-  - '**/media/**'
-  - '**/node_modules/**'
-  - '**/.venv/**'
-  - '**/venv/**'
+  - "**/migrations/**"
+  - "**/tests/**"
+  - "**/test_*.py"
+  - "**/*_test.py"
+  - "**/staticfiles/**"
+  - "**/media/**"
+  - "**/node_modules/**"
+  - "**/.venv/**"
+  - "**/venv/**"
 
 paths:
   - apps/

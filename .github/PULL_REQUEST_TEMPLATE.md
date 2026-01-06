@@ -80,6 +80,7 @@ Relates to #
 - [ ] All tests pass locally
 
 **Test Configuration:**
+
 - Python version:
 - Django version:
 - Database:
@@ -93,8 +94,7 @@ Relates to #
 - [ ] Migrations are reversible
 - [ ] Migration path documented
 
-**Migration files:**
--
+## **Migration files:**
 
 ## GraphQL Schema Changes
 

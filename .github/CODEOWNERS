@@ -22,10 +22,6 @@ Dockerfile* @syntek-studio/devops
 /apps/*/schema.py @syntek-studio/backend-team @syntek-studio/frontend-team
 schema.graphql @syntek-studio/backend-team @syntek-studio/frontend-team
 
-# Wagtail models and admin
-/apps/*/wagtail_hooks.py @syntek-studio/content-team
-/apps/*/models.py @syntek-studio/backend-team
-
 # Documentation
 /docs/ @syntek-studio/backend-team
 *.md @syntek-studio/backend-team
