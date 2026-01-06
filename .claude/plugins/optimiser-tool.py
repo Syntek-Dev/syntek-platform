@@ -11,7 +11,6 @@ import shutil
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
 
 
 def get_metrics_dir() -> Path:
@@ -51,12 +50,12 @@ def load_config() -> dict:
     """Load the metrics configuration."""
     config_path = get_metrics_dir() / "config.json"
     if config_path.exists():
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             return json.load(f)
     return {"auto_optimisation_enabled": True, "min_runs_for_analysis": 50}
 
 
-def query_runs(agent: Optional[str] = None, days: int = 14) -> list:
+def query_runs(agent: str | None = None, days: int = 14) -> list:
     """Query run records for analysis."""
     runs_dir = get_metrics_dir() / "runs"
     if not runs_dir.exists():
@@ -69,7 +68,7 @@ def query_runs(agent: Optional[str] = None, days: int = 14) -> list:
         if not month_dir.is_dir():
             continue
         for run_file in month_dir.glob("*.json"):
-            with open(run_file, "r") as f:
+            with open(run_file) as f:
                 run_data = json.load(f)
             run_time = datetime.fromisoformat(run_data["timestamp"].replace("Z", "+00:00"))
             if run_time.replace(tzinfo=None) < cutoff_date:
@@ -81,7 +80,7 @@ def query_runs(agent: Optional[str] = None, days: int = 14) -> list:
     return runs
 
 
-def query_feedback(agent: Optional[str] = None, days: int = 14) -> list:
+def query_feedback(agent: str | None = None, days: int = 14) -> list:
     """Query feedback records for analysis."""
     feedback_dir = get_metrics_dir() / "feedback"
     if not feedback_dir.exists():
@@ -94,7 +93,7 @@ def query_feedback(agent: Optional[str] = None, days: int = 14) -> list:
         if not month_dir.is_dir():
             continue
         for fb_file in month_dir.glob("*.json"):
-            with open(fb_file, "r") as f:
+            with open(fb_file) as f:
                 fb_data = json.load(f)
             fb_time = datetime.fromisoformat(fb_data["timestamp"].replace("Z", "+00:00"))
             if fb_time.replace(tzinfo=None) < cutoff_date:
@@ -106,7 +105,7 @@ def query_feedback(agent: Optional[str] = None, days: int = 14) -> list:
     return records
 
 
-def get_agent_prompt(agent: str) -> Optional[str]:
+def get_agent_prompt(agent: str) -> str | None:
     """Get the current prompt for an agent."""
     plugin_dir = get_plugin_dir()
     agent_file = plugin_dir / "agents" / f"{agent}.md"
@@ -280,7 +279,7 @@ def list_proposals(status: str = "pending") -> dict:
 
     proposals = []
     for prop_file in sorted(proposals_dir.glob("*.json"), reverse=True):
-        with open(prop_file, "r") as f:
+        with open(prop_file) as f:
             proposal = json.load(f)
         proposals.append(
             {
@@ -295,14 +294,14 @@ def list_proposals(status: str = "pending") -> dict:
     return {"proposals": proposals, "count": len(proposals), "status": status}
 
 
-def get_proposal(proposal_id: str) -> Optional[dict]:
+def get_proposal(proposal_id: str) -> dict | None:
     """Get a specific proposal."""
     metrics_dir = get_metrics_dir()
 
     for status in ["pending", "applied", "rejected"]:
         prop_file = metrics_dir / "optimisations" / status / f"{proposal_id}.json"
         if prop_file.exists():
-            with open(prop_file, "r") as f:
+            with open(prop_file) as f:
                 return json.load(f)
 
     return None
@@ -324,7 +323,7 @@ def apply_proposal(proposal_id: str) -> dict:
     if not pending_file.exists():
         return {"error": f"Proposal not found: {proposal_id}"}
 
-    with open(pending_file, "r") as f:
+    with open(pending_file) as f:
         proposal = json.load(f)
 
     agent = proposal.get("agent")
@@ -389,7 +388,7 @@ def reject_proposal(proposal_id: str, reason: str = "") -> dict:
     if not pending_file.exists():
         return {"error": f"Proposal not found: {proposal_id}"}
 
-    with open(pending_file, "r") as f:
+    with open(pending_file) as f:
         proposal = json.load(f)
 
     proposal["status"] = "rejected"
@@ -445,7 +444,7 @@ def rollback_agent(agent: str) -> dict:
 
 def get_status() -> dict:
     """Get overall optimisation status."""
-    metrics_dir = get_metrics_dir()
+    get_metrics_dir()
     config = load_config()
 
     pending = list_proposals("pending")

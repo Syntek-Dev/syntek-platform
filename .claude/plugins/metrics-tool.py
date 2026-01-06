@@ -9,11 +9,9 @@ Supports recording runs, querying history, and generating aggregates.
 import hashlib
 import json
 import os
-import subprocess
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
 
 
 def get_metrics_dir() -> Path:
@@ -60,7 +58,7 @@ def load_config() -> dict:
     """Load the metrics configuration."""
     config_path = get_metrics_dir() / "config.json"
     if config_path.exists():
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             return json.load(f)
     return {"enabled": True}
 
@@ -68,10 +66,10 @@ def load_config() -> dict:
 def record_run(
     agent: str,
     command: str = "",
-    variant: Optional[str] = None,
+    variant: str | None = None,
     status: str = "completed",
     duration: float = 0,
-    error: Optional[str] = None,
+    error: str | None = None,
     files_modified: int = 0,
     files_read: int = 0,
 ) -> dict:
@@ -137,7 +135,7 @@ def record_run(
     return run_data
 
 
-def get_last_run_id() -> Optional[str]:
+def get_last_run_id() -> str | None:
     """Get the ID of the last recorded run."""
     last_run_file = get_metrics_dir() / ".last_run"
     if last_run_file.exists():
@@ -145,7 +143,7 @@ def get_last_run_id() -> Optional[str]:
     return None
 
 
-def get_run(run_id: str) -> Optional[dict]:
+def get_run(run_id: str) -> dict | None:
     """Get a specific run by ID."""
     runs_dir = get_metrics_dir() / "runs"
     # Search in all month directories
@@ -153,19 +151,19 @@ def get_run(run_id: str) -> Optional[dict]:
         if month_dir.is_dir():
             run_file = month_dir / f"{run_id}.json"
             if run_file.exists():
-                with open(run_file, "r") as f:
+                with open(run_file) as f:
                     return json.load(f)
     return None
 
 
-def update_run(run_id: str, updates: dict) -> Optional[dict]:
+def update_run(run_id: str, updates: dict) -> dict | None:
     """Update an existing run record."""
     runs_dir = get_metrics_dir() / "runs"
     for month_dir in runs_dir.iterdir():
         if month_dir.is_dir():
             run_file = month_dir / f"{run_id}.json"
             if run_file.exists():
-                with open(run_file, "r") as f:
+                with open(run_file) as f:
                     run_data = json.load(f)
                 run_data.update(updates)
                 with open(run_file, "w") as f:
@@ -175,10 +173,10 @@ def update_run(run_id: str, updates: dict) -> Optional[dict]:
 
 
 def query_runs(
-    agent: Optional[str] = None,
+    agent: str | None = None,
     days: int = 7,
-    status: Optional[str] = None,
-    variant: Optional[str] = None,
+    status: str | None = None,
+    variant: str | None = None,
     limit: int = 100,
 ) -> list:
     """
@@ -209,7 +207,7 @@ def query_runs(
             if len(runs) >= limit:
                 break
 
-            with open(run_file, "r") as f:
+            with open(run_file) as f:
                 run_data = json.load(f)
 
             # Parse timestamp
@@ -230,7 +228,7 @@ def query_runs(
     return runs[:limit]
 
 
-def get_agent_summary(agent: Optional[str] = None, days: int = 30) -> dict:
+def get_agent_summary(agent: str | None = None, days: int = 30) -> dict:
     """
     Get summary statistics for an agent or all agents.
 
@@ -288,7 +286,7 @@ def get_agent_summary(agent: Optional[str] = None, days: int = 30) -> dict:
     }
 
 
-def aggregate_daily(date: Optional[str] = None) -> dict:
+def aggregate_daily(date: str | None = None) -> dict:
     """
     Generate daily aggregate for a specific date.
 
@@ -313,7 +311,7 @@ def aggregate_daily(date: Optional[str] = None) -> dict:
 
     if month_dir.exists():
         for run_file in month_dir.glob("*.json"):
-            with open(run_file, "r") as f:
+            with open(run_file) as f:
                 run_data = json.load(f)
             run_time = datetime.fromisoformat(run_data["timestamp"].replace("Z", "+00:00"))
             run_time = run_time.replace(tzinfo=None)

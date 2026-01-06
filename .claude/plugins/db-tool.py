@@ -7,14 +7,12 @@ Returns structured JSON output for integration with database, backend, and setup
 Supports detection of database type, connection info, and ORM/migration framework.
 """
 import json
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Any, Optional
 
 
-def find_config_files(directory: Optional[str] = None) -> dict:
+def find_config_files(directory: str | None = None) -> dict:
     """
     Find database configuration files in the specified directory.
 
@@ -89,7 +87,7 @@ def find_config_files(directory: Optional[str] = None) -> dict:
     }
 
 
-def detect_database_from_env(env_path: Optional[str] = None) -> dict:
+def detect_database_from_env(env_path: str | None = None) -> dict:
     """
     Detect database configuration from environment files.
 
@@ -136,7 +134,7 @@ def detect_database_from_env(env_path: Optional[str] = None) -> dict:
         if path.exists():
             source_file = str(path)
             try:
-                with open(path, "r", encoding="utf-8") as f:
+                with open(path, encoding="utf-8") as f:
                     for line in f:
                         line = line.strip()
                         if not line or line.startswith("#"):
@@ -188,7 +186,7 @@ def detect_database_from_env(env_path: Optional[str] = None) -> dict:
     }
 
 
-def detect_orm_framework(directory: Optional[str] = None) -> dict:
+def detect_orm_framework(directory: str | None = None) -> dict:
     """
     Detect the ORM and migration framework used in the project.
 
@@ -288,7 +286,7 @@ def detect_orm_framework(directory: Optional[str] = None) -> dict:
     return detected
 
 
-def find_migrations(directory: Optional[str] = None) -> dict:
+def find_migrations(directory: str | None = None) -> dict:
     """
     Find and list migration files in the project.
 

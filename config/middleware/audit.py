@@ -17,9 +17,7 @@ GDPR Compliance:
 
 import ipaddress
 import logging
-from typing import Callable, Optional
 
-from django.conf import settings
 from django.contrib.auth.signals import (
     user_logged_in,
     user_logged_out,
@@ -142,7 +140,7 @@ class SecurityAuditMiddleware(MiddlewareMixin):
 
     def process_exception(
         self, request: HttpRequest, exception: Exception
-    ) -> Optional[HttpResponse]:
+    ) -> HttpResponse | None:
         """Log security exceptions.
 
         Args:
@@ -158,7 +156,7 @@ class SecurityAuditMiddleware(MiddlewareMixin):
         return None
 
     def _log_authorization_failure(
-        self, request: HttpRequest, response: Optional[HttpResponse]
+        self, request: HttpRequest, response: HttpResponse | None
     ) -> None:
         """Log when a user is denied access to a resource.
 

@@ -27,16 +27,15 @@ Examples:
 
 import argparse
 import json
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 from clickup_client import get_client
 
 
-def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
+def parse_sprint_file(file_path: Path) -> dict[str, Any] | None:
     """Parse a sprint markdown file to extract story assignments.
 
     Args:
@@ -45,7 +44,7 @@ def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
     Returns:
         Dictionary containing sprint data with story assignments.
     """
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     sprint_data = {
@@ -164,7 +163,7 @@ def add_sprint_metadata_to_story(story_file: Path, sprint_name: str, dry_run: bo
         sprint_name: Sprint name (e.g., "Sprint 01").
         dry_run: If True, only preview changes.
     """
-    with open(story_file, "r", encoding="utf-8") as f:
+    with open(story_file, encoding="utf-8") as f:
         content = f.read()
 
     # Check if Sprint metadata already exists
@@ -205,10 +204,10 @@ def add_sprint_metadata_to_story(story_file: Path, sprint_name: str, dry_run: bo
 
 def find_or_create_sprint_list(
     client,
-    sprint_data: Dict[str, Any],
-    config: Dict,
+    sprint_data: dict[str, Any],
+    config: dict,
     dry_run: bool = False,
-) -> Optional[str]:
+) -> str | None:
     """Find or create a sprint list in ClickUp.
 
     Args:
@@ -231,7 +230,7 @@ def find_or_create_sprint_list(
             )
             return list_data["id"]
         except Exception:
-            print(f"  ClickUp list ID in file is invalid, will search by name")
+            print("  ClickUp list ID in file is invalid, will search by name")
 
     # Search for existing list by name
     lists = client.get_lists_in_folder(folder_id)
@@ -265,7 +264,7 @@ def find_or_create_sprint_list(
         return None
 
 
-def build_sprint_description(sprint_data: Dict[str, Any]) -> str:
+def build_sprint_description(sprint_data: dict[str, Any]) -> str:
     """Build formatted sprint description.
 
     Args:
@@ -299,9 +298,9 @@ def build_sprint_description(sprint_data: Dict[str, Any]) -> str:
 
 def link_stories_to_sprint(
     client,
-    sprint_data: Dict[str, Any],
+    sprint_data: dict[str, Any],
     list_id: str,
-    story_mapping: Dict[str, str],
+    story_mapping: dict[str, str],
     dry_run: bool = False,
 ):
     """Link user stories to the sprint list (keeps them in backlog too).
@@ -317,7 +316,7 @@ def link_stories_to_sprint(
         dry_run: If True, only preview changes.
     """
     if not sprint_data.get("stories"):
-        print(f"  No stories assigned to this sprint")
+        print("  No stories assigned to this sprint")
         return
 
     print(f"  Linking {len(sprint_data['stories'])} stories to sprint list...")
@@ -344,7 +343,7 @@ def link_stories_to_sprint(
             task = client.get_task(clickup_task_id)
 
             # Check if task is already in this list (primary or linked)
-            task_list_ids = [task.get("list", {}).get("id")]
+            [task.get("list", {}).get("id")]
             # ClickUp returns linked lists in the 'folder' or additional fields
             # but the primary check is the list.id
 
@@ -376,7 +375,7 @@ def write_clickup_list_id_to_file(file_path: Path, list_id: str):
         file_path: Path to the sprint file.
         list_id: ClickUp list ID to write.
     """
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     # Check if ID already exists
@@ -434,7 +433,7 @@ def main():
     mapping_file = Path("config/clickup-story-mapping.json")
     story_mapping = {}
     if mapping_file.exists():
-        with open(mapping_file, "r", encoding="utf-8") as f:
+        with open(mapping_file, encoding="utf-8") as f:
             story_mapping = json.load(f)
     else:
         print("Warning: Story mapping file not found")
@@ -459,7 +458,7 @@ def main():
         ]
 
     if not sprint_files:
-        print(f"No sprint files found")
+        print("No sprint files found")
         sys.exit(0)
 
     print(f"Found {len(sprint_files)} sprint file(s)")
@@ -473,7 +472,7 @@ def main():
     # Load existing sprint mapping
     sprint_mapping_file = Path("config/clickup-sprint-mapping.json")
     if sprint_mapping_file.exists():
-        with open(sprint_mapping_file, "r", encoding="utf-8") as f:
+        with open(sprint_mapping_file, encoding="utf-8") as f:
             sprint_mapping = json.load(f)
 
     for sprint_file in sorted(sprint_files):
@@ -489,7 +488,7 @@ def main():
 
             # Step 1: Update story files with Sprint metadata
             if not args.skip_story_metadata and sprint_data.get("stories"):
-                print(f"\nStep 1: Updating story files with Sprint metadata...")
+                print("\nStep 1: Updating story files with Sprint metadata...")
                 stories_path = Path("docs/STORIES")
                 sprint_name = f"Sprint {sprint_data['sprint_number']:02d}"
 
@@ -505,7 +504,7 @@ def main():
                         print(f"  Warning: Story file not found for {story_id}")
 
             # Step 2: Create or find sprint list
-            print(f"\nStep 2: Creating/finding sprint list in ClickUp...")
+            print("\nStep 2: Creating/finding sprint list in ClickUp...")
             list_id = find_or_create_sprint_list(
                 client,
                 sprint_data,
@@ -514,12 +513,12 @@ def main():
             )
 
             if not list_id:
-                print(f"  ERROR: Could not create/find sprint list")
+                print("  ERROR: Could not create/find sprint list")
                 error_count += 1
                 continue
 
             # Step 3: Link stories to sprint list (keeps them in backlog too)
-            print(f"\nStep 3: Linking stories to sprint list...")
+            print("\nStep 3: Linking stories to sprint list...")
             link_stories_to_sprint(
                 client,
                 sprint_data,
@@ -531,7 +530,7 @@ def main():
             # Step 4: Write list ID back to sprint file
             if not args.dry_run:
                 write_clickup_list_id_to_file(sprint_file, list_id)
-                print(f"\nStep 4: Updated sprint file with ClickUp list ID")
+                print("\nStep 4: Updated sprint file with ClickUp list ID")
 
             success_count += 1
             sprint_mapping[sprint_data["sprint_id"]] = list_id
@@ -555,7 +554,7 @@ def main():
     print(f"  Errors: {error_count}")
 
     if args.dry_run:
-        print(f"\nRun without --dry-run to apply changes")
+        print("\nRun without --dry-run to apply changes")
 
 
 if __name__ == "__main__":

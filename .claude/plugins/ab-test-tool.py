@@ -13,7 +13,6 @@ import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 
 def get_metrics_dir() -> Path:
@@ -53,12 +52,12 @@ def load_config() -> dict:
     """Load the metrics configuration."""
     config_path = get_metrics_dir() / "config.json"
     if config_path.exists():
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             return json.load(f)
     return {"ab_testing_enabled": True}
 
 
-def get_agent_prompt(agent: str) -> Optional[str]:
+def get_agent_prompt(agent: str) -> str | None:
     """Get the current prompt for an agent."""
     plugin_dir = get_plugin_dir()
     agent_file = plugin_dir / "agents" / f"{agent}.md"
@@ -118,7 +117,7 @@ def create_test(
 
     if test_file.exists():
         # Add variant to existing test
-        with open(test_file, "r") as f:
+        with open(test_file) as f:
             test_config = json.load(f)
         test_config["variants"].append(
             {
@@ -172,7 +171,7 @@ def create_test(
     }
 
 
-def select_variant(agent: str, session_id: Optional[str] = None) -> dict:
+def select_variant(agent: str, session_id: str | None = None) -> dict:
     """
     Select a variant for an agent run.
 
@@ -193,7 +192,7 @@ def select_variant(agent: str, session_id: Optional[str] = None) -> dict:
     if not test_file.exists():
         return {"variant": None, "reason": "No active test for this agent"}
 
-    with open(test_file, "r") as f:
+    with open(test_file) as f:
         test_config = json.load(f)
 
     if test_config.get("status") != "active":
@@ -237,7 +236,7 @@ def select_variant(agent: str, session_id: Optional[str] = None) -> dict:
     }
 
 
-def update_results(agent: str, variant: str, satisfaction: Optional[int] = None) -> dict:
+def update_results(agent: str, variant: str, satisfaction: int | None = None) -> dict:
     """
     Update test results with a new run.
 
@@ -255,7 +254,7 @@ def update_results(agent: str, variant: str, satisfaction: Optional[int] = None)
     if not test_file.exists():
         return {"error": "No active test for this agent"}
 
-    with open(test_file, "r") as f:
+    with open(test_file) as f:
         test_config = json.load(f)
 
     results = test_config.get("results", {})
@@ -303,7 +302,7 @@ def get_test_status(agent: str) -> dict:
     if not test_file.exists():
         return {"error": f"No active test for agent: {agent}"}
 
-    with open(test_file, "r") as f:
+    with open(test_file) as f:
         test_config = json.load(f)
 
     # Calculate satisfaction rates
@@ -414,7 +413,7 @@ def calculate_significance(test_config: dict) -> dict:
     }
 
 
-def conclude_test(agent: str, winner: Optional[str] = None) -> dict:
+def conclude_test(agent: str, winner: str | None = None) -> dict:
     """
     Conclude an A/B test and optionally apply the winner.
 
@@ -431,7 +430,7 @@ def conclude_test(agent: str, winner: Optional[str] = None) -> dict:
     if not test_file.exists():
         return {"error": f"No active test for agent: {agent}"}
 
-    with open(test_file, "r") as f:
+    with open(test_file) as f:
         test_config = json.load(f)
 
     # Update status
@@ -485,7 +484,7 @@ def list_tests() -> dict:
 
     tests = []
     for test_file in active_dir.glob("*.json"):
-        with open(test_file, "r") as f:
+        with open(test_file) as f:
             test_config = json.load(f)
         tests.append(
             {
@@ -530,7 +529,6 @@ def main():
         # Parse arguments
         agent = None
         variant_name = None
-        description = ""
 
         i = 2
         while i < len(sys.argv):
@@ -542,7 +540,8 @@ def main():
                 variant_name = sys.argv[i + 1]
                 i += 2
             elif arg == "--description" and i + 1 < len(sys.argv):
-                description = sys.argv[i + 1]
+                # description is parsed but used via stdin workflow
+                _ = sys.argv[i + 1]
                 i += 2
             else:
                 i += 1

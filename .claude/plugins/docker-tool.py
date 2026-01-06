@@ -10,7 +10,6 @@ import json
 import shutil
 import subprocess
 import sys
-from typing import Optional
 
 
 def is_docker_installed() -> bool:
@@ -152,7 +151,7 @@ def get_all_containers(include_stopped: bool = True) -> dict:
     }
 
 
-def get_compose_status(project_name: Optional[str] = None) -> dict:
+def get_compose_status(project_name: str | None = None) -> dict:
     """
     Get Docker Compose project status.
 
@@ -226,7 +225,6 @@ def get_docker_images(filter_dangling: bool = False) -> dict:
         return {"error": stderr or "Failed to list images"}
 
     images = []
-    total_size = 0
     for line in stdout.strip().split("\n"):
         if not line:
             continue

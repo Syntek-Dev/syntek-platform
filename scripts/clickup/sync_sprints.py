@@ -21,16 +21,15 @@ Examples:
 
 import argparse
 import json
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from clickup_client import get_client
 
 
-def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
+def parse_sprint_file(file_path: Path) -> dict[str, Any] | None:
     """Parse a sprint markdown file.
 
     Args:
@@ -39,7 +38,7 @@ def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
     Returns:
         Dictionary containing sprint data, or None if parsing fails.
     """
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     # Extract sprint metadata
@@ -154,10 +153,10 @@ def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
 
 def find_or_create_sprint_list(
     client,
-    sprint_data: Dict[str, Any],
-    config: Dict,
+    sprint_data: dict[str, Any],
+    config: dict,
     dry_run: bool = False,
-) -> Optional[str]:
+) -> str | None:
     """Find or create a sprint list in ClickUp.
 
     Args:
@@ -178,7 +177,7 @@ def find_or_create_sprint_list(
             print(f"Found existing sprint list: {sprint_data['sprint_id']} (ID: {list_data['id']})")
             return list_data["id"]
         except Exception:
-            print(f"ClickUp list ID in file is invalid, will search by name")
+            print("ClickUp list ID in file is invalid, will search by name")
 
     # Search for existing list by name
     lists = client.get_lists_in_folder(folder_id)
@@ -212,7 +211,7 @@ def find_or_create_sprint_list(
         return None
 
 
-def build_sprint_description(sprint_data: Dict[str, Any]) -> str:
+def build_sprint_description(sprint_data: dict[str, Any]) -> str:
     """Build formatted sprint description.
 
     Args:
@@ -246,9 +245,9 @@ def build_sprint_description(sprint_data: Dict[str, Any]) -> str:
 
 def move_stories_to_sprint(
     client,
-    sprint_data: Dict[str, Any],
+    sprint_data: dict[str, Any],
     list_id: str,
-    story_mapping: Dict[str, str],
+    story_mapping: dict[str, str],
     dry_run: bool = False,
 ):
     """Move user stories to the sprint list.
@@ -291,7 +290,7 @@ def write_clickup_list_id_to_file(file_path: Path, list_id: str):
         file_path: Path to the sprint file.
         list_id: ClickUp list ID to write.
     """
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     # Check if ID already exists
@@ -348,7 +347,7 @@ def main():
     mapping_file = Path("config/clickup-story-mapping.json")
     story_mapping = {}
     if mapping_file.exists():
-        with open(mapping_file, "r", encoding="utf-8") as f:
+        with open(mapping_file, encoding="utf-8") as f:
             story_mapping = json.load(f)
     else:
         print("Warning: Story mapping file not found, stories won't be linked to sprints")
@@ -413,7 +412,7 @@ def main():
                     # Write ClickUp list ID back to file
                     if not args.dry_run:
                         write_clickup_list_id_to_file(sprint_file, list_id)
-                        print(f"  Updated file with ClickUp list ID")
+                        print("  Updated file with ClickUp list ID")
                 elif args.dry_run:
                     success_count += 1
                 else:
@@ -437,7 +436,7 @@ def main():
         mapping_file = Path("config/clickup-sprint-mapping.json")
         mapping = {}
         if mapping_file.exists():
-            with open(mapping_file, "r", encoding="utf-8") as f:
+            with open(mapping_file, encoding="utf-8") as f:
                 mapping = json.load(f)
 
         for result in results:

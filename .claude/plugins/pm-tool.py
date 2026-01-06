@@ -11,7 +11,6 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Optional
 
 # PM tool detection configurations
 PM_TOOLS = {
@@ -156,7 +155,7 @@ def load_env_file(env_path: Path) -> dict:
         return env_vars
 
     try:
-        with open(env_path, "r") as f:
+        with open(env_path) as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:
@@ -170,7 +169,7 @@ def load_env_file(env_path: Path) -> dict:
     return env_vars
 
 
-def detect_pm_tool(directory: Optional[str] = None) -> dict:
+def detect_pm_tool(directory: str | None = None) -> dict:
     """
     Detect which PM tool is configured in the project.
 
@@ -248,7 +247,7 @@ def detect_pm_tool(directory: Optional[str] = None) -> dict:
     generic_config = None
     if has_generic_config:
         try:
-            with open(generic_config_path, "r") as f:
+            with open(generic_config_path) as f:
                 generic_config = json.load(f)
         except Exception:
             pass
@@ -310,7 +309,7 @@ def get_tool_info(tool_key: str) -> dict:
     }
 
 
-def list_tools(tier: Optional[int] = None) -> dict:
+def list_tools(tier: int | None = None) -> dict:
     """
     List all supported PM tools.
 
@@ -343,7 +342,7 @@ def list_tools(tier: Optional[int] = None) -> dict:
     }
 
 
-def check_github_integration(directory: Optional[str] = None) -> dict:
+def check_github_integration(directory: str | None = None) -> dict:
     """
     Check for PM-related GitHub Actions workflows.
 

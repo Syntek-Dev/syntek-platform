@@ -20,17 +20,15 @@ Examples:
 """
 
 import argparse
-import json
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from clickup_client import get_client
 
 
-def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
+def parse_story_file(file_path: Path) -> dict[str, Any] | None:
     """Parse a user story markdown file.
 
     Args:
@@ -39,7 +37,7 @@ def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
     Returns:
         Dictionary containing story data, or None if parsing fails.
     """
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     # Extract story metadata
@@ -107,7 +105,7 @@ def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
     return story_data
 
 
-def find_or_create_sprint_list(client, sprint_name: str, folder_id: str) -> Optional[str]:
+def find_or_create_sprint_list(client, sprint_name: str, folder_id: str) -> str | None:
     """Find or create a sprint list in ClickUp.
 
     Args:
@@ -129,7 +127,7 @@ def find_or_create_sprint_list(client, sprint_name: str, folder_id: str) -> Opti
     return None
 
 
-def map_priority_to_clickup(priority_label: str, config: Dict) -> Optional[int]:
+def map_priority_to_clickup(priority_label: str, config: dict) -> int | None:
     """Map priority label to ClickUp priority number.
 
     Args:
@@ -143,7 +141,7 @@ def map_priority_to_clickup(priority_label: str, config: Dict) -> Optional[int]:
     return int(mapping.get(priority_label)) if priority_label in mapping else None
 
 
-def build_task_description(story_data: Dict[str, Any]) -> str:
+def build_task_description(story_data: dict[str, Any]) -> str:
     """Build formatted task description from story data.
 
     Args:
@@ -168,10 +166,10 @@ def build_task_description(story_data: Dict[str, Any]) -> str:
 
 def sync_story_to_clickup(
     client,
-    story_data: Dict[str, Any],
-    config: Dict,
+    story_data: dict[str, Any],
+    config: dict,
     dry_run: bool = False,
-) -> Optional[Dict[str, Any]]:
+) -> dict[str, Any] | None:
     """Sync a single story to ClickUp.
 
     Args:

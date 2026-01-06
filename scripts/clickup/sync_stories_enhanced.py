@@ -26,16 +26,15 @@ Examples:
 
 import argparse
 import json
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from clickup_client import get_client
 
 
-def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
+def parse_story_file(file_path: Path) -> dict[str, Any] | None:
     """Parse a user story markdown file.
 
     Args:
@@ -44,7 +43,7 @@ def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
     Returns:
         Dictionary containing story data, or None if parsing fails.
     """
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     # Extract story metadata
@@ -146,7 +145,7 @@ def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
     return story_data
 
 
-def parse_tasks_section(tasks_content: str) -> List[Dict[str, Any]]:
+def parse_tasks_section(tasks_content: str) -> list[dict[str, Any]]:
     """Parse tasks from the Tasks section.
 
     Args:
@@ -184,7 +183,7 @@ def parse_tasks_section(tasks_content: str) -> List[Dict[str, Any]]:
     return tasks
 
 
-def find_or_create_list(client, story_data: Dict[str, Any], config: Dict) -> Optional[str]:
+def find_or_create_list(client, story_data: dict[str, Any], config: dict) -> str | None:
     """Find or create the appropriate list for a story.
 
     For now, all stories go to the backlog list. In future versions,
@@ -202,7 +201,7 @@ def find_or_create_list(client, story_data: Dict[str, Any], config: Dict) -> Opt
     return config["folders"]["backlog"]["list_id"]
 
 
-def get_moscow_priority_value(client, list_id: str, moscow_text: str) -> Optional[int]:
+def get_moscow_priority_value(client, list_id: str, moscow_text: str) -> int | None:
     """Get the ClickUp dropdown option ID for a MoSCoW priority.
 
     Args:
@@ -226,7 +225,7 @@ def get_moscow_priority_value(client, list_id: str, moscow_text: str) -> Optiona
     return None
 
 
-def build_task_description(story_data: Dict[str, Any]) -> str:
+def build_task_description(story_data: dict[str, Any]) -> str:
     """Build formatted task description from story data.
 
     Args:
@@ -252,11 +251,11 @@ def build_task_description(story_data: Dict[str, Any]) -> str:
 
 def sync_story_to_clickup(
     client,
-    story_data: Dict[str, Any],
-    config: Dict,
+    story_data: dict[str, Any],
+    config: dict,
     dry_run: bool = False,
     force: bool = False,
-) -> Optional[Dict[str, Any]]:
+) -> dict[str, Any] | None:
     """Sync a single story to ClickUp.
 
     Args:
@@ -283,7 +282,7 @@ def sync_story_to_clickup(
             task = client.get_task(story_data["clickup_id"])
             print(f"Found existing task: {story_data['story_id']} (ID: {task['id']})")
         except Exception:
-            print(f"ClickUp ID in file is invalid, will search by name")
+            print("ClickUp ID in file is invalid, will search by name")
 
     if not task:
         # Search by story ID in task name
@@ -372,7 +371,7 @@ def sync_story_to_clickup(
                 if task_item.get("category"):
                     subtask_name = f"[{task_item['category']}] {subtask_name}"
 
-                subtask = client.create_subtask(
+                client.create_subtask(
                     parent_task_id=task["id"],
                     name=subtask_name,
                     status="Closed" if task_item.get("completed") else "Open",
@@ -392,7 +391,7 @@ def write_clickup_id_to_file(file_path: Path, clickup_id: str):
         file_path: Path to the story file.
         clickup_id: ClickUp task ID to write.
     """
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
     # Check if ID already exists
@@ -493,7 +492,7 @@ def main():
                     # Write ClickUp ID back to file
                     if not args.dry_run:
                         write_clickup_id_to_file(story_file, result["id"])
-                        print(f"  Updated file with ClickUp ID")
+                        print("  Updated file with ClickUp ID")
                 elif args.dry_run:
                     success_count += 1
             else:
@@ -514,7 +513,7 @@ def main():
         mapping_file = Path("config/clickup-story-mapping.json")
         mapping = {}
         if mapping_file.exists():
-            with open(mapping_file, "r", encoding="utf-8") as f:
+            with open(mapping_file, encoding="utf-8") as f:
                 mapping = json.load(f)
 
         for result in results:

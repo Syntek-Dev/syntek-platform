@@ -10,7 +10,6 @@ import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
 
 
 def get_metrics_dir() -> Path:
@@ -27,7 +26,7 @@ def get_month_dir(base_dir: Path) -> Path:
     return month_dir
 
 
-def get_last_run_id() -> Optional[str]:
+def get_last_run_id() -> str | None:
     """Get the ID of the last recorded run."""
     last_run_file = get_metrics_dir() / ".last_run"
     if last_run_file.exists():
@@ -35,7 +34,7 @@ def get_last_run_id() -> Optional[str]:
     return None
 
 
-def get_run(run_id: str) -> Optional[dict]:
+def get_run(run_id: str) -> dict | None:
     """Get a specific run by ID."""
     runs_dir = get_metrics_dir() / "runs"
     if not runs_dir.exists():
@@ -44,7 +43,7 @@ def get_run(run_id: str) -> Optional[dict]:
         if month_dir.is_dir():
             run_file = month_dir / f"{run_id}.json"
             if run_file.exists():
-                with open(run_file, "r") as f:
+                with open(run_file) as f:
                     return json.load(f)
     return None
 
@@ -58,7 +57,7 @@ def update_run(run_id: str, updates: dict) -> bool:
         if month_dir.is_dir():
             run_file = month_dir / f"{run_id}.json"
             if run_file.exists():
-                with open(run_file, "r") as f:
+                with open(run_file) as f:
                     run_data = json.load(f)
                 run_data.update(updates)
                 with open(run_file, "w") as f:
@@ -69,8 +68,8 @@ def update_run(run_id: str, updates: dict) -> bool:
 
 def record_feedback(
     rating: str,
-    comment: Optional[str] = None,
-    run_id: Optional[str] = None,
+    comment: str | None = None,
+    run_id: str | None = None,
 ) -> dict:
     """
     Record user feedback for an agent run.
@@ -141,8 +140,8 @@ def record_feedback(
 
 
 def query_feedback(
-    agent: Optional[str] = None,
-    rating: Optional[str] = None,
+    agent: str | None = None,
+    rating: str | None = None,
     days: int = 30,
     limit: int = 100,
 ) -> list:
@@ -173,7 +172,7 @@ def query_feedback(
             if len(records) >= limit:
                 break
 
-            with open(fb_file, "r") as f:
+            with open(fb_file) as f:
                 fb_data = json.load(f)
 
             # Parse timestamp
@@ -192,7 +191,7 @@ def query_feedback(
     return records[:limit]
 
 
-def analyse_feedback(agent: Optional[str] = None, days: int = 30) -> dict:
+def analyse_feedback(agent: str | None = None, days: int = 30) -> dict:
     """
     Analyse feedback patterns for an agent.
 

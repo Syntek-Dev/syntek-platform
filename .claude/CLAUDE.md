@@ -1,7 +1,7 @@
 # Backend Template - Django Project
 
 **Last Updated**: 06/01/2026
-**Version**: 0.3.1
+**Version**: 0.3.2
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -123,7 +123,8 @@ backend-template/
 │   ├── CLAUDE.md           # This file
 │   ├── SYNTEK-GUIDE.md     # Plugin usage guide
 │   ├── settings.local.json # Local settings
-│   └── commands/           # Custom commands
+│   ├── commands/           # Custom commands
+│   └── plugins/            # Syntek Dev Suite agent plugins (*.py)
 ├── config/                  # Django settings
 │   ├── settings/
 │   │   ├── base.py

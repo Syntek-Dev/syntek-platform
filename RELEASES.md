@@ -1,7 +1,7 @@
 # Release Notes
 
 **Last Updated**: 06/01/2026
-**Version**: 0.3.1
+**Version**: 0.3.2
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -16,6 +16,79 @@
 ---
 
 ## Latest Release
+
+### Version 0.3.2 - 6 January 2026
+
+This maintenance release enhances code quality tooling, improves git hooks for better developer
+experience, and fixes linting errors across the entire codebase.
+
+#### What's New
+
+**Enhanced Git Hooks**
+
+Your commit workflow just got better with improved validation and helpful reminders:
+
+- **Comprehensive Pre-Commit Checks**: Automatically validates Python code (ruff), JavaScript/
+  TypeScript formatting (Prettier), and markdown formatting (markdownlint) before each commit
+- **Faster Hook Performance**: Optimised to check only staged files instead of the entire codebase
+- **Dependency Change Notifications**: Post-merge hook now alerts you when `uv.lock` has changed,
+  so you never forget to update dependencies
+- **Migration Reminders**: Automatic reminders to run migrations after pulling database changes
+- **Better Push Validation**: Enhanced pre-push checks ensure code quality before sharing
+
+**Consistent Linting with Ruff**
+
+All linting now uses the modern ruff linter for better performance and Python 3.14 support:
+
+- **Replaced flake8 with ruff** across all git hooks and pre-commit configuration
+- **Faster Linting**: Ruff is 10-100x faster than flake8
+- **Better Error Messages**: More helpful and actionable linting feedback
+- **Modern Python Support**: Full support for Python 3.14 features
+
+**Code Quality Improvements**
+
+Fixed all linting errors across the codebase:
+
+- **29 Python Files Fixed**: Cleaned up unused variables, ambiguous names, and other code issues
+- **Plugin Directory**: All 14 plugin files now pass ruff validation
+- **ClickUp Scripts**: All 6 integration scripts cleaned up and validated
+- **API and Middleware**: Fixed linting issues in 4 core API/middleware files
+
+#### Why This Matters
+
+**For Developers:**
+
+- **Faster Feedback**: Linting runs 10-100x faster with ruff
+- **Catch Issues Earlier**: Pre-commit hooks prevent committing code with formatting or quality issues
+- **No More Forgotten Migrations**: Automatic reminders when database changes are pulled
+- **Better Code Quality**: Entire codebase now passes strict linting standards
+
+**For Teams:**
+
+- **Consistent Standards**: Everyone uses the same validation tools automatically
+- **Fewer Review Comments**: Code quality issues caught before code review
+- **Smoother Collaboration**: Automatic notifications about dependency and migration changes
+- **Professional Codebase**: Clean, validated code that meets industry standards
+
+#### Technical Details
+
+This is a patch release with no breaking changes, no database migrations, and no API changes.
+
+**What's Included:**
+
+- Updated git hooks (`.husky/pre-commit`, `.husky/post-merge`, `.husky/pre-push`)
+- Updated pre-commit configuration (`.pre-commit-config.yaml`)
+- Ruff linting fixes across 29 Python files
+- Comprehensive review document explaining all changes
+
+**How to Update:**
+
+Simply pull the latest code. The enhanced git hooks will automatically activate and start
+providing better validation and helpful reminders.
+
+---
+
+## Previous Releases
 
 ### Version 0.3.1 - 6 January 2026
 

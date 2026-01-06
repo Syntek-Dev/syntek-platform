@@ -10,7 +10,6 @@ import json
 import shutil
 import subprocess
 import sys
-from typing import Optional
 
 
 def is_ddev_installed() -> bool:
@@ -89,7 +88,7 @@ def get_ddev_status() -> dict:
         return {"error": f"Failed to parse DDEV output: {e}", "installed": True}
 
 
-def get_project_config(project_name: Optional[str] = None) -> dict:
+def get_project_config(project_name: str | None = None) -> dict:
     """
     Get detailed configuration for a specific DDEV project.
 

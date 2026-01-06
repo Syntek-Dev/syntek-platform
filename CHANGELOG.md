@@ -1,7 +1,7 @@
 # Changelog
 
 **Last Updated**: 06/01/2026
-**Version**: 0.3.1
+**Version**: 0.3.2
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of Contents
 
 - [Unreleased](#unreleased)
+- [0.3.2 - 06/01/2026](#032---06012026)
 - [0.3.1 - 06/01/2026](#031---06012026)
 - [0.3.0 - 06/01/2026](#030---06012026)
 - [0.2.0 - 03/01/2026](#020---03012026)
@@ -30,6 +31,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Nothing yet
+
+---
+
+## [0.3.2] - 06/01/2026
+
+### Added
+
+- Prettier validation to pre-commit hook (JavaScript, TypeScript, JSON, YAML formatting)
+- Markdownlint validation to pre-commit hook (markdown formatting)
+- uv.lock tracking to post-merge hook (dependency change notifications)
+- Migration reminder to post-merge hook
+- Comprehensive review document for hook changes (`docs/REVIEWS/REVIEW-HUSKY-HOOKS-UPDATE-2026-01-06.MD`)
+
+### Fixed
+
+- Replaced flake8 with ruff in `.husky/pre-commit` hook (consistency with CI)
+- Replaced flake8 with ruff in `.husky/pre-push` hook (consistency with CI)
+- Replaced flake8 with ruff in `.pre-commit-config.yaml` (consistency with CI)
+- F841 unused variable errors in 13 plugin files (`.claude/plugins/*.py`)
+- F841 unused variable errors in 6 ClickUp script files (`scripts/clickup/*.py`)
+- F841 unused variable errors in 4 API/middleware files
+- E741 ambiguous variable name in `git-tool.py` (renamed `l` to `line`)
+- B007 unused loop variable in `project-tool.py` (prefixed with underscore)
+
+### Changed
+
+- Optimised pre-commit hook to check only staged files (performance improvement)
+- Enhanced pre-push hook with better validation checks
+- Updated `.claude/CLAUDE.md` to include `.claude/plugins/` directory in project structure
 
 ---
 

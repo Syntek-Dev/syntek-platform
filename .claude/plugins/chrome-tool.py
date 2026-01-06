@@ -12,8 +12,7 @@ import platform
 import shutil
 import subprocess
 import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Chrome binary paths by operating system
 CHROME_PATHS = {
@@ -56,7 +55,7 @@ def get_os_type() -> str:
         return "linux"
 
 
-def find_chrome_binary() -> Dict[str, Any]:
+def find_chrome_binary() -> dict[str, Any]:
     """
     Find Google Chrome binary on the current system.
 
@@ -151,7 +150,7 @@ def find_chrome_binary() -> Dict[str, Any]:
     }
 
 
-def generate_env_config(chrome_info: Dict[str, Any]) -> Dict[str, str]:
+def generate_env_config(chrome_info: dict[str, Any]) -> dict[str, str]:
     """
     Generate environment variable configuration for Chrome.
 
@@ -175,7 +174,7 @@ def generate_env_config(chrome_info: Dict[str, Any]) -> Dict[str, str]:
     return env_vars
 
 
-def generate_env_file_content(env_vars: Dict[str, str]) -> str:
+def generate_env_file_content(env_vars: dict[str, str]) -> str:
     """
     Generate .env file content for Chrome configuration.
 
@@ -198,7 +197,7 @@ def generate_env_file_content(env_vars: Dict[str, str]) -> str:
     return "\n".join(lines)
 
 
-def write_env_file(env_vars: Dict[str, str], file_path: str = ".env.chrome") -> Dict[str, Any]:
+def write_env_file(env_vars: dict[str, str], file_path: str = ".env.chrome") -> dict[str, Any]:
     """
     Write Chrome environment variables to a file.
 
@@ -225,7 +224,7 @@ def write_env_file(env_vars: Dict[str, str], file_path: str = ".env.chrome") -> 
         }
 
 
-def check_claude_chrome_extension() -> Dict[str, Any]:
+def check_claude_chrome_extension() -> dict[str, Any]:
     """
     Check if Claude in Chrome extension requirements are met.
 

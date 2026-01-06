@@ -13,7 +13,7 @@ Functions:
 import json
 import os
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 from urllib.parse import urljoin
 
 import requests
@@ -67,7 +67,7 @@ class ClickUpClient:
 
     BASE_URL = "https://api.clickup.com/api/v2/"
 
-    def __init__(self, api_key: str, config_path: Optional[str] = None):
+    def __init__(self, api_key: str, config_path: str | None = None):
         """Initialize ClickUp client.
 
         Args:
@@ -85,7 +85,7 @@ class ClickUpClient:
                 os.path.dirname(__file__), "../../config/clickup-config.json"
             )
 
-        with open(config_path, "r", encoding="utf-8") as f:
+        with open(config_path, encoding="utf-8") as f:
             raw_config = json.load(f)
 
         # Resolve environment variable placeholders in config
@@ -94,7 +94,7 @@ class ClickUpClient:
         self.workspace_id = self.config["workspace"]["workspace_id"]
         self.space_id = self.config["workspace"]["space_id"]
 
-    def _request(self, method: str, endpoint: str, **kwargs) -> Dict[str, Any]:
+    def _request(self, method: str, endpoint: str, **kwargs) -> dict[str, Any]:
         """Make HTTP request to ClickUp API.
 
         Args:
@@ -113,7 +113,7 @@ class ClickUpClient:
         response.raise_for_status()
         return response.json() if response.content else {}
 
-    def get_folder(self, folder_id: str) -> Dict[str, Any]:
+    def get_folder(self, folder_id: str) -> dict[str, Any]:
         """Retrieve folder details by ID.
 
         Args:
@@ -124,7 +124,7 @@ class ClickUpClient:
         """
         return self._request("GET", f"folder/{folder_id}")
 
-    def get_lists_in_folder(self, folder_id: str) -> List[Dict[str, Any]]:
+    def get_lists_in_folder(self, folder_id: str) -> list[dict[str, Any]]:
         """Retrieve all lists within a folder.
 
         Args:
@@ -136,7 +136,7 @@ class ClickUpClient:
         response = self._request("GET", f"folder/{folder_id}/list")
         return response.get("lists", [])
 
-    def get_list(self, list_id: str) -> Dict[str, Any]:
+    def get_list(self, list_id: str) -> dict[str, Any]:
         """Retrieve list details by ID.
 
         Args:
@@ -151,11 +151,11 @@ class ClickUpClient:
         self,
         folder_id: str,
         name: str,
-        content: Optional[str] = None,
-        due_date: Optional[int] = None,
-        priority: Optional[int] = None,
-        status: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        content: str | None = None,
+        due_date: int | None = None,
+        priority: int | None = None,
+        status: str | None = None,
+    ) -> dict[str, Any]:
         """Create a new list in a folder.
 
         Args:
@@ -187,7 +187,7 @@ class ClickUpClient:
         list_id: str,
         include_closed: bool = False,
         page: int = 0,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Retrieve tasks from a specific list.
 
         Args:
@@ -206,7 +206,7 @@ class ClickUpClient:
         response = self._request("GET", f"list/{list_id}/task", params=params)
         return response.get("tasks", [])
 
-    def get_task(self, task_id: str) -> Dict[str, Any]:
+    def get_task(self, task_id: str) -> dict[str, Any]:
         """Retrieve task details by ID.
 
         Args:
@@ -221,13 +221,13 @@ class ClickUpClient:
         self,
         list_id: str,
         name: str,
-        description: Optional[str] = None,
-        status: Optional[str] = None,
-        priority: Optional[int] = None,
-        assignees: Optional[List[int]] = None,
-        tags: Optional[List[str]] = None,
-        custom_fields: Optional[List[Dict[str, Any]]] = None,
-    ) -> Dict[str, Any]:
+        description: str | None = None,
+        status: str | None = None,
+        priority: int | None = None,
+        assignees: list[int] | None = None,
+        tags: list[str] | None = None,
+        custom_fields: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         """Create a new task in ClickUp.
 
         Args:
@@ -263,12 +263,12 @@ class ClickUpClient:
     def update_task(
         self,
         task_id: str,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        status: Optional[str] = None,
-        priority: Optional[int] = None,
-        assignees: Optional[List[int]] = None,
-    ) -> Dict[str, Any]:
+        name: str | None = None,
+        description: str | None = None,
+        status: str | None = None,
+        priority: int | None = None,
+        assignees: list[int] | None = None,
+    ) -> dict[str, Any]:
         """Update an existing task.
 
         Args:
@@ -296,7 +296,7 @@ class ClickUpClient:
 
         return self._request("PUT", f"task/{task_id}", json=data)
 
-    def update_task_status(self, task_id: str, status: str) -> Dict[str, Any]:
+    def update_task_status(self, task_id: str, status: str) -> dict[str, Any]:
         """Update task status.
 
         Args:
@@ -308,7 +308,7 @@ class ClickUpClient:
         """
         return self.update_task(task_id, status=status)
 
-    def move_task_to_list(self, task_id: str, list_id: str) -> Dict[str, Any]:
+    def move_task_to_list(self, task_id: str, list_id: str) -> dict[str, Any]:
         """Move a task to a different list.
 
         Args:
@@ -321,7 +321,7 @@ class ClickUpClient:
         data = {"list_id": list_id}
         return self._request("PUT", f"task/{task_id}", json=data)
 
-    def add_task_to_list(self, task_id: str, list_id: str) -> Dict[str, Any]:
+    def add_task_to_list(self, task_id: str, list_id: str) -> dict[str, Any]:
         """Add a task to an additional list (link without moving).
 
         This creates a reference to the task in the target list while keeping
@@ -336,7 +336,7 @@ class ClickUpClient:
         """
         return self._request("POST", f"list/{list_id}/task/{task_id}")
 
-    def remove_task_from_list(self, task_id: str, list_id: str) -> Dict[str, Any]:
+    def remove_task_from_list(self, task_id: str, list_id: str) -> dict[str, Any]:
         """Remove a task from an additional list (unlink).
 
         This removes the task reference from the specified list. If this is
@@ -351,7 +351,7 @@ class ClickUpClient:
         """
         return self._request("DELETE", f"list/{list_id}/task/{task_id}")
 
-    def add_task_comment(self, task_id: str, comment_text: str) -> Dict[str, Any]:
+    def add_task_comment(self, task_id: str, comment_text: str) -> dict[str, Any]:
         """Add a comment to a task.
 
         Args:
@@ -364,7 +364,7 @@ class ClickUpClient:
         data = {"comment_text": comment_text}
         return self._request("POST", f"task/{task_id}/comment", json=data)
 
-    def set_custom_field(self, task_id: str, field_id: str, value: Any) -> Dict[str, Any]:
+    def set_custom_field(self, task_id: str, field_id: str, value: Any) -> dict[str, Any]:
         """Set a custom field value on a task.
 
         Args:
@@ -377,7 +377,7 @@ class ClickUpClient:
         """
         return self._request("POST", f"task/{task_id}/field/{field_id}", json={"value": value})
 
-    def get_list_custom_fields(self, list_id: str) -> List[Dict[str, Any]]:
+    def get_list_custom_fields(self, list_id: str) -> list[dict[str, Any]]:
         """Get custom fields for a list.
 
         Args:
@@ -393,10 +393,10 @@ class ClickUpClient:
         self,
         parent_task_id: str,
         name: str,
-        description: Optional[str] = None,
-        status: Optional[str] = None,
-        assignees: Optional[List[int]] = None,
-    ) -> Dict[str, Any]:
+        description: str | None = None,
+        status: str | None = None,
+        assignees: list[int] | None = None,
+    ) -> dict[str, Any]:
         """Create a subtask under a parent task.
 
         Args:
@@ -427,7 +427,7 @@ class ClickUpClient:
 
         return self._request("POST", f"list/{list_id}/task", json=data)
 
-    def find_custom_field_by_name(self, list_id: str, field_name: str) -> Optional[Dict[str, Any]]:
+    def find_custom_field_by_name(self, list_id: str, field_name: str) -> dict[str, Any] | None:
         """Find a custom field by name in a list.
 
         Args:
@@ -443,7 +443,7 @@ class ClickUpClient:
                 return field
         return None
 
-    def get_space_statuses(self) -> List[Dict[str, Any]]:
+    def get_space_statuses(self) -> list[dict[str, Any]]:
         """Retrieve all statuses for the workspace space.
 
         Returns:
@@ -455,8 +455,8 @@ class ClickUpClient:
     def search_tasks(
         self,
         query: str,
-        list_ids: Optional[List[str]] = None,
-    ) -> List[Dict[str, Any]]:
+        list_ids: list[str] | None = None,
+    ) -> list[dict[str, Any]]:
         """Search for tasks by text query.
 
         Args:
@@ -483,7 +483,7 @@ class ClickUpClient:
         return response.get("tasks", [])
 
 
-def get_client(api_key: Optional[str] = None) -> ClickUpClient:
+def get_client(api_key: str | None = None) -> ClickUpClient:
     """Factory function to create a configured ClickUp client.
 
     Args:

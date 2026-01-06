@@ -9,7 +9,6 @@ via environment variables.
 
 import hashlib
 import logging
-from typing import Callable, Optional
 
 from django.conf import settings
 from django.core.cache import cache
@@ -43,7 +42,7 @@ class RateLimitMiddleware(MiddlewareMixin):
         get_response: The next middleware or view in the chain.
     """
 
-    def process_request(self, request: HttpRequest) -> Optional[HttpResponse]:
+    def process_request(self, request: HttpRequest) -> HttpResponse | None:
         """Check rate limits before processing the request.
 
         Args:

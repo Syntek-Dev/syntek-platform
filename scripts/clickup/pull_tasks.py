@@ -24,12 +24,12 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from clickup_client import get_client
 
 
-def fetch_all_tasks(client, include_closed: bool = False) -> List[Dict[str, Any]]:
+def fetch_all_tasks(client, include_closed: bool = False) -> list[dict[str, Any]]:
     """Fetch all tasks from ClickUp workspace.
 
     Args:
@@ -83,7 +83,7 @@ def fetch_all_tasks(client, include_closed: bool = False) -> List[Dict[str, Any]
 
     # Fetch from backlog
     backlog_list_id = config["folders"]["backlog"]["list_id"]
-    print(f"Fetching tasks from backlog...")
+    print("Fetching tasks from backlog...")
 
     backlog_tasks = client.get_tasks_in_list(backlog_list_id, include_closed=include_closed)
 
@@ -116,7 +116,7 @@ def fetch_all_tasks(client, include_closed: bool = False) -> List[Dict[str, Any]
     return tasks
 
 
-def save_tasks(tasks: List[Dict[str, Any]], output_file: str):
+def save_tasks(tasks: list[dict[str, Any]], output_file: str):
     """Save tasks to JSON file.
 
     Args:
@@ -138,7 +138,7 @@ def save_tasks(tasks: List[Dict[str, Any]], output_file: str):
     print(f"\nSaved {len(tasks)} tasks to {output_file}")
 
 
-def extract_task_id_mapping(tasks: List[Dict[str, Any]]) -> Dict[str, str]:
+def extract_task_id_mapping(tasks: list[dict[str, Any]]) -> dict[str, str]:
     """Extract mapping of story IDs to ClickUp task IDs.
 
     Args:

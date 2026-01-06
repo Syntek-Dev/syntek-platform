@@ -10,7 +10,7 @@ against malicious or resource-intensive queries:
 
 import logging
 from collections.abc import Iterator
-from typing import Any, Optional
+from typing import Any
 
 from django.conf import settings
 
@@ -53,7 +53,7 @@ class QueryDepthLimitExtension(SchemaExtension):
         self,
         *,
         execution_context: ExecutionContext,
-        max_depth: Optional[int] = None,
+        max_depth: int | None = None,
     ) -> None:
         """Initialize the extension with maximum query depth.
 
@@ -142,7 +142,7 @@ class QueryComplexityLimitExtension(SchemaExtension):
         self,
         *,
         execution_context: ExecutionContext,
-        max_complexity: Optional[int] = None,
+        max_complexity: int | None = None,
     ) -> None:
         """Initialize the extension with maximum query complexity.
 

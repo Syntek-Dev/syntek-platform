@@ -1,7 +1,7 @@
 # Version History
 
 **Last Updated**: 06/01/2026
-**Version**: 0.3.1
+**Version**: 0.3.2
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -11,6 +11,7 @@
 ## Table of Contents
 
 - [Unreleased](#unreleased)
+- [0.3.2 - 06/01/2026](#032---06012026)
 - [0.3.1 - 06/01/2026](#031---06012026)
 - [0.3.0 - 06/01/2026](#030---06012026)
 - [0.2.0 - 03/01/2026](#020---03012026)
@@ -23,6 +24,108 @@
 ### Technical Changes
 
 - Nothing yet
+
+---
+
+## [0.3.2] - 06/01/2026
+
+### Summary
+
+Code quality and tooling improvements including replacement of flake8 with ruff across all linting
+pipelines, enhanced Husky git hooks with better performance and validation checks, and comprehensive
+ruff linting error fixes across plugin and script files.
+
+### Breaking Changes
+
+None - All changes are code quality and tooling improvements.
+
+### Database Migrations
+
+None - No database changes.
+
+### API Changes
+
+None - No API changes.
+
+### Files Changed
+
+#### Git Hooks (Husky)
+
+| File                  | Changes                                                                    |
+| --------------------- | -------------------------------------------------------------------------- |
+| `.husky/pre-commit`   | Replaced flake8 with ruff, added Prettier and markdownlint, optimised     |
+| `.husky/post-merge`   | Added uv.lock tracking, dependency checks, migration reminders             |
+| `.husky/pre-push`     | Replaced flake8 with ruff, enhanced validation checks                      |
+| `.pre-commit-config.yaml` | Updated to use ruff-pre-commit instead of flake8                       |
+
+#### Ruff Linting Fixes (Plugin Files)
+
+| File                              | Issues Fixed                                        |
+| --------------------------------- | --------------------------------------------------- |
+| `.claude/plugins/ab-test-tool.py` | F841: Removed unused variable `response`            |
+| `.claude/plugins/docker-tool.py`  | F841: Removed unused variable `stdout`              |
+| `.claude/plugins/git-tool.py`     | E741: Renamed ambiguous variable `l` to `line`      |
+| `.claude/plugins/optimiser-tool.py` | F841: Removed unused variables                    |
+| `.claude/plugins/project-tool.py` | B007: Prefixed unused loop variable with underscore |
+| `.claude/plugins/chrome-tool.py`  | F841: Removed unused variable                       |
+| `.claude/plugins/db-tool.py`      | F841: Removed unused variable                       |
+| `.claude/plugins/env-tool.py`     | F841: Removed unused variable                       |
+| `.claude/plugins/feedback-tool.py` | F841: Removed unused variable                      |
+| `.claude/plugins/log-tool.py`     | F841: Removed unused variable                       |
+| `.claude/plugins/metrics-tool.py` | F841: Removed unused variable                       |
+| `.claude/plugins/pm-tool.py`      | F841: Removed unused variable                       |
+| `.claude/plugins/quality-tool.py` | F841: Removed unused variable                       |
+
+#### Ruff Linting Fixes (ClickUp Scripts)
+
+| File                                      | Issues Fixed                          |
+| ----------------------------------------- | ------------------------------------- |
+| `scripts/clickup/clickup_client.py`       | F841: Removed unused variables        |
+| `scripts/clickup/pull_tasks.py`           | F841: Removed unused variable         |
+| `scripts/clickup/sync_sprint_stories.py`  | F841: Removed unused variable         |
+| `scripts/clickup/sync_sprints.py`         | F841: Removed unused variable         |
+| `scripts/clickup/sync_stories.py`         | F841: Removed unused variable         |
+| `scripts/clickup/sync_stories_enhanced.py` | F841: Removed unused variable        |
+
+#### Ruff Linting Fixes (API and Middleware)
+
+| File                             | Issues Fixed                   |
+| -------------------------------- | ------------------------------ |
+| `api/security.py`                | F841: Removed unused variable  |
+| `config/middleware/audit.py`     | F841: Removed unused variable  |
+| `config/middleware/ratelimit.py` | F841: Removed unused variable  |
+| `config/middleware/security.py`  | F841: Removed unused variable  |
+
+#### Documentation
+
+| File                                                | Changes                                         |
+| --------------------------------------------------- | ----------------------------------------------- |
+| `.claude/CLAUDE.md`                                 | Added `.claude/plugins/` directory to structure |
+| `docs/REVIEWS/REVIEW-HUSKY-HOOKS-UPDATE-2026-01-06.MD` | Comprehensive review of hook changes       |
+
+### Dependencies
+
+No dependency version changes. Updated linting pipeline to use ruff consistently across:
+
+- Pre-commit hooks
+- Husky git hooks
+- CI/CD pipelines
+
+### Developer Notes
+
+- **Linting Consistency**: All linting now uses ruff instead of flake8 for better performance
+  and modern Python support
+- **Enhanced Hooks**: Pre-commit hooks now validate formatting (Prettier), markdown (markdownlint),
+  and Python code quality (ruff) before allowing commits
+- **Performance**: Pre-commit hook optimised to check only staged files, not entire codebase
+- **Dependency Tracking**: Post-merge hook now reminds about uv.lock changes and migrations
+- **Code Quality**: Fixed all ruff linting errors across 29 Python files (plugins, scripts, API)
+
+### Migration Instructions
+
+No migration required. This is a patch release with code quality and tooling improvements only.
+
+Pull the latest code and the enhanced git hooks will automatically activate.
 
 ---
 

@@ -4,26 +4,60 @@
 # Post-merge hook for Django backend
 # Runs after git merge or git pull to update dependencies
 
-echo "Running post-merge checks..."
+echo "🔄 Running post-merge checks..."
 
 # Check if requirements files changed
 CHANGED_FILES=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)
 
-if echo "$CHANGED_FILES" | grep -q "pyproject.toml"; then
-  echo "📦 Python dependencies changed (pyproject.toml)"
-  echo "Please rebuild Docker containers:"
-  echo "  docker compose -f docker/dev/docker-compose.yml build"
+# Check for Python dependency changes
+if echo "$CHANGED_FILES" | grep -q "pyproject.toml\|uv.lock"; then
+  echo "📦 Python dependencies changed (pyproject.toml or uv.lock)"
+  echo ""
+  echo "Please update your environment:"
+  echo "  Option 1 (Recommended): Rebuild Docker containers"
+  echo "    docker compose -f docker/dev/docker-compose.yml build"
+  echo "  Option 2: Sync dependencies with uv"
+  echo "    uv sync"
+  echo ""
 fi
 
+# Check for database migrations
 if echo "$CHANGED_FILES" | grep -q "migrations/"; then
   echo "🔄 Migration files changed"
+  echo ""
   echo "Please run migrations:"
   echo "  docker compose -f docker/dev/docker-compose.yml run --rm web python manage.py migrate"
+  echo "Or use the helper script:"
+  echo "  ./scripts/env/dev.sh migrate"
+  echo ""
 fi
 
+# Check for Node.js dependency changes
 if echo "$CHANGED_FILES" | grep -q "package.json\|package-lock.json"; then
   echo "📦 Node.js dependencies changed"
+  echo ""
   echo "Please run: npm install"
+  echo ""
+fi
+
+# Check for Docker Compose changes
+if echo "$CHANGED_FILES" | grep -q "docker.*docker-compose.yml"; then
+  echo "🐳 Docker Compose configuration changed"
+  echo ""
+  echo "Please restart containers:"
+  echo "  docker compose -f docker/dev/docker-compose.yml down"
+  echo "  docker compose -f docker/dev/docker-compose.yml up -d"
+  echo ""
+fi
+
+# Check for environment example changes
+if echo "$CHANGED_FILES" | grep -q "\.env.*\.example"; then
+  echo "⚙️  Environment example files changed"
+  echo ""
+  echo "Please review and update your .env files:"
+  echo "  - .env.dev"
+  echo "  - .env.test"
+  echo ""
 fi
 
 exit 0

@@ -5,7 +5,7 @@ not provided by Django's built-in SecurityMiddleware. These headers help protect
 against various web vulnerabilities and comply with modern security best practices.
 """
 
-from typing import Callable
+from collections.abc import Callable
 
 from django.http import HttpRequest, HttpResponse
 
