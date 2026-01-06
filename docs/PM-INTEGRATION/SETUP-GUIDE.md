@@ -51,7 +51,6 @@ Step-by-step instructions for setting up ClickUp integration with this Django ba
     - [Monthly Tasks](#monthly-tasks)
     - [As Needed](#as-needed)
 
-
 ## Prerequisites
 
 Before starting, ensure you have:
@@ -161,6 +160,7 @@ ls -la config/clickup-*.json
 ```
 
 You should see:
+
 - `config/clickup-tasks.json`
 - `config/clickup-story-mapping.json`
 
@@ -173,11 +173,12 @@ You should see:
 3. Click **New repository secret**
 4. Add these secrets:
 
-| Secret Name | Value |
-|-------------|-------|
-| `CLICKUP_API_KEY` | Your ClickUp API key (pk_...) |
+| Secret Name       | Value                          |
+| ----------------- | ------------------------------ |
+| `CLICKUP_API_KEY` | Your ClickUp API key (pk\_...) |
 
 Optional:
+
 - `CLICKUP_WEBHOOK_SECRET` - For webhook signature verification
 
 ### Step 2: Commit Configuration Files
@@ -229,6 +230,7 @@ git push origin us999/test-integration
 ```
 
 Check ClickUp:
+
 - Task US-999 should move to "in progress"
 - A comment should be added with branch details
 
@@ -248,6 +250,7 @@ gh pr create --title "US-999: Test integration" \
 ```
 
 Check ClickUp:
+
 - Task US-999 should move to "in review"
 - A comment should be added with PR details
 
@@ -259,6 +262,7 @@ gh pr merge --squash
 ```
 
 Check ClickUp:
+
 - Task US-999 should move to "Closed"
 - A comment should be added about the merge
 
@@ -291,6 +295,7 @@ openssl rand -hex 32
 ```
 
 Add to `.env.dev`:
+
 ```bash
 CLICKUP_WEBHOOK_SECRET=your_generated_secret
 ```
@@ -330,6 +335,7 @@ This project integrates with ClickUp for task tracking.
 Example: `us123/add-user-authentication`
 
 This automatically:
+
 - Moves tasks to "in progress" when you create the branch
 - Updates to "in review" when you open a PR
 - Marks as "Closed" when merged to main
@@ -344,6 +350,7 @@ See [docs/PM-INTEGRATION/README.MD](docs/PM-INTEGRATION/README.MD) for details.
 **Symptom:** 401 Unauthorized errors
 
 **Solution:**
+
 1. Verify API key is correct in `.env.dev`
 2. Check API key hasn't expired in ClickUp
 3. Ensure API key has sufficient permissions
@@ -353,6 +360,7 @@ See [docs/PM-INTEGRATION/README.MD](docs/PM-INTEGRATION/README.MD) for details.
 **Symptom:** No status updates in ClickUp
 
 **Solution:**
+
 1. Check Actions are enabled in repository settings
 2. Verify `CLICKUP_API_KEY` secret exists in GitHub
 3. Check Actions tab for error logs
@@ -363,6 +371,7 @@ See [docs/PM-INTEGRATION/README.MD](docs/PM-INTEGRATION/README.MD) for details.
 **Symptom:** "No mapping found for US-XXX"
 
 **Solution:**
+
 1. Run `python scripts/clickup/pull_tasks.py`
 2. Commit and push `config/clickup-story-mapping.json`
 3. Ensure task name in ClickUp starts with `US-XXX:`
@@ -372,6 +381,7 @@ See [docs/PM-INTEGRATION/README.MD](docs/PM-INTEGRATION/README.MD) for details.
 **Symptom:** `ModuleNotFoundError: No module named 'requests'`
 
 **Solution:**
+
 ```bash
 pip install requests>=2.31.0
 ```

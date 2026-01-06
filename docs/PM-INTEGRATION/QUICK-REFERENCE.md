@@ -39,6 +39,7 @@ us{task_number}/{feature_name}
 ```
 
 **Examples:**
+
 - `us123/add-authentication`
 - `us456/fix-bug`
 - `us789/refactor-api`
@@ -46,6 +47,7 @@ us{task_number}/{feature_name}
 ## Common Commands
 
 ### Pull Latest Tasks
+
 ```bash
 export CLICKUP_API_KEY=pk_your_key_here
 python scripts/clickup/pull_tasks.py
@@ -55,6 +57,7 @@ git push
 ```
 
 ### Sync Stories to ClickUp
+
 ```bash
 # Preview changes
 python scripts/clickup/sync_stories.py --dry-run
@@ -64,6 +67,7 @@ python scripts/clickup/sync_stories.py
 ```
 
 ### Create Feature Branch
+
 ```bash
 git checkout -b us123/feature-name
 git push origin us123/feature-name
@@ -71,6 +75,7 @@ git push origin us123/feature-name
 ```
 
 ### Create Pull Request
+
 ```bash
 gh pr create --title "US-123: Feature name" --body "Description"
 # ✓ Task moves to "in review" automatically
@@ -78,12 +83,12 @@ gh pr create --title "US-123: Feature name" --body "Description"
 
 ## Automatic Status Updates
 
-| Action | Result in ClickUp |
-|--------|-------------------|
+| Action                    | Result in ClickUp           |
+| ------------------------- | --------------------------- |
 | Create branch `us123/...` | Task US-123 → "in progress" |
-| Open PR from `us123/...` | Task US-123 → "in review" |
-| Merge PR to staging | Task US-123 → "accepted" |
-| Merge PR to main | Task US-123 → "Closed" |
+| Open PR from `us123/...`  | Task US-123 → "in review"   |
+| Merge PR to staging       | Task US-123 → "accepted"    |
+| Merge PR to main          | Task US-123 → "Closed"      |
 
 ## Status Flow
 
@@ -100,9 +105,11 @@ Talk to your lead dev for the IDs
 ## GitHub Secrets
 
 **Required:**
+
 - `CLICKUP_API_KEY` = Your API key
 
 **Optional:**
+
 - `CLICKUP_WEBHOOK_SECRET` = Webhook signature key
 
 Add at: Settings > Secrets and variables > Actions
@@ -130,16 +137,19 @@ Story description here.
 ## Troubleshooting
 
 ### Task Not Found
+
 ```bash
 python scripts/clickup/pull_tasks.py
 ```
 
 ### Workflow Not Running
+
 1. Check branch name matches `us{number}/...`
 2. Verify `CLICKUP_API_KEY` secret exists
 3. Check Actions tab for errors
 
 ### Status Not Updating
+
 1. Check status name matches exactly (case-sensitive)
 2. Verify mapping file is up to date
 3. Review workflow logs

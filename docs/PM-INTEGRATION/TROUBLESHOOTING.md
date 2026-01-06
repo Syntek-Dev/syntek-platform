@@ -30,7 +30,7 @@ Common issues and solutions for the ClickUp project management integration.
   - [Script Execution Issues](#script-execution-issues)
     - [ModuleNotFoundError: requests](#modulenotfounderror-requests)
     - [Permission Denied](#permission-denied)
-    - [Import Error: clickup\_client](#import-error-clickup_client)
+    - [Import Error: clickup_client](#import-error-clickup_client)
   - [Story Sync Issues](#story-sync-issues)
     - [Story Not Created in ClickUp](#story-not-created-in-clickup)
     - [Duplicate Tasks Created](#duplicate-tasks-created)
@@ -54,6 +54,7 @@ Common issues and solutions for the ClickUp project management integration.
 ### 401 Unauthorized Error
 
 **Symptom:**
+
 ```
 Error: Failed to update task: 401
 Unauthorized
@@ -62,6 +63,7 @@ Unauthorized
 **Causes & Solutions:**
 
 1. **Invalid API Key**
+
    ```bash
    # Verify API key is set correctly
    echo $CLICKUP_API_KEY
@@ -76,6 +78,7 @@ Unauthorized
    **Fix:** Generate new API key in ClickUp Settings > Apps.
 
 3. **API Key Not Exported**
+
    ```bash
    # Export the key
    export CLICKUP_API_KEY=pk_your_key_here
@@ -88,6 +91,7 @@ Unauthorized
 ### 403 Forbidden Error
 
 **Symptom:**
+
 ```
 Error: 403 Forbidden
 ```
@@ -107,6 +111,7 @@ Error: 403 Forbidden
 ### Task Not Found in Mapping
 
 **Symptom:**
+
 ```
 No mapping found for US-123
 ```
@@ -114,6 +119,7 @@ No mapping found for US-123
 **Causes & Solutions:**
 
 1. **Mapping File Outdated**
+
    ```bash
    # Regenerate mapping
    python scripts/clickup/pull_tasks.py
@@ -138,11 +144,13 @@ No mapping found for US-123
 ### Mapping File Missing
 
 **Symptom:**
+
 ```
 FileNotFoundError: config/clickup-story-mapping.json
 ```
 
 **Solution:**
+
 ```bash
 # Generate mapping file
 python scripts/clickup/pull_tasks.py
@@ -160,6 +168,7 @@ git commit -m "Add ClickUp task mapping"
 ### Status Not Found
 
 **Symptom:**
+
 ```
 Error: Status "in progress" not found
 ```
@@ -175,6 +184,7 @@ Error: Status "in progress" not found
    **Fix:** Use exact status name from ClickUp.
 
 2. **Status Doesn't Exist in Workspace**
+
    ```python
    # Check available statuses
    from scripts.clickup.clickup_client import get_client
@@ -189,9 +199,13 @@ Error: Status "in progress" not found
 3. **Wrong Status Mapping**
 
    **Fix:** Update `config/clickup-config.json`:
+
+   <!-- prettier-ignore -->
    ```json
-   "status_mapping": {
-     "in_progress": ["in progress", "doing"]
+   {
+     "status_mapping": {
+       "in_progress": ["in progress", "doing"]
+     }
    }
    ```
 
@@ -236,6 +250,7 @@ Error: Status "in progress" not found
    **Fix:** Use `us{number}/description` format.
 
 3. **Workflow File Has Errors**
+
    ```bash
    # Validate workflow syntax
    cat .github/workflows/clickup-sync.yml
@@ -259,6 +274,7 @@ Error: Status "in progress" not found
    - Review error messages
 
 2. **Common Error: Python Module Not Found**
+
    ```yaml
    # Ensure workflow installs dependencies
    - name: Install dependencies
@@ -280,6 +296,7 @@ Error: Status "in progress" not found
 1. **Task ID Not Found**
 
    Check workflow logs for:
+
    ```
    No mapping found for US-XXX
    ```
@@ -299,11 +316,13 @@ Error: Status "in progress" not found
 ### ModuleNotFoundError: requests
 
 **Symptom:**
+
 ```python
 ModuleNotFoundError: No module named 'requests'
 ```
 
 **Solution:**
+
 ```bash
 pip install requests>=2.31.0
 ```
@@ -311,6 +330,7 @@ pip install requests>=2.31.0
 ### Permission Denied
 
 **Symptom:**
+
 ```bash
 bash: ./scripts/clickup/sync_stories.py: Permission denied
 ```
@@ -318,6 +338,7 @@ bash: ./scripts/clickup/sync_stories.py: Permission denied
 **Solutions:**
 
 1. **Make Script Executable**
+
    ```bash
    chmod +x scripts/clickup/sync_stories.py
    ```
@@ -330,11 +351,13 @@ bash: ./scripts/clickup/sync_stories.py: Permission denied
 ### Import Error: clickup_client
 
 **Symptom:**
+
 ```python
 ModuleNotFoundError: No module named 'clickup_client'
 ```
 
 **Solution:**
+
 ```bash
 # Ensure you're in the correct directory
 cd scripts/clickup
@@ -358,6 +381,7 @@ python -m scripts.clickup.sync_stories
 1. **Invalid Story File Format**
 
    Required format:
+
    ```markdown
    # US-XXX: Title
 
@@ -421,6 +445,7 @@ python -m scripts.clickup.sync_stories
 **Symptom:** Workflow times out after 6 hours.
 
 **Solution:**
+
 ```yaml
 # Add timeout to job
 jobs:
@@ -433,11 +458,13 @@ jobs:
 ### Config File Not Found
 
 **Symptom:**
+
 ```
 FileNotFoundError: config/clickup-config.json
 ```
 
 **Solution:**
+
 ```bash
 # Verify file exists
 ls -la config/clickup-config.json
@@ -451,11 +478,13 @@ git checkout config/clickup-config.json
 ### Invalid JSON in Config
 
 **Symptom:**
+
 ```
 json.decoder.JSONDecodeError: Expecting ',' delimiter
 ```
 
 **Solution:**
+
 ```bash
 # Validate JSON
 python3 -m json.tool config/clickup-config.json
@@ -468,11 +497,13 @@ python3 -m json.tool config/clickup-config.json
 ### 429 Too Many Requests
 
 **Symptom:**
+
 ```
 Error: 429 Too Many Requests
 ```
 
 **Solution:**
+
 ```bash
 # Wait 60 seconds before retrying
 sleep 60
@@ -482,6 +513,7 @@ sleep 60
 ```
 
 **Prevention:**
+
 - Don't run bulk operations in loops
 - Use `--dry-run` to test before executing
 - Cache task data locally
@@ -491,6 +523,7 @@ sleep 60
 ### Connection Timeout
 
 **Symptom:**
+
 ```
 requests.exceptions.ConnectTimeout
 ```
@@ -498,6 +531,7 @@ requests.exceptions.ConnectTimeout
 **Solutions:**
 
 1. **Check Internet Connection**
+
    ```bash
    ping api.clickup.com
    ```
@@ -556,6 +590,7 @@ If none of these solutions work:
    - Download logs
 
 2. **Test Manually**
+
    ```bash
    # Test API connection
    export CLICKUP_API_KEY=your_key
@@ -571,6 +606,7 @@ If none of these solutions work:
    - Verify no ongoing outages
 
 4. **Enable Debug Logging**
+
    ```python
    # Add to scripts for debugging
    import logging
@@ -578,5 +614,5 @@ If none of these solutions work:
    ```
 
 5. **Contact Support**
-   - For ClickUp API issues: support@clickup.com
+   - For ClickUp API issues: <support@clickup.com>
    - For integration issues: Check project repository issues

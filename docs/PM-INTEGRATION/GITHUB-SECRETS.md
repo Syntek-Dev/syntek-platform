@@ -15,9 +15,9 @@ This document lists all GitHub repository secrets required for ClickUp integrati
 - [GitHub Repository Secrets for ClickUp Integration](#github-repository-secrets-for-clickup-integration)
   - [Table of Contents](#table-of-contents)
   - [Required Secrets](#required-secrets)
-    - [CLICKUP\_API\_KEY](#clickup_api_key)
+    - [CLICKUP_API_KEY](#clickup_api_key)
   - [Optional Secrets](#optional-secrets)
-    - [CLICKUP\_WEBHOOK\_SECRET](#clickup_webhook_secret)
+    - [CLICKUP_WEBHOOK_SECRET](#clickup_webhook_secret)
   - [Environment Variables (Not Secrets)](#environment-variables-not-secrets)
   - [Verification](#verification)
     - [Test via GitHub Actions](#test-via-github-actions)
@@ -36,11 +36,12 @@ This document lists all GitHub repository secrets required for ClickUp integrati
 
 ## Required Secrets
 
-### CLICKUP_API_KEY
+### CLICKUP_API_TOKEN
 
-**Description:** ClickUp API key for authentication with ClickUp API.
+**Description:** ClickUp API token for authentication with ClickUp API.
 
 **Where to get it:**
+
 1. Log in to ClickUp
 2. Click avatar (bottom left) > Settings
 3. Navigate to Apps section
@@ -48,6 +49,7 @@ This document lists all GitHub repository secrets required for ClickUp integrati
 5. Copy existing token or generate new one
 
 **How to add:**
+
 1. Go to GitHub repository
 2. Navigate to Settings > Secrets and variables > Actions
 3. Click "New repository secret"
@@ -56,10 +58,12 @@ This document lists all GitHub repository secrets required for ClickUp integrati
 6. Click "Add secret"
 
 **Used in:**
+
 - `.github/workflows/clickup-sync.yml`
 - `.github/workflows/clickup-branch-sync.yml`
 
 **Permissions required:**
+
 - Read access to tasks, lists, folders
 - Write access to update task statuses
 - Comment creation permissions
@@ -75,12 +79,14 @@ This document lists all GitHub repository secrets required for ClickUp integrati
 **Value:** Not set (optional for future webhook implementation)
 
 **Where to get it:**
+
 ```bash
 # Generate random secret
 openssl rand -hex 32
 ```
 
 **How to add:**
+
 1. Generate secret using command above
 2. Go to Settings > Secrets and variables > Actions
 3. Click "New repository secret"
@@ -89,9 +95,11 @@ openssl rand -hex 32
 6. Click "Add secret"
 
 **Used in:**
+
 - Future webhook endpoint (not yet implemented)
 
 **When needed:**
+
 - If implementing bidirectional sync (ClickUp to GitHub)
 - If setting up webhook listeners
 
@@ -101,15 +109,17 @@ openssl rand -hex 32
 
 These are configured in `config/clickup-config.json` and `.env.dev`, NOT as secrets:
 
-| Variable | Value | Description |
-|----------|-------|-------------|
-| `CLICKUP_TEAM_ID` | `90151635198` | ClickUp team/workspace ID |
-| `CLICKUP_SPACE_ID` | `90156744333` | ClickUp space ID (Syntek) |
-| `CLICKUP_SPRINTS_FOLDER_ID` | `901512938483` | Sprints folder ID |
-| `CLICKUP_BACKLOG_FOLDER_ID` | `901512938469` | Backlog folder ID |
-| `CLICKUP_BACKLOG_LIST_ID` | `901519340766` | Backlog list ID |
+| Variable                    | Description          |
+| --------------------------- | -------------------- |
+| `CLICKUP_WORKSPACE_ID`      | ClickUp workspace ID |
+| `CLICKUP_SPACE_ID`          | ClickUp space ID     |
+| `CLICKUP_SPRINT_FOLDER_ID`  | Sprint folder ID     |
+| `CLICKUP_BACKLOG_FOLDER_ID` | Backlog folder ID    |
+| `CLICKUP_BACKLOG_LIST_ID`   | Backlog list ID      |
 
-These values are NOT sensitive and are committed to version control in `config/clickup-config.json`.
+**Note:** While these IDs are not secrets, they should be stored in `.env.*` files
+(which are gitignored) rather than committed to version control. This prevents
+linking this public repository to specific ClickUp workspaces.
 
 ---
 
@@ -120,11 +130,13 @@ After adding secrets, verify they work:
 ### Test via GitHub Actions
 
 1. Create test branch:
+
    ```bash
    git checkout -b test-secrets
    ```
 
 2. Make small change:
+
    ```bash
    echo "# Test" >> README.md
    git add README.md
@@ -141,11 +153,11 @@ After adding secrets, verify they work:
 You cannot access GitHub Secrets locally, but you can test with local `.env.dev`:
 
 ```bash
-# Ensure .env.dev has API key
-grep CLICKUP_API_KEY .env.dev
+# Ensure .env.dev has API token
+grep CLICKUP_API_TOKEN .env.dev
 
 # Export it
-export CLICKUP_API_KEY=pk_236614810_KJX43XCVU2BZC4O1Q9FIZA8XNFFSZP8P
+export CLICKUP_API_TOKEN=pk_your_actual_token_here
 
 # Test API access
 python3 <<EOF
@@ -209,10 +221,12 @@ Expected output: `✓ Connected to: Syntek`
    - Check `CLICKUP_API_KEY` is listed
 
 2. **Check secret name in workflow**
+
    ```yaml
    env:
      CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
    ```
+
    Name must match exactly (case-sensitive)
 
 3. **Regenerate secret**
@@ -225,6 +239,7 @@ Expected output: `✓ Connected to: Syntek`
 **Symptom:** Authentication fails with correct key.
 
 **Solution:**
+
 - Ensure no leading/trailing spaces when pasting
 - API key should start with `pk_` and have no line breaks
 
@@ -233,6 +248,7 @@ Expected output: `✓ Connected to: Syntek`
 **Expected Behavior:** GitHub Secrets are encrypted and cannot be viewed after creation.
 
 **If you need to verify:**
+
 1. Delete existing secret
 2. Regenerate in ClickUp
 3. Add as new secret
@@ -254,6 +270,7 @@ Expected output: `✓ Connected to: Syntek`
    - Click "Update secret"
 
 3. **Update local .env.dev**
+
    ```bash
    # Edit .env.dev
    CLICKUP_API_KEY=pk_new_key_here
@@ -271,12 +288,14 @@ Expected output: `✓ Connected to: Syntek`
 If ClickUp workspace structure changes (new folders, etc.):
 
 1. **Update config file**
+
    ```bash
    # Edit config/clickup-config.json
    # Update folder IDs, list IDs, etc.
    ```
 
 2. **Commit changes**
+
    ```bash
    git add config/clickup-config.json
    git commit -m "Update ClickUp workspace configuration"

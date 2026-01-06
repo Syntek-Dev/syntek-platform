@@ -91,30 +91,33 @@
 
 ## Overview
 
-This document describes the CI/CD pipeline implementation for the Django + Wagtail + PostgreSQL + GraphQL backend template. All CI/CD checks run inside Docker containers to ensure complete parity with the local development environment.
+This document describes the CI/CD pipeline implementation for the Django + PostgreSQL + GraphQL backend template. All CI/CD checks run inside Docker containers to ensure complete parity with the local development environment.
 
 ## Architecture
 
 The CI/CD pipeline follows a three-tier environment strategy:
 
-| Environment | Branch    | Deployment      | Purpose                           |
-| ----------- | --------- | --------------- | --------------------------------- |
-| Development | `dev`     | Manual          | Local development and testing     |
-| Staging     | `staging` | Auto-deploy     | Pre-production testing and QA     |
-| Production  | `main`    | Manual approval | Live production environment       |
+| Environment | Branch    | Deployment      | Purpose                       |
+| ----------- | --------- | --------------- | ----------------------------- |
+| Development | `dev`     | Manual          | Local development and testing |
+| Staging     | `staging` | Auto-deploy     | Pre-production testing and QA |
+| Production  | `main`    | Manual approval | Live production environment   |
 
 ## Workflows
 
 ### 1. CI Pipeline (`ci.yml`)
 
 **Triggers:**
+
 - Push to `main`, `staging`, `dev`, `testing` branches
 - Pull requests to `main`, `staging`, `dev` branches
 
 **Jobs:**
 
 #### Lint and Format Check
+
 Runs code quality checks inside Docker:
+
 - Black formatting verification
 - isort import sorting verification
 - flake8 linting
@@ -127,6 +130,7 @@ docker compose -f docker/test/docker-compose.yml run --rm web flake8 .
 ```
 
 #### Type Checking
+
 Runs mypy type checking:
 
 ```bash
@@ -134,6 +138,7 @@ docker compose -f docker/test/docker-compose.yml run --rm web mypy .
 ```
 
 #### Security Scanning
+
 Runs Bandit security analysis:
 
 ```bash
@@ -141,6 +146,7 @@ docker compose -f docker/test/docker-compose.yml run --rm web bandit -r apps/ ap
 ```
 
 #### Test Suite
+
 Runs pytest with coverage reporting:
 
 ```bash
@@ -149,29 +155,36 @@ docker compose -f docker/test/docker-compose.yml run --rm web pytest --cov
 ```
 
 **Artifacts:**
+
 - Coverage reports (XML and HTML)
 - Bandit security reports
 - Retention: 7 days
 
 #### Dockerfile Linting
+
 Validates all Dockerfiles using hadolint:
+
 - `docker/dev/Dockerfile`
 - `docker/test/Dockerfile`
 - `docker/staging/Dockerfile`
 - `docker/production/Dockerfile`
 
 #### Configuration Validation
+
 Validates YAML and JSON configuration files.
 
 ### 2. PR Validation (`pr-validation.yml`)
 
 **Triggers:**
+
 - Pull request opened, synchronised, reopened, or edited
 
 **Jobs:**
 
 #### PR Title Validation
+
 Ensures PR titles follow Conventional Commits format:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -184,7 +197,9 @@ Ensures PR titles follow Conventional Commits format:
 - `chore`: Other changes
 
 #### Branch Name Validation
+
 Enforces branch naming conventions:
+
 - `us###/description` - User story branches (e.g., `us123/add-authentication`)
 - `feature/description` - Feature branches
 - `bugfix/description` - Bug fix branches
@@ -195,10 +210,13 @@ Enforces branch naming conventions:
 - `test/description` - Test branches
 
 #### PR Size Check
+
 Warns if PR exceeds 1000 changed lines (does not fail).
 
 #### Migration Validation
+
 Checks for:
+
 - Missing Django migrations
 - Migration file validity
 - Migration conflicts
@@ -209,17 +227,21 @@ docker compose -f docker/test/docker-compose.yml run --rm web \
 ```
 
 #### Secret Detection
+
 Uses TruffleHog to detect committed secrets.
 
 #### Dependency Review
+
 Reviews dependency changes for vulnerabilities (main branch only).
 
 #### Commit Message Linting
+
 Validates commit messages using commitlint.
 
 ### 3. Staging Deployment (`deploy-staging.yml`)
 
 **Triggers:**
+
 - Push to `staging` branch
 - Manual workflow dispatch
 
@@ -228,12 +250,14 @@ Validates commit messages using commitlint.
 **Jobs:**
 
 #### Build and Push Docker Image
+
 - Builds production-ready Docker image
 - Pushes to container registry
 - Tags: `staging-latest`, `staging-{sha}`
 - Uses layer caching for faster builds
 
 #### Deploy to Staging
+
 - Connects via SSH to staging server
 - Creates database backup
 - Pulls latest Docker image
@@ -243,6 +267,7 @@ Validates commit messages using commitlint.
 - Performs health checks
 
 **Required Secrets:**
+
 - `CONTAINER_REGISTRY` - Container registry URL
 - `REGISTRY_USERNAME` - Registry username
 - `REGISTRY_PASSWORD` - Registry password
@@ -267,6 +292,7 @@ docker compose -f docker/staging/docker-compose.yml up -d
 ### 4. Production Deployment (`deploy-production.yml`)
 
 **Triggers:**
+
 - Push to `main` branch
 - Manual workflow dispatch
 
@@ -275,9 +301,11 @@ docker compose -f docker/staging/docker-compose.yml up -d
 **Jobs:**
 
 #### Pre-Deployment Checks
+
 Runs critical tests before deployment (can be skipped with `skip-tests` input).
 
 #### Build and Push Production Image
+
 - Builds production Docker image
 - Extracts version from git tags
 - Pushes to container registry
@@ -285,16 +313,19 @@ Runs critical tests before deployment (can be skipped with `skip-tests` input).
 - Generates SBOM (Software Bill of Materials)
 
 #### Security Scan
+
 - Scans production image with Trivy
 - Uploads results to GitHub Security
 - Fails on critical vulnerabilities
 
 #### Manual Approval
+
 Requires manual approval via GitHub Environments before deploying to production.
 
 **Timeout:** 24 hours for approval
 
 #### Deploy to Production
+
 - Creates automatic database backup
 - Performs rolling deployment (zero-downtime)
 - Scales up new containers before removing old ones
@@ -318,11 +349,13 @@ docker compose -f docker/production/docker-compose.yml up -d --scale web=1 --rem
 ```
 
 #### Rollback on Failure
+
 Automatic rollback trigger if deployment fails.
 
 ### 5. Dependency Review (`dependency-review.yml`)
 
 **Triggers:**
+
 - Pull requests to `main` or `staging`
 - Weekly schedule (Monday 9:00 AM UTC)
 - Manual workflow dispatch
@@ -330,12 +363,15 @@ Automatic rollback trigger if deployment fails.
 **Jobs:**
 
 #### Dependency Review (PR only)
+
 Reviews dependency changes for:
+
 - Security vulnerabilities
 - License compliance
 - Severity thresholds
 
 **Allowed Licenses:**
+
 - MIT
 - Apache-2.0
 - BSD-2-Clause, BSD-3-Clause
@@ -344,25 +380,30 @@ Reviews dependency changes for:
 - Python-2.0
 
 **Denied Licenses:**
+
 - GPL-3.0
 - AGPL-3.0
 
 #### Check Outdated Dependencies (scheduled)
+
 - Audits dependencies for vulnerabilities using `pip-audit`
 - Checks for outdated packages
 - Creates GitHub issues for review
 
 #### License Compliance Scan
+
 - Generates license reports using `pip-licenses`
 - Checks for incompatible licenses
 - Uploads license reports as artifacts
 
 #### Docker Base Image Scan
+
 Scans `python:3.14-slim` base image for vulnerabilities using Trivy.
 
 ### 6. Security Scanning (`codeql.yml`)
 
 **Triggers:**
+
 - Push to `main`, `staging`, `dev` branches
 - Pull requests to `main`, `staging`
 - Weekly schedule (Monday 3:00 AM UTC)
@@ -371,22 +412,27 @@ Scans `python:3.14-slim` base image for vulnerabilities using Trivy.
 **Jobs:**
 
 #### CodeQL Analysis
+
 - Static code analysis for Python
 - Uses `security-extended` and `security-and-quality` queries
 - Uploads results to GitHub Security tab
 
 #### Semgrep Security Scan
+
 - Runs Semgrep security rules
 - Rule sets: `security-audit`, `django`, `python`, `docker`
 - Generates SARIF output
 
 #### Bandit Security Analysis
+
 Runs Bandit inside Docker container for Python security issues.
 
 #### Secret Scanning
+
 Uses TruffleHog to detect committed secrets.
 
 #### Django Security Checks
+
 Runs Django's built-in security checks:
 
 ```bash
@@ -398,6 +444,7 @@ python manage.py check --deploy --fail-level WARNING
 ### Pre-Commit Hook (`.husky/pre-commit`)
 
 Runs before each commit:
+
 - Black formatting check
 - isort import sorting check
 - flake8 linting
@@ -415,6 +462,7 @@ docker compose -f docker/test/docker-compose.yml run --rm web flake8 .
 ### Pre-Push Hook (`.husky/pre-push`)
 
 Runs before each push:
+
 - Full test suite execution
 - Database migrations check
 
@@ -429,6 +477,7 @@ docker compose -f docker/test/docker-compose.yml down -v
 ### Commit Message Hook (`.husky/commit-msg`)
 
 Validates commit message format:
+
 - Enforces Conventional Commits format
 - Checks message length (max 100 characters for subject)
 
@@ -445,6 +494,7 @@ footer (optional)
 ### Post-Merge Hook (`.husky/post-merge`)
 
 Runs after `git merge` or `git pull`:
+
 - Detects changes to requirements files
 - Detects changes to migration files
 - Provides helpful reminders to rebuild containers or run migrations
@@ -453,35 +503,38 @@ Runs after `git merge` or `git pull`:
 
 ### Repository Secrets
 
-| Secret Name                    | Description                           | Used In           |
-| ------------------------------ | ------------------------------------- | ----------------- |
-| `CONTAINER_REGISTRY`           | Container registry URL                | Deploy workflows  |
-| `REGISTRY_USERNAME`            | Container registry username           | Deploy workflows  |
-| `REGISTRY_PASSWORD`            | Container registry password           | Deploy workflows  |
-| `STAGING_HOST`                 | Staging server hostname               | Staging deploy    |
-| `STAGING_USER`                 | Staging SSH username                  | Staging deploy    |
-| `STAGING_SSH_PRIVATE_KEY`      | Staging SSH private key               | Staging deploy    |
-| `STAGING_URL`                  | Staging environment URL               | Staging deploy    |
-| `PRODUCTION_HOST`              | Production server hostname            | Production deploy |
-| `PRODUCTION_USER`              | Production SSH username               | Production deploy |
-| `PRODUCTION_SSH_PRIVATE_KEY`   | Production SSH private key            | Production deploy |
-| `PRODUCTION_URL`               | Production environment URL            | Production deploy |
-| `SLACK_WEBHOOK_URL` (optional) | Slack webhook for notifications       | Deploy workflows  |
-| `CLICKUP_API_KEY` (optional)   | ClickUp API key for project sync      | ClickUp sync      |
+| Secret Name                    | Description                      | Used In           |
+| ------------------------------ | -------------------------------- | ----------------- |
+| `CONTAINER_REGISTRY`           | Container registry URL           | Deploy workflows  |
+| `REGISTRY_USERNAME`            | Container registry username      | Deploy workflows  |
+| `REGISTRY_PASSWORD`            | Container registry password      | Deploy workflows  |
+| `STAGING_HOST`                 | Staging server hostname          | Staging deploy    |
+| `STAGING_USER`                 | Staging SSH username             | Staging deploy    |
+| `STAGING_SSH_PRIVATE_KEY`      | Staging SSH private key          | Staging deploy    |
+| `STAGING_URL`                  | Staging environment URL          | Staging deploy    |
+| `PRODUCTION_HOST`              | Production server hostname       | Production deploy |
+| `PRODUCTION_USER`              | Production SSH username          | Production deploy |
+| `PRODUCTION_SSH_PRIVATE_KEY`   | Production SSH private key       | Production deploy |
+| `PRODUCTION_URL`               | Production environment URL       | Production deploy |
+| `SLACK_WEBHOOK_URL` (optional) | Slack webhook for notifications  | Deploy workflows  |
+| `CLICKUP_API_KEY` (optional)   | ClickUp API key for project sync | ClickUp sync      |
 
 ### GitHub Environments
 
 #### Staging Environment
+
 - Auto-deployment enabled
 - No manual approval required
 - Environment URL: Set to staging URL
 
 #### Production Environment
+
 - Manual approval required
 - Reviewers: Add production deployment approvers
 - Environment URL: Set to production URL
 
 #### Production Approval Environment
+
 - Dedicated approval gate before production deployment
 - Timeout: 24 hours
 
@@ -567,17 +620,20 @@ docker compose -f docker/test/docker-compose.yml run --rm web pytest -vv
 ### Deployment Failures
 
 **SSH connection failed:**
+
 - Verify SSH key is correct
 - Check server firewall rules
 - Confirm SSH key has correct permissions (600)
 
 **Database migration failed:**
+
 - Review migration files
 - Check database connectivity
 - Verify database user permissions
 - Restore from backup if needed
 
 **Container health check failed:**
+
 - Review application logs
 - Check environment variables
 - Verify database connectivity
@@ -622,6 +678,7 @@ cache-to: type=gha,mode=max
 ### Parallel Job Execution
 
 CI jobs run in parallel where possible:
+
 - Linting and type checking run concurrently
 - Security scans run independently
 - Deployment jobs run sequentially for safety
@@ -650,6 +707,7 @@ CI jobs run in parallel where possible:
 ### GitHub Actions Notifications
 
 Configure GitHub Actions notifications in repository settings:
+
 - Email notifications for workflow failures
 - Slack integration for deployment status
 - Status checks required for PR merges
@@ -669,12 +727,14 @@ The `clickup-sync.yml` workflow syncs GitHub activity with ClickUp tasks:
 **Branch naming pattern:** `us###/description`
 
 **Status mapping:**
+
 - PR opened → `in review`
 - Merged to dev → `in progress`
 - Merged to staging → `accepted`
 - Merged to main → `Closed`
 
 **Configuration:**
+
 - Task mapping file: `config/clickup-story-mapping.json`
 - Required secret: `CLICKUP_API_KEY`
 
@@ -688,9 +748,9 @@ The `clickup-sync.yml` workflow syncs GitHub activity with ClickUp tasks:
 
 ## Changelog
 
-| Date       | Change                                     | Author        |
-| ---------- | ------------------------------------------ | ------------- |
-| 2026-01-03 | Initial CI/CD pipeline implementation      | Claude Opus 4 |
-| 2026-01-03 | Added Docker-based testing and deployment  | Claude Opus 4 |
-| 2026-01-03 | Configured security scanning workflows     | Claude Opus 4 |
-| 2026-01-03 | Set up Git hooks with Docker support       | Claude Opus 4 |
+| Date       | Change                                    | Author        |
+| ---------- | ----------------------------------------- | ------------- |
+| 2026-01-03 | Initial CI/CD pipeline implementation     | Claude Opus 4 |
+| 2026-01-03 | Added Docker-based testing and deployment | Claude Opus 4 |
+| 2026-01-03 | Configured security scanning workflows    | Claude Opus 4 |
+| 2026-01-03 | Set up Git hooks with Docker support      | Claude Opus 4 |
