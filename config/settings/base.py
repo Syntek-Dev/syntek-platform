@@ -36,20 +36,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Wagtail CMS
-    "wagtail.contrib.forms",
-    "wagtail.contrib.redirects",
-    "wagtail.embeds",
-    "wagtail.sites",
-    "wagtail.users",
-    "wagtail.snippets",
-    "wagtail.documents",
-    "wagtail.images",
-    "wagtail.search",
-    "wagtail.admin",
-    "wagtail",
-    "modelcluster",
-    "taggit",
     # Third-party apps
     "rest_framework",
     "corsheaders",
@@ -72,8 +58,6 @@ MIDDLEWARE = [
     "config.middleware.security.SecurityHeadersMiddleware",
     "config.middleware.ratelimit.RateLimitMiddleware",
     "config.middleware.audit.SecurityAuditMiddleware",
-    # Wagtail middleware (should be last)
-    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -174,10 +158,6 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Wagtail settings
-WAGTAIL_SITE_NAME = env("WAGTAIL_SITE_NAME", default="Backend Template")
-WAGTAILADMIN_BASE_URL = env("WAGTAIL_BASE_URL", default="http://localhost:8000")
 
 # REST Framework settings
 REST_FRAMEWORK = {

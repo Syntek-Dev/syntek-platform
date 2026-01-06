@@ -15,7 +15,6 @@ Note: Django's built-in validators already handle:
 """
 
 import re
-from typing import Optional
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
@@ -232,7 +231,7 @@ class NoSequentialCharactersValidator:
                     raise ValidationError(
                         _(
                             f"Password must not contain sequential numbers "
-                            f"({password[i:i+self.max_sequence_length]})."
+                            f"( {password[i:i + self.max_sequence_length]} )."
                         ),
                         code="sequential_numbers",
                     )
@@ -248,7 +247,7 @@ class NoSequentialCharactersValidator:
                     raise ValidationError(
                         _(
                             f"Password must not contain sequential letters "
-                            f"({password[i:i+self.max_sequence_length]})."
+                            f"({password[i:i + self.max_sequence_length]})."
                         ),
                         code="sequential_letters",
                     )
@@ -296,7 +295,7 @@ class NoRepeatedCharactersValidator:
                 raise ValidationError(
                     _(
                         f"Password must not contain {self.max_repeated} or more "
-                        f"repeated characters ({password[i:i+self.max_repeated]})."
+                        f"repeated characters ({password[i:i + self.max_repeated]})."
                     ),
                     code="repeated_characters",
                 )

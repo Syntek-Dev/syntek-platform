@@ -103,7 +103,6 @@ Root URL router for the entire Django project. Includes:
 
 - Admin interface
 - GraphQL API
-- Wagtail CMS
 - Health check endpoints
 - Debug toolbar (dev only)
 
@@ -114,7 +113,6 @@ Root URL router for the entire Django project. Includes:
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("graphql/", GraphQLView.as_view(schema=schema)),
-    path("", include("wagtail.urls")),
 ]
 ```
 
