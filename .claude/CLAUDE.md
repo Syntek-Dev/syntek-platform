@@ -1,7 +1,7 @@
 # Backend Template - Django Project
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 06/01/2026
+**Version**: 0.3.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -39,6 +39,21 @@
     - [Comments: When to Use Them](#comments-when-to-use-them)
     - [Module-Level Docstrings](#module-level-docstrings)
     - [Examples of What NOT to Document](#examples-of-what-not-to-document)
+  - [Testing Standards](#testing-standards)
+    - [Testing Philosophy](#testing-philosophy)
+    - [Testing Framework Stack](#testing-framework-stack)
+    - [Test Directory Structure](#test-directory-structure)
+    - [Test File Naming Conventions](#test-file-naming-conventions)
+    - [TDD (Test-Driven Development)](#tdd-test-driven-development)
+    - [BDD (Behaviour-Driven Development)](#bdd-behaviour-driven-development)
+    - [Integration Tests](#integration-tests)
+    - [End-to-End Tests](#end-to-end-tests)
+    - [GraphQL API Tests](#graphql-api-tests)
+    - [Test Markers](#test-markers)
+    - [Test Coverage Requirements](#test-coverage-requirements)
+    - [Fixtures and Factory Pattern](#fixtures-and-factory-pattern)
+    - [Test-Writer Agent Instructions](#test-writer-agent-instructions)
+    - [Running Tests Summary](#running-tests-summary)
   - [Markdown Documentation Standards](#markdown-documentation-standards)
     - [File Naming Convention](#file-naming-convention)
     - [Required VS Code Extension](#required-vs-code-extension)
@@ -662,6 +677,845 @@ for i in range(10):
 for item in items:
     process_item(item)
 ```
+
+## Testing Standards
+
+This project follows a comprehensive testing strategy using TDD, BDD, and E2E testing approaches. The test-writer agent (`/syntek-dev-suite:test-writer`) must adhere to these standards.
+
+### Testing Philosophy
+
+**Test-Driven Development (TDD):** Write tests before implementation
+**Behaviour-Driven Development (BDD):** Write human-readable scenarios using Gherkin syntax
+**End-to-End Testing (E2E):** Test complete user workflows across the entire system
+
+### Testing Framework Stack
+
+| Test Type   | Framework      | Purpose                                      |
+| ----------- | -------------- | -------------------------------------------- |
+| Unit (TDD)  | pytest         | Fast, isolated tests for individual units    |
+| BDD         | pytest-bdd     | Behaviour scenarios in Gherkin syntax        |
+| Integration | pytest-django  | Test Django components together              |
+| E2E         | pytest-django  | Full user workflows, multi-service tests     |
+| GraphQL API | pytest + utils | Test GraphQL queries, mutations, permissions |
+
+### Test Directory Structure
+
+```
+tests/
+├── conftest.py                  # Global fixtures and pytest configuration
+├── fixtures/                    # Shared test fixtures
+│   ├── users.py                # User-related fixtures
+│   ├── organisations.py        # Organisation fixtures
+│   └── common.py               # Common test data
+├── unit/                        # TDD unit tests (fast, isolated)
+│   ├── test_models.py
+│   ├── test_serializers.py
+│   ├── test_validators.py
+│   ├── test_services.py
+│   └── apps/
+│       ├── core/
+│       │   ├── test_user_model.py
+│       │   ├── test_organisation_model.py
+│       │   └── test_auth_service.py
+│       ├── design/
+│       └── cms/
+├── bdd/                         # BDD behaviour tests (Gherkin)
+│   ├── features/               # Feature files (Gherkin scenarios)
+│   │   ├── authentication.feature
+│   │   ├── user_management.feature
+│   │   ├── organisation_setup.feature
+│   │   └── content_publishing.feature
+│   ├── step_defs/              # Step definitions
+│   │   ├── test_authentication_steps.py
+│   │   ├── test_user_steps.py
+│   │   ├── test_organisation_steps.py
+│   │   └── test_content_steps.py
+│   └── conftest.py             # BDD-specific fixtures
+├── integration/                 # Integration tests (multiple components)
+│   ├── test_auth_flow.py
+│   ├── test_organisation_workflow.py
+│   ├── test_graphql_api.py
+│   ├── test_cms_publishing.py
+│   └── test_multi_tenancy.py
+├── e2e/                         # End-to-end tests (complete workflows)
+│   ├── test_user_registration_to_login.py
+│   ├── test_organisation_setup_complete.py
+│   ├── test_content_creation_to_publish.py
+│   ├── test_design_token_propagation.py
+│   └── test_multi_user_collaboration.py
+├── graphql/                     # GraphQL-specific tests
+│   ├── test_queries.py
+│   ├── test_mutations.py
+│   ├── test_permissions.py
+│   ├── test_filtering.py
+│   └── test_pagination.py
+└── performance/                 # Performance and load tests
+    ├── test_query_performance.py
+    └── test_bulk_operations.py
+```
+
+### Test File Naming Conventions
+
+| Test Type   | Naming Pattern                       | Example                              |
+| ----------- | ------------------------------------ | ------------------------------------ |
+| Unit        | `test_<component>_<functionality>.py` | `test_user_model_validation.py`      |
+| BDD Feature | `<feature_name>.feature`             | `authentication.feature`             |
+| BDD Steps   | `test_<feature>_steps.py`            | `test_authentication_steps.py`       |
+| Integration | `test_<workflow>_integration.py`     | `test_auth_flow_integration.py`      |
+| E2E         | `test_<workflow>_e2e.py`             | `test_user_registration_e2e.py`      |
+| GraphQL     | `test_<operation>_<entity>.py`       | `test_query_users.py`                |
+
+### TDD (Test-Driven Development)
+
+**Principles:**
+1. Write the test first (Red)
+2. Write minimal code to pass (Green)
+3. Refactor while keeping tests green (Refactor)
+
+**Unit Test Requirements:**
+
+```python
+"""Unit tests for User model validation.
+
+Tests cover:
+- Model field validation
+- Custom validators
+- Model methods
+- Business logic
+"""
+
+import pytest
+from django.core.exceptions import ValidationError
+from apps.core.models import User
+
+
+class TestUserModel:
+    """Unit tests for User model."""
+
+    def test_user_creation_with_valid_data(self) -> None:
+        """Test user is created successfully with valid data.
+
+        Given: Valid user data (email, name, password)
+        When: User.objects.create() is called
+        Then: User is created with correct attributes
+        """
+        user = User.objects.create(
+            email="test@example.com",
+            first_name="Test",
+            last_name="User",
+        )
+
+        assert user.id is not None
+        assert user.email == "test@example.com"
+        assert user.get_full_name() == "Test User"
+
+    def test_user_email_must_be_unique(self) -> None:
+        """Test user email must be unique.
+
+        Given: A user with email "test@example.com" exists
+        When: Creating another user with the same email
+        Then: ValidationError is raised
+        """
+        User.objects.create(email="test@example.com", first_name="First")
+
+        with pytest.raises(ValidationError):
+            user = User(email="test@example.com", first_name="Second")
+            user.full_clean()
+
+    def test_user_password_is_hashed(self) -> None:
+        """Test user password is hashed on save.
+
+        Given: A plain text password
+        When: User is created with set_password()
+        Then: Password is stored as a hash, not plain text
+        """
+        user = User.objects.create(email="test@example.com")
+        user.set_password("secret123")
+        user.save()
+
+        assert user.password != "secret123"
+        assert user.check_password("secret123")
+```
+
+**Key Rules for TDD:**
+- Test class names: `TestComponentName`
+- Test method names: `test_<what>_<condition>_<expected_result>`
+- Use type hints for all test methods
+- Include docstrings explaining Given/When/Then
+- Use pytest assertions (`assert`, not `self.assert*`)
+- Mock external dependencies with `pytest.mock` or `unittest.mock`
+- Mark slow tests with `@pytest.mark.slow`
+
+### BDD (Behaviour-Driven Development)
+
+**Principles:**
+- Write scenarios in Gherkin (Given/When/Then)
+- Make tests readable by non-developers
+- Focus on behaviour, not implementation
+
+**Feature File Requirements:**
+
+Create feature files in `tests/bdd/features/` using Gherkin syntax:
+
+```gherkin
+# tests/bdd/features/authentication.feature
+
+Feature: User Authentication
+  As a registered user
+  I want to log in to the system
+  So that I can access my account
+
+  Background:
+    Given the system is running
+    And the database is clean
+
+  Scenario: Successful login with valid credentials
+    Given a user with email "user@example.com" and password "secret123"
+    When I submit login credentials:
+      | email            | password  |
+      | user@example.com | secret123 |
+    Then I should be logged in
+    And I should see the dashboard
+    And I should see a welcome message "Welcome back, User"
+
+  Scenario: Failed login with invalid password
+    Given a user with email "user@example.com" and password "secret123"
+    When I submit login credentials:
+      | email            | password |
+      | user@example.com | wrong    |
+    Then I should not be logged in
+    And I should see an error message "Invalid credentials"
+    And I should remain on the login page
+
+  Scenario Outline: Login validation
+    Given a user with email "user@example.com" exists
+    When I attempt to login with email "<email>" and password "<password>"
+    Then the login result should be "<result>"
+
+    Examples:
+      | email             | password  | result  |
+      | user@example.com  | secret123 | success |
+      | user@example.com  | wrong     | failure |
+      | wrong@example.com | secret123 | failure |
+      | invalid-email     | secret123 | failure |
+```
+
+**Step Definition Requirements:**
+
+Create step definitions in `tests/bdd/step_defs/`:
+
+```python
+"""Step definitions for authentication feature.
+
+This module implements step definitions for the authentication.feature file.
+"""
+
+import pytest
+from pytest_bdd import given, when, then, scenarios, parsers
+from django.contrib.auth import get_user_model
+from django.test import Client
+
+User = get_user_model()
+
+# Load all scenarios from the feature file
+scenarios('../features/authentication.feature')
+
+
+@pytest.fixture
+def auth_context():
+    """Shared context for authentication tests."""
+    return {
+        'client': Client(),
+        'user': None,
+        'response': None,
+    }
+
+
+@given('the system is running')
+def system_running():
+    """Verify system is operational."""
+    # System checks here
+    pass
+
+
+@given('the database is clean')
+def database_clean(django_db_setup, django_db_blocker):
+    """Ensure database is clean before tests."""
+    with django_db_blocker.unblock():
+        User.objects.all().delete()
+
+
+@given(parsers.parse('a user with email "{email}" and password "{password}"'))
+def create_user(auth_context, email: str, password: str):
+    """Create a test user.
+
+    Args:
+        auth_context: Shared test context
+        email: User email address
+        password: User password
+    """
+    user = User.objects.create_user(
+        email=email,
+        password=password,
+        first_name="Test",
+        last_name="User",
+    )
+    auth_context['user'] = user
+
+
+@when('I submit login credentials:')
+def submit_login(auth_context, datatable):
+    """Submit login form.
+
+    Args:
+        auth_context: Shared test context
+        datatable: Gherkin datatable with credentials
+    """
+    credentials = datatable[0]  # First row of data
+    response = auth_context['client'].post('/api/auth/login/', {
+        'email': credentials['email'],
+        'password': credentials['password'],
+    })
+    auth_context['response'] = response
+
+
+@then('I should be logged in')
+def verify_logged_in(auth_context):
+    """Verify user is authenticated.
+
+    Args:
+        auth_context: Shared test context
+    """
+    assert auth_context['response'].status_code == 200
+    assert auth_context['client'].session.get('_auth_user_id') is not None
+
+
+@then(parsers.parse('I should see a welcome message "{message}"'))
+def verify_welcome_message(auth_context, message: str):
+    """Verify welcome message appears.
+
+    Args:
+        auth_context: Shared test context
+        message: Expected welcome message
+    """
+    response_data = auth_context['response'].json()
+    assert message in response_data.get('message', '')
+```
+
+**BDD Configuration:**
+
+Add to `tests/bdd/conftest.py`:
+
+```python
+"""pytest-bdd configuration and fixtures."""
+
+import pytest
+from pytest_bdd import given, when, then
+
+
+@pytest.fixture
+def bdd_context():
+    """Shared context for BDD tests."""
+    return {}
+```
+
+Install pytest-bdd dependency in `pyproject.toml`:
+
+```toml
+[project.optional-dependencies]
+dev = [
+    # ... existing dependencies ...
+    "pytest-bdd>=7.3.0",  # BDD testing with Gherkin
+]
+```
+
+### Integration Tests
+
+**Purpose:** Test multiple components working together
+
+```python
+"""Integration tests for authentication flow.
+
+Tests the complete authentication workflow including:
+- User registration
+- Email verification
+- Login
+- Session management
+- Logout
+"""
+
+import pytest
+from django.contrib.auth import get_user_model
+from django.test import Client
+from apps.core.models import Organisation
+
+User = get_user_model()
+
+
+@pytest.mark.integration
+class TestAuthenticationFlow:
+    """Integration tests for auth workflow."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self, db):
+        """Set up test data."""
+        self.client = Client()
+        self.organisation = Organisation.objects.create(
+            name="Test Org",
+            slug="test-org",
+        )
+
+    def test_complete_registration_and_login_flow(self) -> None:
+        """Test user can register, verify email, and login.
+
+        Workflow:
+        1. User submits registration form
+        2. User receives verification email
+        3. User clicks verification link
+        4. User logs in
+        5. User accesses protected resource
+        """
+        # Step 1: Register
+        response = self.client.post('/api/auth/register/', {
+            'email': 'newuser@example.com',
+            'password': 'secret123',
+            'first_name': 'New',
+            'last_name': 'User',
+            'organisation': self.organisation.id,
+        })
+        assert response.status_code == 201
+
+        # Step 2: Verify email token was created
+        user = User.objects.get(email='newuser@example.com')
+        assert not user.email_verified
+        assert user.verification_token is not None
+
+        # Step 3: Verify email
+        response = self.client.get(
+            f'/api/auth/verify-email/{user.verification_token}/'
+        )
+        assert response.status_code == 200
+        user.refresh_from_db()
+        assert user.email_verified
+
+        # Step 4: Login
+        response = self.client.post('/api/auth/login/', {
+            'email': 'newuser@example.com',
+            'password': 'secret123',
+        })
+        assert response.status_code == 200
+        assert 'token' in response.json()
+
+        # Step 5: Access protected resource
+        token = response.json()['token']
+        response = self.client.get('/api/users/me/', HTTP_AUTHORIZATION=f'Bearer {token}')
+        assert response.status_code == 200
+        assert response.json()['email'] == 'newuser@example.com'
+```
+
+### End-to-End Tests
+
+**Purpose:** Test complete user workflows across the entire system
+
+```python
+"""End-to-end tests for organisation setup workflow.
+
+Tests the complete organisation setup process from registration to first content publish.
+"""
+
+import pytest
+from django.contrib.auth import get_user_model
+from apps.core.models import Organisation
+from apps.cms.models import Page
+
+User = get_user_model()
+
+
+@pytest.mark.e2e
+class TestOrganisationSetupE2E:
+    """E2E tests for organisation setup."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self, db):
+        """Set up test environment."""
+        self.client = Client()
+
+    def test_complete_organisation_setup_workflow(self) -> None:
+        """Test complete workflow: register -> create org -> setup -> publish content.
+
+        This test covers:
+        1. User registration
+        2. Organisation creation
+        3. Design token configuration
+        4. Template selection
+        5. Content creation
+        6. Content publishing
+        7. Viewing published content
+        """
+        # Step 1: User registration
+        register_response = self.client.post('/api/auth/register/', {
+            'email': 'owner@neworg.com',
+            'password': 'secret123',
+            'first_name': 'Organisation',
+            'last_name': 'Owner',
+        })
+        assert register_response.status_code == 201
+        token = register_response.json()['token']
+
+        # Step 2: Create organisation
+        org_response = self.client.post(
+            '/api/organisations/',
+            {
+                'name': 'New Organisation',
+                'slug': 'new-org',
+                'industry': 'technology',
+            },
+            HTTP_AUTHORIZATION=f'Bearer {token}'
+        )
+        assert org_response.status_code == 201
+        org_id = org_response.json()['id']
+
+        # Step 3: Configure design tokens
+        design_response = self.client.post(
+            f'/api/organisations/{org_id}/design-tokens/',
+            {
+                'primary_color': '#007bff',
+                'secondary_color': '#6c757d',
+                'font_family': 'Inter',
+            },
+            HTTP_AUTHORIZATION=f'Bearer {token}'
+        )
+        assert design_response.status_code == 201
+
+        # Step 4: Select template
+        template_response = self.client.post(
+            f'/api/organisations/{org_id}/select-template/',
+            {'template_type': 'corporate'},
+            HTTP_AUTHORIZATION=f'Bearer {token}'
+        )
+        assert template_response.status_code == 200
+
+        # Step 5: Create content
+        page_response = self.client.post(
+            f'/api/organisations/{org_id}/pages/',
+            {
+                'title': 'About Us',
+                'slug': 'about',
+                'content': {
+                    'blocks': [
+                        {
+                            'type': 'heading',
+                            'content': 'About Our Company',
+                        },
+                        {
+                            'type': 'paragraph',
+                            'content': 'We are a leading provider...',
+                        },
+                    ],
+                },
+                'branch': 'feature',
+            },
+            HTTP_AUTHORIZATION=f'Bearer {token}'
+        )
+        assert page_response.status_code == 201
+        page_id = page_response.json()['id']
+
+        # Step 6: Publish content (feature -> testing -> dev -> staging -> production)
+        branches = ['testing', 'dev', 'staging', 'production']
+        for branch in branches:
+            publish_response = self.client.post(
+                f'/api/organisations/{org_id}/pages/{page_id}/promote/',
+                {'target_branch': branch},
+                HTTP_AUTHORIZATION=f'Bearer {token}'
+            )
+            assert publish_response.status_code == 200
+
+        # Step 7: View published content
+        page = Page.objects.get(id=page_id, branch='production')
+        assert page.title == 'About Us'
+        assert page.published
+```
+
+### GraphQL API Tests
+
+**Purpose:** Test GraphQL queries, mutations, and permissions
+
+```python
+"""Tests for GraphQL user queries."""
+
+import pytest
+from django.contrib.auth import get_user_model
+from apps.core.models import Organisation
+
+User = get_user_model()
+
+
+@pytest.mark.graphql
+class TestUserQueries:
+    """Test GraphQL queries for users."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self, db):
+        """Set up test data."""
+        self.org = Organisation.objects.create(name="Test Org", slug="test-org")
+        self.user = User.objects.create_user(
+            email="test@example.com",
+            password="secret123",
+            organisation=self.org,
+        )
+
+    def test_user_query_returns_user_data(self, graphql_client) -> None:
+        """Test user query returns correct data.
+
+        GraphQL Query:
+        query {
+          user(id: "1") {
+            id
+            email
+            firstName
+            lastName
+            organisation { name }
+          }
+        }
+        """
+        query = """
+        query GetUser($id: ID!) {
+            user(id: $id) {
+                id
+                email
+                firstName
+                lastName
+                organisation {
+                    name
+                }
+            }
+        }
+        """
+
+        response = graphql_client.execute(
+            query,
+            variables={'id': str(self.user.id)},
+        )
+
+        assert response['data']['user']['id'] == str(self.user.id)
+        assert response['data']['user']['email'] == "test@example.com"
+        assert response['data']['user']['organisation']['name'] == "Test Org"
+
+    def test_user_query_respects_organisation_boundaries(self, graphql_client) -> None:
+        """Test users can only query their own organisation's users."""
+        other_org = Organisation.objects.create(name="Other Org", slug="other-org")
+        other_user = User.objects.create_user(
+            email="other@example.com",
+            organisation=other_org,
+        )
+
+        # Authenticate as self.user
+        graphql_client.authenticate(self.user)
+
+        # Try to query other_user
+        query = """
+        query GetUser($id: ID!) {
+            user(id: $id) {
+                id
+                email
+            }
+        }
+        """
+
+        response = graphql_client.execute(
+            query,
+            variables={'id': str(other_user.id)},
+        )
+
+        # Should return None or error due to organisation boundary
+        assert response['data']['user'] is None
+```
+
+### Test Markers
+
+Use pytest markers to categorise tests:
+
+```python
+# Unit tests (fast, isolated)
+@pytest.mark.unit
+def test_user_validation():
+    pass
+
+# Integration tests (multiple components)
+@pytest.mark.integration
+def test_auth_flow():
+    pass
+
+# E2E tests (complete workflows)
+@pytest.mark.e2e
+def test_organisation_setup():
+    pass
+
+# GraphQL tests
+@pytest.mark.graphql
+def test_user_query():
+    pass
+
+# Slow tests (long-running)
+@pytest.mark.slow
+def test_bulk_import():
+    pass
+```
+
+Run specific test categories:
+
+```bash
+# Run only unit tests
+./scripts/env/test.sh run -m unit
+
+# Run only integration tests
+./scripts/env/test.sh run -m integration
+
+# Run only E2E tests
+./scripts/env/test.sh run -m e2e
+
+# Run only GraphQL tests
+./scripts/env/test.sh run -m graphql
+
+# Exclude slow tests
+./scripts/env/test.sh run -m "not slow"
+```
+
+### Test Coverage Requirements
+
+| Test Type   | Coverage Target | Purpose                           |
+| ----------- | --------------- | --------------------------------- |
+| Unit        | 90%+            | Core business logic               |
+| Integration | 80%+            | Component interactions            |
+| E2E         | 60%+            | Critical user workflows           |
+| GraphQL     | 85%+            | API queries and mutations         |
+| Overall     | 80%+            | Entire codebase                   |
+
+### Fixtures and Factory Pattern
+
+Use factories for creating test data:
+
+```python
+"""Test factories for creating test data."""
+
+import factory
+from factory.django import DjangoModelFactory
+from apps.core.models import User, Organisation
+
+
+class OrganisationFactory(DjangoModelFactory):
+    """Factory for Organisation model."""
+
+    class Meta:
+        model = Organisation
+
+    name = factory.Sequence(lambda n: f"Organisation {n}")
+    slug = factory.Sequence(lambda n: f"org-{n}")
+
+
+class UserFactory(DjangoModelFactory):
+    """Factory for User model."""
+
+    class Meta:
+        model = User
+
+    email = factory.Sequence(lambda n: f"user{n}@example.com")
+    first_name = factory.Faker('first_name')
+    last_name = factory.Faker('last_name')
+    organisation = factory.SubFactory(OrganisationFactory)
+
+    @factory.post_generation
+    def password(self, create, extracted, **kwargs):
+        """Set password after user creation."""
+        if not create:
+            return
+        if extracted:
+            self.set_password(extracted)
+        else:
+            self.set_password('default_password')
+```
+
+Usage in tests:
+
+```python
+def test_user_creation_with_factory():
+    """Test user creation using factory."""
+    user = UserFactory.create(email="specific@example.com", password="secret123")
+    assert user.email == "specific@example.com"
+    assert user.check_password("secret123")
+```
+
+### Test-Writer Agent Instructions
+
+When using `/syntek-dev-suite:test-writer`, the agent MUST:
+
+1. **Ask which test type to create:**
+   - TDD (unit tests)
+   - BDD (feature files + step definitions)
+   - Integration tests
+   - E2E tests
+   - GraphQL tests
+
+2. **Follow the directory structure** specified above
+
+3. **Use appropriate naming conventions** for test files
+
+4. **Include comprehensive docstrings** using Google-style format
+
+5. **Apply correct pytest markers** (@pytest.mark.unit, etc.)
+
+6. **Create factories** for complex test data using factory-boy
+
+7. **Write Given/When/Then** comments in TDD tests
+
+8. **Use Gherkin syntax** for BDD feature files
+
+9. **Test organisation boundaries** for multi-tenancy
+
+10. **Mock external services** (email, API calls, etc.)
+
+11. **Include both positive and negative test cases**
+
+12. **Verify error handling** with pytest.raises()
+
+13. **Check authentication/authorisation** where applicable
+
+14. **Test GraphQL permissions** and filtering
+
+15. **Follow the Arrange-Act-Assert pattern**
+
+### Running Tests Summary
+
+```bash
+# Run all tests
+./scripts/env/test.sh run
+
+# Run with coverage
+./scripts/env/test.sh coverage
+
+# Run specific test types
+./scripts/env/test.sh run -m unit
+./scripts/env/test.sh run -m integration
+./scripts/env/test.sh run -m e2e
+./scripts/env/test.sh run -m graphql
+
+# Run specific test file
+./scripts/env/test.sh run tests/unit/test_user_model.py
+
+# Run specific test class
+./scripts/env/test.sh run tests/unit/test_user_model.py::TestUserModel
+
+# Run specific test method
+./scripts/env/test.sh run tests/unit/test_user_model.py::TestUserModel::test_user_creation
+
+# Run fast tests only
+./scripts/env/test.sh fast
+
+# Run full CI pipeline
+./scripts/env/test.sh ci
+```
+
+---
 
 ## Markdown Documentation Standards
 

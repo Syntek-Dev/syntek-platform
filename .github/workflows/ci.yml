@@ -145,10 +145,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check for tests
+        id: check-tests
+        run: |
+          # Check if any test files exist (before building containers)
+          TEST_COUNT=$(find . -type f \( -name "test_*.py" -o -name "*_test.py" \) | wc -l)
+          if [ "$TEST_COUNT" -eq 0 ]; then
+            echo "No test files found, skipping test suite"
+            echo "has_tests=false" >> $GITHUB_OUTPUT
+          else
+            echo "Found $TEST_COUNT test files"
+            echo "has_tests=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Skip tests message
+        if: steps.check-tests.outputs.has_tests == 'false'
+        run: echo "⏭️ No tests found - test suite skipped"
+
       - name: Set up Docker Buildx
+        if: steps.check-tests.outputs.has_tests == 'true'
         uses: docker/setup-buildx-action@v3
 
       - name: Build test container
+        if: steps.check-tests.outputs.has_tests == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -160,9 +179,11 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Create test environment file
+        if: steps.check-tests.outputs.has_tests == 'true'
         run: cp .env.test.example .env.test
 
       - name: Start test services
+        if: steps.check-tests.outputs.has_tests == 'true'
         run: |
           docker compose -f docker/test/docker-compose.yml up -d db redis mailpit
           # Wait for database to be ready using pg_isready
@@ -176,22 +197,10 @@ jobs:
           done
 
       - name: Run migrations
+        if: steps.check-tests.outputs.has_tests == 'true'
         run: |
           docker compose -f docker/test/docker-compose.yml run --rm web \
             python manage.py migrate --noinput
-
-      - name: Check for tests
-        id: check-tests
-        run: |
-          # Check if any test files exist
-          TEST_COUNT=$(find . -type f -name "test_*.py" -o -name "*_test.py" | wc -l)
-          if [ "$TEST_COUNT" -eq 0 ]; then
-            echo "No test files found, skipping test suite"
-            echo "has_tests=false" >> $GITHUB_OUTPUT
-          else
-            echo "Found $TEST_COUNT test files"
-            echo "has_tests=true" >> $GITHUB_OUTPUT
-          fi
 
       - name: Run pytest with coverage
         if: steps.check-tests.outputs.has_tests == 'true'
@@ -222,12 +231,8 @@ jobs:
           docker compose -f docker/test/docker-compose.yml run --rm web \
             coverage report
 
-      - name: Skip tests message
-        if: steps.check-tests.outputs.has_tests == 'false'
-        run: echo "⏭️ No tests found - test suite skipped"
-
       - name: Shutdown test services
-        if: always()
+        if: always() && steps.check-tests.outputs.has_tests == 'true'
         run: |
           docker compose -f docker/test/docker-compose.yml down -v
 
@@ -283,7 +288,15 @@ jobs:
 
       - name: Validate YAML files
         run: |
-          find . -type f \( -name "*.yml" -o -name "*.yaml" \) \
+          set -e
+          FAILED=0
+          while IFS= read -r file; do
+            echo "Validating $file"
+            if ! python -c "import yaml; yaml.safe_load(open('$file'))" 2>&1; then
+              echo "❌ Failed to validate: $file"
+              FAILED=1
+            fi
+          done < <(find . -type f \( -name "*.yml" -o -name "*.yaml" \) \
             -not -path "*/node_modules/*" \
             -not -path "*/.git/*" \
             -not -path "*/__pycache__/*" \
@@ -298,19 +311,23 @@ jobs:
             -not -path "*/.eggs/*" \
             -not -path "*/*.egg-info/*" \
             -not -path "*/build/*" \
-            -not -path "*/dist/*" \
-            | while read file; do
-              echo "Validating $file"
-              if ! python -c "import yaml; yaml.safe_load(open('$file'))" 2>&1; then
-                echo "❌ Failed to validate: $file"
-                exit 1
-              fi
-            done
+            -not -path "*/dist/*")
+          if [ "$FAILED" -eq 1 ]; then
+            exit 1
+          fi
           echo "✅ All YAML files valid"
 
       - name: Validate JSON files
         run: |
-          find . -type f -name "*.json" \
+          set -e
+          FAILED=0
+          while IFS= read -r file; do
+            echo "Validating $file"
+            if ! python -c "import json; json.load(open('$file'))" 2>&1; then
+              echo "❌ Failed to validate: $file"
+              FAILED=1
+            fi
+          done < <(find . -type f -name "*.json" \
             -not -path "*/node_modules/*" \
             -not -path "*/.git/*" \
             -not -path "*/__pycache__/*" \
@@ -326,13 +343,13 @@ jobs:
             -not -path "*/*.egg-info/*" \
             -not -path "*/build/*" \
             -not -path "*/dist/*" \
-            | while read file; do
-              echo "Validating $file"
-              if ! python -c "import json; json.load(open('$file'))" 2>&1; then
-                echo "❌ Failed to validate: $file"
-                exit 1
-              fi
-            done
+            -not -path "*/.vscode/*" \
+            -not -name ".cspell.json" \
+            -not -name "tsconfig.json" \
+            -not -name "jsconfig.json")
+          if [ "$FAILED" -eq 1 ]; then
+            exit 1
+          fi
           echo "✅ All JSON files valid"
 
   ci-summary:

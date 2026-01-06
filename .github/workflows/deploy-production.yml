@@ -1,13 +1,36 @@
 name: Deploy to Production
 
+# NOTE: This workflow is disabled by default for the template.
+# To enable deployments:
+# 1. Configure the required secrets in your repository settings
+# 2. Set up GitHub Environments with required approvers
+# 3. Uncomment the 'push' trigger below
+#
+# Required secrets:
+#   - CONTAINER_REGISTRY: Docker registry URL (e.g., ghcr.io/your-org)
+#   - REGISTRY_USERNAME: Registry username
+#   - REGISTRY_PASSWORD: Registry password/token
+#   - PRODUCTION_SSH_PRIVATE_KEY: SSH key for deployment server
+#   - PRODUCTION_HOST: Production server hostname
+#   - PRODUCTION_USER: SSH username for production server
+#   - PRODUCTION_URL: Production site URL for health checks
+#   - SLACK_WEBHOOK_URL: (optional) Slack notifications
+#
+# Required GitHub Environments:
+#   - production: For build/deploy jobs
+#   - production-approval: For manual approval gate (add required reviewers)
+#
+# See docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md Phase 15 for deployment details.
+
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.github/workflows/**'
+  # Uncomment push trigger to enable automatic production deployments
+  # push:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - '**.md'
+  #     - 'docs/**'
+  #     - '.github/workflows/**'
   workflow_dispatch:
     inputs:
       skip-tests:
@@ -31,10 +54,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check for tests
+        id: check-tests
+        run: |
+          TEST_COUNT=$(find . -type f \( -name "test_*.py" -o -name "*_test.py" \) | wc -l)
+          if [ "$TEST_COUNT" -eq 0 ]; then
+            echo "No test files found, skipping tests"
+            echo "has_tests=false" >> $GITHUB_OUTPUT
+          else
+            echo "Found $TEST_COUNT test files"
+            echo "has_tests=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Skip tests message
+        if: steps.check-tests.outputs.has_tests == 'false'
+        run: echo "⏭️ No tests found - pre-deployment tests skipped"
+
       - name: Set up Docker Buildx
+        if: steps.check-tests.outputs.has_tests == 'true'
         uses: docker/setup-buildx-action@v3
 
       - name: Build test container
+        if: steps.check-tests.outputs.has_tests == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -45,19 +86,8 @@ jobs:
           cache-from: type=gha
 
       - name: Create test environment file
+        if: steps.check-tests.outputs.has_tests == 'true'
         run: cp .env.test.example .env.test
-
-      - name: Check for tests
-        id: check-tests
-        run: |
-          TEST_COUNT=$(find . -type f -name "test_*.py" -o -name "*_test.py" | wc -l)
-          if [ "$TEST_COUNT" -eq 0 ]; then
-            echo "No test files found, skipping tests"
-            echo "has_tests=false" >> $GITHUB_OUTPUT
-          else
-            echo "Found $TEST_COUNT test files"
-            echo "has_tests=true" >> $GITHUB_OUTPUT
-          fi
 
       - name: Run critical tests
         if: steps.check-tests.outputs.has_tests == 'true'
@@ -66,10 +96,6 @@ jobs:
           docker compose -f docker/test/docker-compose.yml run --rm web \
             pytest -m "not slow" --maxfail=1
           docker compose -f docker/test/docker-compose.yml down -v
-
-      - name: Skip tests message
-        if: steps.check-tests.outputs.has_tests == 'false'
-        run: echo "⏭️ No tests found - pre-deployment tests skipped"
 
   build-and-push:
     name: Build and Push Production Image

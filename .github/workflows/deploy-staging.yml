@@ -1,13 +1,31 @@
 name: Deploy to Staging
 
+# NOTE: This workflow is disabled by default for the template.
+# To enable deployments:
+# 1. Configure the required secrets in your repository settings
+# 2. Uncomment the 'push' trigger below
+#
+# Required secrets:
+#   - CONTAINER_REGISTRY: Docker registry URL (e.g., ghcr.io/your-org)
+#   - REGISTRY_USERNAME: Registry username
+#   - REGISTRY_PASSWORD: Registry password/token
+#   - STAGING_SSH_PRIVATE_KEY: SSH key for deployment server
+#   - STAGING_HOST: Staging server hostname
+#   - STAGING_USER: SSH username for staging server
+#   - STAGING_URL: Staging site URL for health checks
+#   - SLACK_WEBHOOK_URL: (optional) Slack notifications
+#
+# See docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md Phase 15 for deployment details.
+
 on:
-  push:
-    branches:
-      - staging
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.github/workflows/**'
+  # Uncomment push trigger to enable automatic staging deployments
+  # push:
+  #   branches:
+  #     - staging
+  #   paths-ignore:
+  #     - '**.md'
+  #     - 'docs/**'
+  #     - '.github/workflows/**'
   workflow_dispatch:
 
 concurrency:
