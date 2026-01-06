@@ -8,11 +8,10 @@ Supports ClickUp, Linear, Jira, GitHub Projects, Monday.com, Asana, Trello,
 Notion, Azure DevOps, Shortcut, and other PM tools.
 """
 import json
-import sys
 import os
+import sys
 from pathlib import Path
 from typing import Optional
-
 
 # PM tool detection configurations
 PM_TOOLS = {

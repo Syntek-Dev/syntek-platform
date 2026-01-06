@@ -13,7 +13,7 @@ Functions:
 import json
 import os
 import re
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
 
 import requests

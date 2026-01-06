@@ -7,12 +7,12 @@ Returns structured JSON output for integration with logging, backend, and debugg
 Supports log file discovery, configuration detection, and recent log entry extraction.
 """
 import json
-import sys
 import os
 import re
+import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
-from datetime import datetime
 
 
 def find_log_files(directory: Optional[str] = None) -> dict:

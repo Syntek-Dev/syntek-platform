@@ -7,9 +7,9 @@ Returns structured JSON output for integration with setup, backend, and cicd age
 Supports reading, comparing, and validating environment files across environments.
 """
 import json
-import sys
 import os
 import re
+import sys
 from pathlib import Path
 from typing import Optional
 

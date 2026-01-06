@@ -6,9 +6,9 @@ Analyses agent performance metrics and manages prompt optimisation proposals.
 Prepares data for the optimiser agent and handles applying/rejecting improvements.
 """
 import json
-import sys
 import os
 import shutil
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional

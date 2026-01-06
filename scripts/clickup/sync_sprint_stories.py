@@ -31,7 +31,7 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Set
+from typing import Any, Dict, List, Optional, Set
 
 from clickup_client import get_client
 

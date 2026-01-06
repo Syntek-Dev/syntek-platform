@@ -6,10 +6,10 @@ Provides Docker container and compose status utilities for Claude Code agents.
 Returns structured JSON output for integration with setup, cicd, and backend agents.
 Supports container listing, compose project status, and image information.
 """
-import subprocess
 import json
-import sys
 import shutil
+import subprocess
+import sys
 from typing import Optional
 
 

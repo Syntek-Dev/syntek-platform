@@ -6,11 +6,11 @@ Records and queries agent performance metrics for the self-learning system.
 Stores run data in docs/METRICS/runs/ as JSON files organised by month.
 Supports recording runs, querying history, and generating aggregates.
 """
-import subprocess
-import json
-import sys
-import os
 import hashlib
+import json
+import os
+import subprocess
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional

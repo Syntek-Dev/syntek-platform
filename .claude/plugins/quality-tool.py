@@ -6,10 +6,10 @@ Measures code quality metrics by running linters and analysing code.
 Supports PHP (phpstan/pint), Python (ruff/black), and JavaScript/TypeScript (eslint).
 Used to track quality changes before and after agent modifications.
 """
-import subprocess
 import json
-import sys
 import os
+import subprocess
+import sys
 from pathlib import Path
 from typing import Optional
 

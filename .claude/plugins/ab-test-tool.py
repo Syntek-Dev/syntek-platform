@@ -5,12 +5,12 @@ ab-test-tool.py
 Manages A/B testing of agent prompt variants.
 Creates tests, randomly selects variants, tracks results, and calculates statistical significance.
 """
+import hashlib
 import json
-import sys
 import os
 import random
-import hashlib
 import shutil
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Optional

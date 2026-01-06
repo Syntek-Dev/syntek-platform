@@ -7,10 +7,10 @@ Returns structured JSON output for integration with setup, backend, and frontend
 Supports framework detection, directory structure analysis, and technology stack identification.
 """
 import json
-import sys
 import os
+import sys
 from pathlib import Path
-from typing import Optional, Any
+from typing import Any, Optional
 
 
 def detect_language(directory: Optional[str] = None) -> dict:

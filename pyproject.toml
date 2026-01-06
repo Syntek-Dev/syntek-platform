@@ -151,6 +151,11 @@ follow_imports = "normal"
 ignore_missing_imports = true
 strict_equality = true
 plugins = ["mypy_django_plugin.main"]
+# Exclude utility scripts and plugins from type checking
+exclude = [
+    "scripts/",
+    ".claude/plugins/",
+]
 
 [[tool.mypy.overrides]]
 module = "*.migrations.*"
@@ -158,11 +163,6 @@ ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = "*.tests.*"
-ignore_errors = true
-
-[[tool.mypy.overrides]]
-# CLI utility scripts - not core application code
-module = "scripts.clickup.*"
 ignore_errors = true
 
 [tool.django-stubs]

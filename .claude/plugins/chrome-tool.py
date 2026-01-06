@@ -7,14 +7,13 @@ Returns structured JSON output for integration with Claude Code agents.
 Automatically finds the Chrome binary path and can generate environment variable configurations.
 """
 import json
-import sys
 import os
 import platform
-import subprocess
 import shutil
+import subprocess
+import sys
 from pathlib import Path
-from typing import Optional, List, Dict, Any
-
+from typing import Any, Dict, List, Optional
 
 # Chrome binary paths by operating system
 CHROME_PATHS = {

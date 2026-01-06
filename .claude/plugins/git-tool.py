@@ -6,11 +6,11 @@ Provides Git repository status and information utilities for Claude Code agents.
 Returns structured JSON output for integration with cicd, setup, and code-reviewer agents.
 Supports repository status, branch info, remote detection, and commit history.
 """
-import subprocess
 import json
-import sys
-import shutil
 import os
+import shutil
+import subprocess
+import sys
 from typing import Optional
 
 

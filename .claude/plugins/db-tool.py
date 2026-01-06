@@ -7,11 +7,11 @@ Returns structured JSON output for integration with database, backend, and setup
 Supports detection of database type, connection info, and ORM/migration framework.
 """
 import json
-import sys
 import os
 import re
+import sys
 from pathlib import Path
-from typing import Optional, Any
+from typing import Any, Optional
 
 
 def find_config_files(directory: Optional[str] = None) -> dict:
