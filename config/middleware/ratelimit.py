@@ -156,9 +156,7 @@ class RateLimitMiddleware(MiddlewareMixin):
             60,
         )
 
-    def _is_rate_limited(
-        self, client_ip: str, path: str, limit: int, period: int
-    ) -> bool:
+    def _is_rate_limited(self, client_ip: str, path: str, limit: int, period: int) -> bool:
         """Check if the client has exceeded the rate limit.
 
         Uses a sliding window approach with Redis cache. Each request increments

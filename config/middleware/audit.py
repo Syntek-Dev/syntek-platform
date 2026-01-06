@@ -51,9 +51,7 @@ class SecurityAuditMiddleware(MiddlewareMixin):
     - Compliance audit trails
     """
 
-    def process_response(
-        self, request: HttpRequest, response: HttpResponse
-    ) -> HttpResponse:
+    def process_response(self, request: HttpRequest, response: HttpResponse) -> HttpResponse:
         """Log security events based on response status codes.
 
         Args:
@@ -113,9 +111,7 @@ class SecurityAuditMiddleware(MiddlewareMixin):
             },
         )
 
-    def _log_authentication_required(
-        self, request: HttpRequest, response: HttpResponse
-    ) -> None:
+    def _log_authentication_required(self, request: HttpRequest, response: HttpResponse) -> None:
         """Log when authentication is required but not provided.
 
         Args:

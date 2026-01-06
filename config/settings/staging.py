@@ -33,9 +33,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 CSRF_COOKIE_SAMESITE = "Strict"
 
 # GraphQL security - optionally enable introspection for staging
-GRAPHQL_ENABLE_INTROSPECTION = env.bool(
-    "GRAPHQL_ENABLE_INTROSPECTION", default=True
-)  # noqa: F405
+GRAPHQL_ENABLE_INTROSPECTION = env.bool("GRAPHQL_ENABLE_INTROSPECTION", default=True)  # noqa: F405
 
 # Email backend for staging
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

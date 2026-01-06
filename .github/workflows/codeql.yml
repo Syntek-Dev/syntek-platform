@@ -87,6 +87,15 @@ jobs:
         with:
           sarif_file: semgrep.sarif
           category: semgrep
+        continue-on-error: true  # May fail if GitHub Advanced Security is not enabled
+
+      - name: Upload Semgrep results as artifact
+        uses: actions/upload-artifact@v4
+        if: always() && hashFiles('semgrep.sarif') != ''
+        with:
+          name: semgrep-results
+          path: semgrep.sarif
+          retention-days: 30
 
   bandit:
     name: Bandit Security Analysis

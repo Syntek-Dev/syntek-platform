@@ -70,9 +70,7 @@ class QueryDepthLimitExtension(SchemaExtension):
         Raises:
             Exception: If query depth exceeds the maximum allowed.
         """
-        query_depth = self._calculate_query_depth(
-            self.execution_context.graphql_document
-        )
+        query_depth = self._calculate_query_depth(self.execution_context.graphql_document)
 
         if query_depth > self.max_depth:
             logger.warning(
@@ -158,9 +156,7 @@ class QueryComplexityLimitExtension(SchemaExtension):
         Raises:
             Exception: If query complexity exceeds the maximum allowed.
         """
-        query_complexity = self._calculate_query_complexity(
-            self.execution_context.graphql_document
-        )
+        query_complexity = self._calculate_query_complexity(self.execution_context.graphql_document)
 
         if query_complexity > self.max_complexity:
             logger.warning(
@@ -204,7 +200,11 @@ class QueryComplexityLimitExtension(SchemaExtension):
                     # List fields are more expensive (multiply nested queries)
                     # This is a simplified heuristic; in production, you'd check field types
                     if hasattr(selection, "name"):
-                        field_name = selection.name.value if hasattr(selection.name, "value") else str(selection.name)
+                        field_name = (
+                            selection.name.value
+                            if hasattr(selection.name, "value")
+                            else str(selection.name)
+                        )
                         # Common list field naming patterns
                         if field_name.endswith("s") or field_name in [
                             "list",

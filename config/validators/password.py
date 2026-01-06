@@ -68,24 +68,18 @@ class PasswordComplexityValidator:
         # Check for uppercase letters
         if len(re.findall(r"[A-Z]", password)) < self.min_uppercase:
             errors.append(
-                _(
-                    f"Password must contain at least {self.min_uppercase} uppercase letter(s)."
-                )
+                _(f"Password must contain at least {self.min_uppercase} uppercase letter(s).")
             )
 
         # Check for lowercase letters
         if len(re.findall(r"[a-z]", password)) < self.min_lowercase:
             errors.append(
-                _(
-                    f"Password must contain at least {self.min_lowercase} lowercase letter(s)."
-                )
+                _(f"Password must contain at least {self.min_lowercase} lowercase letter(s).")
             )
 
         # Check for digits
         if len(re.findall(r"\d", password)) < self.min_digits:
-            errors.append(
-                _(f"Password must contain at least {self.min_digits} digit(s).")
-            )
+            errors.append(_(f"Password must contain at least {self.min_digits} digit(s)."))
 
         # Check for special characters
         special_chars = r"[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]"
@@ -225,9 +219,9 @@ class NoSequentialCharactersValidator:
             if password[i : i + self.max_sequence_length].isdigit():
                 # Check if digits are sequential
                 digits = [int(d) for d in password[i : i + self.max_sequence_length]]
-                if all(
-                    digits[j] + 1 == digits[j + 1] for j in range(len(digits) - 1)
-                ) or all(digits[j] - 1 == digits[j + 1] for j in range(len(digits) - 1)):
+                if all(digits[j] + 1 == digits[j + 1] for j in range(len(digits) - 1)) or all(
+                    digits[j] - 1 == digits[j + 1] for j in range(len(digits) - 1)
+                ):
                     raise ValidationError(
                         _(
                             f"Password must not contain sequential numbers "
