@@ -164,7 +164,7 @@ Create a Pythonic CMS platform that empowers businesses to:
 ### Technology Stack
 
 **Backend:**
-- Django 5.x (no Wagtail)
+- Django 6.x (no Wagtail)
 - PostgreSQL 18
 - Python 3.14
 - Strawberry GraphQL
