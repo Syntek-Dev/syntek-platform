@@ -49,6 +49,10 @@ jobs:
         with:
           category: "/language:${{ matrix.language }}"
           upload: true
+        # Note: This step requires GitHub Advanced Security (GHAS) to be enabled.
+        # GHAS is only available for GitHub Organizations on Enterprise/Team plans.
+        # For repos without GHAS, this step will fail but won't block the workflow.
+        continue-on-error: true
 
   semgrep:
     name: Semgrep Security Scan

@@ -58,9 +58,7 @@ def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
         return None
 
     # Extract existing ClickUp list ID if present
-    clickup_id_match = re.search(
-        r"<!--\s*CLICKUP_LIST_ID:\s*(\w+)\s*-->", content
-    )
+    clickup_id_match = re.search(r"<!--\s*CLICKUP_LIST_ID:\s*(\w+)\s*-->", content)
     if clickup_id_match:
         sprint_data["clickup_list_id"] = clickup_id_match.group(1)
 
@@ -76,21 +74,15 @@ def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
         sprint_data["title"] = sprint_data["sprint_id"]
 
     # Extract sprint metadata from front matter
-    duration_match = re.search(
-        r"\*\*Sprint Duration:\*\*\s*(.+)$", content, re.MULTILINE
-    )
+    duration_match = re.search(r"\*\*Sprint Duration:\*\*\s*(.+)$", content, re.MULTILINE)
     if duration_match:
         sprint_data["duration"] = duration_match.group(1).strip()
 
-    capacity_match = re.search(
-        r"\*\*Capacity:\*\*\s*(.+)$", content, re.MULTILINE
-    )
+    capacity_match = re.search(r"\*\*Capacity:\*\*\s*(.+)$", content, re.MULTILINE)
     if capacity_match:
         sprint_data["capacity"] = capacity_match.group(1).strip()
 
-    status_match = re.search(
-        r"\*\*Status:\*\*\s*(.+)$", content, re.MULTILINE
-    )
+    status_match = re.search(r"\*\*Status:\*\*\s*(.+)$", content, re.MULTILINE)
     if status_match:
         sprint_data["status"] = status_match.group(1).strip()
 
@@ -116,10 +108,12 @@ def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
         for row in must_have_match.group(1).split("\n"):
             story_match = re.search(r"\|\s*\[?(US-\d+)\]?", row)
             if story_match:
-                sprint_data["stories"].append({
-                    "story_id": story_match.group(1).upper(),
-                    "priority": "Must Have",
-                })
+                sprint_data["stories"].append(
+                    {
+                        "story_id": story_match.group(1).upper(),
+                        "priority": "Must Have",
+                    }
+                )
 
     # Parse Should Have stories
     should_have_match = re.search(
@@ -131,10 +125,12 @@ def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
         for row in should_have_match.group(1).split("\n"):
             story_match = re.search(r"\|\s*\[?(US-\d+)\]?", row)
             if story_match:
-                sprint_data["stories"].append({
-                    "story_id": story_match.group(1).upper(),
-                    "priority": "Should Have",
-                })
+                sprint_data["stories"].append(
+                    {
+                        "story_id": story_match.group(1).upper(),
+                        "priority": "Should Have",
+                    }
+                )
 
     # Parse Could Have stories
     could_have_match = re.search(
@@ -146,10 +142,12 @@ def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
         for row in could_have_match.group(1).split("\n"):
             story_match = re.search(r"\|\s*\[?(US-\d+)\]?", row)
             if story_match:
-                sprint_data["stories"].append({
-                    "story_id": story_match.group(1).upper(),
-                    "priority": "Could Have",
-                })
+                sprint_data["stories"].append(
+                    {
+                        "story_id": story_match.group(1).upper(),
+                        "priority": "Could Have",
+                    }
+                )
 
     return sprint_data
 
@@ -188,7 +186,9 @@ def find_or_create_sprint_list(
 
     for lst in lists:
         if sprint_data["sprint_id"] in lst["name"]:
-            print(f"Found existing sprint list by name: {sprint_data['sprint_id']} (ID: {lst['id']})")
+            print(
+                f"Found existing sprint list by name: {sprint_data['sprint_id']} (ID: {lst['id']})"
+            )
             return lst["id"]
 
     if dry_run:
@@ -318,9 +318,7 @@ def write_clickup_list_id_to_file(file_path: Path, list_id: str):
 
 def main():
     """Main entry point for sprint sync script."""
-    parser = argparse.ArgumentParser(
-        description="Sync sprints from docs to ClickUp"
-    )
+    parser = argparse.ArgumentParser(description="Sync sprints from docs to ClickUp")
     parser.add_argument(
         "--folder-path",
         default="docs/SPRINTS",
@@ -364,8 +362,7 @@ def main():
 
     # Find all sprint files (only SPRINT-*.md files)
     sprint_files = [
-        f for f in sprints_path.glob("*.md")
-        if re.match(r"SPRINT-\d+", f.name, re.IGNORECASE)
+        f for f in sprints_path.glob("*.md") if re.match(r"SPRINT-\d+", f.name, re.IGNORECASE)
     ]
 
     if not sprint_files:
@@ -405,11 +402,13 @@ def main():
                     )
 
                     success_count += 1
-                    results.append({
-                        "sprint_id": sprint_data["sprint_id"],
-                        "clickup_list_id": list_id,
-                        "file_path": sprint_file,
-                    })
+                    results.append(
+                        {
+                            "sprint_id": sprint_data["sprint_id"],
+                            "clickup_list_id": list_id,
+                            "file_path": sprint_file,
+                        }
+                    )
 
                     # Write ClickUp list ID back to file
                     if not args.dry_run:
@@ -424,6 +423,7 @@ def main():
         except Exception as e:
             print(f"Error processing {sprint_file.name}: {e}")
             import traceback
+
             traceback.print_exc()
             error_count += 1
 
@@ -447,7 +447,6 @@ def main():
             json.dump(mapping, f, indent=2)
 
         print(f"\nUpdated sprint mapping file: {mapping_file}")
-
 
 
 if __name__ == "__main__":

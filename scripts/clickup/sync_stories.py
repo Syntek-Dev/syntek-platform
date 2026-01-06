@@ -89,9 +89,7 @@ def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
         story_data["status"] = status_match.group(1).strip()
 
     # Extract description (text between first heading and ## sections)
-    desc_match = re.search(
-        r"^#\s+.+\n\n(.+?)(?=\n##|\Z)", content, re.MULTILINE | re.DOTALL
-    )
+    desc_match = re.search(r"^#\s+.+\n\n(.+?)(?=\n##|\Z)", content, re.MULTILINE | re.DOTALL)
     if desc_match:
         story_data["description"] = desc_match.group(1).strip()
     else:
@@ -109,9 +107,7 @@ def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
     return story_data
 
 
-def find_or_create_sprint_list(
-    client, sprint_name: str, folder_id: str
-) -> Optional[str]:
+def find_or_create_sprint_list(client, sprint_name: str, folder_id: str) -> Optional[str]:
     """Find or create a sprint list in ClickUp.
 
     Args:
@@ -258,9 +254,7 @@ def sync_story_to_clickup(
 
 def main():
     """Main entry point for story sync script."""
-    parser = argparse.ArgumentParser(
-        description="Sync user stories from docs to ClickUp"
-    )
+    parser = argparse.ArgumentParser(description="Sync user stories from docs to ClickUp")
     parser.add_argument(
         "--folder-path",
         default="docs/STORIES",

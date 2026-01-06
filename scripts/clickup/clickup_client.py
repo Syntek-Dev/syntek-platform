@@ -94,9 +94,7 @@ class ClickUpClient:
         self.workspace_id = self.config["workspace"]["workspace_id"]
         self.space_id = self.config["workspace"]["space_id"]
 
-    def _request(
-        self, method: str, endpoint: str, **kwargs
-    ) -> Dict[str, Any]:
+    def _request(self, method: str, endpoint: str, **kwargs) -> Dict[str, Any]:
         """Make HTTP request to ClickUp API.
 
         Args:
@@ -353,9 +351,7 @@ class ClickUpClient:
         """
         return self._request("DELETE", f"list/{list_id}/task/{task_id}")
 
-    def add_task_comment(
-        self, task_id: str, comment_text: str
-    ) -> Dict[str, Any]:
+    def add_task_comment(self, task_id: str, comment_text: str) -> Dict[str, Any]:
         """Add a comment to a task.
 
         Args:
@@ -368,9 +364,7 @@ class ClickUpClient:
         data = {"comment_text": comment_text}
         return self._request("POST", f"task/{task_id}/comment", json=data)
 
-    def set_custom_field(
-        self, task_id: str, field_id: str, value: Any
-    ) -> Dict[str, Any]:
+    def set_custom_field(self, task_id: str, field_id: str, value: Any) -> Dict[str, Any]:
         """Set a custom field value on a task.
 
         Args:
@@ -381,9 +375,7 @@ class ClickUpClient:
         Returns:
             Updated task data.
         """
-        return self._request(
-            "POST", f"task/{task_id}/field/{field_id}", json={"value": value}
-        )
+        return self._request("POST", f"task/{task_id}/field/{field_id}", json={"value": value})
 
     def get_list_custom_fields(self, list_id: str) -> List[Dict[str, Any]]:
         """Get custom fields for a list.
@@ -435,9 +427,7 @@ class ClickUpClient:
 
         return self._request("POST", f"list/{list_id}/task", json=data)
 
-    def find_custom_field_by_name(
-        self, list_id: str, field_name: str
-    ) -> Optional[Dict[str, Any]]:
+    def find_custom_field_by_name(self, list_id: str, field_name: str) -> Optional[Dict[str, Any]]:
         """Find a custom field by name in a list.
 
         Args:
@@ -482,10 +472,7 @@ class ClickUpClient:
             for list_id in list_ids:
                 tasks = self.get_tasks_in_list(list_id, include_closed=True)
                 # Filter by query in task name
-                matching = [
-                    t for t in tasks
-                    if query.lower() in t.get("name", "").lower()
-                ]
+                matching = [t for t in tasks if query.lower() in t.get("name", "").lower()]
                 all_tasks.extend(matching)
             return all_tasks
 
@@ -514,8 +501,7 @@ def get_client(api_key: Optional[str] = None) -> ClickUpClient:
 
     if not api_key:
         raise ValueError(
-            "ClickUp API key must be provided or set in CLICKUP_API_TOKEN "
-            "environment variable"
+            "ClickUp API key must be provided or set in CLICKUP_API_TOKEN " "environment variable"
         )
 
     return ClickUpClient(api_key)

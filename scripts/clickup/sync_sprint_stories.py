@@ -112,10 +112,12 @@ def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
         for row in must_have_match.group(1).split("\n"):
             story_match = re.search(r"\|\s*\[?(US-\d+)\]?", row)
             if story_match:
-                sprint_data["stories"].append({
-                    "story_id": story_match.group(1).upper(),
-                    "priority": "Must Have",
-                })
+                sprint_data["stories"].append(
+                    {
+                        "story_id": story_match.group(1).upper(),
+                        "priority": "Must Have",
+                    }
+                )
 
     # Parse Should Have stories
     should_have_match = re.search(
@@ -127,10 +129,12 @@ def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
         for row in should_have_match.group(1).split("\n"):
             story_match = re.search(r"\|\s*\[?(US-\d+)\]?", row)
             if story_match:
-                sprint_data["stories"].append({
-                    "story_id": story_match.group(1).upper(),
-                    "priority": "Should Have",
-                })
+                sprint_data["stories"].append(
+                    {
+                        "story_id": story_match.group(1).upper(),
+                        "priority": "Should Have",
+                    }
+                )
 
     # Parse Could Have stories
     could_have_match = re.search(
@@ -142,10 +146,12 @@ def parse_sprint_file(file_path: Path) -> Optional[Dict[str, Any]]:
         for row in could_have_match.group(1).split("\n"):
             story_match = re.search(r"\|\s*\[?(US-\d+)\]?", row)
             if story_match:
-                sprint_data["stories"].append({
-                    "story_id": story_match.group(1).upper(),
-                    "priority": "Could Have",
-                })
+                sprint_data["stories"].append(
+                    {
+                        "story_id": story_match.group(1).upper(),
+                        "priority": "Could Have",
+                    }
+                )
 
     return sprint_data
 
@@ -164,23 +170,19 @@ def add_sprint_metadata_to_story(story_file: Path, sprint_name: str, dry_run: bo
     # Check if Sprint metadata already exists
     if re.search(r"\*\*Sprint:\*\*", content):
         # Update existing Sprint field
-        new_content = re.sub(
-            r"\*\*Sprint:\*\*\s*[^\n]*",
-            f"**Sprint:** {sprint_name}",
-            content
-        )
+        new_content = re.sub(r"\*\*Sprint:\*\*\s*[^\n]*", f"**Sprint:** {sprint_name}", content)
         action = "Updated"
     else:
         # Add Sprint field after MoSCoW Priority section
         moscow_section = re.search(
-            r"(##\s+MoSCoW Priority\s*\n.*?)(\n##|\Z)",
-            content,
-            re.MULTILINE | re.DOTALL
+            r"(##\s+MoSCoW Priority\s*\n.*?)(\n##|\Z)", content, re.MULTILINE | re.DOTALL
         )
         if moscow_section:
-            new_content = content[:moscow_section.end(1)] + \
-                f"\n\n**Sprint:** {sprint_name}\n" + \
-                content[moscow_section.end(1):]
+            new_content = (
+                content[: moscow_section.end(1)]
+                + f"\n\n**Sprint:** {sprint_name}\n"
+                + content[moscow_section.end(1) :]
+            )
             action = "Added"
         else:
             # Fallback: add after first heading
@@ -189,7 +191,7 @@ def add_sprint_metadata_to_story(story_file: Path, sprint_name: str, dry_run: bo
                 f"\\1**Sprint:** {sprint_name}\n\n",
                 content,
                 count=1,
-                flags=re.MULTILINE
+                flags=re.MULTILINE,
             )
             action = "Added"
 
@@ -224,7 +226,9 @@ def find_or_create_sprint_list(
     if sprint_data.get("clickup_list_id"):
         try:
             list_data = client.get_list(sprint_data["clickup_list_id"])
-            print(f"  Found existing sprint list: {sprint_data['sprint_id']} (ID: {list_data['id']})")
+            print(
+                f"  Found existing sprint list: {sprint_data['sprint_id']} (ID: {list_data['id']})"
+            )
             return list_data["id"]
         except Exception:
             print(f"  ClickUp list ID in file is invalid, will search by name")
@@ -235,7 +239,9 @@ def find_or_create_sprint_list(
 
     for lst in lists:
         if sprint_data["sprint_id"] in lst["name"]:
-            print(f"  Found existing sprint list by name: {sprint_data['sprint_id']} (ID: {lst['id']})")
+            print(
+                f"  Found existing sprint list by name: {sprint_data['sprint_id']} (ID: {lst['id']})"
+            )
             return lst["id"]
 
     if dry_run:
@@ -445,13 +451,11 @@ def main():
     # Find sprint files
     if args.sprint:
         sprint_files = [
-            f for f in sprints_path.glob("*.md")
-            if f.name.upper().startswith(args.sprint.upper())
+            f for f in sprints_path.glob("*.md") if f.name.upper().startswith(args.sprint.upper())
         ]
     else:
         sprint_files = [
-            f for f in sprints_path.glob("*.md")
-            if re.match(r"SPRINT-\d+", f.name, re.IGNORECASE)
+            f for f in sprints_path.glob("*.md") if re.match(r"SPRINT-\d+", f.name, re.IGNORECASE)
         ]
 
     if not sprint_files:
@@ -495,9 +499,7 @@ def main():
                     story_files = list(stories_path.glob(f"{story_id}-*.md"))
                     if story_files:
                         add_sprint_metadata_to_story(
-                            story_files[0],
-                            sprint_name,
-                            dry_run=args.dry_run
+                            story_files[0], sprint_name, dry_run=args.dry_run
                         )
                     else:
                         print(f"  Warning: Story file not found for {story_id}")
@@ -537,6 +539,7 @@ def main():
         except Exception as e:
             print(f"Error processing {sprint_file.name}: {e}")
             import traceback
+
             traceback.print_exc()
             error_count += 1
 

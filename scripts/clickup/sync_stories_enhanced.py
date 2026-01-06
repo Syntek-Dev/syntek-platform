@@ -62,9 +62,7 @@ def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
         return None
 
     # Extract existing ClickUp ID if present
-    clickup_id_match = re.search(
-        r"<!--\s*CLICKUP_ID:\s*(\w+)\s*-->", content
-    )
+    clickup_id_match = re.search(r"<!--\s*CLICKUP_ID:\s*(\w+)\s*-->", content)
     if clickup_id_match:
         story_data["clickup_id"] = clickup_id_match.group(1)
 
@@ -89,9 +87,7 @@ def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
         story_data["points"] = int(points_match.group(1))
     else:
         # Fallback to inline format
-        points_match_inline = re.search(
-            r"\*\*Story Points:\*\*\s*(\d+)", content, re.IGNORECASE
-        )
+        points_match_inline = re.search(r"\*\*Story Points:\*\*\s*(\d+)", content, re.IGNORECASE)
         if points_match_inline:
             story_data["points"] = int(points_match_inline.group(1))
 
@@ -105,7 +101,10 @@ def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
         moscow_content = moscow_section.group(1)
         # Find the first Must/Should/Could/Won't Have
         for priority_type in ["Must Have", "Should Have", "Could Have", "Won't Have"]:
-            if f"**{priority_type}:**" in moscow_content or f"- **{priority_type}:**" in moscow_content:
+            if (
+                f"**{priority_type}:**" in moscow_content
+                or f"- **{priority_type}:**" in moscow_content
+            ):
                 story_data["moscow_priority"] = priority_type
                 break
 
@@ -119,9 +118,7 @@ def parse_story_file(file_path: Path) -> Optional[Dict[str, Any]]:
         story_data["description"] = story_section.group(1).strip()
     else:
         # Fallback: text after title and before first ##
-        desc_match = re.search(
-            r"^#\s+.+\n\n(.+?)(?=\n##|\Z)", content, re.MULTILINE | re.DOTALL
-        )
+        desc_match = re.search(r"^#\s+.+\n\n(.+?)(?=\n##|\Z)", content, re.MULTILINE | re.DOTALL)
         if desc_match:
             story_data["description"] = desc_match.group(1).strip()
         else:
@@ -176,18 +173,18 @@ def parse_tasks_section(tasks_content: str) -> List[Dict[str, Any]]:
             is_completed = task_match.group(1).lower() == "x"
             task_description = task_match.group(2).strip()
 
-            tasks.append({
-                "category": current_category,
-                "description": task_description,
-                "completed": is_completed,
-            })
+            tasks.append(
+                {
+                    "category": current_category,
+                    "description": task_description,
+                    "completed": is_completed,
+                }
+            )
 
     return tasks
 
 
-def find_or_create_list(
-    client, story_data: Dict[str, Any], config: Dict
-) -> Optional[str]:
+def find_or_create_list(client, story_data: Dict[str, Any], config: Dict) -> Optional[str]:
     """Find or create the appropriate list for a story.
 
     For now, all stories go to the backlog list. In future versions,
@@ -205,9 +202,7 @@ def find_or_create_list(
     return config["folders"]["backlog"]["list_id"]
 
 
-def get_moscow_priority_value(
-    client, list_id: str, moscow_text: str
-) -> Optional[int]:
+def get_moscow_priority_value(client, list_id: str, moscow_text: str) -> Optional[int]:
     """Get the ClickUp dropdown option ID for a MoSCoW priority.
 
     Args:
@@ -352,11 +347,7 @@ def sync_story_to_clickup(
         if story_data.get("points"):
             points_field = client.find_custom_field_by_name(list_id, "Story Points")
             if points_field:
-                client.set_custom_field(
-                    task["id"],
-                    points_field["id"],
-                    story_data["points"]
-                )
+                client.set_custom_field(task["id"], points_field["id"], story_data["points"])
                 print(f"  Set Story Points: {story_data['points']}")
 
         # MoSCoW Priority
@@ -367,11 +358,7 @@ def sync_story_to_clickup(
                     client, list_id, story_data["moscow_priority"]
                 )
                 if option_value is not None:
-                    client.set_custom_field(
-                        task["id"],
-                        moscow_field["id"],
-                        option_value
-                    )
+                    client.set_custom_field(task["id"], moscow_field["id"], option_value)
                     print(f"  Set MoSCoW Priority: {story_data['moscow_priority']}")
     except Exception as e:
         print(f"  Warning: Could not set custom fields: {e}")
@@ -468,8 +455,7 @@ def main():
 
     # Find all story files (only US-*.md files, not README or other docs)
     story_files = [
-        f for f in stories_path.glob("*.md")
-        if re.match(r"US-\d+", f.name, re.IGNORECASE)
+        f for f in stories_path.glob("*.md") if re.match(r"US-\d+", f.name, re.IGNORECASE)
     ]
 
     if not story_files:
@@ -496,11 +482,13 @@ def main():
                 )
                 if result:
                     success_count += 1
-                    results.append({
-                        "story_id": story_data["story_id"],
-                        "clickup_id": result["id"],
-                        "file_path": story_file,
-                    })
+                    results.append(
+                        {
+                            "story_id": story_data["story_id"],
+                            "clickup_id": result["id"],
+                            "file_path": story_file,
+                        }
+                    )
 
                     # Write ClickUp ID back to file
                     if not args.dry_run:
@@ -513,6 +501,7 @@ def main():
         except Exception as e:
             print(f"Error processing {story_file.name}: {e}")
             import traceback
+
             traceback.print_exc()
             error_count += 1
 

@@ -29,9 +29,7 @@ from typing import Dict, List, Any
 from clickup_client import get_client
 
 
-def fetch_all_tasks(
-    client, include_closed: bool = False
-) -> List[Dict[str, Any]]:
+def fetch_all_tasks(client, include_closed: bool = False) -> List[Dict[str, Any]]:
     """Fetch all tasks from ClickUp workspace.
 
     Args:
@@ -55,9 +53,7 @@ def fetch_all_tasks(
         list_name = sprint_list["name"]
         print(f"  - {list_name}...")
 
-        list_tasks = client.get_tasks_in_list(
-            list_id, include_closed=include_closed
-        )
+        list_tasks = client.get_tasks_in_list(list_id, include_closed=include_closed)
 
         for task in list_tasks:
             tasks.append(
@@ -89,9 +85,7 @@ def fetch_all_tasks(
     backlog_list_id = config["folders"]["backlog"]["list_id"]
     print(f"Fetching tasks from backlog...")
 
-    backlog_tasks = client.get_tasks_in_list(
-        backlog_list_id, include_closed=include_closed
-    )
+    backlog_tasks = client.get_tasks_in_list(backlog_list_id, include_closed=include_closed)
 
     for task in backlog_tasks:
         tasks.append(
@@ -169,9 +163,7 @@ def extract_task_id_mapping(tasks: List[Dict[str, Any]]) -> Dict[str, str]:
 
 def main():
     """Main entry point for pull tasks script."""
-    parser = argparse.ArgumentParser(
-        description="Pull tasks from ClickUp and save IDs"
-    )
+    parser = argparse.ArgumentParser(description="Pull tasks from ClickUp and save IDs")
     parser.add_argument(
         "--output",
         default="config/clickup-tasks.json",
