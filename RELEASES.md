@@ -56,17 +56,20 @@ Over 60 documentation files throughout the project now follow consistent standar
 #### Why This Matters
 
 **For Developers:**
+
 - Quickly see what changed between versions
 - Understand the technical details of each release
 - Track when documentation was last updated
 - Know which version of the docs matches your code
 
 **For Project Managers:**
+
 - Clear release history for stakeholder communication
 - Version numbers follow semantic versioning (MAJOR.MINOR.PATCH)
 - Easy to track project progress over time
 
 **For Users:**
+
 - Plain-language release notes explain what's new
 - No need to decipher technical jargon
 - Clear understanding of feature additions and improvements
@@ -134,24 +137,28 @@ Get started quickly with comprehensive tooling:
 #### Key Features
 
 **Security First**
+
 - API authentication with modern JWT tokens
 - Rate limiting prevents abuse and protects your server
 - Security headers protect against common web vulnerabilities
 - Automated security scanning in every build
 
 **Testing Made Simple**
+
 - Run all tests with a single command
 - Code coverage reporting shows what's tested
 - Fast test execution with optimised containers
 - Easy to run tests locally before pushing code
 
 **Deployment Automation**
+
 - Push to staging with automatic deployment
 - Production deployments with safety checks
 - Database migrations handled automatically
 - Health checks ensure deployments succeed
 
 **Documentation**
+
 - Step-by-step developer setup guide
 - Clear examples for common tasks
 - Troubleshooting guides for common issues
@@ -171,16 +178,19 @@ The comprehensive documentation in the `docs/` folder will guide you through eve
 #### What This Means for You
 
 **For Developers:**
+
 - Spend less time on setup, more time building features
 - Consistent code quality across your team
 - Confidence that your code is secure and tested
 
 **For Project Managers:**
+
 - Clear visibility into development progress via ClickUp integration
 - Automated quality checks reduce bugs
 - Faster deployment cycles with CI/CD automation
 
 **For DevOps:**
+
 - Environment isolation prevents conflicts
 - Docker containers ensure consistency across environments
 - Automated deployments reduce manual work

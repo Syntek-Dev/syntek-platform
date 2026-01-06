@@ -10,7 +10,6 @@
 
 > **Last Updated:** 2026-01-03
 > **Django Version:** 5.2
-> **Wagtail Version:** 7.0
 
 ## Table of Contents
 
@@ -65,7 +64,7 @@
 
 ## Overview
 
-This Django/Wagtail application implements comprehensive security measures following OWASP best
+This Django application implements comprehensive security measures following OWASP best
 practices and Django security guidelines. Security is implemented at multiple layers:
 
 - **Application Layer**: Middleware, validators, and Django security settings
@@ -75,17 +74,17 @@ practices and Django security guidelines. Security is implemented at multiple la
 
 ## Security Features
 
-| Feature | Status | Environment |
-|---------|--------|-------------|
-| HTTPS Enforcement | ✅ Enabled | Production, Staging |
-| HSTS Headers | ✅ Enabled | Production, Staging |
-| Secure Cookies | ✅ Enabled | Production, Staging |
-| CSRF Protection | ✅ Enabled | All |
-| XSS Protection Headers | ✅ Enabled | All |
-| Rate Limiting | ✅ Enabled | All |
-| Password Complexity | ✅ Enabled | All |
-| GraphQL Query Limiting | ✅ Enabled | All |
-| Security Audit Logging | ✅ Enabled | All |
+| Feature                 | Status     | Environment         |
+| ----------------------- | ---------- | ------------------- |
+| HTTPS Enforcement       | ✅ Enabled | Production, Staging |
+| HSTS Headers            | ✅ Enabled | Production, Staging |
+| Secure Cookies          | ✅ Enabled | Production, Staging |
+| CSRF Protection         | ✅ Enabled | All                 |
+| XSS Protection Headers  | ✅ Enabled | All                 |
+| Rate Limiting           | ✅ Enabled | All                 |
+| Password Complexity     | ✅ Enabled | All                 |
+| GraphQL Query Limiting  | ✅ Enabled | All                 |
+| Security Audit Logging  | ✅ Enabled | All                 |
 | Content Security Policy | ✅ Enabled | Production, Staging |
 
 ## HTTP Security Headers
@@ -94,14 +93,14 @@ practices and Django security guidelines. Security is implemented at multiple la
 
 The application automatically adds the following security headers to all responses:
 
-| Header | Value | Purpose |
-|--------|-------|---------|
-| `X-Content-Type-Options` | `nosniff` | Prevents MIME type sniffing |
-| `X-Frame-Options` | `DENY` | Prevents clickjacking attacks |
-| `Referrer-Policy` | `strict-origin-when-cross-origin` | Controls referrer information |
-| `Permissions-Policy` | Multiple directives | Disables dangerous browser features |
-| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains; preload` | Enforces HTTPS (production only) |
-| `Content-Security-Policy` | Configured via django-csp | Prevents XSS and injection attacks |
+| Header                      | Value                                          | Purpose                             |
+| --------------------------- | ---------------------------------------------- | ----------------------------------- |
+| `X-Content-Type-Options`    | `nosniff`                                      | Prevents MIME type sniffing         |
+| `X-Frame-Options`           | `DENY`                                         | Prevents clickjacking attacks       |
+| `Referrer-Policy`           | `strict-origin-when-cross-origin`              | Controls referrer information       |
+| `Permissions-Policy`        | Multiple directives                            | Disables dangerous browser features |
+| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains; preload` | Enforces HTTPS (production only)    |
+| `Content-Security-Policy`   | Configured via django-csp                      | Prevents XSS and injection attacks  |
 
 ### Content Security Policy (CSP)
 
@@ -125,19 +124,20 @@ rate limits based on sensitivity.
 
 ### Default Rate Limits
 
-| Endpoint Type | Rate Limit (per minute) | Examples |
-|---------------|------------------------|----------|
-| Authentication | 5 requests | `/admin/`, `/cms/`, login endpoints |
-| GraphQL Mutations | 30 requests | POST to `/graphql/` |
-| GraphQL Queries | 100 requests | GET to `/graphql/` |
-| General API | 60 requests | `/api/*` |
-| Other Requests | 120 requests | All other endpoints |
+| Endpoint Type     | Rate Limit (per minute) | Examples                            |
+| ----------------- | ----------------------- | ----------------------------------- |
+| Authentication    | 5 requests              | `/admin/`, `/cms/`, login endpoints |
+| GraphQL Mutations | 30 requests             | POST to `/graphql/`                 |
+| GraphQL Queries   | 100 requests            | GET to `/graphql/`                  |
+| General API       | 60 requests             | `/api/*`                            |
+| Other Requests    | 120 requests            | All other endpoints                 |
 
 ### Configuration
 
 Rate limiting is implemented in `config/middleware/ratelimit.py` using Redis for distributed tracking.
 
 **Key Features:**
+
 - IP-based tracking
 - Sliding window approach
 - Automatic expiry
@@ -264,11 +264,11 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 ### Environment-Specific Settings
 
 | Environment | Cookie Age | SameSite | Secure |
-|-------------|------------|----------|--------|
-| Development | 2 weeks | Lax | False |
-| Test | 2 weeks | Lax | False |
-| Staging | 1 hour | Strict | True |
-| Production | 1 hour | Strict | True |
+| ----------- | ---------- | -------- | ------ |
+| Development | 2 weeks    | Lax      | False  |
+| Test        | 2 weeks    | Lax      | False  |
+| Staging     | 1 hour     | Strict   | True   |
+| Production  | 1 hour     | Strict   | True   |
 
 ## CSRF Protection
 
@@ -282,6 +282,7 @@ CSRF_USE_SESSIONS = False  # Store in cookie for API compatibility
 ```
 
 **For API endpoints:**
+
 - Include `X-CSRFToken` header in requests
 - Obtain token from `/api/csrf/` endpoint or cookie
 
@@ -291,6 +292,7 @@ CSRF_USE_SESSIONS = False  # Store in cookie for API compatibility
 
 Prevents deeply nested queries that could cause performance issues:
 
+<!-- prettier-ignore -->
 ```graphql
 # This query would be rejected if depth > 10
 query {
@@ -315,6 +317,7 @@ query {
 ### Query Complexity Analysis
 
 Calculates a complexity score based on:
+
 - Number of fields requested
 - List fields (multiplier of 10)
 - Nested queries
@@ -325,12 +328,12 @@ Calculates a complexity score based on:
 
 Introspection is automatically controlled based on environment:
 
-| Environment | Introspection |
-|-------------|---------------|
-| Development | ✅ Enabled |
-| Test | ✅ Enabled |
-| Staging | ⚙️ Configurable (default: enabled) |
-| Production | ❌ Disabled |
+| Environment | Introspection                      |
+| ----------- | ---------------------------------- |
+| Development | ✅ Enabled                         |
+| Test        | ✅ Enabled                         |
+| Staging     | ⚙️ Configurable (default: enabled) |
+| Production  | ❌ Disabled                        |
 
 ### Configuration
 
@@ -349,14 +352,14 @@ All security-relevant events are logged to a separate logger channel (`security.
 
 ### Events Logged
 
-| Event Type | Log Level | Information Captured |
-|------------|-----------|---------------------|
-| Successful Login | INFO | User, IP, timestamp, user agent |
-| Failed Login | WARNING | Username, IP, timestamp, user agent |
-| Logout | INFO | User, IP, timestamp |
-| Authorization Failure (403) | WARNING | User, IP, path, method, referer |
-| Authentication Required (401) | INFO | IP, path, method |
-| Rate Limit Exceeded | WARNING | IP, path, method, limit |
+| Event Type                    | Log Level | Information Captured                |
+| ----------------------------- | --------- | ----------------------------------- |
+| Successful Login              | INFO      | User, IP, timestamp, user agent     |
+| Failed Login                  | WARNING   | Username, IP, timestamp, user agent |
+| Logout                        | INFO      | User, IP, timestamp                 |
+| Authorization Failure (403)   | WARNING   | User, IP, path, method, referer     |
+| Authentication Required (401) | INFO      | IP, path, method                    |
+| Rate Limit Exceeded           | WARNING   | IP, path, method, limit             |
 
 ### Log Format
 
@@ -495,7 +498,7 @@ GRAPHQL_ENABLE_INTROSPECTION=False
 ### Infrastructure Security
 
 1. **Use HTTPS everywhere**: No exceptions
-2. **Keep software updated**: Django, Wagtail, Python, OS packages
+2. **Keep software updated**: Django, Python, OS packages
 3. **Restrict database access**: Use firewall rules and VPC
 4. **Use managed services**: For Redis, PostgreSQL when possible
 5. **Enable automated backups**: And test restore procedures
@@ -562,7 +565,6 @@ Periodic security testing should include:
 ## Additional Resources
 
 - [Django Security Documentation](https://docs.djangoproject.com/en/stable/topics/security/)
-- [Wagtail Security Documentation](https://docs.wagtail.org/en/stable/advanced_topics/security.html)
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/)
 - [Mozilla Web Security Guidelines](https://infosec.mozilla.org/guidelines/web_security)

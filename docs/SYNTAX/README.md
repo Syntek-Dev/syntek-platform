@@ -51,12 +51,14 @@ This folder contains syntax analysis, code quality assessments, and linting repo
 Comprehensive analysis of Python code syntax, type hints, and style compliance.
 
 **Key Findings:**
+
 - 1 High priority issue (generic exception handling)
 - 2 Medium priority issues (type hints, code duplication)
 - 1 Low priority issue (Python version)
 - 5 Positive checks passing
 
 **Focus Areas:**
+
 - Exception handling best practices
 - Type hint coverage
 - Code duplication detection
@@ -70,12 +72,12 @@ Comprehensive analysis of Python code syntax, type hints, and style compliance.
 
 ### Most Common Issues
 
-| Issue | File | Fix |
-|-------|------|-----|
-| Generic Exception | `api/security.py` | Create specific exception classes |
-| Missing Optional | `config/middleware/audit.py:213` | Add Optional type hint |
-| Code Duplication | IP extraction (3 locations) | Centralise in `config/utils/request.py` |
-| Python Version | `pyproject.toml` | Update to `^3.13` |
+| Issue             | File                             | Fix                                     |
+| ----------------- | -------------------------------- | --------------------------------------- |
+| Generic Exception | `api/security.py`                | Create specific exception classes       |
+| Missing Optional  | `config/middleware/audit.py:213` | Add Optional type hint                  |
+| Code Duplication  | IP extraction (3 locations)      | Centralise in `config/utils/request.py` |
+| Python Version    | `pyproject.toml`                 | Update to `^3.13`                       |
 
 ---
 
@@ -88,13 +90,16 @@ Start with [LINTING-REPORT-2026-01-03.md](LINTING-REPORT-2026-01-03.md) for comp
 ### 2. Identify Priority
 
 **High Priority (fix soon):**
+
 - Generic exception handling in security code
 
 **Medium Priority (next sprint):**
+
 - Missing Optional type hints
 - Code duplication
 
 **Low Priority (maintenance):**
+
 - Python version in config
 
 ### 3. Create Issues
@@ -128,13 +133,13 @@ Re-run linters to confirm issues resolved.
 
 The project uses these tools for code quality:
 
-| Tool | Purpose | Config |
-|------|---------|--------|
-| flake8 | Style compliance | `.flake8` |
-| black | Code formatting | `pyproject.toml` |
-| mypy | Type checking | `pyproject.toml` |
-| pylint | Code analysis | `.pylintrc` |
-| isort | Import sorting | `.isort.cfg` |
+| Tool   | Purpose          | Config           |
+| ------ | ---------------- | ---------------- |
+| flake8 | Style compliance | `.flake8`        |
+| black  | Code formatting  | `pyproject.toml` |
+| mypy   | Type checking    | `pyproject.toml` |
+| pylint | Code analysis    | `.pylintrc`      |
+| isort  | Import sorting   | `.isort.cfg`     |
 
 ### Running Locally
 

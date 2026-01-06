@@ -83,22 +83,22 @@ The application has good security foundations but lacks critical GDPR compliance
 
 ### Current Score: 40/100
 
-| Requirement | Status | Score |
-|-----------|--------|-------|
-| Secure transmission (HTTPS) | ✅ Implemented | 20 |
-| Session security | ✅ Implemented | 5 |
-| Error message sanitisation | ✅ Implemented | 5 |
-| Sentry PII filtering | ✅ Implemented | 5 |
-| Password validation | ✅ Implemented | 5 |
-| PII encryption at rest | ❌ Missing | 0 |
-| Consent management | ❌ Missing | 0 |
-| Data export endpoint | ❌ Missing | 0 |
-| Account deletion | ❌ Missing | 0 |
-| Privacy policy | ❌ Missing | 0 |
-| Data retention policy | ⚠️ Partial | 0 |
-| Audit logging | ✅ Implemented | 10 |
-| DPA documentation | ❌ Missing | 0 |
-| Breach notification | ⚠️ Partial | 5 |
+| Requirement                 | Status         | Score |
+| --------------------------- | -------------- | ----- |
+| Secure transmission (HTTPS) | ✅ Implemented | 20    |
+| Session security            | ✅ Implemented | 5     |
+| Error message sanitisation  | ✅ Implemented | 5     |
+| Sentry PII filtering        | ✅ Implemented | 5     |
+| Password validation         | ✅ Implemented | 5     |
+| PII encryption at rest      | ❌ Missing     | 0     |
+| Consent management          | ❌ Missing     | 0     |
+| Data export endpoint        | ❌ Missing     | 0     |
+| Account deletion            | ❌ Missing     | 0     |
+| Privacy policy              | ❌ Missing     | 0     |
+| Data retention policy       | ⚠️ Partial     | 0     |
+| Audit logging               | ✅ Implemented | 10    |
+| DPA documentation           | ❌ Missing     | 0     |
+| Breach notification         | ⚠️ Partial     | 5     |
 
 ---
 
@@ -200,6 +200,7 @@ class User(models.Model):
 ```
 
 **Database Exposure:**
+
 - Stolen database backups expose all PII
 - Admin access exposes all PII
 - SQL injection attacks expose all PII
@@ -210,8 +211,8 @@ class User(models.Model):
 Implement field-level encryption:
 
 ```python
-# requirements/base.txt
-django-fernet-fields==0.9.0  # Encrypted database fields
+# pyproject.toml (dependencies section)
+# django-fernet-fields = "^0.9.0"  # Encrypted database fields
 
 # apps/users/models.py
 from fernet_fields import EncryptedCharField, EncryptedEmailField
@@ -288,7 +289,7 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_INITDB_ARGS: "-c wal_level=replica -c max_wal_senders=3"
+      POSTGRES_INITDB_ARGS: '-c wal_level=replica -c max_wal_senders=3'
     volumes:
       - encrypted_postgres_data:/var/lib/postgresql/data:encrypted
 ```
@@ -307,6 +308,7 @@ services:
 #### Current State
 
 No way to:
+
 - Obtain user consent for data processing
 - Track what consent has been given
 - Show users their current consents
@@ -459,37 +461,33 @@ def user_consents(request):
 <div class="consent-banner" role="dialog" aria-label="Cookie Consent">
   <p>We use cookies and tracking technologies to improve your experience.</p>
 
-  <button class="btn-accept-all" onclick="acceptAll()">
-    Accept All
-  </button>
-  <button class="btn-manage" onclick="showSettings()">
-    Manage Preferences
-  </button>
+  <button class="btn-accept-all" onclick="acceptAll()">Accept All</button>
+  <button class="btn-manage" onclick="showSettings()">Manage Preferences</button>
   <a href="/privacy/">Privacy Policy</a>
 </div>
 
 <script>
-function acceptAll() {
-  const consentTypes = ['marketing', 'analytics', 'advertising'];
-  consentTypes.forEach(type => {
-    giveConsent(type);
-  });
-  closeBanner();
-}
+  function acceptAll() {
+    const consentTypes = ['marketing', 'analytics', 'advertising']
+    consentTypes.forEach((type) => {
+      giveConsent(type)
+    })
+    closeBanner()
+  }
 
-function giveConsent(type) {
-  fetch('/api/gdpr/consents/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie('csrftoken'),
-    },
-    body: JSON.stringify({
-      consent_type_id: getTypeId(type),
-      given: true,
-    }),
-  });
-}
+  function giveConsent(type) {
+    fetch('/api/gdpr/consents/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({
+        consent_type_id: getTypeId(type),
+        given: true,
+      }),
+    })
+  }
 </script>
 ```
 
@@ -787,8 +785,10 @@ Create privacy policy page:
 <p>Last Updated: 3 January 2026</p>
 
 <h2>1. Introduction</h2>
-<p>[Company] is committed to protecting your personal data and respecting your privacy.
-This privacy policy explains how we collect, use, and protect your personal information.</p>
+<p>
+  [Company] is committed to protecting your personal data and respecting your privacy. This privacy
+  policy explains how we collect, use, and protect your personal information.
+</p>
 
 <h2>2. What Data We Collect</h2>
 <ul>
@@ -810,18 +810,30 @@ This privacy policy explains how we collect, use, and protect your personal info
 
 <h2>4. Your Rights (GDPR Articles 15-22)</h2>
 <ul>
-  <li><strong>Right to Access (Article 15):</strong> Download your data
-      [View/request your data](/api/gdpr/export/)</li>
-  <li><strong>Right to Rectification (Article 16):</strong> Update your information
-      [Update profile](/settings/profile/)</li>
-  <li><strong>Right to Erasure (Article 17):</strong> Delete your account
-      [Delete account](/settings/privacy/delete/)</li>
-  <li><strong>Right to Restrict Processing (Article 18):</strong> Limit how we use data
-      [View consents](/settings/privacy/consents/)</li>
-  <li><strong>Right to Data Portability (Article 20):</strong> Receive data in machine-readable format
-      [Download data](/api/gdpr/export/)</li>
-  <li><strong>Right to Object (Article 21):</strong> Opt out of certain processing
-      [Update preferences](/settings/privacy/consents/)</li>
+  <li>
+    <strong>Right to Access (Article 15):</strong> Download your data [View/request your
+    data](/api/gdpr/export/)
+  </li>
+  <li>
+    <strong>Right to Rectification (Article 16):</strong> Update your information [Update
+    profile](/settings/profile/)
+  </li>
+  <li>
+    <strong>Right to Erasure (Article 17):</strong> Delete your account [Delete
+    account](/settings/privacy/delete/)
+  </li>
+  <li>
+    <strong>Right to Restrict Processing (Article 18):</strong> Limit how we use data [View
+    consents](/settings/privacy/consents/)
+  </li>
+  <li>
+    <strong>Right to Data Portability (Article 20):</strong> Receive data in machine-readable format
+    [Download data](/api/gdpr/export/)
+  </li>
+  <li>
+    <strong>Right to Object (Article 21):</strong> Opt out of certain processing [Update
+    preferences](/settings/privacy/consents/)
+  </li>
 </ul>
 
 <h2>5. Data Retention</h2>
@@ -852,8 +864,10 @@ This privacy policy explains how we collect, use, and protect your personal info
 <p>Email: dpo@example.com</p>
 
 <h2>7. International Transfers</h2>
-<p>Your data may be transferred to [countries]. We use [mechanism, e.g., Standard Contractual Clauses]
-to ensure adequate protection.</p>
+<p>
+  Your data may be transferred to [countries]. We use [mechanism, e.g., Standard Contractual
+  Clauses] to ensure adequate protection.
+</p>
 
 <h2>8. Contact & Complaints</h2>
 <p>Data Protection Authority: [Country DPA]</p>
@@ -895,14 +909,14 @@ urlpatterns = [
 
 ## GDPR Articles Overview
 
-| Article | Requirement | Status |
-|---------|------------|--------|
-| 6 | Lawful basis for processing | ❌ Missing (Consent) |
-| 13 | Information to be provided | ❌ Missing (Privacy Policy) |
-| 15 | Right of access | ❌ Missing (Export) |
-| 17 | Right to erasure | ❌ Missing (Delete) |
-| 32 | Security of processing | ⚠️ Partial (No encryption) |
-| 33 | Notification of breach | ⚠️ Partial |
+| Article | Requirement                 | Status                      |
+| ------- | --------------------------- | --------------------------- |
+| 6       | Lawful basis for processing | ❌ Missing (Consent)        |
+| 13      | Information to be provided  | ❌ Missing (Privacy Policy) |
+| 15      | Right of access             | ❌ Missing (Export)         |
+| 17      | Right to erasure            | ❌ Missing (Delete)         |
+| 32      | Security of processing      | ⚠️ Partial (No encryption)  |
+| 33      | Notification of breach      | ⚠️ Partial                  |
 
 ---
 
@@ -914,6 +928,7 @@ urlpatterns = [
 **Timeline:** Critical - start immediately
 
 **Week 1:**
+
 1. Add field-level encryption for PII
 2. Create consent management system
 3. Add consent type definitions
@@ -921,12 +936,14 @@ urlpatterns = [
 5. Create consent banner UI
 
 **Week 2:**
+
 1. Migrate existing user data (one-time)
 2. Test encryption/decryption
 3. Verify audit trail
 4. Code review by security team
 
 **Deliverables:**
+
 - Encrypted database fields
 - Consent management system
 - API endpoints
@@ -937,18 +954,21 @@ urlpatterns = [
 **Effort:** 30-40 hours
 
 **Week 3:**
+
 1. Build data export endpoint
 2. Create ZIP export functionality
 3. Add export logging
 4. Build export request UI
 
 **Week 4:**
+
 1. Build account deletion endpoint
 2. Implement deletion workflow
 3. Add deletion confirmation UI
 4. Test edge cases
 
 **Deliverables:**
+
 - Data export system
 - Account deletion system
 - User-facing UI
@@ -959,18 +979,21 @@ urlpatterns = [
 **Effort:** 20-30 hours
 
 **Week 5:**
+
 1. Write comprehensive privacy policy
 2. Add DPA documentation
 3. Document data flows
 4. Create user guides
 
 **Week 6:**
+
 1. Update Terms of Service
 2. Create data processing agreements
 3. Document legal basis
 4. Legal review
 
 **Deliverables:**
+
 - Privacy policy
 - DPA documentation
 - User guides

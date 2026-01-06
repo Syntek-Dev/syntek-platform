@@ -8,7 +8,7 @@
 
 ---
 
-This guide helps new developers get started with the Django/Wagtail/PostgreSQL/GraphQL backend project.
+This guide helps new developers get started with the Django/PostgreSQL/GraphQL backend project.
 
 All development happens inside Docker containers. No local Python virtual environment is needed.
 
@@ -46,7 +46,6 @@ All development happens inside Docker containers. No local Python virtual enviro
   - [Common Tasks](#common-tasks)
     - [Adding a New Django App](#adding-a-new-django-app)
     - [Adding GraphQL Queries/Mutations](#adding-graphql-queriesmutations)
-    - [Adding Wagtail Page Models](#adding-wagtail-page-models)
   - [Troubleshooting](#troubleshooting)
     - [Database Connection Issues](#database-connection-issues)
     - [Migration Conflicts](#migration-conflicts)
@@ -97,6 +96,7 @@ docker compose -f docker/dev/docker-compose.yml up -d
 ```
 
 The containers include:
+
 - **web**: Django application running on port 8000
 - **db**: PostgreSQL 18.1 database
 - **redis**: Redis cache (if configured)
@@ -113,6 +113,7 @@ nano .env.dev  # or use your preferred editor
 ```
 
 **Important environment variables to set:**
+
 - `SECRET_KEY`: Generate using `docker compose -f docker/dev/docker-compose.yml exec web python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
 - `DATABASE_URL`: PostgreSQL connection string (predefined in docker-compose)
 - `DEBUG`: Set to `True` for development
@@ -140,8 +141,8 @@ docker compose -f docker/dev/docker-compose.yml exec web python manage.py create
 ### 7. Access the Application
 
 Visit:
+
 - **Django Admin**: http://localhost:8000/admin/
-- **Wagtail Admin**: http://localhost:8000/cms/
 - **GraphQL Playground**: http://localhost:8000/graphql
 - **Mailpit (Email Simulator)**: http://localhost:8025
 
@@ -276,6 +277,7 @@ The `.editorconfig` file will configure most editors automatically. Install the 
 ### Branch Naming
 
 Follow these conventions:
+
 - `feature/description` - New features
 - `bugfix/description` - Bug fixes
 - `hotfix/description` - Urgent production fixes
@@ -285,6 +287,7 @@ Follow these conventions:
 ### Commit Messages
 
 Follow Conventional Commits:
+
 - `feat: add user authentication`
 - `fix: resolve database connection issue`
 - `docs: update API documentation`
@@ -295,6 +298,7 @@ Follow Conventional Commits:
 ### Pre-commit Hooks
 
 Pre-commit hooks run automatically before each commit:
+
 - Code formatting (Black, isort)
 - Linting (flake8, pylint)
 - Type checking (mypy)
@@ -304,6 +308,7 @@ Pre-commit hooks run automatically before each commit:
 If hooks fail, fix the issues and commit again.
 
 **Bypass hooks** (not recommended):
+
 ```bash
 git commit --no-verify
 ```
@@ -311,17 +316,20 @@ git commit --no-verify
 ### Pull Requests
 
 1. **Create a feature branch**:
+
    ```bash
    git checkout -b feature/my-new-feature
    ```
 
 2. **Make changes and commit**:
+
    ```bash
    git add .
    git commit -m "feat: add my new feature"
    ```
 
 3. **Push to remote**:
+
    ```bash
    git push origin feature/my-new-feature
    ```
@@ -393,6 +401,7 @@ make migrate
 ### Adding GraphQL Queries/Mutations
 
 1. **Create schema in app**:
+
    ```python
    # apps/my_app/schema.py
    import graphene
@@ -405,6 +414,7 @@ make migrate
    ```
 
 2. **Register in main schema**:
+
    ```python
    # config/schema.py
    from apps.my_app.schema import Query as MyAppQuery
@@ -417,26 +427,6 @@ make migrate
    ```bash
    make graphql-schema
    ```
-
-### Adding Wagtail Page Models
-
-1. **Create model in app**:
-   ```python
-   # apps/my_app/models.py
-   from wagtail.models import Page
-
-   class MyPage(Page):
-       # fields here
-       pass
-   ```
-
-2. **Create migration** (inside Docker):
-   ```bash
-   make makemigrations APP=my_app
-   make migrate
-   ```
-
-3. **Add to Wagtail admin** (automatic for Page models)
 
 ## Troubleshooting
 
@@ -514,21 +504,20 @@ make docker-up
 
 ## Environment Variables Reference
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DEBUG` | Enable debug mode | `True` or `False` |
-| `SECRET_KEY` | Django secret key | Random 50-character string |
-| `ALLOWED_HOSTS` | Allowed hostnames | `localhost,127.0.0.1` |
-| `DATABASE_URL` | Database connection | `postgres://user:pass@host:5432/db` |
-| `REDIS_URL` | Redis connection | `redis://redis:6379/0` |
-| `CORS_ALLOWED_ORIGINS` | CORS whitelist | `http://localhost:3000` |
-| `EMAIL_BACKEND` | Email backend | `django.core.mail.backends.console.EmailBackend` |
-| `LOG_LEVEL` | Logging level | `INFO`, `DEBUG`, `WARNING` |
+| Variable               | Description         | Example                                          |
+| ---------------------- | ------------------- | ------------------------------------------------ |
+| `DEBUG`                | Enable debug mode   | `True` or `False`                                |
+| `SECRET_KEY`           | Django secret key   | Random 50-character string                       |
+| `ALLOWED_HOSTS`        | Allowed hostnames   | `localhost,127.0.0.1`                            |
+| `DATABASE_URL`         | Database connection | `postgres://user:pass@host:5432/db`              |
+| `REDIS_URL`            | Redis connection    | `redis://redis:6379/0`                           |
+| `CORS_ALLOWED_ORIGINS` | CORS whitelist      | `http://localhost:3000`                          |
+| `EMAIL_BACKEND`        | Email backend       | `django.core.mail.backends.console.EmailBackend` |
+| `LOG_LEVEL`            | Logging level       | `INFO`, `DEBUG`, `WARNING`                       |
 
 ## Additional Resources
 
 - **Django Documentation**: https://docs.djangoproject.com/
-- **Wagtail Documentation**: https://docs.wagtail.org/
 - **GraphQL Documentation**: https://graphql.org/
 - **Project-specific docs**: See `/docs` directory
 

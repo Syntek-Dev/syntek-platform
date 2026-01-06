@@ -8,7 +8,7 @@
 
 ---
 
-> Comprehensive security implementation for Django/Wagtail
+> Comprehensive security implementation for Django
 
 ## Table of Contents
 
@@ -25,7 +25,7 @@
 
 ## Overview
 
-This directory contains security documentation for the Django/Wagtail backend template. The implementation follows OWASP best practices and Django security guidelines.
+This directory contains security documentation for the Django backend template. The implementation follows OWASP best practices and Django security guidelines.
 
 ## Documents
 

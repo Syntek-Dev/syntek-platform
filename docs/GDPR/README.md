@@ -75,6 +75,7 @@ This folder contains GDPR compliance documentation and implementation guidance f
 Comprehensive GDPR compliance assessment with detailed implementation plans.
 
 **Includes:**
+
 - Compliance scoring (40/100)
 - Strengths assessment
 - Critical gaps analysis
@@ -84,6 +85,7 @@ Comprehensive GDPR compliance assessment with detailed implementation plans.
 - Legal timeline
 
 **Key Areas:**
+
 - PII encryption at rest
 - User consent management
 - Data export (Right to Access)
@@ -98,22 +100,22 @@ Comprehensive GDPR compliance assessment with detailed implementation plans.
 
 ### Current Score: 40/100
 
-| Component | Status | Gap |
-|-----------|--------|-----|
-| **Secure transmission** | ✅ Complete | - |
-| **Session security** | ✅ Complete | - |
-| **Error sanitisation** | ✅ Complete | - |
-| **Sentry PII filtering** | ✅ Complete | - |
-| **Password validation** | ✅ Complete | - |
-| **Audit logging** | ✅ Complete | - |
-| **PII encryption** | ❌ MISSING | Critical |
-| **Consent management** | ❌ MISSING | Critical |
-| **Data export** | ❌ MISSING | Critical |
-| **Account deletion** | ❌ MISSING | Critical |
-| **Privacy policy** | ❌ MISSING | Critical |
-| **Data retention policy** | ⚠️ Partial | Major |
-| **DPA documentation** | ❌ MISSING | Major |
-| **Breach notification** | ⚠️ Partial | Medium |
+| Component                 | Status      | Gap      |
+| ------------------------- | ----------- | -------- |
+| **Secure transmission**   | ✅ Complete | -        |
+| **Session security**      | ✅ Complete | -        |
+| **Error sanitisation**    | ✅ Complete | -        |
+| **Sentry PII filtering**  | ✅ Complete | -        |
+| **Password validation**   | ✅ Complete | -        |
+| **Audit logging**         | ✅ Complete | -        |
+| **PII encryption**        | ❌ MISSING  | Critical |
+| **Consent management**    | ❌ MISSING  | Critical |
+| **Data export**           | ❌ MISSING  | Critical |
+| **Account deletion**      | ❌ MISSING  | Critical |
+| **Privacy policy**        | ❌ MISSING  | Critical |
+| **Data retention policy** | ⚠️ Partial  | Major    |
+| **DPA documentation**     | ❌ MISSING  | Major    |
+| **Breach notification**   | ⚠️ Partial  | Medium   |
 
 ---
 
@@ -127,6 +129,7 @@ Comprehensive GDPR compliance assessment with detailed implementation plans.
 **Effort:** 40-60 hours
 
 **What's Missing:**
+
 - Field-level encryption for name, email, phone, etc.
 - Encrypted database backups
 - Encryption key management
@@ -141,6 +144,7 @@ Comprehensive GDPR compliance assessment with detailed implementation plans.
 **Effort:** 30-40 hours
 
 **What's Missing:**
+
 - Consent recording system
 - Cookie consent banner
 - User consent preferences API
@@ -156,6 +160,7 @@ Comprehensive GDPR compliance assessment with detailed implementation plans.
 **Effort:** 20-30 hours
 
 **What's Missing:**
+
 - Data export endpoint
 - ZIP file generation
 - JSON/CSV export formats
@@ -171,6 +176,7 @@ Comprehensive GDPR compliance assessment with detailed implementation plans.
 **Effort:** 25-35 hours
 
 **What's Missing:**
+
 - Account deletion endpoint
 - Deletion confirmation workflow
 - Data anonymisation
@@ -186,6 +192,7 @@ Comprehensive GDPR compliance assessment with detailed implementation plans.
 **Effort:** 8-10 hours
 
 **What's Missing:**
+
 - Privacy policy page
 - Data collection explanation
 - Legal basis statement
@@ -237,21 +244,21 @@ Comprehensive GDPR compliance assessment with detailed implementation plans.
 
 ## GDPR Articles Mapped
 
-| Article | Requirement | Status |
-|---------|------------|--------|
-| 5 | Principles (lawfulness, fairness, transparency) | ⚠️ Partial |
-| 6 | Lawful basis for processing | ❌ Missing (consent) |
-| 13 | Information to provide (data collection) | ❌ Missing (privacy policy) |
-| 14 | Information when not collected from subject | ❌ Missing |
-| 15 | Right of access by subject | ❌ Missing (export) |
-| 16 | Right to rectification | ✅ Implemented |
-| 17 | Right to erasure | ❌ Missing (delete) |
-| 18 | Right to restrict processing | ⚠️ Partial (consents) |
-| 20 | Right to data portability | ❌ Missing (export) |
-| 21 | Right to object | ❌ Missing |
-| 32 | Security of processing | ⚠️ Partial (no encryption) |
-| 33 | Breach notification | ⚠️ Partial |
-| 34 | Communication of breach to subject | ⚠️ Partial |
+| Article | Requirement                                     | Status                      |
+| ------- | ----------------------------------------------- | --------------------------- |
+| 5       | Principles (lawfulness, fairness, transparency) | ⚠️ Partial                  |
+| 6       | Lawful basis for processing                     | ❌ Missing (consent)        |
+| 13      | Information to provide (data collection)        | ❌ Missing (privacy policy) |
+| 14      | Information when not collected from subject     | ❌ Missing                  |
+| 15      | Right of access by subject                      | ❌ Missing (export)         |
+| 16      | Right to rectification                          | ✅ Implemented              |
+| 17      | Right to erasure                                | ❌ Missing (delete)         |
+| 18      | Right to restrict processing                    | ⚠️ Partial (consents)       |
+| 20      | Right to data portability                       | ❌ Missing (export)         |
+| 21      | Right to object                                 | ❌ Missing                  |
+| 32      | Security of processing                          | ⚠️ Partial (no encryption)  |
+| 33      | Breach notification                             | ⚠️ Partial                  |
+| 34      | Communication of breach to subject              | ⚠️ Partial                  |
 
 ---
 
@@ -368,6 +375,7 @@ Follow detailed code examples in the assessment document.
 ### PII (Personally Identifiable Information)
 
 Data that can identify a person:
+
 - Name, email, phone
 - Address, date of birth
 - IP address, cookies
@@ -378,6 +386,7 @@ Must be protected with encryption at rest.
 ### Legal Basis
 
 Why you can process data:
+
 - **Consent:** User explicitly agrees (needs consent form)
 - **Contract:** Required to provide service (no consent needed)
 - **Legal obligation:** Required by law (no consent needed)
@@ -394,6 +403,7 @@ Users can request deletion of their account and data. Must comply unless legal o
 ### Data Retention
 
 Cannot keep data longer than necessary. Examples:
+
 - User data: Until account deletion
 - Activity logs: 2 years
 - Tax records: 7 years
@@ -403,11 +413,11 @@ Cannot keep data longer than necessary. Examples:
 
 ## Penalties for Non-Compliance
 
-| Violation | Penalty |
-|-----------|---------|
-| Not processing lawfully | €10-20M or 2-4% revenue |
-| Not respecting user rights | €5-15M or 1-3% revenue |
-| Security breach | €10-20M or 2-4% revenue |
+| Violation                  | Penalty                 |
+| -------------------------- | ----------------------- |
+| Not processing lawfully    | €10-20M or 2-4% revenue |
+| Not respecting user rights | €5-15M or 1-3% revenue  |
+| Security breach            | €10-20M or 2-4% revenue |
 | Not documenting processing | €2-5M or 0.5-1% revenue |
 
 ---

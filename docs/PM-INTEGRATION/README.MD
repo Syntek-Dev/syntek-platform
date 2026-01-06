@@ -21,7 +21,7 @@ Complete integration between this Django backend project and ClickUp for project
     - [3. Install Dependencies Locally](#3-install-dependencies-locally)
     - [4. Pull Task IDs from ClickUp](#4-pull-task-ids-from-clickup)
   - [ClickUp Workspace Structure](#clickup-workspace-structure)
-    - [Space: Syntek (ID: 90156744333)](#space-syntek-id-90156744333)
+    - [Space: Syntek](#space-syntek)
       - [Folders](#folders)
     - [Available Statuses](#available-statuses)
   - [Branch Naming Convention](#branch-naming-convention)
@@ -88,6 +88,7 @@ Add these secrets to your GitHub repository for Actions:
 - `CLICKUP_WEBHOOK_SECRET`: Optional webhook signature secret
 
 **To add secrets:**
+
 1. Go to GitHub repository Settings
 2. Navigate to Secrets and variables > Actions
 3. Click "New repository secret"
@@ -117,17 +118,19 @@ git push
 
 ## ClickUp Workspace Structure
 
-### Space: Syntek (ID: 90156744333)
+### Space: Syntek
 
 #### Folders
 
 **1. Sprint - Backend Template**
+
 - Contains sprint lists (Sprint 01, Sprint 02, etc.)
 - Empty initially - lists created as sprints are planned
 - Used for active development work
 
 **2. Backlog - UI Template**
-- Contains the main backlog list (ID: 901519340766)
+
+- Contains the main backlog list
 - All unassigned stories start here
 - Move stories to sprint lists when ready for development
 
@@ -135,21 +138,21 @@ git push
 
 The workspace uses these statuses (configured in `config/clickup-config.json`):
 
-| Status | Type | Use Case |
-|--------|------|----------|
-| Open | open | New tasks, not yet started |
-| pending | custom | Awaiting something before starting |
-| in progress | custom | Currently being worked on |
-| in review | custom | Code review, PR opened |
-| accepted | custom | Approved, ready for staging |
-| accepted customer | custom | Customer/stakeholder approved |
-| rejected | custom | Changes requested |
-| rejected customer | custom | Customer requested changes |
-| blocked | custom | Cannot proceed due to blocker |
-| completed | custom | Work finished, testing passed |
-| client accepted | custom | Client final approval |
-| client rejected | custom | Client requested changes |
-| Closed | closed | Task complete and deployed |
+| Status            | Type   | Use Case                           |
+| ----------------- | ------ | ---------------------------------- |
+| Open              | open   | New tasks, not yet started         |
+| pending           | custom | Awaiting something before starting |
+| in progress       | custom | Currently being worked on          |
+| in review         | custom | Code review, PR opened             |
+| accepted          | custom | Approved, ready for staging        |
+| accepted customer | custom | Customer/stakeholder approved      |
+| rejected          | custom | Changes requested                  |
+| rejected customer | custom | Customer requested changes         |
+| blocked           | custom | Cannot proceed due to blocker      |
+| completed         | custom | Work finished, testing passed      |
+| client accepted   | custom | Client final approval              |
+| client rejected   | custom | Client requested changes           |
+| Closed            | closed | Task complete and deployed         |
 
 ## Branch Naming Convention
 
@@ -186,12 +189,14 @@ When you create a branch with this pattern:
 ### Step 1: Create User Story in ClickUp
 
 Option A - Manually in ClickUp:
+
 1. Go to Backlog list in ClickUp
 2. Create new task with format: `US-XXX: Story Title`
 3. Add description, acceptance criteria, priority
 4. Assign to sprint list when ready
 
 Option B - Sync from Local Files:
+
 1. Create markdown file: `docs/STORIES/US-XXX.md`
 2. Run sync script: `python scripts/clickup/sync_stories.py`
 3. Story appears in ClickUp
@@ -228,18 +233,21 @@ gh pr create --title "US-123: Implement feature" --body "Implementation details"
 ```
 
 When PR is created:
+
 - Task status changes to "in review"
 - Comment added to ClickUp task with PR link
 
 ### Step 5: Merge to Staging
 
 When PR is merged to `staging` branch:
+
 - Task status changes to "accepted"
 - Comment added noting the merge
 
 ### Step 6: Merge to Production
 
 When staging is merged to `main` branch:
+
 - Task status changes to "Closed"
 - Task marked as complete
 
@@ -247,18 +255,18 @@ When staging is merged to `main` branch:
 
 ### Branch/Event to ClickUp Status
 
-| Event | Branch | ClickUp Status |
-|-------|--------|----------------|
-| Branch created | us{number}/... | in progress |
-| PR opened | any | in review |
-| PR merged | dev | in progress |
-| PR merged | testing | in review |
-| PR merged | staging | accepted |
-| PR merged | main | Closed |
-| Push | dev | in progress |
-| Push | testing | in review |
-| Push | staging | accepted |
-| Push | main | Closed |
+| Event          | Branch         | ClickUp Status |
+| -------------- | -------------- | -------------- |
+| Branch created | us{number}/... | in progress    |
+| PR opened      | any            | in review      |
+| PR merged      | dev            | in progress    |
+| PR merged      | testing        | in review      |
+| PR merged      | staging        | accepted       |
+| PR merged      | main           | Closed         |
+| Push           | dev            | in progress    |
+| Push           | testing        | in review      |
+| Push           | staging        | accepted       |
+| Push           | main           | Closed         |
 
 ## Scripts Reference
 
@@ -278,6 +286,7 @@ python scripts/clickup/pull_tasks.py --output /tmp/tasks.json
 ```
 
 Output files:
+
 - `config/clickup-tasks.json` - Full task data
 - `config/clickup-story-mapping.json` - Story ID to task ID mapping
 
@@ -319,11 +328,13 @@ Description of the user story goes here.
 ### clickup-sync.yml
 
 **Triggers:**
+
 - Push to main, staging, dev, testing
 - Pull request opened, synchronized, closed, reopened
 - Manual workflow dispatch
 
 **Actions:**
+
 - Extracts task ID from branch name
 - Updates task status based on event
 - Adds PR comments to ClickUp tasks
@@ -331,9 +342,11 @@ Description of the user story goes here.
 ### clickup-branch-sync.yml
 
 **Triggers:**
+
 - Branch creation matching `us*/**` pattern
 
 **Actions:**
+
 - Moves task to "in progress"
 - Adds branch creation comment
 
@@ -403,10 +416,12 @@ Description of the user story goes here.
 ## API Rate Limits
 
 ClickUp API has these limits:
+
 - 100 requests per minute per API key
 - 10 requests per second per API key
 
 **Best Practices:**
+
 - Don't run bulk sync operations too frequently
 - Use `--dry-run` to preview changes before syncing
 - Cache task mappings locally (already done in `config/`)
@@ -424,6 +439,7 @@ ClickUp API has these limits:
 ### config/clickup-config.json
 
 Main configuration defining:
+
 - Workspace and folder IDs
 - Status mappings
 - Branch naming patterns
@@ -433,6 +449,7 @@ Main configuration defining:
 ### config/clickup-tasks.json
 
 Generated by `pull_tasks.py`:
+
 - Full task details from ClickUp
 - Includes assignees, tags, dates
 - Updated when you run pull script
@@ -440,6 +457,7 @@ Generated by `pull_tasks.py`:
 ### config/clickup-story-mapping.json
 
 Generated by `pull_tasks.py`:
+
 - Maps story IDs (US-XXX) to ClickUp task IDs
 - Used by GitHub Actions to find tasks
 - Commit this file to version control

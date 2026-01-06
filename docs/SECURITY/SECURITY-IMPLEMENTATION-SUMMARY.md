@@ -10,7 +10,6 @@
 
 > **Implementation Date:** 2026-01-03
 > **Django Version:** 5.2
-> **Wagtail Version:** 7.0
 
 ## Table of Contents
 
@@ -54,7 +53,7 @@
 
 ## Overview
 
-This document summarises the security enhancements implemented in the Django/Wagtail backend
+This document summarises the security enhancements implemented in the Django backend
 template. All security features are production-ready and follow industry best practices.
 
 ## Security Components Implemented
@@ -63,13 +62,14 @@ template. All security features are production-ready and follow industry best pr
 
 **Location:** `config/middleware/`
 
-| Middleware | Purpose | Status |
-|------------|---------|--------|
+| Middleware                  | Purpose                          | Status         |
+| --------------------------- | -------------------------------- | -------------- |
 | `SecurityHeadersMiddleware` | Additional HTTP security headers | ✅ Implemented |
-| `RateLimitMiddleware` | Request rate limiting | ✅ Implemented |
-| `SecurityAuditMiddleware` | Security event logging | ✅ Implemented |
+| `RateLimitMiddleware`       | Request rate limiting            | ✅ Implemented |
+| `SecurityAuditMiddleware`   | Security event logging           | ✅ Implemented |
 
 **Files Created:**
+
 - `config/middleware/__init__.py`
 - `config/middleware/security.py`
 - `config/middleware/ratelimit.py`
@@ -88,11 +88,13 @@ Enhanced password validation with custom validators:
 - `NoRepeatedCharactersValidator` (prevents aaa, 111 patterns)
 
 Plus Django's built-in validators:
+
 - `UserAttributeSimilarityValidator` (prevents passwords similar to username/email)
 - `CommonPasswordValidator` (rejects common passwords)
 - `NumericPasswordValidator` (prevents all-numeric passwords)
 
 **Files Created:**
+
 - `config/validators/__init__.py`
 - `config/validators/password.py`
 
@@ -100,74 +102,77 @@ Plus Django's built-in validators:
 
 **Location:** `api/security.py`
 
-| Extension | Purpose | Default Limit |
-|-----------|---------|---------------|
-| `QueryDepthLimitExtension` | Prevent deeply nested queries | 10 levels |
-| `QueryComplexityLimitExtension` | Limit expensive queries | 1000 score |
+| Extension                       | Purpose                             | Default Limit     |
+| ------------------------------- | ----------------------------------- | ----------------- |
+| `QueryDepthLimitExtension`      | Prevent deeply nested queries       | 10 levels         |
+| `QueryComplexityLimitExtension` | Limit expensive queries             | 1000 score        |
 | `IntrospectionControlExtension` | Disable introspection in production | Environment-based |
 
 **Files Created:**
+
 - `api/security.py`
 
 **Files Modified:**
+
 - `api/schema.py` (integrated security extensions)
 
 ### 4. Settings Enhancements
 
 **Files Modified:**
 
-| File | Changes |
-|------|---------|
-| `config/settings/base.py` | Added middleware, password validators, rate limiting settings, GraphQL security, session/CSRF configuration |
-| `config/settings/production.py` | Enhanced SSL/TLS, session security, security audit logging, GraphQL introspection control |
-| `config/settings/staging.py` | Mirrored production security, configurable introspection, security audit logging |
-| `config/settings/dev.py` | Enabled introspection, security audit logging (verbose) |
+| File                            | Changes                                                                                                     |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `config/settings/base.py`       | Added middleware, password validators, rate limiting settings, GraphQL security, session/CSRF configuration |
+| `config/settings/production.py` | Enhanced SSL/TLS, session security, security audit logging, GraphQL introspection control                   |
+| `config/settings/staging.py`    | Mirrored production security, configurable introspection, security audit logging                            |
+| `config/settings/dev.py`        | Enabled introspection, security audit logging (verbose)                                                     |
 
 ### 5. Environment Configuration
 
 **Files Modified:**
 
-| File | Security Settings Added |
-|------|------------------------|
-| `.env.example` | Rate limiting, GraphQL security, session configuration |
-| `.env.dev.example` | Development security settings |
-| `.env.staging.example` | Staging security settings (mirrors production) |
-| `.env.production.example` | Production security settings |
+| File                      | Security Settings Added                                |
+| ------------------------- | ------------------------------------------------------ |
+| `.env.example`            | Rate limiting, GraphQL security, session configuration |
+| `.env.dev.example`        | Development security settings                          |
+| `.env.staging.example`    | Staging security settings (mirrors production)         |
+| `.env.production.example` | Production security settings                           |
 
 ### 6. Documentation
 
 **Files Created:**
 
-| File | Purpose |
-|------|---------|
-| `docs/SECURITY.md` | Comprehensive security documentation |
-| `docs/SECURITY-QUICK-REFERENCE.md` | Quick reference guide for common tasks |
-| `docs/SECURITY-IMPLEMENTATION-SUMMARY.md` | This file |
+| File                                      | Purpose                                |
+| ----------------------------------------- | -------------------------------------- |
+| `docs/SECURITY.md`                        | Comprehensive security documentation   |
+| `docs/SECURITY-QUICK-REFERENCE.md`        | Quick reference guide for common tasks |
+| `docs/SECURITY-IMPLEMENTATION-SUMMARY.md` | This file                              |
 
 ## Security Features Summary
 
 ### HTTP Security Headers
 
-| Header | Value | Purpose |
-|--------|-------|---------|
-| X-Content-Type-Options | nosniff | Prevent MIME sniffing |
-| X-Frame-Options | DENY | Prevent clickjacking |
-| Referrer-Policy | strict-origin-when-cross-origin | Control referrer information |
-| Permissions-Policy | Restrictive | Disable dangerous browser features |
-| Strict-Transport-Security | 31536000; includeSubDomains; preload | Enforce HTTPS (production) |
-| Content-Security-Policy | Configured | Prevent XSS/injection attacks |
+| Header                    | Value                                | Purpose                            |
+| ------------------------- | ------------------------------------ | ---------------------------------- |
+| X-Content-Type-Options    | nosniff                              | Prevent MIME sniffing              |
+| X-Frame-Options           | DENY                                 | Prevent clickjacking               |
+| Referrer-Policy           | strict-origin-when-cross-origin      | Control referrer information       |
+| Permissions-Policy        | Restrictive                          | Disable dangerous browser features |
+| Strict-Transport-Security | 31536000; includeSubDomains; preload | Enforce HTTPS (production)         |
+| Content-Security-Policy   | Configured                           | Prevent XSS/injection attacks      |
 
 ### Rate Limiting
 
-| Endpoint Type | Limit (per minute) |
-|---------------|-------------------|
-| Authentication (/admin/, /cms/) | 5 |
-| GraphQL Mutations | 30 |
-| GraphQL Queries | 100 |
-| General API | 60 |
-| Default | 120 |
+| Endpoint Type                   | Limit (per minute) |
+| ------------------------------- | ------------------ |
+| Authentication (/admin/, /cms/) | 5                  |
+| GraphQL Mutations               | 30                 |
+| GraphQL Queries                 | 100                |
+| General API                     | 60                 |
+| Default                         | 120                |
 
 **Features:**
+
 - IP-based tracking using Redis
 - Sliding window approach
 - Configurable via environment variables
@@ -176,6 +181,7 @@ Plus Django's built-in validators:
 ### Password Security
 
 **Requirements:**
+
 - Minimum 12 characters
 - At least 1 uppercase, 1 lowercase, 1 digit, 1 special character
 - No sequential characters (123, abc)
@@ -186,6 +192,7 @@ Plus Django's built-in validators:
 ### GraphQL Security
 
 **Features:**
+
 - Query depth limiting (default: 10 levels)
 - Query complexity analysis (default: 1000 score)
 - Introspection control (disabled in production)
@@ -196,12 +203,13 @@ Plus Django's built-in validators:
 **Configuration:**
 
 | Environment | Cookie Age | SameSite | Secure | HTTPS Only |
-|-------------|------------|----------|--------|------------|
-| Development | 2 weeks | Lax | No | No |
-| Production | 1 hour | Strict | Yes | Yes |
-| Staging | 1 hour | Strict | Yes | Yes |
+| ----------- | ---------- | -------- | ------ | ---------- |
+| Development | 2 weeks    | Lax      | No     | No         |
+| Production  | 1 hour     | Strict   | Yes    | Yes        |
+| Staging     | 1 hour     | Strict   | Yes    | Yes        |
 
 **Features:**
+
 - HttpOnly cookies (prevents JavaScript access)
 - SameSite protection (CSRF prevention)
 - Secure flag (HTTPS only in production/staging)
@@ -210,6 +218,7 @@ Plus Django's built-in validators:
 ### Audit Logging
 
 **Events Logged:**
+
 - Successful logins
 - Failed login attempts
 - Logouts
@@ -294,6 +303,7 @@ validate_password("MyP@ssw0rd2026!")
 
 ### Test GraphQL Security
 
+<!-- prettier-ignore -->
 ```graphql
 # Test introspection (should fail in production)
 query {
@@ -342,6 +352,7 @@ curl -I https://your-domain.com
 ### Rate Limiting
 
 Rate limiting uses Redis with minimal overhead:
+
 - Cache lookups: O(1)
 - Memory usage: ~50 bytes per tracked IP
 - Automatic cleanup via TTL
@@ -351,6 +362,7 @@ Rate limiting uses Redis with minimal overhead:
 ### Password Validation
 
 Password validation adds ~50-100ms to password changes:
+
 - All validators run on password set/change only
 - Not called during authentication
 - Negligible impact on user experience
@@ -358,6 +370,7 @@ Password validation adds ~50-100ms to password changes:
 ### GraphQL Security
 
 Query analysis adds minimal overhead:
+
 - Query depth: ~1-5ms
 - Query complexity: ~5-10ms
 - Introspection check: ~1ms
@@ -387,6 +400,7 @@ Query analysis adds minimal overhead:
 ### Alerting Rules
 
 Set up alerts for:
+
 - More than 50 rate limit violations per hour
 - More than 20 failed logins from single IP in 10 minutes
 - GraphQL introspection attempts in production
@@ -398,21 +412,25 @@ Set up alerts for:
 ### Regular Tasks
 
 **Weekly:**
+
 - Review security audit logs
 - Check for unusual patterns in rate limiting
 - Monitor failed login attempts
 
 **Monthly:**
+
 - Update dependencies (`pip list --outdated`)
 - Run security scanner (`bandit -r .`)
 - Review and rotate API keys
 
 **Quarterly:**
+
 - Review and update rate limits based on traffic
 - Audit user permissions
 - Test incident response procedures
 
 **Annually:**
+
 - Conduct penetration testing
 - Review and update security policies
 - Audit all third-party integrations

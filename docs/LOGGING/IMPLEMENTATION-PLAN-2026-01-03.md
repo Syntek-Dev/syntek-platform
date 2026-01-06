@@ -62,6 +62,7 @@
 **Proposed:** Structured, environment-aware logging with performance monitoring
 
 **Improvements:**
+
 - Centralised logging configuration
 - JSON structured logging for production
 - Colored console output for development
@@ -738,6 +739,7 @@ sentry_sdk.init(
 **Timeline:** Week 1-2
 
 **Tasks:**
+
 1. Create `config/logging/` package structure
 2. Implement formatters (JSON, colored)
 3. Implement filters (sensitive data, environment)
@@ -748,6 +750,7 @@ sentry_sdk.init(
 8. Test all environments
 
 **Deliverables:**
+
 - Complete logging package
 - Updated settings
 - All tests passing
@@ -759,6 +762,7 @@ sentry_sdk.init(
 **Timeline:** Week 2-3
 
 **Tasks:**
+
 1. Implement logging decorators
 2. Create GraphQL logging decorator
 3. Add request ID generation middleware
@@ -768,6 +772,7 @@ sentry_sdk.init(
 7. Add examples to codebase
 
 **Deliverables:**
+
 - Decorators ready for use
 - Middleware for request context
 - Examples and documentation
@@ -779,6 +784,7 @@ sentry_sdk.init(
 **Timeline:** Week 3-4
 
 **Tasks:**
+
 1. Update existing code to use new logging
 2. Add context to request handlers
 3. Add request ID to responses (X-Request-ID header)
@@ -789,6 +795,7 @@ sentry_sdk.init(
 8. Production deployment
 
 **Deliverables:**
+
 - All code using new logging
 - Request IDs in responses
 - Sentry integration working

@@ -65,6 +65,7 @@ Overall code quality is good with consistent style and documentation. No critica
 found, but a few areas need attention:
 
 **Summary:**
+
 - 1 High issue (exception handling)
 - 2 Medium issues (type hints and code duplication)
 - 1 Low issue (Python version)
@@ -394,6 +395,7 @@ mypy config/middleware/audit.py
 #### Problem
 
 IP extraction logic duplicated in three places with slight variations. See:
+
 - **Code Review Document:** [DRY Violation in IP Extraction](../REVIEWS/CODE-REVIEW-2026-01-03.md#dry-violation-in-ip-extraction)
 
 This is also a security issue and covered in detail in the code review.
@@ -493,6 +495,7 @@ from .base import *  # Expected pattern in settings
 5. All team members know this convention
 
 **Evidence:**
+
 - Django documentation shows this pattern
 - All Django projects use this pattern
 - Tools like djangoflake specifically allow it in settings
@@ -524,6 +527,7 @@ All function signatures include type hints. A few missing Optional hints (addres
 **Status:** PASSING
 
 Imports properly organised:
+
 1. Standard library
 2. Third-party
 3. Local imports
@@ -615,7 +619,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.13"
+          python-version: '3.13'
 
       - name: Install dependencies
         run: |

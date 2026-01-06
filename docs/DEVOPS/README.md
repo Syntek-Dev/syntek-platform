@@ -45,16 +45,17 @@ Documentation for CI/CD pipelines, deployment, and infrastructure.
 
 ## Quick Links
 
-| Document | Purpose |
-|----------|---------|
+| Document                                           | Purpose                               |
+| -------------------------------------------------- | ------------------------------------- |
 | [CICD-GITHUB-ACTIONS.MD](./CICD-GITHUB-ACTIONS.MD) | Complete CI/CD pipeline documentation |
-| [QUICK-REFERENCE.MD](./QUICK-REFERENCE.MD) | Quick commands and troubleshooting |
+| [QUICK-REFERENCE.MD](./QUICK-REFERENCE.MD)         | Quick commands and troubleshooting    |
 
 ## Overview
 
 This project uses a Docker-first approach for CI/CD:
 
 **All CI/CD checks run inside Docker containers** to ensure:
+
 - Complete parity with local development
 - Consistent environments across dev/CI/staging/production
 - No dependency on local Python installation
@@ -142,31 +143,35 @@ Deploy to Staging (auto) or Production (manual)
 
 ## GitHub Actions Workflows
 
-| Workflow | Trigger | Purpose |
-|----------|---------|---------|
-| CI Pipeline | Push/PR | Linting, testing, security |
-| PR Validation | PR events | Title, branch, commits validation |
-| Deploy Staging | Push to `staging` | Auto-deploy to staging |
-| Deploy Production | Push to `main` | Manual approval, deploy to prod |
-| Dependency Review | PR/weekly | Vulnerability scanning |
-| CodeQL | Push/PR/weekly | Security analysis |
+| Workflow          | Trigger           | Purpose                           |
+| ----------------- | ----------------- | --------------------------------- |
+| CI Pipeline       | Push/PR           | Linting, testing, security        |
+| PR Validation     | PR events         | Title, branch, commits validation |
+| Deploy Staging    | Push to `staging` | Auto-deploy to staging            |
+| Deploy Production | Push to `main`    | Manual approval, deploy to prod   |
+| Dependency Review | PR/weekly         | Vulnerability scanning            |
+| CodeQL            | Push/PR/weekly    | Security analysis                 |
 
 ## Git Hooks
 
 All hooks run checks inside Docker containers:
 
 **Pre-commit:**
+
 - Black formatting
 - isort import sorting
 - flake8 linting
 
 **Pre-push:**
+
 - Full test suite
 
 **Commit-msg:**
+
 - Conventional Commits validation
 
 **Post-merge:**
+
 - Dependency change notifications
 
 ## Required Configuration
@@ -174,25 +179,30 @@ All hooks run checks inside Docker containers:
 ### GitHub Secrets
 
 **Deployment:**
+
 - Container registry credentials
 - SSH keys for staging/production
 - Environment URLs
 
 **Optional:**
+
 - Slack webhook
 - ClickUp API key
 
 ### GitHub Environments
 
 **staging:**
+
 - Auto-deployment enabled
 - No approval required
 
 **production:**
+
 - Manual approval required
 - Protected environment
 
 **production-approval:**
+
 - Approval gate before production
 
 ## Key Features
@@ -200,6 +210,7 @@ All hooks run checks inside Docker containers:
 ### Docker-Based CI
 
 All checks run in Docker:
+
 ```bash
 docker compose -f docker/test/docker-compose.yml run --rm web pytest
 ```
@@ -209,6 +220,7 @@ No local Python installation needed.
 ### Zero-Downtime Deployments
 
 Production uses rolling deployments:
+
 - Scale up new containers
 - Health check
 - Remove old containers
@@ -227,6 +239,7 @@ Production uses rolling deployments:
 ### Quality Gates
 
 PRs must pass:
+
 - All CI checks
 - Security scans
 - Migration validation
@@ -236,6 +249,7 @@ PRs must pass:
 ## Monitoring
 
 Recommended tools:
+
 - **APM:** New Relic, DataDog
 - **Errors:** Sentry
 - **Logs:** ELK Stack, Loki
@@ -314,6 +328,7 @@ docker compose -f docker/staging/docker-compose.yml logs -f web
 See [QUICK-REFERENCE.MD](./QUICK-REFERENCE.MD) for detailed troubleshooting.
 
 Common issues:
+
 - **CI fails:** Run `./scripts/run-ci-locally.sh all` to reproduce locally
 - **Deployment fails:** Check SSH keys and server connectivity
 - **Tests fail:** Review logs with `docker compose logs`

@@ -60,26 +60,17 @@ templates/
 
 ```html
 {% for item in items %}
-  <li>{{ item.name }}</li>
-{% endfor %}
-
-{% if user.is_authenticated %}
-  Welcome, {{ user.username }}!
-{% else %}
-  Please log in.
-{% endif %}
-
-{% include "components/header.html" %}
+<li>{{ item.name }}</li>
+{% endfor %} {% if user.is_authenticated %} Welcome, {{ user.username }}! {% else %} Please log in.
+{% endif %} {% include "components/header.html" %}
 ```
 
 ### Common Filters
 
 ```html
-{{ text|upper }}           {# Convert to uppercase #}
-{{ price|floatformat:2 }}  {# Format decimal places #}
-{{ date|date:"Y-m-d" }}    {# Format date #}
-{{ items|length }}         {# Count items #}
-{{ text|truncatewords:10 }} {# Truncate text #}
+{{ text|upper }} {# Convert to uppercase #} {{ price|floatformat:2 }} {# Format decimal places #} {{
+date|date:"Y-m-d" }} {# Format date #} {{ items|length }} {# Count items #} {{ text|truncatewords:10
+}} {# Truncate text #}
 ```
 
 ---
@@ -96,23 +87,18 @@ templates/
 ### Example Template
 
 ```html
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}My Page{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% load static %} {% block title %}My Page{% endblock %} {% block content
+%}
 <h1>{{ title }}</h1>
 
 {% for item in items %}
-  <div class="item">
-    <h2>{{ item.name }}</h2>
-    <p>{{ item.description }}</p>
-  </div>
+<div class="item">
+  <h2>{{ item.name }}</h2>
+  <p>{{ item.description }}</p>
+</div>
 {% empty %}
-  <p>No items available.</p>
-{% endfor %}
-{% endblock %}
+<p>No items available.</p>
+{% endfor %} {% endblock %}
 ```
 
 ---

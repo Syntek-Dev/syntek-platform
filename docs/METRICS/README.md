@@ -58,11 +58,11 @@ See `config.json` for current settings:
 
 ## Commands
 
-| Command | Purpose |
-|---------|---------|
+| Command                               | Purpose                                 |
+| ------------------------------------- | --------------------------------------- |
 | `/syntek-dev-suite:learning-feedback` | Provide feedback on last agent response |
-| `/syntek-dev-suite:learning-optimise` | Review and apply prompt improvements |
-| `/syntek-dev-suite:learning-ab-test` | Manage A/B tests for prompts |
+| `/syntek-dev-suite:learning-optimise` | Review and apply prompt improvements    |
+| `/syntek-dev-suite:learning-ab-test`  | Manage A/B tests for prompts            |
 
 ## Privacy
 

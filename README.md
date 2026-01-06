@@ -8,8 +8,13 @@
 
 ---
 
-A reusable backend template using Django, Wagtail, PostgreSQL and GraphQL with environment-specific
-setups for dev, staging, production, and test.
+A comprehensive Django CMS platform backend providing content management, design tokens,
+multi-tenancy, SaaS integrations, and enterprise-grade security. Part of the Syntek CMS Platform
+architecture supporting web and mobile applications.
+
+**Platform Architecture:** This backend is one component of a multi-repository CMS platform.
+See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the
+complete architectural plan including all 16 development phases.
 
 **Important:** All development happens inside Docker containers. You do not need to install Python,
 PostgreSQL, or any other dependencies locally. Simply use the environment scripts in `scripts/env/`
@@ -40,28 +45,44 @@ to run everything inside Docker.
 
 ## Stack
 
-| Component   | Version          |
-| ----------- | ---------------- |
-| Python      | 3.14             |
-| Django      | 5.2              |
-| Wagtail CMS | 7                |
-| PostgreSQL  | 18.1             |
-| Node.js     | 24.12.0          |
-| GraphQL     | (via Strawberry) |
+| Component  | Version          |
+| ---------- | ---------------- |
+| Python     | 3.14             |
+| Django     | 5.2              |
+| PostgreSQL | 18.1             |
+| Node.js    | 24.12.0          |
+| GraphQL    | (via Strawberry) |
 
 ## Features
 
+### Core Platform Features
+
+- **Multi-Repository Architecture:** Integrates with ui_design, frontend_web, frontend_mobile
+- **Multi-Tenancy:** Organisation-based isolation with encrypted data
+- **Design Token System:** Database-driven theming for consistent branding across platforms
+- **Content Management:** Pure Django CMS with block-based content and JSON structure
+- **Content Branching:** Git-like workflow (feature → testing → dev → staging → production)
+- **9 Site Templates:** E-commerce, Blog, Corporate, Church, Charity, SaaS, Sole Trader,
+  Estate Agent, Single Page
+- **GraphQL API:** Strawberry-based with query protection, depth limiting, complexity analysis
+- **AI Integration:** Anthropic Claude for content assistance, SEO, code help (planned)
+- **SaaS Integrations:** Email, Cloud documents, Password manager (planned)
+
+### Infrastructure & Security
+
 - Separate Docker containers for each environment (dev, staging, prod, test)
 - Staging and Production use managed PostgreSQL (AWS RDS or DigitalOcean)
-- Redis or Valkey for caching
+- Redis or Valkey for caching and session storage
 - Mailpit for email simulation in dev/test environments
-- GraphQL API with security extensions
-- Wagtail CMS integration
-- Comprehensive security features
+- 2FA authentication with TOTP
+- Comprehensive audit logging with encrypted IP addresses
+- Environment variable encryption and management
 - GDPR compliance tools
-- Structured logging system
-- GraphQL query protection (depth, complexity, introspection control)
-- Rate limiting and audit logging
+- Structured logging system with Sentry integration
+- Rate limiting and security middleware
+
+**See:** [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for
+complete platform architecture and phased development plan.
 
 ## Project Structure
 
@@ -143,6 +164,12 @@ For more detailed setup instructions, see [docs/DEVELOPER-SETUP.md](docs/DEVELOP
 
 The documentation is organized by topic in the `docs/` folder. Here's a quick index:
 
+### Platform Architecture
+
+- **[CMS Platform Plan](docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md)** - **START HERE** -
+  Comprehensive architectural plan for the entire CMS platform including all 16 development phases,
+  database schema, GraphQL API contracts, security architecture, and multi-repository structure
+
 ### Getting Started
 
 - [Developer Setup Guide](docs/DEVELOPER-SETUP.md) - Complete setup instructions
@@ -157,6 +184,7 @@ The documentation is organized by topic in the `docs/` folder. Here's a quick in
 
 ### Architecture & Operations
 
+- [Platform Architecture](docs/ARCHITECTURE/) - **CMS platform design and phases**
 - [DevOps & CI/CD](docs/DEVOPS/) - Deployment and pipeline documentation
 - [Logging System](docs/LOGGING/) - Structured logging implementation
 - [Database Documentation](docs/DATABASE/) - Schema and migrations

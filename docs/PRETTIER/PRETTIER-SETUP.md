@@ -110,13 +110,13 @@ pre-commit install
 
 ### Configuration Files
 
-| File                | Purpose                                    |
-| ------------------- | ------------------------------------------ |
-| `.prettierrc`       | Prettier configuration (formatting rules)  |
-| `.prettierignore`   | Files to exclude from formatting           |
-| `package.json`      | npm package definition and scripts         |
-| `.vscode/settings.json` | VS Code Prettier integration           |
-| `.pre-commit-config.yaml` | Git pre-commit hook configuration    |
+| File                      | Purpose                                   |
+| ------------------------- | ----------------------------------------- |
+| `.prettierrc`             | Prettier configuration (formatting rules) |
+| `.prettierignore`         | Files to exclude from formatting          |
+| `package.json`            | npm package definition and scripts        |
+| `.vscode/settings.json`   | VS Code Prettier integration              |
+| `.pre-commit-config.yaml` | Git pre-commit hook configuration         |
 
 ### Prettier Configuration (`.prettierrc`)
 
@@ -148,14 +148,14 @@ pre-commit install
 
 ### Key Settings Explained
 
-| Setting            | Value   | Why                                      |
-| ------------------ | ------- | ---------------------------------------- |
-| `semi`             | `false` | No semicolons (cleaner)                  |
-| `singleQuote`      | `true`  | Consistency with Black (Python)          |
-| `tabWidth`         | `2`     | Standard for JSON/YAML/HTML              |
-| `printWidth`       | `100`   | Matches Black's line length              |
-| `endOfLine`        | `lf`    | Unix line endings (consistency)          |
-| `parser` (HTML)    | `jinja-template` | Support Django/Jinja templates  |
+| Setting         | Value            | Why                             |
+| --------------- | ---------------- | ------------------------------- |
+| `semi`          | `false`          | No semicolons (cleaner)         |
+| `singleQuote`   | `true`           | Consistency with Black (Python) |
+| `tabWidth`      | `2`              | Standard for JSON/YAML/HTML     |
+| `printWidth`    | `100`            | Matches Black's line length     |
+| `endOfLine`     | `lf`             | Unix line endings (consistency) |
+| `parser` (HTML) | `jinja-template` | Support Django/Jinja templates  |
 
 ---
 
@@ -340,7 +340,8 @@ pre-commit run prettier --all-files
 
 Remove other formatters for the same file types:
 
-```json
+<!-- prettier-ignore -->
+```jsonc
 // In VS Code settings
 "[json]": {
   "editor.defaultFormatter": "esbenp.prettier-vscode"  // Only Prettier
@@ -357,7 +358,7 @@ Check `.yamllint.yml` and `.prettierrc` rules align:
 # .yamllint.yml
 rules:
   line-length:
-    max: 100  # Matches Prettier's printWidth
+    max: 100 # Matches Prettier's printWidth
 ```
 
 ---

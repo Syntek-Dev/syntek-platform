@@ -30,7 +30,7 @@
     - [Version Consistency](#version-consistency)
   - [Updating Versions](#updating-versions)
     - [Updating Python Version](#updating-python-version)
-    - [Updating Django or Wagtail](#updating-django-or-wagtail)
+    - [Updating Django](#updating-django)
     - [Updating System Tools](#updating-system-tools)
   - [Version Pinning Strategy](#version-pinning-strategy)
   - [Last Updated](#last-updated)
@@ -41,29 +41,29 @@
 
 These are the primary framework versions used in this project, as specified in `pyproject.toml`:
 
-| Framework | Version | Notes |
-|-----------|---------|-------|
-| Django | 5.2 | Web framework |
-| Wagtail CMS | 7 | Content management system |
-| Python | 3.14 | Programming language |
-| PostgreSQL | 18.1 | Database |
+| Framework  | Version | Notes                |
+| ---------- | ------- | -------------------- |
+| Django     | 5.2     | Web framework        |
+| Python     | 3.14    | Programming language |
+| PostgreSQL | 18.1    | Database             |
 
 ## System Requirements
 
 All development machines and deployment environments must meet these minimum requirements:
 
-| Tool | Version | Purpose | Configuration File |
-|------|---------|---------|-------------------|
-| Python | 3.14 | Runtime and development | `.python-version` |
-| PostgreSQL | 18.1 | Database | `.tool-versions` |
-| Node.js | 24.12.0 | Frontend tooling (Prettier, build tools) | `.tool-versions` |
-| Docker | Latest | Containerization (optional but recommended) | N/A |
-| Docker Compose | Latest | Multi-container orchestration | N/A |
-| Git | Latest | Version control | N/A |
+| Tool           | Version | Purpose                                     | Configuration File |
+| -------------- | ------- | ------------------------------------------- | ------------------ |
+| Python         | 3.14    | Runtime and development                     | `.python-version`  |
+| PostgreSQL     | 18.1    | Database                                    | `.tool-versions`   |
+| Node.js        | 24.12.0 | Frontend tooling (Prettier, build tools)    | `.tool-versions`   |
+| Docker         | Latest  | Containerization (optional but recommended) | N/A                |
+| Docker Compose | Latest  | Multi-container orchestration               | N/A                |
+| Git            | Latest  | Version control                             | N/A                |
 
 ### Installing Specific Versions
 
 **Using asdf version manager (recommended):**
+
 ```bash
 # Install asdf
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf
@@ -100,42 +100,43 @@ The following tools are configured in the project but versions are managed throu
 
 ### Code Quality Tools
 
-| Tool | Purpose | Configuration |
-|------|---------|---------------|
-| Black | Code formatting | `pyproject.toml` - line length: 100 |
-| isort | Import sorting | `pyproject.toml` - Black compatible |
-| Ruff | Fast Python linting | `pyproject.toml` - replaces flake8 |
-| mypy | Static type checking | `pyproject.toml` - Django support |
-| pylint | Additional linting | `.pylintrc` - Django plugins |
-| flake8 | Legacy linting | `.flake8` - kept for compatibility |
-| bandit | Security scanning | `.bandit` - finds security issues |
+| Tool   | Purpose              | Configuration                       |
+| ------ | -------------------- | ----------------------------------- |
+| Black  | Code formatting      | `pyproject.toml` - line length: 100 |
+| isort  | Import sorting       | `pyproject.toml` - Black compatible |
+| Ruff   | Fast Python linting  | `pyproject.toml` - replaces flake8  |
+| mypy   | Static type checking | `pyproject.toml` - Django support   |
+| pylint | Additional linting   | `.pylintrc` - Django plugins        |
+| flake8 | Legacy linting       | `.flake8` - kept for compatibility  |
+| bandit | Security scanning    | `.bandit` - finds security issues   |
 
 ### Testing Tools
 
-| Tool | Purpose | Configuration |
-|------|---------|---------------|
-| pytest | Test runner | `pyproject.toml` - pytest settings |
-| coverage | Coverage reporting | `.coveragerc` - coverage settings |
+| Tool          | Purpose            | Configuration                             |
+| ------------- | ------------------ | ----------------------------------------- |
+| pytest        | Test runner        | `pyproject.toml` - pytest settings        |
+| coverage      | Coverage reporting | `.coveragerc` - coverage settings         |
 | pytest-django | Django integration | `pyproject.toml` - DJANGO_SETTINGS_MODULE |
-| pytest-cov | Coverage plugin | `pyproject.toml` - auto-enabled |
+| pytest-cov    | Coverage plugin    | `pyproject.toml` - auto-enabled           |
 
 ### Pre-commit Hooks
 
 Versions are managed in `.pre-commit-config.yaml`:
 
 ```yaml
-- black          # Code formatter
-- isort          # Import sorter
-- flake8         # Linter
-- mypy           # Type checker
-- bandit         # Security
+- black # Code formatter
+- isort # Import sorter
+- flake8 # Linter
+- mypy # Type checker
+- bandit # Security
 - django-upgrade # Django upgrades
-- markdownlint   # Markdown linting
-- yamllint       # YAML linting
-- hadolint       # Dockerfile linting
+- markdownlint # Markdown linting
+- yamllint # YAML linting
+- hadolint # Dockerfile linting
 ```
 
 **Installation:**
+
 ```bash
 pip install pre-commit
 pre-commit install
@@ -143,11 +144,11 @@ pre-commit install
 
 ### Editor and IDE Tools
 
-| Tool | Version | Configuration |
-|------|---------|---------------|
-| Prettier | Latest | `.prettierrc` |
-| EditorConfig | Via plugin | `.editorconfig` |
-| Pylance | Latest | VS Code extension |
+| Tool         | Version    | Configuration     |
+| ------------ | ---------- | ----------------- |
+| Prettier     | Latest     | `.prettierrc`     |
+| EditorConfig | Via plugin | `.editorconfig`   |
+| Pylance      | Latest     | VS Code extension |
 
 ---
 
@@ -206,11 +207,13 @@ All images use `python:3.14-slim` as the base for consistency across environment
 ### Configuration Files
 
 **`.python-version`** - Python version specification for pyenv
+
 ```
 python 3.14
 ```
 
 **`.tool-versions`** - asdf version manager configuration
+
 ```
 python 3.14
 nodejs 24.12.0
@@ -218,13 +221,13 @@ postgres 18.1
 ```
 
 **`pyproject.toml`** - Modern Python project configuration
+
 ```toml
 requires-python = ">=3.14"
 
 [project]
 classifiers = [
     "Framework :: Django :: 5.2",
-    "Framework :: Wagtail :: 7",
     "Programming Language :: Python :: 3.14",
 ]
 
@@ -239,6 +242,7 @@ target-version = ['py314']
 ```
 
 **`setup.cfg`** - Legacy configuration for backward compatibility
+
 ```ini
 python_requires = >=3.14
 ```
@@ -247,13 +251,12 @@ python_requires = >=3.14
 
 The following versions are pinned across multiple configuration files to ensure consistency:
 
-| Setting | Files | Current Value |
-|---------|-------|---------------|
-| Python version | `.python-version`, `pyproject.toml`, `setup.cfg`, Docker | 3.14 |
-| Node.js version | `.tool-versions` | 24.12.0 |
-| PostgreSQL version | `.tool-versions`, Docker | 18.1 |
-| Django version | `pyproject.toml` classifiers | 5.2 |
-| Wagtail version | `pyproject.toml` classifiers | 7 |
+| Setting            | Files                                                    | Current Value |
+| ------------------ | -------------------------------------------------------- | ------------- |
+| Python version     | `.python-version`, `pyproject.toml`, `setup.cfg`, Docker | 3.14          |
+| Node.js version    | `.tool-versions`                                         | 24.12.0       |
+| PostgreSQL version | `.tool-versions`, Docker                                 | 18.1          |
+| Django version     | `pyproject.toml` classifiers                             | 5.2           |
 
 ---
 
@@ -262,6 +265,7 @@ The following versions are pinned across multiple configuration files to ensure 
 ### Updating Python Version
 
 1. **Update configuration files:**
+
    ```bash
    # .python-version
    echo "python 3.15" > .python-version
@@ -271,6 +275,7 @@ The following versions are pinned across multiple configuration files to ensure 
    ```
 
 2. **Update pyproject.toml:**
+
    ```toml
    requires-python = ">=3.15"
 
@@ -285,6 +290,7 @@ The following versions are pinned across multiple configuration files to ensure 
    ```
 
 3. **Update Dockerfiles:**
+
    ```dockerfile
    FROM python:3.15-slim
    ```
@@ -295,6 +301,7 @@ The following versions are pinned across multiple configuration files to ensure 
    - Update example commands if needed
 
 5. **Test the update:**
+
    ```bash
    # Rebuild Docker containers with new Python version
    make docker-build
@@ -304,13 +311,13 @@ The following versions are pinned across multiple configuration files to ensure 
    docker compose -f docker/dev/docker-compose.yml exec web python --version
    ```
 
-### Updating Django or Wagtail
+### Updating Django
 
 1. **Update pyproject.toml:**
+
    ```toml
    classifiers = [
        "Framework :: Django :: 6.0",  # Updated
-       "Framework :: Wagtail :: 8",   # Updated
    ]
    ```
 
@@ -319,17 +326,19 @@ The following versions are pinned across multiple configuration files to ensure 
 3. **Update documentation** to reflect new features/breaking changes
 
 4. **Run tests inside Docker:**
+
    ```bash
    make test
    ```
 
-5. **Review breaking changes** in official release notes
+5. **Review breaking changes** in official Django release notes
 
 ### Updating System Tools
 
 For Node.js, PostgreSQL, or other system tools:
 
 1. **Update .tool-versions:**
+
    ```
    nodejs 25.0.0  # Updated
    postgres 19.0  # Updated
@@ -340,6 +349,7 @@ For Node.js, PostgreSQL, or other system tools:
 3. **Update Docker base images** if system dependencies change
 
 4. **Rebuild Docker containers with new versions:**
+
    ```bash
    # Rebuild to use updated base images
    make docker-build
@@ -356,7 +366,7 @@ For Node.js, PostgreSQL, or other system tools:
 
 This project uses:
 
-- **Pinned major versions** for frameworks (Django 5.2, Wagtail 7) to prevent breaking changes
+- **Pinned major versions** for frameworks (Django 5.2) to prevent breaking changes
 - **Flexible minor/patch versions** in requirements files (managed by pip during installation)
 - **Specific versions in .tool-versions** for reproducible development environments
 - **Python version pinning** to match team capabilities and library support

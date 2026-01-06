@@ -29,7 +29,7 @@
       - [Problem](#problem-2)
       - [Solution](#solution-2)
   - [Warnings](#warnings)
-    - [W1: ALLOWED\_HOSTS Wildcard in Staging](#w1-allowed_hosts-wildcard-in-staging)
+    - [W1: ALLOWED_HOSTS Wildcard in Staging](#w1-allowed_hosts-wildcard-in-staging)
     - [W2: Missing Rate Limit Headers](#w2-missing-rate-limit-headers)
     - [W3: Naive GraphQL Complexity Calculation](#w3-naive-graphql-complexity-calculation)
     - [W4: Missing Password Validator Tests](#w4-missing-password-validator-tests)
@@ -58,7 +58,6 @@
     - [For Development Team](#for-development-team)
     - [For Team Lead](#for-team-lead)
     - [Related Documents](#related-documents)
-
 
 ---
 
@@ -102,6 +101,7 @@ def generate_cache_key(identifier: str) -> str:
 ```
 
 **Why This is Dangerous:**
+
 - MD5 is broken and can be collided with negligible computing power
 - Attackers could craft identifiers producing cache key collisions
 - Leads to cache poisoning and serving wrong data to users
@@ -131,6 +131,7 @@ def generate_cache_key(identifier: str) -> str:
 ```
 
 **Alternative (Recommended for Django):**
+
 ```python
 from django.core.cache.backends.base import KEY_FUNC
 
@@ -146,6 +147,7 @@ CACHES = {
 ```
 
 **Implementation:**
+
 1. Replace all `hashlib.md5()` calls with `hashlib.sha256()`
 2. Update cache key format if necessary (longer hash)
 3. Clear all existing cache entries
@@ -179,6 +181,7 @@ def _get_client_ip(request) -> str:
 ```
 
 **Why This is Dangerous:**
+
 - X-Forwarded-For is set by the client (not trusted)
 - Attackers can spoof their IP address
 - Could bypass IP-based rate limiting
@@ -258,6 +261,7 @@ else:
 ```
 
 **Implementation:**
+
 1. Add TRUSTED_PROXIES to settings
 2. Update IP extraction to validate proxy trust
 3. Add tests for trusted/untrusted proxy scenarios
@@ -271,6 +275,7 @@ else:
 ### DRY Violation in IP Extraction
 
 **Files:**
+
 - `config/middleware/audit.py:52` - `_get_client_ip()`
 - `config/middleware/rate_limit.py:78` - duplicate function
 - `api/security.py:45` - duplicate function
@@ -307,6 +312,7 @@ def _extract_client_ip(request) -> str:
 ```
 
 **Consequences:**
+
 - Different functions extract IP differently (inconsistent)
 - Bug fixes only applied in one location
 - Security improvements hard to implement consistently
@@ -453,6 +459,7 @@ def check_rate_limit(request):
 ```
 
 **Implementation Steps:**
+
 1. Create `config/utils/request.py` with the centralised function
 2. Update all three files to import from the new location
 3. Add comprehensive tests for IP extraction
@@ -656,6 +663,7 @@ Some error messages may leak database details in development mode:
 **Effort:** 2-4 hours
 
 Current middleware is monolithic. Suggest splitting into:
+
 - IP extraction and validation
 - Rate limit checking (separate class)
 - Response header management
@@ -741,6 +749,7 @@ class User(models.Model):
 **Effort:** 2-3 hours
 
 Document what the application assumes about its deployment:
+
 - Which headers to trust (X-Forwarded-For, X-Real-IP)
 - Proxy configuration expectations
 - TLS/HTTPS requirements
@@ -779,6 +788,7 @@ class QueryDepthAnalyzer:
 **Status:** Well implemented
 
 The password validation suite is comprehensive:
+
 - Numeric similarity check
 - Common password detection
 - Length requirements
@@ -794,6 +804,7 @@ This exceeds OWASP guidelines.
 **Status:** Well configured
 
 Excellent implementation of:
+
 - Introspection restrictions in production
 - Query depth limiting
 - Query timeout handling
@@ -807,6 +818,7 @@ Excellent implementation of:
 **Status:** Best practice implementation
 
 Logs important events:
+
 - Authentication attempts
 - Authorization failures
 - Data access patterns
@@ -822,6 +834,7 @@ Provides excellent forensic trail.
 **Status:** Well organized
 
 Proper separation of:
+
 - Base settings
 - Environment overrides
 - Secret management
@@ -837,6 +850,7 @@ This pattern prevents configuration mistakes.
 **Status:** Above average
 
 Google-style docstrings throughout with:
+
 - Purpose statements
 - Argument descriptions
 - Return value documentation

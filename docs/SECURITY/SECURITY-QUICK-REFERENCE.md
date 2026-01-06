@@ -32,13 +32,13 @@
 
 ## Rate Limiting
 
-| Endpoint Type | Default Limit (per minute) | Environment Variable |
-|---------------|----------------------------|---------------------|
-| Authentication | 5 | `RATELIMIT_AUTH_REQUESTS_PER_MINUTE` |
-| GraphQL Mutations | 30 | `RATELIMIT_GRAPHQL_MUTATION_REQUESTS_PER_MINUTE` |
-| GraphQL Queries | 100 | `RATELIMIT_GRAPHQL_QUERY_REQUESTS_PER_MINUTE` |
-| General API | 60 | `RATELIMIT_API_REQUESTS_PER_MINUTE` |
-| Default | 120 | `RATELIMIT_DEFAULT_REQUESTS_PER_MINUTE` |
+| Endpoint Type     | Default Limit (per minute) | Environment Variable                             |
+| ----------------- | -------------------------- | ------------------------------------------------ |
+| Authentication    | 5                          | `RATELIMIT_AUTH_REQUESTS_PER_MINUTE`             |
+| GraphQL Mutations | 30                         | `RATELIMIT_GRAPHQL_MUTATION_REQUESTS_PER_MINUTE` |
+| GraphQL Queries   | 100                        | `RATELIMIT_GRAPHQL_QUERY_REQUESTS_PER_MINUTE`    |
+| General API       | 60                         | `RATELIMIT_API_REQUESTS_PER_MINUTE`              |
+| Default           | 120                        | `RATELIMIT_DEFAULT_REQUESTS_PER_MINUTE`          |
 
 **Temporarily adjust limits:**
 
@@ -80,11 +80,11 @@ RATELIMIT_ENABLE_IN_DEBUG=False
 
 ## GraphQL Security
 
-| Setting | Default | Environment Variable |
-|---------|---------|---------------------|
-| Max Query Depth | 10 | `GRAPHQL_MAX_QUERY_DEPTH` |
-| Max Complexity | 1000 | `GRAPHQL_MAX_QUERY_COMPLEXITY` |
-| Introspection (Dev) | Enabled | `GRAPHQL_ENABLE_INTROSPECTION` |
+| Setting              | Default  | Environment Variable           |
+| -------------------- | -------- | ------------------------------ |
+| Max Query Depth      | 10       | `GRAPHQL_MAX_QUERY_DEPTH`      |
+| Max Complexity       | 1000     | `GRAPHQL_MAX_QUERY_COMPLEXITY` |
+| Introspection (Dev)  | Enabled  | `GRAPHQL_ENABLE_INTROSPECTION` |
 | Introspection (Prod) | Disabled | `GRAPHQL_ENABLE_INTROSPECTION` |
 
 **Enable introspection in staging:**
@@ -104,10 +104,10 @@ GRAPHQL_MAX_QUERY_DEPTH=15
 ## Session Configuration
 
 | Environment | Cookie Age | SameSite | Secure | Extends on Activity |
-|-------------|------------|----------|--------|---------------------|
-| Development | 2 weeks | Lax | No | No |
-| Production | 1 hour | Strict | Yes | Yes |
-| Staging | 1 hour | Strict | Yes | Yes |
+| ----------- | ---------- | -------- | ------ | ------------------- |
+| Development | 2 weeks    | Lax      | No     | No                  |
+| Production  | 1 hour     | Strict   | Yes    | Yes                 |
+| Staging     | 1 hour     | Strict   | Yes    | Yes                 |
 
 **Adjust session timeout:**
 
@@ -237,6 +237,7 @@ SECURE_SSL_REDIRECT=True
 ### Suspected Brute Force Attack
 
 1. **Identify the attack:**
+
    ```bash
    # Check security logs for repeated login failures
    grep "login_failure" logs/security.log | grep <IP>
@@ -260,6 +261,7 @@ SECURE_SSL_REDIRECT=True
 ### Compromised Admin Account
 
 1. **Immediately disable the account:**
+
    ```python
    # Django shell
    from django.contrib.auth import get_user_model
@@ -270,6 +272,7 @@ SECURE_SSL_REDIRECT=True
    ```
 
 2. **Force logout all sessions:**
+
    ```python
    # Clear all sessions
    from django.contrib.sessions.models import Session
@@ -295,6 +298,7 @@ SECURE_SSL_REDIRECT=True
    - Low: Include in next regular update
 
 2. **Apply patches:**
+
    ```bash
    # Update dependencies
    pip install --upgrade <package>

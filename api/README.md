@@ -52,12 +52,12 @@ The API provides a single endpoint that can be queried from frontend application
 
 ## Files
 
-| File | Purpose |
-|------|---------|
-| `schema.py` | Root GraphQL schema definition (Query, Mutation, Subscription types) |
-| `security.py` | Security extensions and request validation |
-| `urls.py` | URL routing configuration for the GraphQL endpoint |
-| `__init__.py` | Package initialization |
+| File          | Purpose                                                              |
+| ------------- | -------------------------------------------------------------------- |
+| `schema.py`   | Root GraphQL schema definition (Query, Mutation, Subscription types) |
+| `security.py` | Security extensions and request validation                           |
+| `urls.py`     | URL routing configuration for the GraphQL endpoint                   |
+| `__init__.py` | Package initialization                                               |
 
 ---
 
@@ -114,6 +114,8 @@ Prevents deeply nested queries that could impact performance:
 ```
 
 **Example blocked query:**
+
+<!-- prettier-ignore -->
 ```graphql
 query {
   article {
@@ -139,6 +141,7 @@ Limits the total "cost" of a query based on field complexity:
 ```
 
 **How it works:**
+
 - Each field has a complexity score
 - Nested fields multiply complexity
 - Queries exceeding limit are rejected
@@ -158,6 +161,7 @@ Controls whether clients can introspect the schema:
 Introspection allows clients to query the schema itself (`__schema`, `__type`).
 
 **Security implications:**
+
 - Disabled in production to hide API structure
 - Enabled in development for tooling support
 - Can leak sensitive information
@@ -191,10 +195,7 @@ query GetArticles {
 
 ```graphql
 mutation CreateArticle {
-  createArticle(
-    title: "My Article"
-    content: "Article content"
-  ) {
+  createArticle(title: "My Article", content: "Article content") {
     article {
       id
       title
@@ -227,7 +228,7 @@ const query = `
       title
     }
   }
-`;
+`
 
 const response = await fetch('/graphql/', {
   method: 'POST',
@@ -235,9 +236,9 @@ const response = await fetch('/graphql/', {
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({ query }),
-});
+})
 
-const data = await response.json();
+const data = await response.json()
 ```
 
 ---

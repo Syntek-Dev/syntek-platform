@@ -8,7 +8,7 @@
 
 ---
 
-> **Backend Template - Django/Wagtail Documentation**
+> **Backend Template - Django Documentation**
 
 ## Table of Contents
 
@@ -208,5 +208,5 @@ The following comprehensive reports were generated from automated code reviews:
 ---
 
 **Project:** Backend Template
-**Framework:** Django 5.2 + Wagtail 7.0
+**Framework:** Django 5.2
 **Last Updated:** 2026-01-03

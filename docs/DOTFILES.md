@@ -8,7 +8,7 @@
 
 ---
 
-This document explains all configuration files (dotfiles) in this Django/Wagtail/PostgreSQL/GraphQL project.
+This document explains all configuration files (dotfiles) in this Django/PostgreSQL/GraphQL project.
 
 ## Table of Contents
 
@@ -71,10 +71,13 @@ This document explains all configuration files (dotfiles) in this Django/Wagtail
 ## Python Configuration
 
 ### `.python-version`
+
 Specifies the Python version for this project (3.14). Used by pyenv and other version managers.
 
 ### `pyproject.toml`
+
 Modern Python project configuration file containing:
+
 - **Project metadata**: name, version, description, dependencies
 - **Black**: Python code formatter settings (line length: 100)
 - **isort**: Import sorting configuration
@@ -86,7 +89,9 @@ Modern Python project configuration file containing:
 - **ruff**: Fast Python linter (alternative to flake8)
 
 ### `setup.cfg`
+
 Legacy Python configuration file for backward compatibility. Contains:
+
 - Package metadata
 - pytest configuration
 - flake8 settings
@@ -94,7 +99,9 @@ Legacy Python configuration file for backward compatibility. Contains:
 - coverage configuration
 
 ### `.flake8`
+
 Flake8 linter configuration:
+
 - Max line length: 100 characters
 - Max complexity: 10
 - Excludes: migrations, venv, build directories
@@ -102,13 +109,17 @@ Flake8 linter configuration:
 - Django-specific import ordering
 
 ### `.pylintrc`
+
 Pylint configuration with Django support:
+
 - Django settings module integration
 - Disabled rules for Django patterns
 - Custom settings for Django models
 
 ### `.bandit`
+
 Security linter configuration:
+
 - Excludes test directories
 - Skips specific security checks that are false positives
 
@@ -117,7 +128,9 @@ Security linter configuration:
 ## Code Quality
 
 ### `.pre-commit-config.yaml`
+
 Pre-commit hooks that run before each commit:
+
 - **General checks**: trailing whitespace, YAML/JSON validation
 - **Black**: Auto-format Python code
 - **isort**: Sort imports
@@ -141,7 +154,9 @@ git commit -m "your message"
 **Note:** Do not attempt to install pre-commit locally with `pip install pre-commit`. The Docker container handles all pre-commit hook execution.
 
 ### `.editorconfig`
+
 Cross-editor configuration:
+
 - UTF-8 encoding
 - LF line endings
 - 4 spaces for Python
@@ -151,7 +166,9 @@ Cross-editor configuration:
 - Insert final newline
 
 ### `.prettierrc`
+
 Code formatter for JavaScript/CSS/HTML in Django templates:
+
 - No semicolons
 - Single quotes
 - 2-space indentation
@@ -164,21 +181,26 @@ Code formatter for JavaScript/CSS/HTML in Django templates:
 ## Testing
 
 ### `.coveragerc`
+
 Coverage.py configuration:
+
 - Source: current directory
 - Omits: migrations, tests, venv, static files
 - Branch coverage enabled
 - HTML and XML report generation
 
 ### `pytest.ini` (in pyproject.toml)
+
 Pytest configuration:
+
 - Django settings: `config.settings.test`
 - Test discovery patterns
 - Coverage integration
-- Custom markers: slow, integration, unit, graphql, wagtail
+- Custom markers: slow, integration, unit, graphql
 - Verbose output
 
 **Run tests:**
+
 ```bash
 pytest
 pytest --cov --cov-report=html  # With coverage
@@ -191,7 +213,9 @@ pytest -m integration            # Only integration tests
 ## Editor Configuration
 
 ### `.vscode/settings.json`
+
 VS Code workspace settings:
+
 - Python interpreter: Points to the Docker container (not a local venv)
 - Linters: flake8, pylint, mypy, bandit
 - Formatter: Black
@@ -203,7 +227,9 @@ VS Code workspace settings:
 **Note:** All linting and formatting happens inside the Docker container via Makefile commands and pre-commit hooks. Do not configure VS Code to use a local virtual environment.
 
 ### `.vscode/extensions.json`
+
 Recommended VS Code extensions:
+
 - Python and Pylance
 - Django and Jinja templates
 - GraphQL
@@ -213,7 +239,9 @@ Recommended VS Code extensions:
 - Testing adapters
 
 ### `.vscode/launch.json`
+
 Debug configurations:
+
 - Run Django server
 - Run tests
 - Django shell
@@ -225,7 +253,9 @@ Debug configurations:
 ## Git Configuration
 
 ### `.gitignore`
+
 Specifies files to exclude from version control:
+
 - Python: `__pycache__`, `*.pyc`, `*.pyo`
 - Django: `*.log`, `db.sqlite3`, `media/`, `staticfiles/`
 - Virtual environments: `venv/`, `.venv/`
@@ -235,20 +265,26 @@ Specifies files to exclude from version control:
 - OS files: `.DS_Store`, `Thumbs.db`
 
 ### `.gitattributes`
+
 Git attributes for consistent line endings and file handling:
+
 - LF line endings for all text files
 - Binary file detection for images, fonts
 - Linguist overrides for GitHub language statistics
 
 ### `.github/CODEOWNERS`
+
 Defines code ownership for PR reviews:
+
 - Backend team owns all code by default
 - Backend leads own settings and migrations
 - DevOps owns Docker and CI/CD
 - GraphQL schema requires both backend and frontend review
 
 ### `.github/PULL_REQUEST_TEMPLATE.md`
+
 PR template with checklist for:
+
 - Change description
 - Testing verification
 - Migration handling
@@ -256,7 +292,9 @@ PR template with checklist for:
 - Code quality checks
 
 ### `.github/dependabot.yml`
+
 Automated dependency updates:
+
 - Python packages (weekly)
 - Docker images (weekly)
 - GitHub Actions (weekly)
@@ -266,7 +304,9 @@ Automated dependency updates:
 ## Docker Configuration
 
 ### `.dockerignore`
+
 Files to exclude from Docker builds:
+
 - Git files
 - Python cache
 - Virtual environments
@@ -275,7 +315,9 @@ Files to exclude from Docker builds:
 - Test results
 
 ### `.hadolint.yaml`
+
 Dockerfile linting configuration:
+
 - Ignored rules for flexibility
 - Trusted registries
 - Warning threshold
@@ -286,7 +328,9 @@ Dockerfile linting configuration:
 ## GraphQL Configuration
 
 ### `.graphqlconfig`
+
 GraphQL configuration for schema management:
+
 - Schema path: `schema.graphql`
 - Development endpoint: `http://localhost:8000/graphql`
 - Staging and production endpoints
@@ -294,6 +338,7 @@ GraphQL configuration for schema management:
 - File includes and excludes
 
 **Generate schema:**
+
 ```bash
 python manage.py graphql_schema --out schema.graphql
 ```
@@ -303,31 +348,38 @@ python manage.py graphql_schema --out schema.graphql
 ## Environment Management
 
 ### `.envrc`
+
 direnv configuration file (optional):
+
 - Historically used for local virtual environment activation
 - **Not required** for this project since development happens in Docker containers
 
 **Note:** This file is kept for teams that use direnv locally for other tools. However, you do not need direnv to develop on this project. The Docker container provides the complete Python environment and dependencies. Simply use the Makefile commands to run tasks inside Docker.
 
 ### `.tool-versions`
+
 asdf version manager configuration:
+
 - Python 3.14
 - Node.js 24.12.0
 - PostgreSQL 18.1
 
 ### `.env.example`
+
 Template for environment variables:
+
 - Django settings (DEBUG, SECRET_KEY, ALLOWED_HOSTS)
 - Database configuration
 - GraphQL settings
-- Wagtail configuration
 - CORS settings
 - Email configuration
 - Redis and Celery (optional)
 - Security settings
 
 ### `.env.chrome`
+
 Browser configuration for testing:
+
 - Chrome binary paths for Selenium, Playwright, Puppeteer
 - WebDriver settings
 - Headless mode configuration
@@ -337,20 +389,26 @@ Browser configuration for testing:
 ## Linting Configuration
 
 ### `.yamllint.yml`
+
 YAML linting rules:
+
 - 120 character line length
 - 2-space indentation
 - Truthy values allowed: true, false, yes, no
 - Excludes: venv, node_modules, static files
 
 ### `.markdownlint.json`
+
 Markdown linting configuration:
+
 - 120 character line length (warnings only)
 - Disabled rules for flexible documentation
 - Tables and code blocks exempt from line length
 
 ### `.shellcheckrc`
+
 Shell script linting configuration:
+
 - Disabled rules for common patterns
 - Warning severity threshold
 - Source path settings
@@ -360,15 +418,18 @@ Shell script linting configuration:
 ## Build Configuration
 
 ### `Makefile`
+
 Common development commands:
 
 **Installation:**
+
 ```bash
 make install        # Install all dependencies
 make install-dev    # Install dev dependencies + pre-commit
 ```
 
 **Development:**
+
 ```bash
 make dev            # Run development server
 make migrate        # Run migrations
@@ -378,6 +439,7 @@ make superuser      # Create superuser
 ```
 
 **Testing:**
+
 ```bash
 make test           # Run all tests with coverage
 make test-fast      # Run tests without coverage
@@ -386,6 +448,7 @@ make test-integration # Run only integration tests
 ```
 
 **Code Quality:**
+
 ```bash
 make lint           # Run all linters
 make format         # Format code with black and isort
@@ -393,6 +456,7 @@ make check          # Run pre-commit on all files
 ```
 
 **Docker:**
+
 ```bash
 make docker-build   # Build Docker images
 make docker-up      # Start containers
@@ -401,6 +465,7 @@ make docker-shell   # Open shell in container
 ```
 
 **Database:**
+
 ```bash
 make db-reset       # Reset database (WARNING: destroys data)
 make db-backup      # Backup to backup.json
@@ -408,11 +473,13 @@ make db-restore     # Restore from backup.json
 ```
 
 **GraphQL:**
+
 ```bash
 make graphql-schema # Generate GraphQL schema file
 ```
 
 **Cleanup:**
+
 ```bash
 make clean          # Remove temporary files
 make clean-all      # Remove venv and all temp files
@@ -464,22 +531,26 @@ backend_template/
 **Important:** This project uses Docker containers for development. Do not create a local Python virtual environment.
 
 1. **Build Docker containers:**
+
    ```bash
    make docker-build
    ```
 
 2. **Set up environment variables:**
+
    ```bash
    cp .env.example .env.dev
    # Edit .env.dev with your settings if needed
    ```
 
 3. **Start Docker containers:**
+
    ```bash
    make docker-up
    ```
 
 4. **Run migrations (inside Docker):**
+
    ```bash
    make migrate
    ```
@@ -498,6 +569,7 @@ All Python dependencies, linting, formatting, and pre-commit hooks run automatic
 ### Adding New Linters
 
 Add to `.pre-commit-config.yaml`:
+
 ```yaml
 - repo: https://github.com/user/repo
   rev: v1.0.0
@@ -508,6 +580,7 @@ Add to `.pre-commit-config.yaml`:
 ### Changing Code Style
 
 Edit `pyproject.toml`:
+
 ```toml
 [tool.black]
 line-length = 120  # Change from 100 to 120
@@ -516,11 +589,10 @@ line-length = 120  # Change from 100 to 120
 ### Adding VS Code Extensions
 
 Edit `.vscode/extensions.json`:
+
 ```json
 {
-  "recommendations": [
-    "publisher.extension-name"
-  ]
+  "recommendations": ["publisher.extension-name"]
 }
 ```
 
@@ -581,5 +653,4 @@ Do not attempt to install type stubs locally with `pip install`. The Docker cont
 - [pre-commit](https://pre-commit.com/)
 - [Prettier](https://prettier.io/)
 - [Django](https://docs.djangoproject.com/)
-- [Wagtail](https://docs.wagtail.org/)
 - [GraphQL](https://graphql.org/)

@@ -63,6 +63,7 @@ This folder contains the logging system design and implementation plan for the D
 Complete implementation guide for structured logging.
 
 **Includes:**
+
 - Current state analysis
 - Proposed architecture
 - Module breakdown
@@ -73,6 +74,7 @@ Complete implementation guide for structured logging.
 - Deployment guide
 
 **Key Features:**
+
 - Colored console output for development
 - JSON structured logging for production
 - Request ID tracking across logs
@@ -109,15 +111,15 @@ config/logging/
 
 ### 3. Key Benefits
 
-| Benefit | Use Case |
-|---------|----------|
-| JSON formatting | Production - easily parsed and searchable |
-| Colored output | Development - human readable |
-| Request IDs | Track requests across multiple logs |
-| Context tracking | Correlate logs with user ID and client IP |
-| Automatic redaction | Prevent PII leakage to logs |
-| Performance monitoring | Identify slow operations |
-| Rotating logs | Manage disk space automatically |
+| Benefit                | Use Case                                  |
+| ---------------------- | ----------------------------------------- |
+| JSON formatting        | Production - easily parsed and searchable |
+| Colored output         | Development - human readable              |
+| Request IDs            | Track requests across multiple logs       |
+| Context tracking       | Correlate logs with user ID and client IP |
+| Automatic redaction    | Prevent PII leakage to logs               |
+| Performance monitoring | Identify slow operations                  |
+| Rotating logs          | Manage disk space automatically           |
 
 ---
 
@@ -126,6 +128,7 @@ config/logging/
 ### Development Environment
 
 **Console Output (Colored):**
+
 ```
 [INFO] 2026-01-03 14:30:42 config.middleware.audit - User 123 logged in
 [WARNING] 2026-01-03 14:30:43 apps.api.views - Slow query (1.2s)
@@ -133,11 +136,14 @@ config/logging/
 ```
 
 **File Output (Rotating):**
+
 - `logs/app.log` - All logs (rotates at 10MB)
 
 ### Production Environment
 
 **Console Output (JSON):**
+
+<!-- prettier-ignore -->
 ```json
 {"timestamp":"2026-01-03T14:30:42Z","level":"INFO","logger":"config.middleware.audit","message":"User 123 logged in","request_id":"abc-123","user_id":123}
 {"timestamp":"2026-01-03T14:30:43Z","level":"WARNING","logger":"apps.api.views","message":"Slow query (1.2s)","elapsed_seconds":1.2}
@@ -145,6 +151,7 @@ config/logging/
 ```
 
 **File Output (Daily Rotation, 30-day retention):**
+
 - `logs/app.log` - All INFO+ logs
 - `logs/error.log` - ERROR+ logs only
 - `logs/security.log` - Security events (authentication, authorization)
@@ -301,6 +308,7 @@ jq 'select(.elapsed_seconds > 1)' logs/app.log
 ### With Sentry
 
 Logs are automatically sent to Sentry for:
+
 - Error tracking
 - Performance monitoring
 - Release tracking
@@ -308,11 +316,11 @@ Logs are automatically sent to Sentry for:
 
 ### Metrics to Monitor
 
-| Metric | Target | Alert |
-|--------|--------|-------|
-| Slow requests | <200ms p95 | >500ms |
-| Error rate | <0.1% | >1% |
-| Log volume | <10MB/hour | >50MB/hour |
+| Metric        | Target     | Alert      |
+| ------------- | ---------- | ---------- |
+| Slow requests | <200ms p95 | >500ms     |
+| Error rate    | <0.1%      | >1%        |
+| Log volume    | <10MB/hour | >50MB/hour |
 
 ---
 

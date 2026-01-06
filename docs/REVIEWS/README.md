@@ -32,7 +32,6 @@
   - [Review Schedule](#review-schedule)
   - [Related Documentation](#related-documentation)
 
-
 ---
 
 ## Overview
@@ -53,12 +52,14 @@ These reviews cover security, code quality, syntax correctness, and compliance i
 **Scope:** Full codebase analysis
 
 Contains detailed findings across three severity levels:
+
 - 3 Critical security issues (must fix before production)
 - 8 Warnings (should address in next sprint)
 - 6 Suggestions (nice-to-have improvements)
 - 5 Positive notes (excellent implementations)
 
 **Key Areas:**
+
 - Hashing algorithms and cryptography
 - IP address handling and request forgery prevention
 - Rate limiting and middleware
@@ -79,6 +80,7 @@ Contains detailed findings across three severity levels:
 Comprehensive analysis of code security, performance, and maintainability.
 
 Covers:
+
 - Security vulnerabilities and attack vectors
 - Code quality and adherence to standards
 - Performance considerations
@@ -92,6 +94,7 @@ Covers:
 Analysis of code style, type hints, and linting issues.
 
 Covers:
+
 - Python syntax compliance
 - Type hint coverage
 - Import organisation
@@ -105,6 +108,7 @@ Covers:
 Assessment of GDPR and data protection compliance.
 
 Covers:
+
 - Personal data handling
 - Data retention policies
 - User consent management
@@ -119,6 +123,7 @@ Covers:
 Analysis and plan for structured logging implementation.
 
 Covers:
+
 - Current logging infrastructure
 - Proposed logging structure
 - Environment-specific configurations
@@ -133,18 +138,21 @@ Covers:
 ### 1. Prioritise by Severity
 
 **Critical Issues (must fix):**
+
 - Review first
 - Plan implementation immediately
 - Cannot deploy to production without fixing
 - Estimated effort: varies
 
 **Warnings (should address):**
+
 - Plan for next sprint
 - Represent significant improvements
 - May affect performance or security
 - Can deploy with documented plan to fix
 
 **Suggestions (nice-to-have):**
+
 - Consider for refactoring sprints
 - Improve maintainability and performance
 - Can be deferred without risk
@@ -167,6 +175,7 @@ Copy these to your project management tool (ClickUp, GitHub Issues, etc.)
 ### 3. Cross-Reference Code
 
 Each finding includes:
+
 - Specific file paths
 - Line numbers
 - Code examples
@@ -177,6 +186,7 @@ Use this to quickly locate and understand issues in the codebase.
 ### 4. Assign Work
 
 Suggested workflow:
+
 1. Review findings with team lead
 2. Create tasks in ClickUp/GitHub Projects
 3. Assign to developers
@@ -205,6 +215,7 @@ The application uses MD5 hashing for cache keys in config/cache/backend.py:45,
 which is cryptographically insecure. Replace with SHA256.
 
 **Acceptance Criteria:**
+
 - [ ] Cache key generation uses SHA256
 - [ ] All cache keys updated
 - [ ] Tests pass
@@ -220,6 +231,7 @@ After making changes:
 3. Track improvements in project metrics
 
 **Commands:**
+
 ```bash
 # Run code review
 /syntek-dev-suite:review
@@ -237,6 +249,7 @@ After making changes:
 ### Documentation Updates
 
 When fixes are implemented:
+
 1. Add a "Fixed" section to the review document
 2. Update this README with resolution status
 3. Link to the GitHub commit/PR that fixed the issue
@@ -248,12 +261,12 @@ When fixes are implemented:
 
 Suggested review cadence:
 
-| Review Type | Frequency | Trigger |
-|------------|-----------|---------|
-| Code Review | After each sprint | Before merging to main |
-| Syntax Check | On every commit | Pre-commit hook |
-| GDPR Assessment | Quarterly or after changes | Data handling changes |
-| Logging Review | When debugging issues | Before production deploy |
+| Review Type     | Frequency                  | Trigger                  |
+| --------------- | -------------------------- | ------------------------ |
+| Code Review     | After each sprint          | Before merging to main   |
+| Syntax Check    | On every commit            | Pre-commit hook          |
+| GDPR Assessment | Quarterly or after changes | Data handling changes    |
+| Logging Review  | When debugging issues      | Before production deploy |
 
 ---
 
