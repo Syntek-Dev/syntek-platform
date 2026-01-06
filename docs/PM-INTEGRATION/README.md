@@ -8,7 +8,8 @@
 
 ---
 
-Complete integration between this Django backend project and ClickUp for project management, task tracking, and workflow automation.
+Complete integration between this Django backend project and ClickUp for project management,
+task tracking, and workflow automation.
 
 ## Table of Contents
 
