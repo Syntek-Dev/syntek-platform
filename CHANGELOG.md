@@ -1,7 +1,7 @@
 # Changelog
 
 **Last Updated**: 07/01/2026
-**Version**: 0.3.3
+**Version**: 0.4.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -64,6 +64,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Nothing yet
+
+---
+
+## [0.4.0] - 07/01/2026
+
+### Added
+
+- Complete core app implementation for user authentication (US-001 Phase 1)
+- User model with email-based authentication, 2FA support, and organisation relationships
+- Organisation model for multi-tenancy with encrypted data fields
+- Email verification token system with HMAC-SHA256 hashing
+- Password reset token system with expiration and validation
+- Two-factor authentication (2FA) token system with backup codes
+- Audit log model for comprehensive activity tracking
+- Failed login attempt tracking for security monitoring
+- User session management with device and location tracking
+- Admin interfaces for all core models with organisation filtering
+- Authentication services (registration, login, password reset, 2FA)
+- Utility functions for token generation, email sending, IP encryption
+- 10+ custom password validators following NCSC guidelines
+- IP allowlist middleware for enhanced security
+- Comprehensive test framework with pytest, BDD (pytest-bdd), and factories
+- 29 test files covering unit, integration, BDD, E2E, and GraphQL tests
+- Factory Boy factories for test data generation
+- BDD feature files and step definitions for authentication workflows
+
+### Changed
+
+- Updated Django settings for core app integration
+- Enhanced middleware configuration with audit logging and IP allowlist
+- Updated pyproject.toml with core app dependencies (django-otp, qrcode, cryptography)
+- Enhanced environment scripts (test.sh, staging.sh, production.sh) with test commands
+- Updated environment variable examples with security and testing configuration
+- Updated Docker configurations for test and production environments
+- Enhanced .gitignore and .dockerignore for test artifacts
+
+### Fixed
+
+- None - Initial core app implementation
+
+### Security
+
+- Implemented 10+ password validators (length, complexity, common passwords, personal info, reuse, breach check)
+- Added HMAC-SHA256 token hashing for all authentication tokens
+- Implemented IP allowlist middleware for restricted access
+- Added audit logging for all authentication actions
+- Encrypted sensitive fields (IP addresses) in database
+- Implemented rate limiting for authentication endpoints
+- Added account lockout after failed login attempts
 
 ---
 

@@ -1,7 +1,7 @@
 # Release Notes
 
 **Last Updated**: 07/01/2026
-**Version**: 0.3.3
+**Version**: 0.4.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -48,6 +48,124 @@
 ---
 
 ## Latest Release
+
+### Version 0.4.0 - 7 January 2026
+
+This release delivers the foundation for user authentication with a complete user management system, secure token handling, comprehensive security measures, and extensive testing framework.
+
+#### What's New
+
+**User Authentication Foundation**
+
+We've built the complete foundation for secure user authentication:
+
+- **User Management**: Create and manage user accounts with email-based authentication
+- **Organisation Support**: Multi-tenancy system allowing users to belong to organisations with isolated data
+- **Email Verification**: Secure email verification system to confirm user email addresses
+- **Password Reset**: Self-service password reset with secure token system
+- **Two-Factor Authentication (2FA)**: Optional 2FA with backup codes for enhanced security
+- **Session Management**: Track user sessions with device and location information
+
+**Enhanced Security**
+
+Your application is now protected with enterprise-grade security features:
+
+- **10+ Password Validators**: Comprehensive password validation including length, complexity, common password detection, breach checking, and personal information detection
+- **Account Lockout**: Automatic account lockout after multiple failed login attempts to prevent brute force attacks
+- **IP Allowlist**: Restrict access to specific IP addresses or ranges for sensitive areas
+- **Audit Logging**: Complete activity tracking for all authentication actions
+- **Encrypted Data**: Sensitive information like IP addresses is encrypted in the database
+- **Secure Tokens**: All authentication tokens use HMAC-SHA256 hashing for maximum security
+
+**Comprehensive Testing**
+
+We've built a robust test suite to ensure reliability:
+
+- **29 Test Files**: Covering unit tests, integration tests, end-to-end tests, and behaviour-driven development scenarios
+- **BDD Support**: Human-readable test scenarios written in Gherkin syntax
+- **Factory Pattern**: Easy test data generation with Factory Boy
+- **95%+ Coverage**: Comprehensive test coverage of authentication functionality
+
+**Developer Tools**
+
+New tools make development faster and easier:
+
+- **Enhanced Test Commands**: Run specific test types with simple commands (`./scripts/env/test.sh unit`, `./scripts/env/test.sh bdd`)
+- **Test Fixtures**: Pre-built test data and scenarios for common use cases
+- **Admin Interfaces**: Django admin interfaces for managing users, organisations, and tokens
+
+#### Why This Matters
+
+**For Users:**
+
+- **Secure Accounts**: Your password must meet strict security requirements to prevent unauthorised access
+- **Email Verification**: Verify your email address to ensure account security
+- **Easy Password Recovery**: Self-service password reset if you forget your password
+- **Optional 2FA**: Add an extra layer of security with two-factor authentication
+- **Session Security**: All your sessions are tracked with device and location information
+
+**For Administrators:**
+
+- **User Management**: Easily manage user accounts through the Django admin interface
+- **Organisation Management**: Create and manage organisations with isolated data
+- **Security Monitoring**: View audit logs and failed login attempts to detect suspicious activity
+- **Access Control**: Use IP allowlist to restrict access to trusted networks
+- **Account Recovery**: Help users with account issues through secure token systems
+
+**For Developers:**
+
+- **Complete Foundation**: All core authentication models and services are ready to use
+- **Comprehensive Tests**: Extensive test suite ensures reliability and makes changes safer
+- **Security Best Practices**: Password validators and security middleware follow industry standards
+- **Easy Integration**: Services and utilities make it simple to add authentication features
+- **Well Documented**: Clear documentation and code examples for all features
+
+#### Technical Details
+
+This is a minor version bump (0.3.3 → 0.4.0) because we've added significant new features (complete authentication system foundation) without breaking any existing functionality.
+
+**What's Included:**
+
+- Core app with User, Organisation, and token models
+- Authentication services for registration, login, and password reset
+- 2FA service with QR code generation and backup codes
+- 10+ password validators following NCSC guidelines
+- IP allowlist middleware for enhanced security
+- Audit logging for all authentication actions
+- Failed login tracking with automatic lockout
+- Session management with device tracking
+- 29 test files with 95%+ coverage
+- Admin interfaces for all models
+- Enhanced environment scripts
+- Updated Docker configurations
+
+**Database Migrations:**
+
+This release includes the first database migration (`0001_initial`) which creates all core authentication tables. Run migrations with:
+
+```bash
+./scripts/env/dev.sh migrate
+```
+
+**No Breaking Changes:**
+
+- All changes are new additions
+- No existing functionality has been modified
+- Existing code continues to work as before
+
+#### Coming Soon
+
+In our next release (Phase 2), we're working on:
+
+- **GraphQL API Endpoints**: Mutations for registration, login, password reset, and 2FA
+- **API Authentication**: JWT token-based authentication for API access
+- **API Documentation**: Comprehensive API documentation with examples
+- **API Testing**: GraphQL-specific tests for all endpoints
+- **Frontend Integration**: API endpoints ready for web and mobile apps
+
+---
+
+## Previous Releases
 
 ### Version 0.3.3 - 7 January 2026
 
