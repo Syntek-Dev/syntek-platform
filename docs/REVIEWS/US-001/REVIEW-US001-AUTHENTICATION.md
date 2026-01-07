@@ -162,7 +162,7 @@ brute force attacks. The complexity requirements balance security with usability
 **Recommendations:**
 
 ```python
-# Add to apps/core/validators.py
+# Add to config/validators/password.py
 
 import requests
 import hashlib

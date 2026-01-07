@@ -29,6 +29,11 @@
     - [Django Apps](#django-apps)
     - [GraphQL API](#graphql-api)
     - [CMS Content Management](#cms-content-management)
+  - [Code Quality Principles](#code-quality-principles)
+    - [Minimal Code Philosophy](#minimal-code-philosophy)
+    - [DRY (Don't Repeat Yourself)](#dry-dont-repeat-yourself)
+    - [Code Quality Checklist](#code-quality-checklist)
+    - [Refactoring Guidelines](#refactoring-guidelines)
   - [Line Length Standards](#line-length-standards)
     - [Exceptions](#exceptions)
     - [Running Lint Checks](#running-lint-checks)
@@ -67,6 +72,7 @@
     - [Markdown Formatting Rules](#markdown-formatting-rules)
     - [Link Validation](#link-validation)
   - [Command Execution Requirements](#command-execution-requirements)
+    - [Claude Agent Instructions](#claude-agent-instructions)
     - [Environment Scripts](#environment-scripts)
     - [Script Command Examples](#script-command-examples)
       - [Development (`scripts/env/dev.sh`)](#development-scriptsenvdevsh)
@@ -229,6 +235,188 @@ docker compose -f docker/test/docker-compose.yml run --rm web pytest --cov=apps
 
 See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md)
 for detailed CMS architecture.
+
+## Code Quality Principles
+
+This project enforces strict code quality standards to maintain a clean, maintainable codebase.
+
+### Minimal Code Philosophy
+
+**CRITICAL:** Always write the minimum amount of code necessary to achieve the requirement.
+
+**Principles:**
+
+1. **No speculative code** - Only implement what is explicitly required
+2. **No "just in case" features** - Don't add functionality that might be needed later
+3. **No premature abstractions** - Three similar lines of code are better than a premature helper
+4. **No extra configurability** - A simple feature doesn't need extra options
+5. **No unnecessary validation** - Only validate at system boundaries (user input, external APIs)
+
+**Examples:**
+
+```python
+# ❌ BAD - Over-engineered with unnecessary abstraction
+class UserEmailValidator:
+    """Validates user email addresses."""
+
+    def __init__(self, allow_subdomains: bool = True, blocked_domains: list = None):
+        self.allow_subdomains = allow_subdomains
+        self.blocked_domains = blocked_domains or []
+
+    def validate(self, email: str) -> bool:
+        # ... 50 lines of validation logic
+        pass
+
+def validate_user_email(email: str) -> bool:
+    """Validate email using the validator class."""
+    validator = UserEmailValidator()
+    return validator.validate(email)
+
+
+# ✅ GOOD - Simple, direct implementation
+def validate_user_email(email: str) -> bool:
+    """Validate email format."""
+    return bool(re.match(r'^[^@]+@[^@]+\.[^@]+$', email))
+```
+
+```python
+# ❌ BAD - Unnecessary helper function for one-time operation
+def get_active_user_emails(users: list[User]) -> list[str]:
+    """Extract emails from active users."""
+    return [u.email for u in users if u.is_active]
+
+def send_newsletter():
+    users = User.objects.all()
+    emails = get_active_user_emails(users)
+    send_bulk_email(emails)
+
+
+# ✅ GOOD - Inline the simple logic
+def send_newsletter():
+    """Send newsletter to active users."""
+    emails = User.objects.filter(is_active=True).values_list('email', flat=True)
+    send_bulk_email(list(emails))
+```
+
+### DRY (Don't Repeat Yourself)
+
+**CRITICAL:** Eliminate code duplication, but only when there's actual repetition.
+
+**When to apply DRY:**
+
+- Same logic appears in 3+ places
+- Copy-pasting code between functions/classes
+- Similar validation rules across multiple models
+- Repeated query patterns
+
+**When NOT to apply DRY:**
+
+- Two pieces of code happen to look similar but serve different purposes
+- Extracting code would require many parameters to handle variations
+- The "shared" code is trivial (1-2 lines)
+
+**Examples:**
+
+```python
+# ❌ BAD - Repeated logic across multiple views
+class UserListView(ListView):
+    def get_queryset(self):
+        return User.objects.filter(
+            organisation=self.request.user.organisation,
+            is_active=True
+        ).select_related('organisation')
+
+class UserDetailView(DetailView):
+    def get_queryset(self):
+        return User.objects.filter(
+            organisation=self.request.user.organisation,
+            is_active=True
+        ).select_related('organisation')
+
+class UserUpdateView(UpdateView):
+    def get_queryset(self):
+        return User.objects.filter(
+            organisation=self.request.user.organisation,
+            is_active=True
+        ).select_related('organisation')
+
+
+# ✅ GOOD - Extract to mixin when pattern repeats 3+ times
+class OrganisationFilterMixin:
+    """Filter queryset by user's organisation."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            organisation=self.request.user.organisation,
+            is_active=True
+        ).select_related('organisation')
+
+class UserListView(OrganisationFilterMixin, ListView):
+    model = User
+
+class UserDetailView(OrganisationFilterMixin, DetailView):
+    model = User
+
+class UserUpdateView(OrganisationFilterMixin, UpdateView):
+    model = User
+```
+
+```python
+# ❌ BAD - Forced DRY creating unnecessary complexity
+def process_entity(entity_type: str, entity_id: int, action: str) -> dict:
+    """Generic entity processor."""
+    if entity_type == 'user':
+        model = User
+        serializer = UserSerializer
+    elif entity_type == 'organisation':
+        model = Organisation
+        serializer = OrganisationSerializer
+    # ... more conditionals
+
+    instance = model.objects.get(id=entity_id)
+    if action == 'serialize':
+        return serializer(instance).data
+    # ... more action handling
+
+
+# ✅ GOOD - Keep separate when logic differs meaningfully
+def get_user_data(user_id: int) -> dict:
+    """Get serialised user data."""
+    user = User.objects.select_related('organisation').get(id=user_id)
+    return UserSerializer(user).data
+
+def get_organisation_data(org_id: int) -> dict:
+    """Get serialised organisation data."""
+    org = Organisation.objects.prefetch_related('users').get(id=org_id)
+    return OrganisationSerializer(org).data
+```
+
+### Code Quality Checklist
+
+Before committing code, verify:
+
+- [ ] **Minimal:** No unnecessary code, abstractions, or features
+- [ ] **DRY:** No duplicated logic (3+ occurrences)
+- [ ] **Single Responsibility:** Each function/class does one thing
+- [ ] **No Dead Code:** No commented-out code, unused imports, or unreachable branches
+- [ ] **No Magic Numbers:** Constants are named and documented
+- [ ] **Clear Intent:** Code is self-documenting with meaningful names
+
+### Refactoring Guidelines
+
+**Only refactor when:**
+
+1. There's measurable code duplication (3+ occurrences)
+2. A function exceeds 50 lines
+3. A class has more than 10 public methods
+4. Cyclomatic complexity exceeds 10
+5. The change is explicitly requested
+
+**Never refactor:**
+
+- Working code "just to improve it"
+- Code that's not part of the current task
+- To add "future-proofing" abstractions
 
 ## Line Length Standards
 
@@ -1694,6 +1882,31 @@ Before committing, validate all internal links:
 
 **CRITICAL:** All commands MUST be run inside Docker containers, NOT on the host machine.
 
+### Claude Agent Instructions
+
+**MANDATORY:** When executing any Django or Docker commands, Claude MUST:
+
+1. **ALWAYS use the `scripts/env/*.sh` helper scripts** - Never run `python manage.py` directly
+2. **Select the correct environment script** based on the task:
+   - `./scripts/env/dev.sh` - For development work
+   - `./scripts/env/test.sh` - For running tests
+   - `./scripts/env/staging.sh` - For staging operations
+   - `./scripts/env/production.sh` - For production (extreme caution)
+3. **Never run Docker commands directly** unless the environment script doesn't support the operation
+4. **Check script help first** if unsure: `./scripts/env/dev.sh help`
+
+```bash
+# ❌ WRONG - Never do this
+python manage.py migrate
+python manage.py makemigrations
+docker compose exec web python manage.py shell
+
+# ✅ CORRECT - Always use environment scripts
+./scripts/env/dev.sh migrate
+./scripts/env/dev.sh makemigrations
+./scripts/env/dev.sh shell
+```
+
 ### Environment Scripts
 
 Use the environment-specific helper scripts in `scripts/env/` for all operations:
@@ -1712,6 +1925,10 @@ Use the environment-specific helper scripts in `scripts/env/` for all operations
 ```bash
 # Start development environment
 ./scripts/env/dev.sh start
+
+# Create new migrations
+./scripts/env/dev.sh makemigrations           # All apps
+./scripts/env/dev.sh makemigrations core      # Specific app
 
 # Run Django migrations inside container
 ./scripts/env/dev.sh migrate
@@ -1763,6 +1980,10 @@ Use the environment-specific helper scripts in `scripts/env/` for all operations
 
 # Full CI pipeline
 ./scripts/env/test.sh ci
+
+# Database migrations (test environment)
+./scripts/env/test.sh makemigrations
+./scripts/env/test.sh migrate
 ```
 
 #### Staging (`scripts/env/staging.sh`)
@@ -1771,8 +1992,9 @@ Use the environment-specific helper scripts in `scripts/env/` for all operations
 # Deploy to staging
 ./scripts/env/staging.sh deploy
 
-# Run migrations
-./scripts/env/staging.sh migrate
+# Database migrations (requires confirmation)
+./scripts/env/staging.sh makemigrations       # Create migrations
+./scripts/env/staging.sh migrate              # Apply migrations
 
 # Create database backup
 ./scripts/env/staging.sh backup
@@ -1791,6 +2013,10 @@ Use the environment-specific helper scripts in `scripts/env/` for all operations
 ```bash
 # Deploy to production (requires confirmation)
 ./scripts/env/production.sh deploy
+
+# Database migrations (requires "PRODUCTION" confirmation)
+./scripts/env/production.sh migrate           # Auto-backup before migration
+./scripts/env/production.sh makemigrations    # Not recommended in production
 
 # Create production backup
 ./scripts/env/production.sh backup

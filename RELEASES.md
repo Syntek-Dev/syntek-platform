@@ -22,7 +22,6 @@
       - [What's New](#whats-new-1)
       - [Why This Matters](#why-this-matters-1)
       - [Technical Details](#technical-details-1)
-  - [Previous Releases](#previous-releases-1)
     - [Version 0.3.1 - 6 January 2026](#version-031---6-january-2026)
       - [What's New](#whats-new-2)
       - [Why This Matters](#why-this-matters-2)
@@ -219,8 +218,6 @@ Simply pull the latest code. The enhanced git hooks will automatically activate 
 providing better validation and helpful reminders.
 
 ---
-
-## Previous Releases
 
 ### Version 0.3.1 - 6 January 2026
 

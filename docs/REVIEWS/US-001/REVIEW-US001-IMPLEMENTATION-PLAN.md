@@ -1374,7 +1374,7 @@ Run: `pytest` → PASSES ✓
 **Step 3 (REFACTOR):**
 
 ```python
-# apps/core/validators.py
+# config/validators/password.py
 def validate_email_format(email):
     # More comprehensive validation
     ...

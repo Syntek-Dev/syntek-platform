@@ -540,7 +540,7 @@ def users(self, info: Info) -> List[User]:
 3. **Add Role Validation Rules** - Define which role combinations are allowed:
 
 ```python
-# apps/core/validators.py
+# config/validators/password.py
 
 class RoleValidator:
     """Validator for role assignment rules."""

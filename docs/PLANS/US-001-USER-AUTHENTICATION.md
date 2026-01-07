@@ -24,8 +24,38 @@
     - [Changes Incorporated From Reviews](#changes-incorporated-from-reviews)
     - [Implementation Details for Review Findings](#implementation-details-for-review-findings)
       - [Critical Issue Implementations](#critical-issue-implementations)
+        - [C1: Session Token Storage - HMAC-SHA256 Implementation](#c1-session-token-storage---hmac-sha256-implementation)
+        - [C2: TOTP Secret Storage - Fernet Encryption Implementation](#c2-totp-secret-storage---fernet-encryption-implementation)
+        - [C3: Password Reset Token Hashing Implementation](#c3-password-reset-token-hashing-implementation)
+        - [C4: CSRF Protection for GraphQL Implementation](#c4-csrf-protection-for-graphql-implementation)
+        - [C5: Email Verification Enforcement Implementation](#c5-email-verification-enforcement-implementation)
+        - [C6: IP Encryption Key Rotation Implementation](#c6-ip-encryption-key-rotation-implementation)
       - [High Priority Issue Implementations](#high-priority-issue-implementations)
+        - [H1: Composite Indexes for Multi-Tenant Queries](#h1-composite-indexes-for-multi-tenant-queries)
+        - [H2: Token Expiry Indexes](#h2-token-expiry-indexes)
+        - [H3: AuditLog CASCADE to SET\_NULL](#h3-auditlog-cascade-to-set_null)
+        - [H4: User.organisation Nullable for Platform Superusers](#h4-userorganisation-nullable-for-platform-superusers)
+        - [H5: Row-Level Security (RLS)](#h5-row-level-security-rls)
+        - [H6: N+1 Query Prevention with DataLoaders](#h6-n1-query-prevention-with-dataloaders)
+        - [H7: Race Condition Prevention with Database Locking](#h7-race-condition-prevention-with-database-locking)
+        - [H8: Token Revocation on Password Change](#h8-token-revocation-on-password-change)
+        - [H9: Refresh Token Replay Detection](#h9-refresh-token-replay-detection)
+        - [H10: HaveIBeenPwned Password Breach Checking](#h10-haveibeenpwned-password-breach-checking)
+        - [H11: JWT Algorithm and Key Rotation](#h11-jwt-algorithm-and-key-rotation)
+        - [H12: Concurrent Session Limit](#h12-concurrent-session-limit)
+        - [H13: Account Lockout Mechanism](#h13-account-lockout-mechanism)
+        - [H14-15: Security Tests](#h14-15-security-tests)
       - [Medium Priority Issue Implementations](#medium-priority-issue-implementations)
+        - [M1: Module-Level Docstrings](#m1-module-level-docstrings)
+        - [M2: Instance Methods with Dependency Injection](#m2-instance-methods-with-dependency-injection)
+        - [M3: Django Password Validators](#m3-django-password-validators)
+        - [M4: Error Messages with Codes](#m4-error-messages-with-codes)
+        - [M5: Email Service Failure Handling](#m5-email-service-failure-handling)
+        - [M6: Timezone Handling](#m6-timezone-handling)
+        - [M7: User Enumeration Prevention](#m7-user-enumeration-prevention)
+        - [M8: Password History](#m8-password-history)
+        - [M9: 2FA Backup Codes](#m9-2fa-backup-codes)
+        - [M10: JWT Token Payload Structure](#m10-jwt-token-payload-structure)
       - [Edge Cases Coverage](#edge-cases-coverage)
   - [Executive Summary](#executive-summary)
   - [Requirements](#requirements)
@@ -531,12 +561,12 @@ print(Fernet.generate_key().decode())
 
 **Key Management Documentation:**
 
-| Key | Purpose | Rotation | Storage |
-|-----|---------|----------|---------|
-| `TOTP_ENCRYPTION_KEY` | Encrypt 2FA secrets | Annually + on compromise | Environment variable |
-| `IP_ENCRYPTION_KEY` | Encrypt IP addresses | Quarterly | Environment variable |
-| `TOKEN_SIGNING_KEY` | HMAC token hashing | Annually + on compromise | Environment variable |
-| `SECRET_KEY` | Django sessions/CSRF | On compromise only | Environment variable |
+| Key                   | Purpose              | Rotation                 | Storage              |
+| --------------------- | -------------------- | ------------------------ | -------------------- |
+| `TOTP_ENCRYPTION_KEY` | Encrypt 2FA secrets  | Annually + on compromise | Environment variable |
+| `IP_ENCRYPTION_KEY`   | Encrypt IP addresses | Quarterly                | Environment variable |
+| `TOKEN_SIGNING_KEY`   | HMAC token hashing   | Annually + on compromise | Environment variable |
+| `SECRET_KEY`          | Django sessions/CSRF | On compromise only       | Environment variable |
 
 **Updated TOTPDevice Model:**
 
@@ -853,18 +883,18 @@ MIDDLEWARE = [
 
 ```javascript
 // Frontend must include CSRF token in mutation requests
-const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value
-  || getCookie('csrftoken');
+const csrfToken =
+  document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken')
 
 fetch('/graphql', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'X-CSRFToken': csrfToken,  // Required for mutations
+    'X-CSRFToken': csrfToken, // Required for mutations
   },
-  credentials: 'include',  // Include cookies
+  credentials: 'include', // Include cookies
   body: JSON.stringify({ query: 'mutation { ... }' }),
-});
+})
 ```
 
 ---
@@ -1143,10 +1173,10 @@ class Command(BaseCommand):
 
 **Rotation Schedule:**
 
-| Trigger | Action |
-|---------|--------|
-| Quarterly | Scheduled key rotation |
-| Key compromise | Immediate emergency rotation |
+| Trigger            | Action                                      |
+| ------------------ | ------------------------------------------- |
+| Quarterly          | Scheduled key rotation                      |
+| Key compromise     | Immediate emergency rotation                |
 | Employee departure | Rotation within 24 hours if they had access |
 
 ---
@@ -1615,7 +1645,7 @@ class PasswordBreachChecker:
             return False, 0
 
 
-# apps/core/validators.py
+# config/validators/password.py
 
 from django.core.exceptions import ValidationError
 
@@ -2001,7 +2031,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# apps/core/validators.py
+# config/validators/password.py
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
@@ -2329,7 +2359,7 @@ class PasswordHistory(models.Model):
         ordering = ['-created_at']
 
 
-# apps/core/validators.py
+# config/validators/password.py
 
 class PasswordHistoryValidator:
     """Validate password hasn't been used recently."""
@@ -2494,35 +2524,35 @@ JWT Refresh Token Payload:
 
 The following 27 edge cases from QA review are now addressed:
 
-| # | Edge Case | Resolution |
-|---|-----------|------------|
-| 1 | Empty email/password | Input validation in GraphQL schema |
-| 2 | Email with leading/trailing spaces | `.strip().lower()` normalisation |
-| 3 | Unicode in names | Django CharField handles UTF-8 |
-| 4 | Very long passwords (>128 chars) | MaxLengthValidator(128) |
-| 5 | SQL injection in email | Parameterised queries via ORM |
-| 6 | XSS in user fields | Output escaping in GraphQL |
-| 7 | CSRF on mutations | GraphQLCSRFMiddleware |
-| 8 | Concurrent session creation | SELECT FOR UPDATE locking |
-| 9 | Token collision | Retry with unique check |
-| 10 | Expired token usage | expires_at check in validation |
-| 11 | Revoked token replay | Redis blacklist check |
-| 12 | Password reset token reuse | `used` flag on token model |
-| 13 | 2FA code timing attack | Constant-time TOTP comparison |
-| 14 | Backup code enumeration | Same response for valid/invalid |
-| 15 | Rate limit bypass (IP spoofing) | X-Forwarded-For validation |
-| 16 | Organisation boundary bypass | RLS + resolver checks |
-| 17 | Superuser org access | RLS bypass flag |
-| 18 | Deleted user token usage | is_active check on validation |
-| 19 | Email change invalidation | Require re-verification |
-| 20 | Password change session handling | Revoke all tokens on change |
-| 21 | Timezone DST edge cases | pytz DST handling utilities |
-| 22 | Leap second handling | Django timezone.now() handles |
-| 23 | Redis unavailability | Graceful degradation to DB |
-| 24 | Database connection pool exhaustion | PgBouncer connection pooling |
-| 25 | Very long user agent strings | TextField with max_length check |
-| 26 | Malformed JWT | Exception handling in decode |
-| 27 | Key rotation during active sessions | Previous key acceptance period |
+| #   | Edge Case                           | Resolution                         |
+| --- | ----------------------------------- | ---------------------------------- |
+| 1   | Empty email/password                | Input validation in GraphQL schema |
+| 2   | Email with leading/trailing spaces  | `.strip().lower()` normalisation   |
+| 3   | Unicode in names                    | Django CharField handles UTF-8     |
+| 4   | Very long passwords (>128 chars)    | MaxLengthValidator(128)            |
+| 5   | SQL injection in email              | Parameterised queries via ORM      |
+| 6   | XSS in user fields                  | Output escaping in GraphQL         |
+| 7   | CSRF on mutations                   | GraphQLCSRFMiddleware              |
+| 8   | Concurrent session creation         | SELECT FOR UPDATE locking          |
+| 9   | Token collision                     | Retry with unique check            |
+| 10  | Expired token usage                 | expires_at check in validation     |
+| 11  | Revoked token replay                | Redis blacklist check              |
+| 12  | Password reset token reuse          | `used` flag on token model         |
+| 13  | 2FA code timing attack              | Constant-time TOTP comparison      |
+| 14  | Backup code enumeration             | Same response for valid/invalid    |
+| 15  | Rate limit bypass (IP spoofing)     | X-Forwarded-For validation         |
+| 16  | Organisation boundary bypass        | RLS + resolver checks              |
+| 17  | Superuser org access                | RLS bypass flag                    |
+| 18  | Deleted user token usage            | is_active check on validation      |
+| 19  | Email change invalidation           | Require re-verification            |
+| 20  | Password change session handling    | Revoke all tokens on change        |
+| 21  | Timezone DST edge cases             | pytz DST handling utilities        |
+| 22  | Leap second handling                | Django timezone.now() handles      |
+| 23  | Redis unavailability                | Graceful degradation to DB         |
+| 24  | Database connection pool exhaustion | PgBouncer connection pooling       |
+| 25  | Very long user agent strings        | TextField with max_length check    |
+| 26  | Malformed JWT                       | Exception handling in decode       |
+| 27  | Key rotation during active sessions | Previous key acceptance period     |
 
 ---
 
@@ -3042,6 +3072,7 @@ create an abstract base class:
 >
 > ALL tokens in this system use **HMAC-SHA256** via the `TokenHasher` utility (see [C1](#c1-session-token-storage---hmac-sha256-implementation)).
 > This applies to:
+>
 > - Session tokens (access and refresh)
 > - Password reset tokens
 > - Email verification tokens
@@ -3896,7 +3927,7 @@ class Query:
 - At least one number (0-9)
 - At least one special character (!@#$%^&\*()\_+-=[]{}|;:,.<>?)
 
-Validation implemented in `apps/core/validators.py`:
+Validation implemented in `config/validators/password.py`:
 
 ```python
 def validate_password_strength(password: str) -> None:
@@ -5278,7 +5309,7 @@ class AuditService:
   - [ ] Add `device_name` field for multiple devices (H13)
 - [ ] Create `PasswordHistory` model in `apps/core/models/password_history.py` (H11)
 - [ ] Create custom `UserManager` in `apps/core/managers.py`
-- [ ] Create password validators in `apps/core/validators.py`:
+- [ ] Create password validators in `config/validators/passwords.py`:
   - [ ] `MinimumLengthValidator` (12-character minimum)
   - [ ] `BreachedPasswordValidator` with HaveIBeenPwned integration (H5)
 - [ ] Create default Groups (Organisation Owner, Admin, Member, Viewer)

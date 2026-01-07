@@ -132,7 +132,7 @@ The authentication plan is fundamentally sound and demonstrates mature security 
   - At least one number (0-9)
   - At least one special character
 - **Hashing Algorithm**: Argon2id with PBKDF2 fallback
-- **Validation**: Custom validator in `apps/core/validators.py`
+- **Validation**: Custom validator in `config/validators/password.py`
 
 #### Strengths
 
@@ -681,7 +681,7 @@ def calculate_2fa_delay(failed_attempts: int) -> int:
 
 ### Password Validation
 
-**Implementation**: Custom validator in `apps/core/validators.py`
+**Implementation**: Custom validator in `config/validators/password.py`
 
 **Risk Rating**: 🟢 Low
 
