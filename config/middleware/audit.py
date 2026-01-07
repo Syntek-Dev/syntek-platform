@@ -214,13 +214,15 @@ def log_user_login(sender, request: HttpRequest, user, **kwargs) -> None:
         user: The user who logged in.
         **kwargs: Additional keyword arguments from the signal.
     """
+    # Use email as identifier for custom User model (no username field)
+    user_identifier = getattr(user, "email", str(user))
     security_logger.info(
-        f"User login successful: {user.username}",
+        f"User login successful: {user_identifier}",
         extra={
             "event_type": "login_success",
             "user": str(user),
             "user_id": user.id,
-            "username": user.username,
+            "email": user_identifier,
             "client_ip": get_client_ip(request),  # Full IP for security
             "user_agent": request.META.get("HTTP_USER_AGENT", ""),
         },
@@ -242,13 +244,15 @@ def log_user_logout(sender, request: HttpRequest, user, **kwargs) -> None:
     if user is None:
         return
 
+    # Use email as identifier for custom User model (no username field)
+    user_identifier = getattr(user, "email", str(user))
     security_logger.info(
-        f"User logout: {user.username}",
+        f"User logout: {user_identifier}",
         extra={
             "event_type": "logout",
             "user": str(user),
             "user_id": user.id,
-            "username": user.username,
+            "email": user_identifier,
             "client_ip": get_client_ip(request),  # Full IP for security
         },
     )
@@ -273,13 +277,14 @@ def log_user_login_failed(
 
     client_ip = get_client_ip(request)  # Full IP for security
 
-    username = credentials.get("username", "unknown")
+    # Support both username and email fields for custom User model
+    user_identifier = credentials.get("email") or credentials.get("username", "unknown")
 
     security_logger.warning(
-        f"Failed login attempt for username: {username}",
+        f"Failed login attempt for: {user_identifier}",
         extra={
             "event_type": "login_failure",
-            "username": username,
+            "email": user_identifier,
             "client_ip": client_ip,
             "user_agent": request.META.get("HTTP_USER_AGENT", ""),
         },

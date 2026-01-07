@@ -68,26 +68,35 @@ class PasswordComplexityValidator:
         # Check for uppercase letters
         if len(re.findall(r"[A-Z]", password)) < self.min_uppercase:
             errors.append(
-                _(f"Password must contain at least {self.min_uppercase} uppercase letter(s).")
+                _(
+                    f"Password must contain at least {self.min_uppercase} "
+                    "uppercase letter(s)."
+                )
             )
 
         # Check for lowercase letters
         if len(re.findall(r"[a-z]", password)) < self.min_lowercase:
             errors.append(
-                _(f"Password must contain at least {self.min_lowercase} lowercase letter(s).")
+                _(
+                    f"Password must contain at least {self.min_lowercase} "
+                    "lowercase letter(s)."
+                )
             )
 
         # Check for digits
         if len(re.findall(r"\d", password)) < self.min_digits:
-            errors.append(_(f"Password must contain at least {self.min_digits} digit(s)."))
+            errors.append(
+                _(f"Password must contain at least {self.min_digits} digit(s).")
+            )
 
         # Check for special characters
         special_chars = r"[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]"
         if len(re.findall(special_chars, password)) < self.min_special:
             errors.append(
                 _(
-                    f"Password must contain at least {self.min_special} special character(s) "
-                    "from: !@#$%^&*()_+-=[]{}|;:,.<>?"
+                    f"Password must contain at least {self.min_special} "
+                    "special character(s) from: "
+                    "!@#$%^&*()_+-=[]{}|;:,.<>?"
                 )
             )
 
@@ -101,36 +110,40 @@ class PasswordComplexityValidator:
             A description of the password complexity requirements.
         """
         return _(
-            f"Password must contain at least {self.min_uppercase} uppercase letter(s), "
-            f"{self.min_lowercase} lowercase letter(s), {self.min_digits} digit(s), "
-            f"and {self.min_special} special character(s)."
+            f"Password must contain at least {self.min_uppercase} "
+            f"uppercase letter(s), {self.min_lowercase} lowercase letter(s), "
+            f"{self.min_digits} digit(s), and {self.min_special} special "
+            f"character(s)."
         )
 
 
 class MinimumLengthValidator:
-    """Validate minimum password length with a higher default than Django's.
+    """Validate minimum and maximum password length.
 
     Django's default minimum length is 8 characters. This validator enforces
-    a minimum of 12 characters for better security.
+    a minimum of 12 characters for better security. It also enforces a maximum
+    length to prevent DoS attacks from very long passwords.
     """
 
-    def __init__(self, min_length: int = 12) -> None:
-        """Initialize the validator with minimum length requirement.
+    def __init__(self, min_length: int = 12, max_length: int = 128) -> None:
+        """Initialize the validator with length requirements.
 
         Args:
-            min_length: Minimum number of characters required.
+            min_length: Minimum number of characters required (default: 12).
+            max_length: Maximum number of characters allowed (default: 128).
         """
         self.min_length = min_length
+        self.max_length = max_length
 
     def validate(self, password: str, user=None) -> None:
-        """Validate the password meets minimum length requirement.
+        """Validate the password meets length requirements.
 
         Args:
             password: The password to validate.
             user: The user instance (optional, for context-aware validation).
 
         Raises:
-            ValidationError: If the password is too short.
+            ValidationError: If the password is too short or too long.
         """
         if len(password) < self.min_length:
             raise ValidationError(
@@ -139,13 +152,23 @@ class MinimumLengthValidator:
                 params={"min_length": self.min_length},
             )
 
+        if len(password) > self.max_length:
+            raise ValidationError(
+                _(f"Password must not exceed {self.max_length} characters (maximum length)."),
+                code="password_too_long",
+                params={"max_length": self.max_length},
+            )
+
     def get_help_text(self) -> str:
-        """Return help text for minimum length requirement.
+        """Return help text for length requirements.
 
         Returns:
-            A description of the minimum length requirement.
+            A description of the length requirements.
         """
-        return _(f"Password must be at least {self.min_length} characters long.")
+        return _(
+            f"Password must be at least {self.min_length} characters long "
+            f"and no more than {self.max_length} characters."
+        )
 
 
 class MaximumLengthValidator:
@@ -218,14 +241,21 @@ class NoSequentialCharactersValidator:
         for i in range(len(password) - self.max_sequence_length + 1):
             if password[i : i + self.max_sequence_length].isdigit():
                 # Check if digits are sequential
-                digits = [int(d) for d in password[i : i + self.max_sequence_length]]
-                if all(digits[j] + 1 == digits[j + 1] for j in range(len(digits) - 1)) or all(
-                    digits[j] - 1 == digits[j + 1] for j in range(len(digits) - 1)
-                ):
+                seq = password[i : i + self.max_sequence_length]
+                digits = [int(d) for d in seq]
+                is_ascending = all(
+                    digits[j] + 1 == digits[j + 1]
+                    for j in range(len(digits) - 1)
+                )
+                is_descending = all(
+                    digits[j] - 1 == digits[j + 1]
+                    for j in range(len(digits) - 1)
+                )
+                if is_ascending or is_descending:
                     raise ValidationError(
                         _(
                             f"Password must not contain sequential numbers "
-                            f"( {password[i:i + self.max_sequence_length]} )."
+                            f"( {seq} )."
                         ),
                         code="sequential_numbers",
                     )
@@ -233,15 +263,22 @@ class NoSequentialCharactersValidator:
         # Check for sequential letters
         for i in range(len(password) - self.max_sequence_length + 1):
             if password[i : i + self.max_sequence_length].isalpha():
-                chars = password[i : i + self.max_sequence_length].lower()
+                seq = password[i : i + self.max_sequence_length]
+                chars = seq.lower()
                 # Check if letters are sequential
-                if all(
-                    ord(chars[j]) + 1 == ord(chars[j + 1]) for j in range(len(chars) - 1)
-                ) or all(ord(chars[j]) - 1 == ord(chars[j + 1]) for j in range(len(chars) - 1)):
+                is_ascending = all(
+                    ord(chars[j]) + 1 == ord(chars[j + 1])
+                    for j in range(len(chars) - 1)
+                )
+                is_descending = all(
+                    ord(chars[j]) - 1 == ord(chars[j + 1])
+                    for j in range(len(chars) - 1)
+                )
+                if is_ascending or is_descending:
                     raise ValidationError(
                         _(
                             f"Password must not contain sequential letters "
-                            f"({password[i:i + self.max_sequence_length]})."
+                            f"({seq})."
                         ),
                         code="sequential_letters",
                     )
@@ -286,10 +323,11 @@ class NoRepeatedCharactersValidator:
         # Check for repeated characters
         for i in range(len(password) - self.max_repeated + 1):
             if len(set(password[i : i + self.max_repeated])) == 1:
+                seq = password[i : i + self.max_repeated]
                 raise ValidationError(
                     _(
                         f"Password must not contain {self.max_repeated} or more "
-                        f"repeated characters ({password[i:i + self.max_repeated]})."
+                        f"repeated characters ({seq})."
                     ),
                     code="repeated_characters",
                 )
@@ -303,4 +341,148 @@ class NoRepeatedCharactersValidator:
         return _(
             f"Password must not contain {self.max_repeated} or more "
             "consecutive repeated characters (e.g., aaa, 111)."
+        )
+
+
+class HIBPPasswordValidator:
+    """Validate password against Have I Been Pwned database (H5).
+
+    This validator checks if the password has appeared in known data breaches
+    using the HIBP k-anonymity API. Only the first 5 characters of the
+    SHA-1 hash are sent to preserve privacy (k-anonymity model).
+
+    Security Review Recommendation H5:
+    "Implement breach checking during registration and password change operations."
+    """
+
+    def __init__(self, threshold: int = 1, timeout: int = 2) -> None:
+        """Initialise HIBP validator.
+
+        Args:
+            threshold: Minimum breach count to reject password (default: 1).
+            timeout: HTTP request timeout in seconds (default: 2).
+        """
+        self.threshold = threshold
+        self.timeout = timeout
+
+    def validate(self, password: str, user=None) -> None:
+        """Validate password against HIBP database.
+
+        Uses k-anonymity model: only first 5 chars of SHA-1 hash are sent
+        to the HIBP API. Full hash comparison happens locally.
+
+        Args:
+            password: The password to validate.
+            user: Optional user instance for context.
+
+        Raises:
+            ValidationError: If password found in breach database above threshold.
+        """
+        import hashlib
+
+        import requests
+
+        # Calculate SHA-1 hash of password
+        sha1_hash = hashlib.sha1(password.encode()).hexdigest().upper()
+        prefix = sha1_hash[:5]
+        suffix = sha1_hash[5:]
+
+        try:
+            # Query HIBP API with only first 5 chars (k-anonymity)
+            response = requests.get(
+                f"https://api.pwnedpasswords.com/range/{prefix}",
+                timeout=self.timeout,
+            )
+
+            if response.status_code == 200:
+                # Parse response for matching hashes
+                hashes = response.text.split("\r\n")
+                for hash_count in hashes:
+                    if ":" not in hash_count:
+                        continue
+                    hash_part, count_str = hash_count.split(":")
+                    if hash_part == suffix:
+                        breach_count = int(count_str)
+                        if breach_count >= self.threshold:
+                            raise ValidationError(
+                                _(
+                                    "This password has been exposed in data "
+                                    f"breaches {breach_count:,} times. Please "
+                                    "choose a different password."
+                                ),
+                                code="password_breached",
+                            )
+
+        except requests.RequestException:
+            # If API is unavailable, allow password change
+            # (fail open to prevent blocking legitimate users)
+            pass
+
+    def get_help_text(self) -> str:
+        """Return help text describing HIBP validation.
+
+        Returns:
+            Help text string.
+        """
+        return _(
+            "Your password cannot be one that has been exposed in "
+            "data breaches."
+        )
+
+
+class PasswordHistoryValidator:
+    """Validate password against user's password history (H11).
+
+    This validator prevents users from reusing their recent passwords.
+    By default, it checks the last 5 passwords.
+
+    Security Review Recommendation H11:
+    "Prevent password reuse by checking against the last N passwords."
+    """
+
+    def __init__(self, history_count: int = 5) -> None:
+        """Initialise password history validator.
+
+        Args:
+            history_count: Number of previous passwords to check (default: 5).
+        """
+        self.history_count = history_count
+
+    def validate(self, password: str, user=None) -> None:
+        """Validate password against user's password history.
+
+        Args:
+            password: The password to validate.
+            user: Optional user instance for context.
+
+        Raises:
+            ValidationError: If password matches a recent password in history.
+        """
+        if user is None:
+            return
+
+        # Import here to avoid circular imports
+        from apps.core.models import PasswordHistory
+
+        if PasswordHistory.check_password_reuse(
+            user, password, self.history_count
+        ):
+            raise ValidationError(
+                _(
+                    f"This password has been recently used. "
+                    f"Please choose a password you haven't used in your "
+                    f"last {self.history_count} passwords."
+                ),
+                code="password_recently_used",
+            )
+
+    def get_help_text(self) -> str:
+        """Return help text describing password history validation.
+
+        Returns:
+            Help text string.
+        """
+        return _(
+            f"Your password cannot be one of your previous "
+            f"{self.history_count} passwords."
         )
