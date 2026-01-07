@@ -48,6 +48,11 @@ dependencies = [
 
     # Static files (needed in base for dev too)
     "whitenoise>=6.8.2",
+
+    # Security & Cryptography
+    "argon2-cffi>=23.1.0",  # Password hashing (Argon2)
+    "cryptography>=42.0.0",  # Fernet encryption for TOTP secrets (C2)
+    "pyotp>=2.9.0",  # TOTP/HOTP for 2FA
 ]
 
 classifiers = [
@@ -72,6 +77,9 @@ dev = [
     "pytest-django>=4.9.0",
     "pytest-cov>=6.0.0",
     "pytest-xdist>=3.6.1",
+    "pytest-bdd>=7.3.0",  # BDD testing with Gherkin syntax
+    "pytest-json-report>=1.5.0",  # JSON test reports
+    "pytest-md-report>=0.6.0",  # Markdown test reports
     "factory-boy>=3.3.1",
     "faker>=33.1.0",
     "coverage[toml]>=7.6.10",
@@ -97,6 +105,8 @@ production = [
     "django-redis>=5.4.0",
     # Security
     "django-csp>=3.8",
+    # Logging
+    "python-json-logger>=3.0.0",
 ]
 
 [project.urls]
@@ -178,7 +188,14 @@ DJANGO_SETTINGS_MODULE = "config.settings.test"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-testpaths = ["tests"]
+testpaths = [
+    "tests",
+    "tests/unit",
+    "tests/bdd",
+    "tests/integration",
+    "tests/e2e",
+    "tests/graphql",
+]
 addopts = [
     "--verbose",
     "--strict-markers",
@@ -195,12 +212,16 @@ markers = [
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",
     "graphql: marks tests for GraphQL API",
+    "bdd: marks tests as BDD behaviour tests",
+    "e2e: marks tests as end-to-end tests",
 ]
 filterwarnings = [
     "error",
     "ignore::UserWarning",
     "ignore::DeprecationWarning",
 ]
+# pytest-bdd configuration
+bdd_features_base_dir = "tests/bdd/features"
 
 # coverage configuration
 [tool.coverage.run]

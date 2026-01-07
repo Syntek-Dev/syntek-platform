@@ -41,8 +41,11 @@ INSTALLED_APPS = [
     "corsheaders",
     "strawberry.django",
     # Project apps (add your apps here)
-    # "apps.core",
+    "apps.core",
 ]
+
+# Custom user model
+AUTH_USER_MODEL = "core.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -55,6 +58,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Custom security middleware
+    "config.middleware.ip_allowlist.IPAllowlistMiddleware",
     "config.middleware.security.SecurityHeadersMiddleware",
     "config.middleware.ratelimit.RateLimitMiddleware",
     "config.middleware.audit.SecurityAuditMiddleware",
@@ -135,7 +139,35 @@ AUTH_PASSWORD_VALIDATORS = [
             "max_repeated": 3,
         },
     },
+    {
+        "NAME": "config.validators.password.HIBPPasswordValidator",
+        "OPTIONS": {
+            "threshold": 1,
+            "timeout": 2,
+        },
+    },
 ]
+
+# Password hashing configuration
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+]
+
+# TOTP encryption key (Fernet) - C2 security requirement
+# Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+TOTP_ENCRYPTION_KEY = env(
+    "TOTP_ENCRYPTION_KEY",
+    default="",  # Must be set in production
+)
+
+# IP address encryption key (Fernet) - for audit logs and session tracking
+# Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+IP_ENCRYPTION_KEY = env(
+    "IP_ENCRYPTION_KEY",
+    default="",  # Must be set in production
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

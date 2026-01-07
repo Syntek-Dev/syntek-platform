@@ -14,6 +14,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # GraphQL API
     path("graphql/", include("api.urls")),
+    # Core utilities (health check, etc.)
+    path("", include("apps.core.urls")),
 ]
 
 # Serve media files in development

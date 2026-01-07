@@ -28,6 +28,12 @@ INTERNAL_IPS = [
     "localhost",
 ]
 
+# Docker support: add container gateway IP for debug toolbar
+import socket
+
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+INTERNAL_IPS += [ip[: ip.rfind(".")] + ".1" for ip in ips]
+
 # Email backend for development (Mailpit)
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env("EMAIL_HOST", default="mailpit")  # noqa: F405

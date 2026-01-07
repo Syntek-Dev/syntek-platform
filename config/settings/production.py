@@ -97,13 +97,16 @@ LOGGING = {
     },
 }
 
-sentry_sdk.init(
-    dsn=env("SENTRY_DSN"),  # noqa: F405
-    integrations=[DjangoIntegration()],
-    environment="production",
-    traces_sample_rate=0.1,
-    send_default_pii=False,
-)
+# Sentry error tracking (optional - only initialise if DSN is provided)
+SENTRY_DSN = env("SENTRY_DSN", default="")  # noqa: F405
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        environment="production",
+        traces_sample_rate=0.1,
+        send_default_pii=False,
+    )
 
 # CSP (Content Security Policy) headers
 CSP_DEFAULT_SRC = ("'self'",)
