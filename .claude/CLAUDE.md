@@ -1,7 +1,7 @@
 # Backend Template - Django Project
 
-**Last Updated**: 06/01/2026
-**Version**: 0.3.2
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London

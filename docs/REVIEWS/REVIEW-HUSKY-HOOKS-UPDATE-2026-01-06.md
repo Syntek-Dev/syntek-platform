@@ -301,6 +301,7 @@ ignore = [
 
 **Lines 1-55:**
 
+<!-- prettier-ignore -->
 ```json
 {
   "semi": false,
@@ -314,7 +315,7 @@ ignore = [
   "printWidth": 100,
   "endOfLine": "lf",
   "plugins": ["prettier-plugin-jinja-template"],
-  "overrides": [...]
+  "overrides": []
 }
 ```
 
@@ -346,16 +347,19 @@ ignore = [
 
 **Lines 6-14 - NPM Scripts:**
 
+<!-- prettier-ignore -->
 ```json
-"scripts": {
-  "format": "prettier --write .",
-  "format:check": "prettier --check . && markdownlint-cli2 '**/*.md' '#node_modules'",
-  "format:staged": "prettier --write $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\\.(json|yaml|yml|md|html|css|js|graphql)$' | xargs)",
-  "lint": "npm run lint:prettier && npm run lint:markdown",
-  "lint:prettier": "prettier --check .",
-  "lint:markdown": "markdownlint-cli2 '**/*.md' '#node_modules'",
-  "lint:markdown:fix": "markdownlint-cli2 --fix '**/*.md' '#node_modules'",
-  "precommit": "npm run format:staged"
+{
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check . && markdownlint-cli2 '**/*.md' '#node_modules'",
+    "format:staged": "prettier --write $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\\.(json|yaml|yml|md|html|css|js|graphql)$' | xargs)",
+    "lint": "npm run lint:prettier && npm run lint:markdown",
+    "lint:prettier": "prettier --check .",
+    "lint:markdown": "markdownlint-cli2 '**/*.md' '#node_modules'",
+    "lint:markdown:fix": "markdownlint-cli2 --fix '**/*.md' '#node_modules'",
+    "precommit": "npm run format:staged"
+  }
 }
 ```
 
@@ -621,12 +625,10 @@ this optimisation is worth it.
 ### Immediate Actions (Critical)
 
 1. **Update `.husky/pre-commit` to use ruff instead of flake8**
-
    - Replace flake8 command with `ruff check .`
    - Update error message to suggest `ruff check . --fix`
 
 2. **Update `.husky/post-merge` to track uv.lock**
-
    - Add `uv.lock` to the Python dependency change detection
    - Add suggestion to run `uv sync` as an alternative to rebuilding containers
 
@@ -638,13 +640,11 @@ this optimisation is worth it.
 ### Short-term Improvements
 
 4. **Add Prettier and markdownlint to CI workflow**
-
    - Add a new job to `.github/workflows/ci.yml` for formatting checks
    - Run `npm run lint:prettier` and `npm run lint:markdown`
    - This enforces documentation standards from CLAUDE.md
 
 5. **Add mypy to pre-commit hook (optional warning)**
-
    - Run mypy in pre-commit but don't block commits
    - Provide helpful warning and fix instructions
    - Consider moving to pre-push for performance
@@ -657,13 +657,11 @@ this optimisation is worth it.
 ### Long-term Optimisations
 
 7. **Consider using pre-commit framework exclusively**
-
    - The project has a comprehensive `.pre-commit-config.yaml`
    - Husky hooks could simply call `pre-commit run --hook-stage=commit`
    - This centralises tool configuration and reduces duplication
 
 8. **Add cache invalidation hints to post-merge hook**
-
    - Detect changes to Docker Compose files
    - Suggest clearing Docker build cache if performance degrades
    - Detect changes to static files and suggest collectstatic
@@ -957,15 +955,18 @@ No changes needed to `package.json` - the scripts are already correct and compre
 
 **Confirmed Scripts:**
 
+<!-- prettier-ignore -->
 ```json
-"format": "prettier --write .",
-"format:check": "prettier --check . && markdownlint-cli2 '**/*.md' '#node_modules'",
-"format:staged": "prettier --write $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\\.(json|yaml|yml|md|html|css|js|graphql)$' | xargs)",
-"lint": "npm run lint:prettier && npm run lint:markdown",
-"lint:prettier": "prettier --check .",
-"lint:markdown": "markdownlint-cli2 '**/*.md' '#node_modules'",
-"lint:markdown:fix": "markdownlint-cli2 --fix '**/*.md' '#node_modules'",
-"precommit": "npm run format:staged"
+{
+  "format": "prettier --write .",
+  "format:check": "prettier --check . && markdownlint-cli2 '**/*.md' '#node_modules'",
+  "format:staged": "prettier --write $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\\.(json|yaml|yml|md|html|css|js|graphql)$' | xargs)",
+  "lint": "npm run lint:prettier && npm run lint:markdown",
+  "lint:prettier": "prettier --check .",
+  "lint:markdown": "markdownlint-cli2 '**/*.md' '#node_modules'",
+  "lint:markdown:fix": "markdownlint-cli2 --fix '**/*.md' '#node_modules'",
+  "precommit": "npm run format:staged"
+}
 ```
 
 **Status:** ✅ No action required

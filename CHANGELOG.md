@@ -1,7 +1,7 @@
 # Changelog
 
-**Last Updated**: 06/01/2026
-**Version**: 0.3.2
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -17,12 +17,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Table of Contents
 
-- [Unreleased](#unreleased)
-- [0.3.2 - 06/01/2026](#032---06012026)
-- [0.3.1 - 06/01/2026](#031---06012026)
-- [0.3.0 - 06/01/2026](#030---06012026)
-- [0.2.0 - 03/01/2026](#020---03012026)
-- [0.1.0 - 03/01/2026](#010---03012026)
+- [Changelog](#changelog)
+  - [Table of Contents](#table-of-contents)
+  - [\[Unreleased\]](#unreleased)
+    - [Added](#added)
+  - [\[0.3.3\] - 07/01/2026](#033---07012026)
+    - [Added](#added-1)
+    - [Changed](#changed)
+    - [Removed](#removed)
+    - [Fixed](#fixed)
+  - [\[0.3.2\] - 06/01/2026](#032---06012026)
+    - [Added](#added-2)
+    - [Fixed](#fixed-1)
+    - [Changed](#changed-1)
+  - [\[0.3.1\] - 06/01/2026](#031---06012026)
+    - [Added](#added-3)
+    - [Fixed](#fixed-2)
+    - [Changed](#changed-2)
+  - [\[0.3.0\] - 06/01/2026](#030---06012026)
+    - [Added](#added-4)
+    - [Changed](#changed-3)
+    - [Deprecated](#deprecated)
+    - [Removed](#removed-1)
+    - [Fixed](#fixed-3)
+    - [Security](#security)
+  - [\[0.2.0\] - 03/01/2026](#020---03012026)
+    - [Added](#added-5)
+    - [Changed](#changed-4)
+    - [Deprecated](#deprecated-1)
+    - [Removed](#removed-2)
+    - [Fixed](#fixed-4)
+    - [Security](#security-1)
+  - [\[0.1.0\] - 03/01/2026](#010---03012026)
+    - [Added](#added-6)
+    - [Changed](#changed-5)
+    - [Deprecated](#deprecated-2)
+    - [Removed](#removed-3)
+    - [Fixed](#fixed-5)
+    - [Security](#security-2)
+
 
 ---
 
@@ -31,6 +64,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Nothing yet
+
+---
+
+## [0.3.3] - 07/01/2026
+
+### Added
+
+- Comprehensive US-001 User Authentication implementation plan (203KB)
+- Architecture review documentation for US-001 (65KB)
+- Security analysis and hardening documentation for US-001 (43KB)
+- New documentation directories: PLANS, ARCHITECTURE/US-001, SECURITY/US-001, CODE-REVIEW, BACKEND, DATABASE, GDPR/US-001, QA, REVIEWS/US-001, TESTS
+- Implementation details for 6 Critical, 15 High, and 12 Medium priority security issues
+- Coverage for all 27 edge cases in authentication workflow
+- Token hashing consistency fixes (HMAC-SHA256)
+- 7 implementation phases with integrated security fixes
+- Comprehensive API specifications for authentication endpoints
+
+### Changed
+
+- Updated markdown linting configuration to exclude `.venv` directory
+- Enhanced markdownlint.json for better documentation validation
+- Updated docs/README.md with new documentation structure references
+- Updated US-004 Organisation Setup story details
+
+### Removed
+
+- Consolidated docs/REVIEWS/CODE-REVIEW-2026-01-03.md into US-001 structure
+- Removed docs/REVIEWS/REVIEW-HUSKY-HOOKS-UPDATE-2026-01-06.MD (reorganised)
+
+### Fixed
+
+- Package.json markdown linting now excludes virtual environment directory
+- Markdownlint configuration updated for new project structure
 
 ---
 

@@ -1,7 +1,7 @@
 # UV Migration Guide
 
-**Last Updated**: 06/01/2026
-**Version**: 0.3.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 
 ---

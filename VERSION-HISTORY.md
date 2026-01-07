@@ -1,7 +1,7 @@
 # Version History
 
-**Last Updated**: 06/01/2026
-**Version**: 0.3.2
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -10,12 +10,116 @@
 
 ## Table of Contents
 
-- [Unreleased](#unreleased)
-- [0.3.2 - 06/01/2026](#032---06012026)
-- [0.3.1 - 06/01/2026](#031---06012026)
-- [0.3.0 - 06/01/2026](#030---06012026)
-- [0.2.0 - 03/01/2026](#020---03012026)
-- [0.1.0 - 03/01/2026](#010---03012026)
+- [Version History](#version-history)
+  - [Table of Contents](#table-of-contents)
+  - [\[Unreleased\]](#unreleased)
+    - [Technical Changes](#technical-changes)
+  - [\[0.3.3\] - 07/01/2026](#033---07012026)
+    - [Summary](#summary)
+    - [Breaking Changes](#breaking-changes)
+    - [Database Migrations](#database-migrations)
+    - [API Changes](#api-changes)
+    - [Files Changed](#files-changed)
+      - [Documentation (New)](#documentation-new)
+      - [Documentation (Updated)](#documentation-updated)
+      - [Documentation (Removed)](#documentation-removed)
+      - [Configuration](#configuration)
+    - [Key Documentation Additions](#key-documentation-additions)
+    - [Technical Details](#technical-details)
+    - [Migration Notes](#migration-notes)
+    - [Testing Notes](#testing-notes)
+    - [Deployment Notes](#deployment-notes)
+  - [\[0.3.2\] - 06/01/2026](#032---06012026)
+    - [Summary](#summary-1)
+    - [Breaking Changes](#breaking-changes-1)
+    - [Database Migrations](#database-migrations-1)
+    - [API Changes](#api-changes-1)
+    - [Files Changed](#files-changed-1)
+      - [Git Hooks (Husky)](#git-hooks-husky)
+      - [Ruff Linting Fixes (Plugin Files)](#ruff-linting-fixes-plugin-files)
+      - [Ruff Linting Fixes (ClickUp Scripts)](#ruff-linting-fixes-clickup-scripts)
+      - [Ruff Linting Fixes (API and Middleware)](#ruff-linting-fixes-api-and-middleware)
+      - [Documentation](#documentation)
+    - [Dependencies](#dependencies)
+    - [Developer Notes](#developer-notes)
+    - [Migration Instructions](#migration-instructions)
+  - [\[0.3.1\] - 06/01/2026](#031---06012026)
+    - [Summary](#summary-2)
+    - [Breaking Changes](#breaking-changes-2)
+    - [Database Migrations](#database-migrations-2)
+    - [API Changes](#api-changes-2)
+    - [Files Changed](#files-changed-2)
+      - [Documentation Formatting (Markdown Lint Fixes)](#documentation-formatting-markdown-lint-fixes)
+      - [Build and Configuration](#build-and-configuration)
+    - [Dependencies](#dependencies-1)
+    - [Developer Notes](#developer-notes-1)
+    - [Migration Instructions](#migration-instructions-1)
+  - [\[0.3.0\] - 06/01/2026](#030---06012026)
+    - [Summary](#summary-3)
+    - [Breaking Changes](#breaking-changes-3)
+    - [Database Migrations](#database-migrations-3)
+    - [API Changes](#api-changes-3)
+    - [Files Changed](#files-changed-3)
+      - [Platform Architecture Documentation](#platform-architecture-documentation)
+      - [Sprint and User Story Management](#sprint-and-user-story-management)
+      - [ClickUp Integration Enhancement](#clickup-integration-enhancement)
+      - [Git Workflow Plugin](#git-workflow-plugin)
+      - [Environment Configuration](#environment-configuration)
+      - [CI/CD and Workflows](#cicd-and-workflows)
+      - [Configuration and Tooling](#configuration-and-tooling)
+      - [Docker Configuration](#docker-configuration)
+      - [Automation Scripts](#automation-scripts)
+      - [Comprehensive Documentation Updates](#comprehensive-documentation-updates)
+      - [Code Refactoring](#code-refactoring)
+    - [Dependencies Updated](#dependencies-updated)
+    - [Configuration Changes](#configuration-changes)
+    - [Performance Notes](#performance-notes)
+    - [Security Notes](#security-notes)
+    - [Documentation Standards](#documentation-standards)
+    - [Platform Architecture](#platform-architecture)
+    - [Git Workflow Plugin Features](#git-workflow-plugin-features)
+    - [ClickUp Integration Enhancements](#clickup-integration-enhancements)
+  - [\[0.2.0\] - 03/01/2026](#020---03012026)
+    - [Summary](#summary-4)
+    - [Breaking Changes](#breaking-changes-4)
+    - [Database Migrations](#database-migrations-4)
+    - [API Changes](#api-changes-4)
+    - [Files Changed](#files-changed-4)
+      - [Version Management](#version-management)
+      - [Markdown Documentation Headers](#markdown-documentation-headers)
+    - [Dependencies Updated](#dependencies-updated-1)
+    - [Configuration Changes](#configuration-changes-1)
+    - [Performance Notes](#performance-notes-1)
+    - [Security Notes](#security-notes-1)
+    - [Documentation Standards](#documentation-standards-1)
+    - [Version Management Workflow](#version-management-workflow)
+  - [\[0.1.0\] - 03/01/2026](#010---03012026)
+    - [Summary](#summary-5)
+    - [Breaking Changes](#breaking-changes-5)
+    - [Database Migrations](#database-migrations-5)
+    - [API Changes](#api-changes-5)
+    - [Files Changed](#files-changed-5)
+      - [Core Django Configuration](#core-django-configuration)
+      - [API and Security](#api-and-security)
+      - [Docker Configuration](#docker-configuration-1)
+      - [CI/CD Pipelines](#cicd-pipelines)
+      - [Pre-commit Hooks](#pre-commit-hooks)
+      - [Environment Configuration](#environment-configuration-1)
+      - [Python Quality Tools](#python-quality-tools)
+      - [JavaScript and Markdown Formatting](#javascript-and-markdown-formatting)
+      - [Shell and Tool Configuration](#shell-and-tool-configuration)
+      - [Git Configuration](#git-configuration)
+      - [Automation Scripts](#automation-scripts-1)
+      - [IDE Configuration](#ide-configuration)
+      - [Documentation](#documentation-1)
+    - [Dependencies Updated](#dependencies-updated-2)
+    - [Configuration Changes](#configuration-changes-2)
+    - [Performance Notes](#performance-notes-2)
+    - [Security Notes](#security-notes-2)
+    - [Infrastructure](#infrastructure)
+    - [Development Workflow](#development-workflow)
+    - [Testing](#testing)
+    - [Documentation](#documentation-2)
 
 ---
 
@@ -24,6 +128,128 @@
 ### Technical Changes
 
 - Nothing yet
+
+---
+
+## [0.3.3] - 07/01/2026
+
+### Summary
+
+Documentation expansion for US-001 User Authentication including comprehensive implementation plan,
+architecture review, security analysis, and supporting documentation across multiple categories.
+This release also includes tooling improvements for markdown linting configuration and cleanup of
+outdated review files.
+
+### Breaking Changes
+
+None - Documentation and configuration updates only.
+
+### Database Migrations
+
+None - No database changes.
+
+### API Changes
+
+None - No API changes.
+
+### Files Changed
+
+#### Documentation (New)
+
+| Directory               | File                           | Purpose                         | Size  |
+| ----------------------- | ------------------------------ | ------------------------------- | ----- |
+| `docs/PLANS/`           | US-001-USER-AUTHENTICATION.md  | Complete authentication plan    | 203KB |
+| `docs/ARCHITECTURE/US-` | ARCHITECTURE-REVIEW.md         | Technical architecture analysis | 65KB  |
+| `docs/SECURITY/US-001/` | US-001-SECURITY.md             | Security review and hardening   | 43KB  |
+| `docs/CODE-REVIEW/`     | Various code review files      | Code quality assessments        | -     |
+| `docs/BACKEND/`         | Backend implementation details | Server-side architecture        | -     |
+| `docs/DATABASE/`        | Database schema documentation  | Data model specifications       | -     |
+| `docs/GDPR/US-001/`     | GDPR compliance documentation  | Data protection requirements    | -     |
+| `docs/QA/`              | Quality assurance tests        | Testing strategies              | -     |
+| `docs/REVIEWS/US-001/`  | US-001 specific reviews        | Detailed review documentation   | -     |
+| `docs/TESTS/`           | Test specifications            | Test plan and coverage          | -     |
+
+#### Documentation (Updated)
+
+| File                                  | Changes                                              |
+| ------------------------------------- | ---------------------------------------------------- |
+| `docs/README.md`                      | Updated documentation index and structure references |
+| `docs/STORIES/US-004-ORGANISATION-SE` | Updated organisation setup story details             |
+
+#### Documentation (Removed)
+
+| File                                            | Reason                       |
+| ----------------------------------------------- | ---------------------------- |
+| `docs/REVIEWS/CODE-REVIEW-2026-01-03.md`        | Consolidated into US-001     |
+| `docs/REVIEWS/REVIEW-HUSKY-HOOKS-UPDATE-2026-0` | Consolidated and reorganised |
+
+#### Configuration
+
+| File                 | Changes                                               |
+| -------------------- | ----------------------------------------------------- |
+| `.markdownlint.json` | Updated configuration for new documentation structure |
+| `package.json`       | Exclude `.venv` from markdown linting, version bump   |
+| `VERSION-HISTORY.md` | Added 0.3.3 release entry                             |
+| `RELEASES.md`        | Updated for 0.3.3 release                             |
+
+### Key Documentation Additions
+
+**US-001 User Authentication Plan (203KB):**
+
+- Complete authentication workflow implementation
+- Security review findings (6 Critical, 15 High, 12 Medium priority issues)
+- Implementation details for all 27 edge cases
+- Token hashing consistency fixes (HMAC-SHA256)
+- 7 implementation phases with security fixes integrated
+- Comprehensive API specifications
+
+**Architecture Review (65KB):**
+
+- Technical architecture analysis
+- Component interaction diagrams
+- Performance considerations
+- Scalability planning
+
+**Security Documentation (43KB):**
+
+- Security hardening checklist
+- Threat model analysis
+- Authentication flow security
+- Token management security
+- Rate limiting and brute force protection
+
+### Technical Details
+
+**Documentation Structure:**
+Created comprehensive documentation hierarchy for US-001 spanning:
+
+- Plans (implementation roadmap)
+- Architecture (technical design)
+- Security (threat analysis and hardening)
+- Code Review (quality assessments)
+- Backend (implementation details)
+- Database (schema specifications)
+- GDPR (data protection compliance)
+- QA (quality assurance)
+- Tests (test specifications)
+
+**Tooling Improvements:**
+
+- Updated markdown linting to exclude `.venv` directory
+- Enhanced markdownlint configuration for better documentation validation
+- Cleaned up outdated review files to reduce repository clutter
+
+### Migration Notes
+
+No migrations required - documentation and configuration only.
+
+### Testing Notes
+
+No new tests required - documentation updates only.
+
+### Deployment Notes
+
+No deployment changes - documentation updates can be merged directly.
 
 ---
 
@@ -51,57 +277,57 @@ None - No API changes.
 
 #### Git Hooks (Husky)
 
-| File                  | Changes                                                                    |
-| --------------------- | -------------------------------------------------------------------------- |
-| `.husky/pre-commit`   | Replaced flake8 with ruff, added Prettier and markdownlint, optimised     |
-| `.husky/post-merge`   | Added uv.lock tracking, dependency checks, migration reminders             |
-| `.husky/pre-push`     | Replaced flake8 with ruff, enhanced validation checks                      |
-| `.pre-commit-config.yaml` | Updated to use ruff-pre-commit instead of flake8                       |
+| File                      | Changes                                                               |
+| ------------------------- | --------------------------------------------------------------------- |
+| `.husky/pre-commit`       | Replaced flake8 with ruff, added Prettier and markdownlint, optimised |
+| `.husky/post-merge`       | Added uv.lock tracking, dependency checks, migration reminders        |
+| `.husky/pre-push`         | Replaced flake8 with ruff, enhanced validation checks                 |
+| `.pre-commit-config.yaml` | Updated to use ruff-pre-commit instead of flake8                      |
 
 #### Ruff Linting Fixes (Plugin Files)
 
-| File                              | Issues Fixed                                        |
-| --------------------------------- | --------------------------------------------------- |
-| `.claude/plugins/ab-test-tool.py` | F841: Removed unused variable `response`            |
-| `.claude/plugins/docker-tool.py`  | F841: Removed unused variable `stdout`              |
-| `.claude/plugins/git-tool.py`     | E741: Renamed ambiguous variable `l` to `line`      |
-| `.claude/plugins/optimiser-tool.py` | F841: Removed unused variables                    |
-| `.claude/plugins/project-tool.py` | B007: Prefixed unused loop variable with underscore |
-| `.claude/plugins/chrome-tool.py`  | F841: Removed unused variable                       |
-| `.claude/plugins/db-tool.py`      | F841: Removed unused variable                       |
-| `.claude/plugins/env-tool.py`     | F841: Removed unused variable                       |
-| `.claude/plugins/feedback-tool.py` | F841: Removed unused variable                      |
-| `.claude/plugins/log-tool.py`     | F841: Removed unused variable                       |
-| `.claude/plugins/metrics-tool.py` | F841: Removed unused variable                       |
-| `.claude/plugins/pm-tool.py`      | F841: Removed unused variable                       |
-| `.claude/plugins/quality-tool.py` | F841: Removed unused variable                       |
+| File                                | Issues Fixed                                        |
+| ----------------------------------- | --------------------------------------------------- |
+| `.claude/plugins/ab-test-tool.py`   | F841: Removed unused variable `response`            |
+| `.claude/plugins/docker-tool.py`    | F841: Removed unused variable `stdout`              |
+| `.claude/plugins/git-tool.py`       | E741: Renamed ambiguous variable `l` to `line`      |
+| `.claude/plugins/optimiser-tool.py` | F841: Removed unused variables                      |
+| `.claude/plugins/project-tool.py`   | B007: Prefixed unused loop variable with underscore |
+| `.claude/plugins/chrome-tool.py`    | F841: Removed unused variable                       |
+| `.claude/plugins/db-tool.py`        | F841: Removed unused variable                       |
+| `.claude/plugins/env-tool.py`       | F841: Removed unused variable                       |
+| `.claude/plugins/feedback-tool.py`  | F841: Removed unused variable                       |
+| `.claude/plugins/log-tool.py`       | F841: Removed unused variable                       |
+| `.claude/plugins/metrics-tool.py`   | F841: Removed unused variable                       |
+| `.claude/plugins/pm-tool.py`        | F841: Removed unused variable                       |
+| `.claude/plugins/quality-tool.py`   | F841: Removed unused variable                       |
 
 #### Ruff Linting Fixes (ClickUp Scripts)
 
-| File                                      | Issues Fixed                          |
-| ----------------------------------------- | ------------------------------------- |
-| `scripts/clickup/clickup_client.py`       | F841: Removed unused variables        |
-| `scripts/clickup/pull_tasks.py`           | F841: Removed unused variable         |
-| `scripts/clickup/sync_sprint_stories.py`  | F841: Removed unused variable         |
-| `scripts/clickup/sync_sprints.py`         | F841: Removed unused variable         |
-| `scripts/clickup/sync_stories.py`         | F841: Removed unused variable         |
-| `scripts/clickup/sync_stories_enhanced.py` | F841: Removed unused variable        |
+| File                                       | Issues Fixed                   |
+| ------------------------------------------ | ------------------------------ |
+| `scripts/clickup/clickup_client.py`        | F841: Removed unused variables |
+| `scripts/clickup/pull_tasks.py`            | F841: Removed unused variable  |
+| `scripts/clickup/sync_sprint_stories.py`   | F841: Removed unused variable  |
+| `scripts/clickup/sync_sprints.py`          | F841: Removed unused variable  |
+| `scripts/clickup/sync_stories.py`          | F841: Removed unused variable  |
+| `scripts/clickup/sync_stories_enhanced.py` | F841: Removed unused variable  |
 
 #### Ruff Linting Fixes (API and Middleware)
 
-| File                             | Issues Fixed                   |
-| -------------------------------- | ------------------------------ |
-| `api/security.py`                | F841: Removed unused variable  |
-| `config/middleware/audit.py`     | F841: Removed unused variable  |
-| `config/middleware/ratelimit.py` | F841: Removed unused variable  |
-| `config/middleware/security.py`  | F841: Removed unused variable  |
+| File                             | Issues Fixed                  |
+| -------------------------------- | ----------------------------- |
+| `api/security.py`                | F841: Removed unused variable |
+| `config/middleware/audit.py`     | F841: Removed unused variable |
+| `config/middleware/ratelimit.py` | F841: Removed unused variable |
+| `config/middleware/security.py`  | F841: Removed unused variable |
 
 #### Documentation
 
-| File                                                | Changes                                         |
-| --------------------------------------------------- | ----------------------------------------------- |
-| `.claude/CLAUDE.md`                                 | Added `.claude/plugins/` directory to structure |
-| `docs/REVIEWS/REVIEW-HUSKY-HOOKS-UPDATE-2026-01-06.MD` | Comprehensive review of hook changes       |
+| File                                                   | Changes                                         |
+| ------------------------------------------------------ | ----------------------------------------------- |
+| `.claude/CLAUDE.md`                                    | Added `.claude/plugins/` directory to structure |
+| `docs/REVIEWS/REVIEW-HUSKY-HOOKS-UPDATE-2026-01-06.MD` | Comprehensive review of hook changes            |
 
 ### Dependencies
 

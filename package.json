@@ -1,16 +1,16 @@
 {
   "name": "backend-template",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "description": "Django backend with PostgreSQL and GraphQL API",
   "private": true,
   "scripts": {
     "format": "prettier --write .",
-    "format:check": "prettier --check . && markdownlint-cli2 '**/*.md' '#node_modules'",
+    "format:check": "prettier --check . && markdownlint-cli2 '**/*.md' '#node_modules' '#.venv'",
     "format:staged": "prettier --write $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\\.(json|yaml|yml|md|html|css|js|graphql)$' | xargs)",
     "lint": "npm run lint:prettier && npm run lint:markdown",
     "lint:prettier": "prettier --check .",
-    "lint:markdown": "markdownlint-cli2 '**/*.md' '#node_modules'",
-    "lint:markdown:fix": "markdownlint-cli2 --fix '**/*.md' '#node_modules'",
+    "lint:markdown": "markdownlint-cli2 '**/*.md' '#node_modules' '#.venv'",
+    "lint:markdown:fix": "markdownlint-cli2 --fix '**/*.md' '#node_modules' '#.venv'",
     "precommit": "npm run format:staged"
   },
   "devDependencies": {

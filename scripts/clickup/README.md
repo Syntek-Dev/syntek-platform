@@ -1,7 +1,7 @@
 # ClickUp Integration Scripts
 
-**Last Updated**: 06/01/2026
-**Version**: 0.2.1
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 
 ---

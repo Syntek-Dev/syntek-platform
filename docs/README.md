@@ -1,7 +1,7 @@
 # Project Documentation
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -15,6 +15,8 @@
 - [Project Documentation](#project-documentation)
   - [Table of Contents](#table-of-contents)
   - [Documentation Structure](#documentation-structure)
+  - [Testing Documentation](#testing-documentation)
+    - [TESTS/README.md](#testsreadmemd)
   - [Security Documentation](#security-documentation)
     - [SECURITY.md](#securitymd)
     - [SECURITY-QUICK-REFERENCE.md](#security-quick-referencemd)
@@ -40,24 +42,30 @@ docs/
 ├── DEVELOPER-SETUP.md                  # Developer environment setup
 ├── VERSIONS.md                         # Version history and changelog
 │
+├── TESTS/                              # Testing strategy and reviews (NEW)
+│   ├── README.md                       # Testing documentation index
+│   └── REVIEWS/
+│       ├── README.md                   # Testing reviews index
+│       └── US-001-TESTING-REVIEW-CONSOLIDATED.md  # US-001 testing strategy
+│
 ├── SECURITY/                           # Security guidelines and implementation
 │   ├── SECURITY.md                     # Comprehensive security documentation
 │   ├── SECURITY-QUICK-REFERENCE.md     # Quick reference for security tasks
 │   └── SECURITY-IMPLEMENTATION-SUMMARY.md
 │
-├── REVIEWS/                            # Code review reports (NEW)
+├── REVIEWS/                            # Code review reports
 │   ├── README.md                       # Review index and how to use
 │   └── CODE-REVIEW-2026-01-03.md       # Security and code quality review
 │
-├── SYNTAX/                             # Code quality and linting (NEW)
+├── SYNTAX/                             # Code quality and linting
 │   ├── README.md                       # Syntax check overview
 │   └── LINTING-REPORT-2026-01-03.md    # Detailed linting analysis
 │
-├── GDPR/                               # Data protection and compliance (NEW)
+├── GDPR/                               # Data protection and compliance
 │   ├── README.md                       # GDPR overview and status
 │   └── COMPLIANCE-ASSESSMENT-2026-01-03.md
 │
-├── LOGGING/                            # Logging system design (NEW)
+├── LOGGING/                            # Logging system design
 │   ├── README.md                       # Logging architecture overview
 │   └── IMPLEMENTATION-PLAN-2026-01-03.md
 │
@@ -68,6 +76,32 @@ docs/
 ├── PM-INTEGRATION/                     # Project management integration docs
 └── DOTFILES.md                         # Configuration files documentation
 ```
+
+## Testing Documentation
+
+This project uses comprehensive testing standards with TDD, BDD, and E2E approaches:
+
+### [TESTS/README.md](./TESTS/README.md)
+
+**Testing documentation index** containing:
+
+- [TESTS/REVIEWS/US-001-TESTING-REVIEW-CONSOLIDATED.md](./TESTS/REVIEWS/US-001-TESTING-REVIEW-CONSOLIDATED.md)
+  - Executive summary with 8.5/10 assessment score
+  - Detailed test pyramid and framework analysis
+  - TDD, BDD, Integration, E2E, and GraphQL testing strategies
+  - Coverage analysis by component
+  - Critical gaps and missing tests
+  - Recommended additional tests by type
+  - Action items organised by phase
+
+**Use this when:**
+
+- Planning test implementation for a user story
+- Understanding the testing strategy and approach
+- Identifying test coverage gaps
+- Reviewing test quality and recommendations
+
+---
 
 ## Security Documentation
 
@@ -178,6 +212,8 @@ The following comprehensive reports were generated from automated code reviews:
 
 ### For Developers
 
+- **Testing Strategy:** [TESTS/REVIEWS/US-001-TESTING-REVIEW-CONSOLIDATED.md](./TESTS/REVIEWS/US-001-TESTING-REVIEW-CONSOLIDATED.md)
+  - Testing approach and coverage
 - **Code Quality:** [REVIEWS/README.md](./REVIEWS/README.md) - Code review index
 - **Code Issues:** [SYNTAX/README.md](./SYNTAX/README.md) - Linting and syntax
 - **Security Setup:** [SECURITY.md](./SECURITY/SECURITY.md) → Security Checklist
@@ -201,12 +237,12 @@ The following comprehensive reports were generated from automated code reviews:
 ### For Security Auditors
 
 - **Security Overview:** [SECURITY.md](./SECURITY/SECURITY.md)
-- **Code Review Findings:** [REVIEWS/CODE-REVIEW-2026-01-03.md](./REVIEWS/CODE-REVIEW-2026-01-03.md)
+- **Code Review Findings:** [CODE-REVIEWS/CODE-REVIEW-2026-01-03.md](./CODE-REVIEW/CODE-REVIEW-2026-01-03.md)
 - **Compliance Status:** [GDPR/COMPLIANCE-ASSESSMENT-2026-01-03.md](./GDPR/COMPLIANCE-ASSESSMENT-2026-01-03.md)
 - **Implementation Details:** [SECURITY-IMPLEMENTATION-SUMMARY.md](./SECURITY/SECURITY-IMPLEMENTATION-SUMMARY.md)
 
 ---
 
 **Project:** Backend Template
-**Framework:** Django 5.2
-**Last Updated:** 2026-01-03
+**Framework:** Django 6.0
+**Last Updated:** 07/01/2026

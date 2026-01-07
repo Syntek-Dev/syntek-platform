@@ -1,7 +1,7 @@
 # Release Notes
 
-**Last Updated**: 06/01/2026
-**Version**: 0.3.2
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -10,12 +10,144 @@
 
 ## Table of Contents
 
-- [Latest Release](#latest-release)
-- [Previous Releases](#previous-releases)
+- [Release Notes](#release-notes)
+  - [Table of Contents](#table-of-contents)
+  - [Latest Release](#latest-release)
+    - [Version 0.3.3 - 7 January 2026](#version-033---7-january-2026)
+      - [What's New](#whats-new)
+      - [Why This Matters](#why-this-matters)
+      - [Technical Details](#technical-details)
+  - [Previous Releases](#previous-releases)
+    - [Version 0.3.2 - 6 January 2026](#version-032---6-january-2026)
+      - [What's New](#whats-new-1)
+      - [Why This Matters](#why-this-matters-1)
+      - [Technical Details](#technical-details-1)
+  - [Previous Releases](#previous-releases-1)
+    - [Version 0.3.1 - 6 January 2026](#version-031---6-january-2026)
+      - [What's New](#whats-new-2)
+      - [Why This Matters](#why-this-matters-2)
+      - [Technical Details](#technical-details-2)
+    - [Version 0.3.0 - 6 January 2026](#version-030---6-january-2026)
+      - [What's New](#whats-new-3)
+      - [Why This Matters](#why-this-matters-3)
+      - [Technical Improvements](#technical-improvements)
+      - [Coming Soon](#coming-soon)
+  - [Previous Releases (v0.2.x)](#previous-releases-v02x)
+    - [Version 0.2.0 - 3 January 2026](#version-020---3-january-2026)
+      - [What's New](#whats-new-4)
+      - [Why This Matters](#why-this-matters-4)
+      - [Technical Details](#technical-details-3)
+  - [Previous Releases (v0.1.x)](#previous-releases-v01x)
+    - [Version 0.1.0 - 3 January 2026](#version-010---3-january-2026)
+      - [What's New](#whats-new-5)
+      - [Key Features](#key-features)
+      - [Getting Started](#getting-started)
+      - [What This Means for You](#what-this-means-for-you)
+      - [Coming Soon](#coming-soon-1)
+  - [Previous Releases (Pre-v0.1.0)](#previous-releases-pre-v010)
 
 ---
 
 ## Latest Release
+
+### Version 0.3.3 - 7 January 2026
+
+This documentation release adds comprehensive planning, architecture, and security documentation for
+US-001 User Authentication, establishing a solid foundation for the authentication implementation phase.
+
+#### What's New
+
+**Complete Authentication Implementation Plan**
+
+We've created a comprehensive 200+ page implementation plan for user authentication:
+
+- **US-001 User Authentication Plan (203KB)**: Complete workflow covering registration, login, password
+  reset, email verification, 2FA, session management, and account recovery
+- **Security Review Integration**: Implementation details for 6 Critical, 15 High, and 12 Medium priority
+  security issues identified in code reviews
+- **27 Edge Cases Covered**: Comprehensive handling of race conditions, timing attacks, token reuse,
+  concurrent sessions, and more
+- **7 Implementation Phases**: Clear roadmap from Phase 1 (Core Models) through Phase 7 (Monitoring)
+- **API Specifications**: Detailed endpoint definitions with request/response examples
+
+**Architecture and Security Documentation**
+
+Deep technical analysis to guide implementation:
+
+- **Architecture Review (65KB)**: Technical architecture analysis, component interactions, performance
+  considerations, and scalability planning for the authentication system
+- **Security Hardening Documentation (43KB)**: Threat model analysis, authentication flow security,
+  token management best practices, and rate limiting strategies
+- **GDPR Compliance Documentation**: Data protection requirements and compliance checklist
+
+**Documentation Structure**
+
+Created organised documentation hierarchy spanning multiple categories:
+
+- **PLANS**: Implementation roadmaps and technical plans
+- **ARCHITECTURE/US-001**: Technical design and component specifications
+- **SECURITY/US-001**: Security analysis and hardening guides
+- **CODE-REVIEW**: Code quality assessments and review findings
+- **BACKEND**: Server-side implementation details
+- **DATABASE**: Schema specifications and data models
+- **GDPR/US-001**: Data protection compliance documentation
+- **QA**: Quality assurance strategies and test plans
+- **TESTS**: Test specifications and coverage requirements
+
+**Token Security Improvements**
+
+Fixed critical security inconsistency:
+
+- **HMAC-SHA256 Consistency**: All authentication tokens now use HMAC-SHA256 hashing consistently
+  (password reset tokens were previously using plain SHA-256)
+- **Enhanced Token Security**: Unified token generation and validation approach across all token types
+
+#### Why This Matters
+
+**For Developers:**
+
+- **Clear Implementation Path**: 7 phases provide step-by-step implementation guidance
+- **Security Best Practices**: All 33 security issues addressed in the plan with code examples
+- **Edge Case Coverage**: Comprehensive handling of 27 edge cases prevents production bugs
+- **Ready-to-Use Code**: Implementation details include code snippets ready to integrate
+
+**For Security:**
+
+- **Threat Model Documented**: Complete threat analysis identifies and mitigates risks
+- **Consistent Token Security**: HMAC-SHA256 across all tokens prevents timing attacks
+- **Rate Limiting Specified**: Brute force protection with clear thresholds and lockout policies
+- **Audit Trail Requirements**: Comprehensive logging requirements for security monitoring
+
+**For Project Management:**
+
+- **Work Breakdown Available**: 7 phases can be estimated and scheduled
+- **Dependencies Identified**: Clear prerequisites for each implementation phase
+- **Progress Tracking**: Well-defined acceptance criteria for each phase
+- **Risk Assessment**: Security and edge case documentation highlights implementation risks
+
+#### Technical Details
+
+This is a patch release (0.3.2 → 0.3.3) with documentation and configuration improvements only.
+
+**What's Included:**
+
+- US-001 User Authentication implementation plan (203KB)
+- Architecture review documentation (65KB)
+- Security analysis documentation (43KB)
+- New documentation structure (9 new directories)
+- Updated markdown linting configuration
+- Consolidated and reorganised review documentation
+
+**No Breaking Changes:**
+
+- No database migrations required
+- No API changes
+- No code changes (documentation only)
+- Safe to merge without deployment considerations
+
+---
+
+## Previous Releases
 
 ### Version 0.3.2 - 6 January 2026
 
@@ -133,8 +265,6 @@ This is a patch release with no breaking changes, no database migrations, and no
 Simply pull the latest code and continue working.
 
 ---
-
-## Previous Releases
 
 ### Version 0.3.0 - 6 January 2026
 
