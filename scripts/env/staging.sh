@@ -258,6 +258,25 @@ cmd_migrate() {
     success "Migrations completed."
 }
 
+cmd_makemigrations() {
+    local app="${1:-}"
+    header "Creating Database Migrations (Staging)"
+
+    warning "This will create new migrations in the staging environment."
+    read -p "Continue? (y/n): " confirm
+    if [[ "${confirm}" != "y" ]]; then
+        info "Operation cancelled."
+        exit 0
+    fi
+
+    if [[ -n "${app}" ]]; then
+        dc exec ${WEB_SERVICE} python manage.py makemigrations "${app}"
+    else
+        dc exec ${WEB_SERVICE} python manage.py makemigrations
+    fi
+    success "Migrations created."
+}
+
 cmd_backup() {
     header "Creating Staging Database Backup"
 
@@ -411,6 +430,7 @@ cmd_help() {
     echo ""
     echo -e "${YELLOW}Database:${NC}"
     echo "  migrate            Run database migrations"
+    echo "  makemigrations     Create new migrations"
     echo "  backup             Create database backup"
     echo "  shell              Open Django shell"
     echo "  bash               Open bash shell in container"
@@ -453,6 +473,7 @@ main() {
 
         # Database
         migrate)         cmd_migrate ;;
+        makemigrations)  cmd_makemigrations "$@" ;;
         backup)          cmd_backup ;;
         shell)           cmd_shell ;;
         bash)            cmd_bash ;;

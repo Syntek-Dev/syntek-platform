@@ -217,6 +217,29 @@ cmd_run_graphql() {
     dc run --rm ${WEB_SERVICE} pytest -m "graphql" "$@"
 }
 
+cmd_run_bdd() {
+    header "Running BDD Tests Only"
+    check_prerequisites
+
+    if ! dc ps | grep -q "${DB_SERVICE}.*running"; then
+        cmd_up
+    fi
+
+    info "Running pytest-bdd feature tests..."
+    dc run --rm ${WEB_SERVICE} pytest tests/bdd/ "$@"
+}
+
+cmd_run_e2e() {
+    header "Running E2E Tests Only"
+    check_prerequisites
+
+    if ! dc ps | grep -q "${DB_SERVICE}.*running"; then
+        cmd_up
+    fi
+
+    dc run --rm ${WEB_SERVICE} pytest -m "e2e" "$@"
+}
+
 cmd_run_failed() {
     header "Re-running Failed Tests"
     check_prerequisites
@@ -226,6 +249,114 @@ cmd_run_failed() {
     fi
 
     dc run --rm ${WEB_SERVICE} pytest --lf "$@"
+}
+
+cmd_run_md() {
+    local timestamp=$(date +%Y%m%d-%H%M%S)
+    local output_dir="docs/TESTS/RESULTS"
+    local output_file="${output_dir}/test-results-${timestamp}.md"
+
+    header "Running Tests with Markdown Report"
+    check_prerequisites
+
+    # Create output directory if it doesn't exist
+    mkdir -p "${PROJECT_ROOT}/${output_dir}"
+
+    if ! dc ps | grep -q "${DB_SERVICE}.*running"; then
+        cmd_up
+    fi
+
+    info "Running pytest with markdown report..."
+    dc run --rm ${WEB_SERVICE} pytest \
+        --md-report \
+        --md-report-output="${output_file}" \
+        "$@"
+
+    local exit_code=$?
+    if [[ -f "${PROJECT_ROOT}/${output_file}" ]]; then
+        success "Markdown report generated: ${output_file}"
+    fi
+    return ${exit_code}
+}
+
+cmd_run_json() {
+    local timestamp=$(date +%Y%m%d-%H%M%S)
+    local output_dir="docs/TESTS/RESULTS"
+    local output_file="${output_dir}/test-results-${timestamp}.json"
+
+    header "Running Tests with JSON Report"
+    check_prerequisites
+
+    # Create output directory if it doesn't exist
+    mkdir -p "${PROJECT_ROOT}/${output_dir}"
+
+    if ! dc ps | grep -q "${DB_SERVICE}.*running"; then
+        cmd_up
+    fi
+
+    info "Running pytest with JSON report..."
+    dc run --rm ${WEB_SERVICE} pytest \
+        --json-report \
+        --json-report-file="${output_file}" \
+        "$@"
+
+    local exit_code=$?
+    if [[ -f "${PROJECT_ROOT}/${output_file}" ]]; then
+        success "JSON report generated: ${output_file}"
+    fi
+    return ${exit_code}
+}
+
+cmd_run_report() {
+    local timestamp=$(date +%Y%m%d-%H%M%S)
+    local output_dir="docs/TESTS/RESULTS"
+    local md_file="${output_dir}/test-results-${timestamp}.md"
+    local json_file="${output_dir}/test-results-${timestamp}.json"
+
+    header "Running Tests with All Reports (MD + JSON)"
+    check_prerequisites
+
+    # Create output directory if it doesn't exist
+    mkdir -p "${PROJECT_ROOT}/${output_dir}"
+
+    # Delete previous test results
+    info "Cleaning previous test results..."
+    rm -f "${PROJECT_ROOT}/${output_dir}"/test-results-*.md
+    rm -f "${PROJECT_ROOT}/${output_dir}"/test-results-*.json
+
+    if ! dc ps | grep -q "${DB_SERVICE}.*running"; then
+        cmd_up
+    fi
+
+    info "Running pytest with markdown and JSON reports..."
+    dc run --rm ${WEB_SERVICE} pytest \
+        --md-report \
+        --md-report-output="${md_file}" \
+        --json-report \
+        --json-report-file="${json_file}" \
+        "$@"
+
+    local exit_code=$?
+
+    # Format JSON with prettier if available
+    if [[ -f "${PROJECT_ROOT}/${json_file}" ]]; then
+        if command -v npx &> /dev/null; then
+            info "Formatting JSON with prettier..."
+            npx prettier --write "${PROJECT_ROOT}/${json_file}" 2>/dev/null || \
+                warning "Prettier formatting failed (non-blocking)"
+        elif command -v prettier &> /dev/null; then
+            info "Formatting JSON with prettier..."
+            prettier --write "${PROJECT_ROOT}/${json_file}" 2>/dev/null || \
+                warning "Prettier formatting failed (non-blocking)"
+        else
+            warning "Prettier not found - JSON not formatted"
+        fi
+    fi
+
+    success "Reports generated:"
+    echo "  - Markdown: ${md_file}"
+    echo "  - JSON:     ${json_file}"
+    return ${exit_code}
 }
 
 cmd_run_app() {
@@ -363,6 +494,38 @@ cmd_ci() {
 }
 
 # -----------------------------------------------------------------------------
+# Django Management Commands
+# -----------------------------------------------------------------------------
+cmd_migrate() {
+    header "Running Database Migrations (Test)"
+    check_prerequisites
+
+    if ! dc ps | grep -q "${DB_SERVICE}.*running"; then
+        cmd_up
+    fi
+
+    dc run --rm ${WEB_SERVICE} python manage.py migrate
+    success "Migrations completed."
+}
+
+cmd_makemigrations() {
+    local app="${1:-}"
+    header "Creating Database Migrations (Test)"
+    check_prerequisites
+
+    if ! dc ps | grep -q "${DB_SERVICE}.*running"; then
+        cmd_up
+    fi
+
+    if [[ -n "${app}" ]]; then
+        dc run --rm ${WEB_SERVICE} python manage.py makemigrations "${app}"
+    else
+        dc run --rm ${WEB_SERVICE} python manage.py makemigrations
+    fi
+    success "Migrations created."
+}
+
+# -----------------------------------------------------------------------------
 # Utility Commands
 # -----------------------------------------------------------------------------
 cmd_shell() {
@@ -409,8 +572,15 @@ cmd_help() {
     echo "  shell              Open bash shell in test container"
     echo "  clean              Remove all test containers and images"
     echo ""
+    echo -e "${YELLOW}Django Management:${NC}"
+    echo "  migrate            Run database migrations"
+    echo "  makemigrations     Create new migrations"
+    echo ""
     echo -e "${YELLOW}Test Execution:${NC}"
     echo "  run [args]         Run full test suite"
+    echo "  run:md [args]      Run tests with Markdown report"
+    echo "  run:json [args]    Run tests with JSON report"
+    echo "  run:report [args]  Run tests with both MD and JSON reports"
     echo "  fast [args]        Run tests without coverage (fast)"
     echo "  verbose [args]     Run tests with verbose output"
     echo "  coverage [args]    Run tests with coverage report"
@@ -420,6 +590,8 @@ cmd_help() {
     echo -e "${YELLOW}Test Categories:${NC}"
     echo "  unit               Run unit tests only"
     echo "  integration        Run integration tests only"
+    echo "  bdd                Run BDD feature tests only"
+    echo "  e2e                Run E2E tests only"
     echo "  graphql            Run GraphQL tests only"
     echo ""
     echo -e "${YELLOW}Code Quality:${NC}"
@@ -456,8 +628,15 @@ main() {
         shell)          cmd_shell ;;
         clean)          cmd_clean ;;
 
+        # Django Management
+        migrate)        cmd_migrate ;;
+        makemigrations) cmd_makemigrations "$@" ;;
+
         # Test Execution
         run)            cmd_run "$@" ;;
+        run:md)         cmd_run_md "$@" ;;
+        run:json)       cmd_run_json "$@" ;;
+        run:report)     cmd_run_report "$@" ;;
         fast)           cmd_run_fast "$@" ;;
         verbose)        cmd_run_verbose "$@" ;;
         coverage)       cmd_run_coverage "$@" ;;
@@ -467,6 +646,8 @@ main() {
         # Test Categories
         unit)           cmd_run_unit "$@" ;;
         integration)    cmd_run_integration "$@" ;;
+        bdd)            cmd_run_bdd "$@" ;;
+        e2e)            cmd_run_e2e "$@" ;;
         graphql)        cmd_run_graphql "$@" ;;
 
         # Code Quality

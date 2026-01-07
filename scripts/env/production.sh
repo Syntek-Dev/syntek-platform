@@ -344,6 +344,25 @@ cmd_migrate() {
     success "Migrations completed."
 }
 
+cmd_makemigrations() {
+    local app="${1:-}"
+    header "Creating Database Migrations (Production)"
+    check_prerequisites
+    check_env_vars
+
+    warning "Creating migrations in production is unusual and should typically be done in development."
+    warning "This will create new migration files in the PRODUCTION environment."
+    confirm_production "creating migrations"
+
+    if [[ -n "${app}" ]]; then
+        dc exec ${WEB_SERVICE} python manage.py makemigrations "${app}"
+    else
+        dc exec ${WEB_SERVICE} python manage.py makemigrations
+    fi
+    success "Migrations created."
+    warning "Remember to commit these migration files to version control."
+}
+
 cmd_backup() {
     header "Creating Production Database Backup"
 
@@ -546,6 +565,7 @@ cmd_help() {
     echo ""
     echo -e "${YELLOW}Database:${NC}"
     echo "  migrate            Run database migrations"
+    echo "  makemigrations     Create new migrations (not recommended)"
     echo "  backup             Create database backup"
     echo "  list-backups       List available backups"
     echo "  shell              Open Django shell"
@@ -591,6 +611,7 @@ main() {
 
         # Database
         migrate)         cmd_migrate ;;
+        makemigrations)  cmd_makemigrations "$@" ;;
         backup)          cmd_backup ;;
         list-backups)    cmd_list_backups ;;
         shell)           cmd_shell ;;
