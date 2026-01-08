@@ -4,6 +4,8 @@ Implements secure email verification tokens with expiration and single-use
 validation as specified in security requirement H12.
 """
 
+from django.db import models
+
 from apps.core.models.base_token import BaseToken
 
 
@@ -30,6 +32,11 @@ class EmailVerificationToken(BaseToken):
         db_table = "email_verification_tokens"
         verbose_name = "Email Verification Token"
         verbose_name_plural = "Email Verification Tokens"
+        indexes = [
+            # H2: Token expiry index for cleanup queries
+            models.Index(fields=["expires_at"]),
+            models.Index(fields=["user", "-created_at"]),
+        ]
 
     def __str__(self) -> str:
         """Return email verification token description."""

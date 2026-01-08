@@ -4,6 +4,8 @@ Implements secure password reset tokens with expiration and single-use
 validation as specified in security requirement H12.
 """
 
+from django.db import models
+
 from apps.core.models.base_token import BaseToken
 
 
@@ -30,6 +32,11 @@ class PasswordResetToken(BaseToken):
         db_table = "password_reset_tokens"
         verbose_name = "Password Reset Token"
         verbose_name_plural = "Password Reset Tokens"
+        indexes = [
+            # H2: Token expiry index for cleanup queries
+            models.Index(fields=["expires_at"]),
+            models.Index(fields=["user", "-created_at"]),
+        ]
 
     def __str__(self) -> str:
         """Return password reset token description."""

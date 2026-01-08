@@ -74,6 +74,8 @@ class AuditLog(models.Model):
             models.Index(fields=["organisation", "-created_at"]),
             models.Index(fields=["action", "-created_at"]),
             models.Index(fields=["created_at"]),
+            # H1: Composite index for filtering user actions
+            models.Index(fields=["user", "action"]),
         ]
 
     def __str__(self) -> str:

@@ -66,16 +66,28 @@ class BaseToken(models.Model):
     def hash_token(cls, token: str) -> str:
         """Generate HMAC-SHA256 hash of token for secure storage.
 
-        Uses the SECRET_KEY as the HMAC key to ensure tokens cannot be
-        forged without access to the secret key.
+        Uses the TOKEN_SIGNING_KEY as the HMAC key to ensure tokens cannot be
+        forged without access to the signing key (C1 security requirement).
+        This key is separate from SECRET_KEY for defense-in-depth.
 
         Args:
             token: The plain text token to hash.
 
         Returns:
             Hexadecimal string of the HMAC-SHA256 hash.
+
+        Raises:
+            ImproperlyConfigured: If TOKEN_SIGNING_KEY is not set in settings.
         """
-        key = settings.SECRET_KEY.encode()
+        from django.core.exceptions import ImproperlyConfigured
+
+        signing_key = getattr(settings, "TOKEN_SIGNING_KEY", None)
+        if not signing_key:
+            raise ImproperlyConfigured(
+                "TOKEN_SIGNING_KEY must be set in settings. "
+                "Generate with: python -c \"import secrets; print(secrets.token_hex(32))\""
+            )
+        key = signing_key.encode()
         return hmac.new(key, token.encode(), hashlib.sha256).hexdigest()
 
     @classmethod

@@ -231,6 +231,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         indexes = [
             models.Index(fields=["email"]),
             models.Index(fields=["organisation"]),
+            # H1: Composite indexes for multi-tenant queries
+            models.Index(fields=["organisation", "email"]),
+            models.Index(fields=["organisation", "is_active"]),
+            models.Index(fields=["organisation", "-created_at"]),
         ]
 
     def __str__(self) -> str:

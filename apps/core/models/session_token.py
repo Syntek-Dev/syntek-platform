@@ -66,6 +66,11 @@ class SessionToken(BaseToken):
             models.Index(fields=["token_family"]),
             models.Index(fields=["device_fingerprint"]),
             models.Index(fields=["last_activity_at"]),
+            # H1: Composite index for filtering active sessions per user
+            models.Index(fields=["user", "is_revoked"]),
+            # H2: Token expiry index for cleanup queries
+            models.Index(fields=["expires_at"]),
+            models.Index(fields=["is_revoked", "expires_at"]),
         ]
 
     def __str__(self) -> str:
