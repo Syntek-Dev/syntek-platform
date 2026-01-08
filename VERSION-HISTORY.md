@@ -143,9 +143,9 @@ None - New feature additions only.
 
 ### Database Migrations
 
-| Migration | Description | Reversible |
-|-----------|-------------|------------|
-| `0001_initial` | Creates User, Organisation, EmailVerificationToken, PasswordResetToken, TwoFactorToken, AuditLog, FailedLoginAttempt, UserSession models | Yes |
+| Migration      | Description                                                                                                                              | Reversible |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `0001_initial` | Creates User, Organisation, EmailVerificationToken, PasswordResetToken, TwoFactorToken, AuditLog, FailedLoginAttempt, UserSession models | Yes        |
 
 ### API Changes
 
@@ -155,119 +155,119 @@ None - API endpoints will be added in Phase 2.
 
 #### Core App (New)
 
-| File | Purpose |
-|------|---------|
-| `apps/core/models/__init__.py` | Model exports and package init |
-| `apps/core/models/user.py` | User model with authentication and organisation relationship |
-| `apps/core/models/organisation.py` | Organisation model for multi-tenancy |
-| `apps/core/models/email_verification.py` | Email verification token model |
-| `apps/core/models/password_reset.py` | Password reset token model |
-| `apps/core/models/two_factor.py` | 2FA token and backup code models |
-| `apps/core/models/audit_log.py` | Audit log for activity tracking |
-| `apps/core/models/failed_login.py` | Failed login attempt tracking |
-| `apps/core/models/session.py` | User session management |
-| `apps/core/admin/__init__.py` | Admin interface configuration |
-| `apps/core/admin/user.py` | User admin with organisation filtering |
-| `apps/core/admin/organisation.py` | Organisation admin |
-| `apps/core/admin/token.py` | Token admin interfaces |
-| `apps/core/admin/audit.py` | Audit log admin |
-| `apps/core/services/__init__.py` | Service layer exports |
-| `apps/core/services/auth.py` | Authentication service (register, login, password reset) |
-| `apps/core/services/two_factor.py` | 2FA service (setup, verify, backup codes) |
-| `apps/core/utils/__init__.py` | Utility exports |
-| `apps/core/utils/tokens.py` | Token generation and validation |
-| `apps/core/utils/email.py` | Email sending utilities |
-| `apps/core/utils/ip.py` | IP address encryption/decryption |
-| `apps/core/views/__init__.py` | View exports (placeholder for Phase 2) |
-| `apps/core/apps.py` | Django app configuration |
-| `apps/core/__init__.py` | App package init |
+| File                                     | Purpose                                                      |
+| ---------------------------------------- | ------------------------------------------------------------ |
+| `apps/core/models/__init__.py`           | Model exports and package init                               |
+| `apps/core/models/user.py`               | User model with authentication and organisation relationship |
+| `apps/core/models/organisation.py`       | Organisation model for multi-tenancy                         |
+| `apps/core/models/email_verification.py` | Email verification token model                               |
+| `apps/core/models/password_reset.py`     | Password reset token model                                   |
+| `apps/core/models/two_factor.py`         | 2FA token and backup code models                             |
+| `apps/core/models/audit_log.py`          | Audit log for activity tracking                              |
+| `apps/core/models/failed_login.py`       | Failed login attempt tracking                                |
+| `apps/core/models/session.py`            | User session management                                      |
+| `apps/core/admin/__init__.py`            | Admin interface configuration                                |
+| `apps/core/admin/user.py`                | User admin with organisation filtering                       |
+| `apps/core/admin/organisation.py`        | Organisation admin                                           |
+| `apps/core/admin/token.py`               | Token admin interfaces                                       |
+| `apps/core/admin/audit.py`               | Audit log admin                                              |
+| `apps/core/services/__init__.py`         | Service layer exports                                        |
+| `apps/core/services/auth.py`             | Authentication service (register, login, password reset)     |
+| `apps/core/services/two_factor.py`       | 2FA service (setup, verify, backup codes)                    |
+| `apps/core/utils/__init__.py`            | Utility exports                                              |
+| `apps/core/utils/tokens.py`              | Token generation and validation                              |
+| `apps/core/utils/email.py`               | Email sending utilities                                      |
+| `apps/core/utils/ip.py`                  | IP address encryption/decryption                             |
+| `apps/core/views/__init__.py`            | View exports (placeholder for Phase 2)                       |
+| `apps/core/apps.py`                      | Django app configuration                                     |
+| `apps/core/__init__.py`                  | App package init                                             |
 
 #### Security (New)
 
-| File | Purpose |
-|------|---------|
-| `config/validators/password.py` | 10+ custom password validators (NCSC guidelines) |
-| `config/middleware/ip_allowlist.py` | IP allowlist middleware for restricted access |
+| File                                | Purpose                                          |
+| ----------------------------------- | ------------------------------------------------ |
+| `config/validators/password.py`     | 10+ custom password validators (NCSC guidelines) |
+| `config/middleware/ip_allowlist.py` | IP allowlist middleware for restricted access    |
 
 #### Tests (New)
 
-| Directory | File Count | Coverage |
-|-----------|------------|----------|
-| `tests/unit/` | 8 files | User model, Organisation model, Token models, Services, Utils |
-| `tests/bdd/features/` | 3 files | Authentication, 2FA, Password reset workflows |
-| `tests/bdd/step_defs/` | 3 files | Step definitions for BDD scenarios |
-| `tests/integration/` | 5 files | Auth flow, Organisation workflow, Multi-tenancy |
-| `tests/e2e/` | 3 files | Complete user journeys (registration to login) |
-| `tests/graphql/` | 2 files | GraphQL queries and mutations (placeholder) |
-| `tests/factories/` | 4 files | Factory Boy factories for test data |
-| `tests/fixtures/` | 3 files | Shared pytest fixtures |
+| Directory              | File Count | Coverage                                                      |
+| ---------------------- | ---------- | ------------------------------------------------------------- |
+| `tests/unit/`          | 8 files    | User model, Organisation model, Token models, Services, Utils |
+| `tests/bdd/features/`  | 3 files    | Authentication, 2FA, Password reset workflows                 |
+| `tests/bdd/step_defs/` | 3 files    | Step definitions for BDD scenarios                            |
+| `tests/integration/`   | 5 files    | Auth flow, Organisation workflow, Multi-tenancy               |
+| `tests/e2e/`           | 3 files    | Complete user journeys (registration to login)                |
+| `tests/graphql/`       | 2 files    | GraphQL queries and mutations (placeholder)                   |
+| `tests/factories/`     | 4 files    | Factory Boy factories for test data                           |
+| `tests/fixtures/`      | 3 files    | Shared pytest fixtures                                        |
 
 **Total Test Files**: 29
 
 #### Configuration (Updated)
 
-| File | Changes |
-|------|---------|
-| `config/settings/base.py` | Added apps.core to INSTALLED_APPS, configured authentication backends |
-| `config/settings/dev.py` | Added EMAIL_BACKEND for development email testing |
-| `config/settings/test.py` | Added test-specific configuration for email and caching |
-| `config/settings/production.py` | Enhanced security settings for production authentication |
-| `config/urls.py` | Prepared for core app URL routing (Phase 2) |
-| `config/middleware/audit.py` | Enhanced with authentication event logging |
-| `pyproject.toml` | Added dependencies: django-otp, qrcode, cryptography, pytest-bdd, factory-boy |
-| `uv.lock` | Updated with new dependencies |
+| File                            | Changes                                                                       |
+| ------------------------------- | ----------------------------------------------------------------------------- |
+| `config/settings/base.py`       | Added apps.core to INSTALLED_APPS, configured authentication backends         |
+| `config/settings/dev.py`        | Added EMAIL_BACKEND for development email testing                             |
+| `config/settings/test.py`       | Added test-specific configuration for email and caching                       |
+| `config/settings/production.py` | Enhanced security settings for production authentication                      |
+| `config/urls.py`                | Prepared for core app URL routing (Phase 2)                                   |
+| `config/middleware/audit.py`    | Enhanced with authentication event logging                                    |
+| `pyproject.toml`                | Added dependencies: django-otp, qrcode, cryptography, pytest-bdd, factory-boy |
+| `uv.lock`                       | Updated with new dependencies                                                 |
 
 #### Environment Configuration (Updated)
 
-| File | Changes |
-|------|---------|
-| `.env.dev.example` | Added EMAIL_* variables, SECRET_KEY, IP_ENCRYPTION_KEY |
-| `.env.test.example` | Added test-specific configuration |
-| `.env.staging.example` | Added authentication configuration |
-| `.env.production.example` | Added production security configuration |
+| File                      | Changes                                                  |
+| ------------------------- | -------------------------------------------------------- |
+| `.env.dev.example`        | Added EMAIL\_\* variables, SECRET_KEY, IP_ENCRYPTION_KEY |
+| `.env.test.example`       | Added test-specific configuration                        |
+| `.env.staging.example`    | Added authentication configuration                       |
+| `.env.production.example` | Added production security configuration                  |
 
 #### Scripts (Updated)
 
-| File | Changes |
-|------|---------|
-| `scripts/env/test.sh` | Enhanced with test command shortcuts (unit, integration, bdd, e2e, coverage) |
-| `scripts/env/staging.sh` | Added migration and deployment enhancements |
-| `scripts/env/production.sh` | Added safety checks for production migrations |
+| File                        | Changes                                                                      |
+| --------------------------- | ---------------------------------------------------------------------------- |
+| `scripts/env/test.sh`       | Enhanced with test command shortcuts (unit, integration, bdd, e2e, coverage) |
+| `scripts/env/staging.sh`    | Added migration and deployment enhancements                                  |
+| `scripts/env/production.sh` | Added safety checks for production migrations                                |
 
 #### Docker (Updated)
 
-| File | Changes |
-|------|---------|
-| `docker/test/docker-compose.yml` | Updated for test environment with PostgreSQL |
-| `docker/production/docker-compose.yml` | Enhanced security configuration |
+| File                                   | Changes                                      |
+| -------------------------------------- | -------------------------------------------- |
+| `docker/test/docker-compose.yml`       | Updated for test environment with PostgreSQL |
+| `docker/production/docker-compose.yml` | Enhanced security configuration              |
 
 #### Ignore Files (Updated)
 
-| File | Changes |
-|------|---------|
-| `.gitignore` | Added test artifacts, coverage reports, pytest cache |
-| `.dockerignore` | Added test directories and coverage files |
+| File            | Changes                                              |
+| --------------- | ---------------------------------------------------- |
+| `.gitignore`    | Added test artifacts, coverage reports, pytest cache |
+| `.dockerignore` | Added test directories and coverage files            |
 
 ### Dependencies Updated
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `django-otp` | ^1.5.0 | Two-factor authentication |
-| `qrcode` | ^8.0.0 | QR code generation for 2FA |
-| `cryptography` | ^44.0.0 | IP address encryption |
-| `pytest-bdd` | ^7.3.0 | BDD testing with Gherkin |
-| `factory-boy` | ^3.3.0 | Test data factories |
+| Package        | Version | Purpose                    |
+| -------------- | ------- | -------------------------- |
+| `django-otp`   | ^1.5.0  | Two-factor authentication  |
+| `qrcode`       | ^8.0.0  | QR code generation for 2FA |
+| `cryptography` | ^44.0.0 | IP address encryption      |
+| `pytest-bdd`   | ^7.3.0  | BDD testing with Gherkin   |
+| `factory-boy`  | ^3.3.0  | Test data factories        |
 
 ### Configuration Changes
 
-| File | Key | Change |
-|------|-----|--------|
-| `config/settings/base.py` | `INSTALLED_APPS` | Added 'apps.core' and 'django_otp' |
-| `config/settings/base.py` | `AUTHENTICATION_BACKENDS` | Added custom authentication backend |
-| `config/settings/base.py` | `AUTH_PASSWORD_VALIDATORS` | Added 10+ custom validators |
-| `config/settings/base.py` | `MIDDLEWARE` | Added IP allowlist middleware |
-| `.env.*.example` | `IP_ENCRYPTION_KEY` | New required variable for IP encryption |
-| `.env.*.example` | `EMAIL_*` | Email configuration for verification emails |
+| File                      | Key                        | Change                                      |
+| ------------------------- | -------------------------- | ------------------------------------------- |
+| `config/settings/base.py` | `INSTALLED_APPS`           | Added 'apps.core' and 'django_otp'          |
+| `config/settings/base.py` | `AUTHENTICATION_BACKENDS`  | Added custom authentication backend         |
+| `config/settings/base.py` | `AUTH_PASSWORD_VALIDATORS` | Added 10+ custom validators                 |
+| `config/settings/base.py` | `MIDDLEWARE`               | Added IP allowlist middleware               |
+| `.env.*.example`          | `IP_ENCRYPTION_KEY`        | New required variable for IP encryption     |
+| `.env.*.example`          | `EMAIL_*`                  | Email configuration for verification emails |
 
 ### Performance Notes
 
@@ -290,6 +290,7 @@ None - API endpoints will be added in Phase 2.
 ### Testing Notes
 
 **Test Coverage:**
+
 - Unit tests: Core models, services, utils (8 files)
 - BDD tests: Authentication workflows in Gherkin (3 features, 3 step defs)
 - Integration tests: Auth flow, organisation workflow (5 files)
@@ -297,12 +298,14 @@ None - API endpoints will be added in Phase 2.
 - GraphQL tests: Placeholder for API testing (2 files)
 
 **Test Framework:**
+
 - pytest with Django plugin
 - pytest-bdd for behaviour-driven development
 - Factory Boy for test data generation
 - Comprehensive fixtures for common test scenarios
 
 **Running Tests:**
+
 ```bash
 ./scripts/env/test.sh run          # All tests
 ./scripts/env/test.sh unit         # Unit tests only
@@ -314,15 +317,15 @@ None - API endpoints will be added in Phase 2.
 
 ### Documentation Notes
 
-| File | Purpose |
-|------|---------|
-| `docs/PLANS/US-001-USER-AUTHENTICATION.md` | Complete implementation plan (updated) |
-| `docs/ARCHITECTURE/US-001/ARCHITECTURE-REVIEW.md` | Architecture analysis (updated) |
-| `docs/SECURITY/US-001/US-001-SECURITY.md` | Security review (updated) |
-| `docs/SECURITY/US-001/SECURITY-IMPLEMENTATION.md` | Security implementation details (new) |
-| `docs/REVIEWS/US-001/REVIEW-US001-PHASE1-IMPLEMENTATION.md` | Phase 1 review (new) |
-| `docs/TESTS/TEST-US-001-USER-AUTHENTICATION.md` | Test plan and coverage (new) |
-| `docs/TESTS/MANUAL/` | Manual testing procedures (new) |
+| File                                                        | Purpose                                |
+| ----------------------------------------------------------- | -------------------------------------- |
+| `docs/PLANS/US-001-USER-AUTHENTICATION.md`                  | Complete implementation plan (updated) |
+| `docs/ARCHITECTURE/US-001/ARCHITECTURE-REVIEW.md`           | Architecture analysis (updated)        |
+| `docs/SECURITY/US-001/US-001-SECURITY.md`                   | Security review (updated)              |
+| `docs/SECURITY/US-001/SECURITY-IMPLEMENTATION.md`           | Security implementation details (new)  |
+| `docs/REVIEWS/US-001/REVIEW-US001-PHASE1-IMPLEMENTATION.md` | Phase 1 review (new)                   |
+| `docs/TESTS/TEST-US-001-USER-AUTHENTICATION.md`             | Test plan and coverage (new)           |
+| `docs/TESTS/MANUAL/`                                        | Manual testing procedures (new)        |
 
 ### Migration Notes
 
@@ -345,6 +348,7 @@ None - API endpoints will be added in Phase 2.
 ### Deployment Notes
 
 **Phase 1 Complete:**
+
 - ✅ User and Organisation models implemented
 - ✅ Email verification token system
 - ✅ Password reset token system
@@ -357,6 +361,7 @@ None - API endpoints will be added in Phase 2.
 - ✅ Comprehensive test suite (29 files)
 
 **Next Phase (Phase 2 - API Endpoints):**
+
 - GraphQL mutations for registration, login, password reset
 - API endpoint implementation
 - API authentication and authorisation

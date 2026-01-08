@@ -13,36 +13,41 @@
 - [Release Notes](#release-notes)
   - [Table of Contents](#table-of-contents)
   - [Latest Release](#latest-release)
-    - [Version 0.3.3 - 7 January 2026](#version-033---7-january-2026)
+    - [Version 0.4.0 - 7 January 2026](#version-040---7-january-2026)
       - [What's New](#whats-new)
       - [Why This Matters](#why-this-matters)
       - [Technical Details](#technical-details)
+      - [Coming Soon](#coming-soon)
   - [Previous Releases](#previous-releases)
-    - [Version 0.3.2 - 6 January 2026](#version-032---6-january-2026)
+    - [Version 0.3.3 - 7 January 2026](#version-033---7-january-2026)
       - [What's New](#whats-new-1)
       - [Why This Matters](#why-this-matters-1)
       - [Technical Details](#technical-details-1)
-    - [Version 0.3.1 - 6 January 2026](#version-031---6-january-2026)
+    - [Version 0.3.2 - 6 January 2026](#version-032---6-january-2026)
       - [What's New](#whats-new-2)
       - [Why This Matters](#why-this-matters-2)
       - [Technical Details](#technical-details-2)
-    - [Version 0.3.0 - 6 January 2026](#version-030---6-january-2026)
+    - [Version 0.3.1 - 6 January 2026](#version-031---6-january-2026)
       - [What's New](#whats-new-3)
       - [Why This Matters](#why-this-matters-3)
-      - [Technical Improvements](#technical-improvements)
-      - [Coming Soon](#coming-soon)
-  - [Previous Releases (v0.2.x)](#previous-releases-v02x)
-    - [Version 0.2.0 - 3 January 2026](#version-020---3-january-2026)
+      - [Technical Details](#technical-details-3)
+    - [Version 0.3.0 - 6 January 2026](#version-030---6-january-2026)
       - [What's New](#whats-new-4)
       - [Why This Matters](#why-this-matters-4)
-      - [Technical Details](#technical-details-3)
+      - [Technical Improvements](#technical-improvements)
+      - [Coming Soon](#coming-soon-1)
+  - [Previous Releases (v0.2.x)](#previous-releases-v02x)
+    - [Version 0.2.0 - 3 January 2026](#version-020---3-january-2026)
+      - [What's New](#whats-new-5)
+      - [Why This Matters](#why-this-matters-5)
+      - [Technical Details](#technical-details-4)
   - [Previous Releases (v0.1.x)](#previous-releases-v01x)
     - [Version 0.1.0 - 3 January 2026](#version-010---3-january-2026)
-      - [What's New](#whats-new-5)
+      - [What's New](#whats-new-6)
       - [Key Features](#key-features)
       - [Getting Started](#getting-started)
       - [What This Means for You](#what-this-means-for-you)
-      - [Coming Soon](#coming-soon-1)
+      - [Coming Soon](#coming-soon-2)
   - [Previous Releases (Pre-v0.1.0)](#previous-releases-pre-v010)
 
 ---
@@ -263,8 +268,6 @@ This is a patch release (0.3.2 → 0.3.3) with documentation and configuration i
 - Safe to merge without deployment considerations
 
 ---
-
-## Previous Releases
 
 ### Version 0.3.2 - 6 January 2026
 
