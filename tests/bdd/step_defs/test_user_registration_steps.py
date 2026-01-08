@@ -4,16 +4,17 @@ This module implements step definitions for the user_registration.feature file.
 These tests drive the implementation of user registration functionality.
 """
 
-import pytest
-from pytest_bdd import given, when, then, scenarios, parsers
+from datetime import timedelta
+
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils import timezone
-from datetime import timedelta
 
-from apps.core.models import User, Organisation, AuditLog, EmailVerificationToken
+import pytest
+from pytest_bdd import given, parsers, scenarios, then, when
 
+from apps.core.models import AuditLog, EmailVerificationToken, Organisation, User
 
 # Load all scenarios from the feature file
 scenarios("../features/user_registration.feature")
@@ -209,7 +210,7 @@ def register_with_details(registration_context, datatable):
         try:
             validate_email(email)
         except ValidationError as e:
-            raise ValidationError(str(e.messages[0]))
+            raise ValidationError(str(e.messages[0])) from e
 
         # Check for duplicate email
         if User.objects.filter(email__iexact=email).exists():
@@ -438,11 +439,7 @@ def user_should_be_verified(email: str):
     assert user.email_verified is True
 
 
-@then(
-    parsers.parse(
-        'the user "{email}" should have an audit log entry for "{action}"'
-    )
-)
+@then(parsers.parse('the user "{email}" should have an audit log entry for "{action}"'))
 def user_should_have_audit_log(email: str, action: str):
     """Assert user has an audit log entry with specified action.
 

@@ -15,12 +15,14 @@ barebones model skeleton until the model is fully implemented.
 """
 
 import uuid
-import pytest
+
+from django.contrib.auth.hashers import check_password, make_password
 from django.db import IntegrityError
 from django.utils import timezone
-from django.contrib.auth.hashers import make_password, check_password
 
-from apps.core.models import PasswordHistory, User, Organisation
+import pytest
+
+from apps.core.models import Organisation, PasswordHistory, User
 
 
 @pytest.mark.unit
@@ -239,9 +241,7 @@ class TestPasswordHistoryModel:
         When: Filtering by specific user
         Then: Only entries for that user are returned
         """
-        other_user = User.objects.create(
-            email="other@example.com", organisation=organisation
-        )
+        other_user = User.objects.create(email="other@example.com", organisation=organisation)
 
         history1 = PasswordHistory.objects.create(
             user=user,
@@ -294,8 +294,7 @@ class TestPasswordHistoryModel:
         # Check if password is in history
         history_entries = PasswordHistory.objects.filter(user=user)
         password_was_used = any(
-            check_password(password, entry.password_hash)
-            for entry in history_entries
+            check_password(password, entry.password_hash) for entry in history_entries
         )
 
         assert password_was_used is True
@@ -318,8 +317,7 @@ class TestPasswordHistoryModel:
         new_password = "CompletelyNewPassword123!@"
         history_entries = PasswordHistory.objects.filter(user=user)
         password_was_used = any(
-            check_password(new_password, entry.password_hash)
-            for entry in history_entries
+            check_password(new_password, entry.password_hash) for entry in history_entries
         )
 
         assert password_was_used is False

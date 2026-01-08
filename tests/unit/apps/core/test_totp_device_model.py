@@ -14,14 +14,16 @@ These tests are in the RED phase of TDD - they WILL FAIL against the
 barebones model skeleton until the model is fully implemented.
 """
 
-import pytest
 import uuid
+from unittest.mock import Mock, patch
+
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from unittest.mock import Mock, patch
-from django.contrib.auth import get_user_model
 
-from apps.core.models import TOTPDevice, Organisation
+import pytest
+
+from apps.core.models import Organisation, TOTPDevice
 
 User = get_user_model()
 
@@ -78,9 +80,7 @@ class TestTOTPDeviceModel:
         When: TOTPDevice.objects.create() is called
         Then: TOTP device is created with correct attributes
         """
-        device = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=b"encrypted_secret"
-        )
+        device = TOTPDevice.objects.create(user=user, name="iPhone", secret=b"encrypted_secret")
 
         assert device.id is not None
         assert device.user == user
@@ -96,9 +96,7 @@ class TestTOTPDeviceModel:
         Then: Secret is stored as encrypted binary data
         """
         encrypted_secret = b"\x00\x01\x02\x03encrypted_data"
-        device = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=encrypted_secret
-        )
+        device = TOTPDevice.objects.create(user=user, name="iPhone", secret=encrypted_secret)
 
         assert isinstance(device.secret, bytes)
         assert device.secret == encrypted_secret
@@ -144,12 +142,8 @@ class TestTOTPDeviceModel:
         When: Creating another TOTP device with different name
         Then: Second device is created successfully
         """
-        device1 = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=b"secret1"
-        )
-        device2 = TOTPDevice.objects.create(
-            user=user, name="Android", secret=b"secret2"
-        )
+        device1 = TOTPDevice.objects.create(user=user, name="iPhone", secret=b"secret1")
+        device2 = TOTPDevice.objects.create(user=user, name="Android", secret=b"secret2")
 
         assert device1.name == "iPhone"
         assert device2.name == "Android"
@@ -162,9 +156,7 @@ class TestTOTPDeviceModel:
         When: full_clean() is called
         Then: ValidationError is raised
         """
-        device = TOTPDevice(
-            user=user, name="a" * 65, secret=b"secret"
-        )
+        device = TOTPDevice(user=user, name="a" * 65, secret=b"secret")
 
         with pytest.raises(ValidationError) as exc_info:
             device.full_clean()
@@ -189,9 +181,7 @@ class TestTOTPDeviceModel:
         When: Device is retrieved
         Then: is_confirmed is False by default
         """
-        device = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=b"secret"
-        )
+        device = TOTPDevice.objects.create(user=user, name="iPhone", secret=b"secret")
 
         assert device.is_confirmed is False
 
@@ -202,9 +192,7 @@ class TestTOTPDeviceModel:
         When: is_confirmed is set to True
         Then: Device is marked as confirmed
         """
-        device = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=b"secret"
-        )
+        device = TOTPDevice.objects.create(user=user, name="iPhone", secret=b"secret")
         device.is_confirmed = True
         device.save()
 
@@ -218,9 +206,7 @@ class TestTOTPDeviceModel:
         When: Device is created
         Then: last_used_at is None
         """
-        device = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=b"secret"
-        )
+        device = TOTPDevice.objects.create(user=user, name="iPhone", secret=b"secret")
 
         assert device.last_used_at is None
 
@@ -231,9 +217,7 @@ class TestTOTPDeviceModel:
         When: last_used_at is set to current time
         Then: last_used_at timestamp is stored
         """
-        device = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=b"secret"
-        )
+        device = TOTPDevice.objects.create(user=user, name="iPhone", secret=b"secret")
 
         before = timezone.now()
         device.last_used_at = timezone.now()
@@ -251,9 +235,7 @@ class TestTOTPDeviceModel:
         Then: All devices are associated with the user
         """
         devices = [
-            TOTPDevice.objects.create(
-                user=user, name=f"Device {i}", secret=f"secret{i}".encode()
-            )
+            TOTPDevice.objects.create(user=user, name=f"Device {i}", secret=f"secret{i}".encode())
             for i in range(3)
         ]
 
@@ -270,9 +252,7 @@ class TestTOTPDeviceModel:
         When: TOTP device is deleted
         Then: User still exists
         """
-        device = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=b"secret"
-        )
+        device = TOTPDevice.objects.create(user=user, name="iPhone", secret=b"secret")
 
         device.delete()
 
@@ -285,12 +265,8 @@ class TestTOTPDeviceModel:
         When: User is deleted
         Then: All associated TOTP devices are deleted
         """
-        device1 = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=b"secret1"
-        )
-        device2 = TOTPDevice.objects.create(
-            user=user, name="Android", secret=b"secret2"
-        )
+        device1 = TOTPDevice.objects.create(user=user, name="iPhone", secret=b"secret1")
+        device2 = TOTPDevice.objects.create(user=user, name="Android", secret=b"secret2")
         device1_id = device1.id
         device2_id = device2.id
 
@@ -306,9 +282,7 @@ class TestTOTPDeviceModel:
         When: str(device) is called
         Then: String contains user email and name
         """
-        device = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=b"secret"
-        )
+        device = TOTPDevice.objects.create(user=user, name="iPhone", secret=b"secret")
 
         str_repr = str(device)
         assert "test@example.com" in str_repr or "iPhone" in str_repr
@@ -320,9 +294,7 @@ class TestTOTPDeviceModel:
         When: id field is checked
         Then: id is a valid UUID
         """
-        device = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=b"secret"
-        )
+        device = TOTPDevice.objects.create(user=user, name="iPhone", secret=b"secret")
 
         assert device.id is not None
         assert isinstance(device.id, uuid.UUID)
@@ -344,9 +316,7 @@ class TestTOTPDeviceModel:
         Then: created_at contains a timestamp close to now
         """
         before = timezone.now()
-        device = TOTPDevice.objects.create(
-            user=user, name="iPhone", secret=b"secret"
-        )
+        device = TOTPDevice.objects.create(user=user, name="iPhone", secret=b"secret")
         after = timezone.now()
 
         assert device.created_at is not None

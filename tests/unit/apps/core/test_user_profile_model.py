@@ -14,12 +14,14 @@ barebones model skeleton until the model is fully implemented.
 """
 
 import uuid
-import pytest
+
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.utils import timezone
 
-from apps.core.models import UserProfile, User, Organisation
+import pytest
+
+from apps.core.models import Organisation, User, UserProfile
 
 
 @pytest.mark.unit

@@ -16,13 +16,14 @@ barebones model skeleton until the model is fully implemented.
 """
 
 import uuid
-import pytest
 from datetime import timedelta
-from django.core.exceptions import ValidationError
+
 from django.db import IntegrityError
 from django.utils import timezone
 
-from apps.core.models import EmailVerificationToken, User, Organisation
+import pytest
+
+from apps.core.models import EmailVerificationToken, Organisation, User
 
 
 @pytest.mark.unit
@@ -126,9 +127,7 @@ class TestEmailVerificationTokenModel:
 
         assert token.is_expired() is True
 
-    def test_email_verification_token_is_not_expired_within_validity(
-        self, user
-    ) -> None:
+    def test_email_verification_token_is_not_expired_within_validity(self, user) -> None:
         """Test token is_expired() returns False within validity period.
 
         Given: Token with expires_at in the future
@@ -144,9 +143,7 @@ class TestEmailVerificationTokenModel:
 
         assert token.is_expired() is False
 
-    def test_email_verification_token_is_valid_when_not_expired_and_not_used(
-        self, user
-    ) -> None:
+    def test_email_verification_token_is_valid_when_not_expired_and_not_used(self, user) -> None:
         """Test is_valid() returns True when not expired and not used.
 
         Given: Token that is not expired and not used
@@ -277,9 +274,7 @@ class TestEmailVerificationTokenModel:
         When: Model Meta is checked
         Then: db_table is 'email_verification_tokens'
         """
-        assert (
-            EmailVerificationToken._meta.db_table == "email_verification_tokens"
-        )
+        assert EmailVerificationToken._meta.db_table == "email_verification_tokens"
 
     def test_email_verification_token_str_representation(self, user) -> None:
         """Test email verification token string representation.
@@ -309,9 +304,7 @@ class TestEmailVerificationTokenModel:
         When: Filtering by specific user
         Then: Only tokens for that user are returned
         """
-        other_user = User.objects.create(
-            email="other@example.com", organisation=organisation
-        )
+        other_user = User.objects.create(email="other@example.com", organisation=organisation)
 
         token1 = EmailVerificationToken.objects.create(
             user=user,

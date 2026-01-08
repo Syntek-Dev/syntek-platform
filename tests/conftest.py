@@ -5,24 +5,26 @@ It automatically imports all factories and fixtures to make them available
 across all test modules.
 """
 
-import pytest
-from typing import Dict, Any
+from typing import Any
 from unittest.mock import Mock, patch
+
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+
+import pytest
 
 # Import all factories to make them available globally
 # This allows tests to use factories without explicit imports
 from tests.factories import (
+    AuditLogFactory,
+    EmailVerificationTokenFactory,
     OrganisationFactory,
+    PasswordHistoryFactory,
+    PasswordResetTokenFactory,
+    SessionTokenFactory,
+    TOTPDeviceFactory,
     UserFactory,
     UserProfileFactory,
-    AuditLogFactory,
-    SessionTokenFactory,
-    PasswordResetTokenFactory,
-    EmailVerificationTokenFactory,
-    TOTPDeviceFactory,
-    PasswordHistoryFactory,
 )
 
 # Make factories available via pytest namespace
@@ -140,15 +142,13 @@ def mock_timezone():
         Mocked timezone module
     """
     with patch("django.utils.timezone.now") as mock_now:
-        fixed_time = timezone.datetime(
-            2026, 1, 7, 12, 0, 0, tzinfo=timezone.get_current_timezone()
-        )
+        fixed_time = timezone.datetime(2026, 1, 7, 12, 0, 0, tzinfo=timezone.get_current_timezone())
         mock_now.return_value = fixed_time
         yield mock_now
 
 
 @pytest.fixture
-def test_context() -> Dict[str, Any]:
+def test_context() -> dict[str, Any]:
     """Provide shared test context dictionary.
 
     Returns:

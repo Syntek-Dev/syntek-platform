@@ -17,14 +17,15 @@ These tests are in the RED phase of TDD - they WILL FAIL against the
 barebones model skeleton until the model is fully implemented.
 """
 
-import pytest
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
-from django.utils import timezone
-from datetime import timedelta
 import time
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from django.utils import timezone
+
+import pytest
+
 from apps.core.models import Organisation
 
 User = get_user_model()
@@ -76,9 +77,7 @@ class TestUserModel:
         When: Creating another user with the same email
         Then: IntegrityError is raised
         """
-        User.objects.create(
-            email="test@example.com", first_name="First", organisation=organisation
-        )
+        User.objects.create(email="test@example.com", first_name="First", organisation=organisation)
 
         with pytest.raises(IntegrityError):
             User.objects.create(

@@ -13,14 +13,16 @@ These tests are in the RED phase of TDD - they WILL FAIL against the
 barebones model skeleton until the model is fully implemented.
 """
 
-import pytest
 import uuid
+from datetime import timedelta
+
+from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.utils import timezone
-from datetime import timedelta
-from django.contrib.auth import get_user_model
 
-from apps.core.models import BaseToken, SessionToken, Organisation
+import pytest
+
+from apps.core.models import BaseToken, Organisation, SessionToken
 
 User = get_user_model()
 
@@ -63,9 +65,7 @@ class TestBaseTokenModel:
         Then: TypeError or AttributeError is raised
         """
         with pytest.raises((TypeError, AttributeError)):
-            BaseToken.objects.create(
-                token_hash="test_hash", expires_at=timezone.now()
-            )
+            BaseToken.objects.create(token_hash="test_hash", expires_at=timezone.now())
 
     def test_token_is_expired_when_expires_at_in_past(self, user) -> None:
         """Test token is_expired() returns True when expires_at is in the past.

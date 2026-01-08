@@ -7,18 +7,18 @@ once the models are properly registered with Django. During TDD RED phase,
 the factories may fail until models are fully implemented.
 """
 
+from tests.factories.token_factory import (
+    EmailVerificationTokenFactory,
+    PasswordHistoryFactory,
+    PasswordResetTokenFactory,
+    SessionTokenFactory,
+    TOTPDeviceFactory,
+)
 from tests.factories.user_factory import (
+    AuditLogFactory,
     OrganisationFactory,
     UserFactory,
     UserProfileFactory,
-    AuditLogFactory,
-)
-from tests.factories.token_factory import (
-    SessionTokenFactory,
-    PasswordResetTokenFactory,
-    EmailVerificationTokenFactory,
-    TOTPDeviceFactory,
-    PasswordHistoryFactory,
 )
 
 __all__ = [

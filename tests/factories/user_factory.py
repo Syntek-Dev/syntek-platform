@@ -3,12 +3,11 @@
 This module contains factory-boy factories for creating User and related test data.
 """
 
-import factory
-from factory.django import DjangoModelFactory
-from factory import Faker, SubFactory, Sequence, post_generation
 from django.utils import timezone
-from typing import Optional
 
+import factory
+from factory import Faker, Sequence, SubFactory, post_generation
+from factory.django import DjangoModelFactory
 
 # TODO: Import actual models once implemented
 # from apps.core.models import User, Organisation, UserProfile

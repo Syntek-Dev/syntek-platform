@@ -19,13 +19,15 @@ barebones model skeleton until the model is fully implemented.
 """
 
 import uuid
-import pytest
 from datetime import timedelta
+
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.utils import timezone
 
-from apps.core.models import SessionToken, User, Organisation
+import pytest
+
+from apps.core.models import Organisation, SessionToken, User
 
 
 @pytest.mark.unit
@@ -596,9 +598,7 @@ class TestSessionTokenModel:
         When: Filtering by specific user
         Then: Only tokens for that user are returned
         """
-        other_user = User.objects.create(
-            email="other@example.com", organisation=organisation
-        )
+        other_user = User.objects.create(email="other@example.com", organisation=organisation)
 
         token1 = SessionToken.objects.create(
             user=user,

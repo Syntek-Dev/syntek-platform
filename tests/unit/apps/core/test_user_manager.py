@@ -14,12 +14,9 @@ These tests are in the RED phase of TDD - they WILL FAIL against the
 barebones model skeleton until the manager is fully implemented.
 """
 
-import uuid
 import pytest
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
 
-from apps.core.models import User, Organisation
+from apps.core.models import Organisation, User
 
 
 @pytest.mark.unit
@@ -155,9 +152,7 @@ class TestUserManager:
 
         assert user.is_staff is False
 
-    def test_create_user_sets_is_superuser_false_by_default(
-        self, organisation
-    ) -> None:
+    def test_create_user_sets_is_superuser_false_by_default(self, organisation) -> None:
         """Test create_user sets is_superuser to False by default.
 
         Given: User created without is_superuser specified
@@ -172,9 +167,7 @@ class TestUserManager:
 
         assert user.is_superuser is False
 
-    def test_create_user_sets_email_verified_false_by_default(
-        self, organisation
-    ) -> None:
+    def test_create_user_sets_email_verified_false_by_default(self, organisation) -> None:
         """Test create_user sets email_verified to False by default.
 
         Given: User created without email_verified specified

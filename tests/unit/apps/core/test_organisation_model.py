@@ -12,12 +12,14 @@ These tests are in the RED phase of TDD - they WILL FAIL against the
 barebones model skeleton until the model is fully implemented.
 """
 
-import pytest
+import time
+import uuid
+
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.utils import timezone
-import time
-import uuid
+
+import pytest
 
 from apps.core.models import Organisation
 

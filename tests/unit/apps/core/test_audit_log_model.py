@@ -18,12 +18,12 @@ barebones model skeleton until the model is fully implemented.
 """
 
 import uuid
-import pytest
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
+
 from django.utils import timezone
 
-from apps.core.models import AuditLog, User, Organisation
+import pytest
+
+from apps.core.models import AuditLog, Organisation, User
 
 
 @pytest.mark.unit
@@ -147,9 +147,7 @@ class TestAuditLogModel:
 
         assert log.action == "register"
 
-    def test_audit_log_action_choices_password_reset_request(
-        self, user, organisation
-    ) -> None:
+    def test_audit_log_action_choices_password_reset_request(self, user, organisation) -> None:
         """Test audit log accepts 'password_reset_request' action.
 
         Given: Action value 'password_reset_request'
@@ -165,9 +163,7 @@ class TestAuditLogModel:
 
         assert log.action == "password_reset_request"
 
-    def test_audit_log_action_choices_password_reset_complete(
-        self, user, organisation
-    ) -> None:
+    def test_audit_log_action_choices_password_reset_complete(self, user, organisation) -> None:
         """Test audit log accepts 'password_reset_complete' action.
 
         Given: Action value 'password_reset_complete'
@@ -183,9 +179,7 @@ class TestAuditLogModel:
 
         assert log.action == "password_reset_complete"
 
-    def test_audit_log_action_choices_password_change(
-        self, user, organisation
-    ) -> None:
+    def test_audit_log_action_choices_password_change(self, user, organisation) -> None:
         """Test audit log accepts 'password_change' action.
 
         Given: Action value 'password_change'
@@ -249,9 +243,7 @@ class TestAuditLogModel:
 
         assert log.action == "2fa_disable"
 
-    def test_audit_log_action_choices_2fa_verify_success(
-        self, user, organisation
-    ) -> None:
+    def test_audit_log_action_choices_2fa_verify_success(self, user, organisation) -> None:
         """Test audit log accepts '2fa_verify_success' action.
 
         Given: Action value '2fa_verify_success'
@@ -267,9 +259,7 @@ class TestAuditLogModel:
 
         assert log.action == "2fa_verify_success"
 
-    def test_audit_log_action_choices_2fa_verify_failed(
-        self, user, organisation
-    ) -> None:
+    def test_audit_log_action_choices_2fa_verify_failed(self, user, organisation) -> None:
         """Test audit log accepts '2fa_verify_failed' action.
 
         Given: Action value '2fa_verify_failed'
@@ -397,9 +387,7 @@ class TestAuditLogModel:
         log.refresh_from_db()
         assert log.user_agent == long_user_agent
 
-    def test_audit_log_metadata_defaults_to_empty_dict(
-        self, user, organisation
-    ) -> None:
+    def test_audit_log_metadata_defaults_to_empty_dict(self, user, organisation) -> None:
         """Test audit log metadata defaults to empty dict.
 
         Given: AuditLog without metadata
@@ -475,9 +463,7 @@ class TestAuditLogModel:
         assert log.created_at is not None
         assert before <= log.created_at <= after
 
-    def test_audit_log_ordering_by_created_at_descending(
-        self, user, organisation
-    ) -> None:
+    def test_audit_log_ordering_by_created_at_descending(self, user, organisation) -> None:
         """Test audit logs are ordered by created_at descending by default.
 
         Given: Multiple audit logs
@@ -585,9 +571,7 @@ class TestAuditLogModel:
         When: Filtering by specific user
         Then: Only logs for that user are returned
         """
-        other_user = User.objects.create(
-            email="other@example.com", organisation=organisation
-        )
+        other_user = User.objects.create(email="other@example.com", organisation=organisation)
 
         log1 = AuditLog.objects.create(
             user=user,

@@ -11,18 +11,22 @@ These tests are in the RED phase of TDD - they WILL FAIL until the
 validators are fully implemented.
 """
 
-import pytest
-from django.core.exceptions import ValidationError
 from unittest.mock import Mock, patch
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ValidationError
+
+import pytest
 
 from apps.core.models import Organisation, PasswordHistory
+from config.validators import (
+    HIBPPasswordValidator as BreachedPasswordValidator,
+)
 from config.validators import (
     MinimumLengthValidator,
     PasswordComplexityValidator,
     PasswordHistoryValidator,
-    HIBPPasswordValidator as BreachedPasswordValidator,
 )
 
 User = get_user_model()
@@ -404,9 +408,7 @@ class TestPasswordHistoryValidator:
         old_password = "OldPassword123!@"
 
         # Create the oldest entry first
-        PasswordHistory.objects.create(
-            user=user, password_hash=make_password(old_password)
-        )
+        PasswordHistory.objects.create(user=user, password_hash=make_password(old_password))
         # Create 5 newer password history entries
         for i in range(5):
             PasswordHistory.objects.create(

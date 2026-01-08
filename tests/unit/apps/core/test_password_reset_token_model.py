@@ -16,13 +16,14 @@ barebones model skeleton until the model is fully implemented.
 """
 
 import uuid
-import pytest
 from datetime import timedelta
-from django.core.exceptions import ValidationError
+
 from django.db import IntegrityError
 from django.utils import timezone
 
-from apps.core.models import PasswordResetToken, User, Organisation
+import pytest
+
+from apps.core.models import Organisation, PasswordResetToken, User
 
 
 @pytest.mark.unit
@@ -142,9 +143,7 @@ class TestPasswordResetTokenModel:
 
         assert token.is_expired() is False
 
-    def test_password_reset_token_is_valid_when_not_expired_and_not_used(
-        self, user
-    ) -> None:
+    def test_password_reset_token_is_valid_when_not_expired_and_not_used(self, user) -> None:
         """Test is_valid() returns True when not expired and not used.
 
         Given: Token that is not expired and not used
@@ -326,9 +325,7 @@ class TestPasswordResetTokenModel:
         When: Filtering by specific user
         Then: Only tokens for that user are returned
         """
-        other_user = User.objects.create(
-            email="other@example.com", organisation=organisation
-        )
+        other_user = User.objects.create(email="other@example.com", organisation=organisation)
 
         token1 = PasswordResetToken.objects.create(
             user=user,

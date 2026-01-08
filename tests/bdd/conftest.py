@@ -4,7 +4,6 @@ This module provides BDD-specific fixtures and configuration for pytest-bdd test
 """
 
 import pytest
-from pytest_bdd import given
 
 
 @pytest.fixture
