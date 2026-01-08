@@ -239,6 +239,8 @@ cmd_lint() {
     dc exec ${WEB_SERVICE} ruff check .
     info "Running Black (check mode)..."
     dc exec ${WEB_SERVICE} black --check .
+    info "Running Flake8..."
+    dc exec ${WEB_SERVICE} flake8
     info "Running isort (check mode)..."
     dc exec ${WEB_SERVICE} isort --check-only .
     success "Linting completed."

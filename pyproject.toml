@@ -215,6 +215,8 @@ markers = [
     "graphql: marks tests for GraphQL API",
     "bdd: marks tests as BDD behaviour tests",
     "e2e: marks tests as end-to-end tests",
+    "security: marks tests for security features (CSRF, authentication, authorisation)",
+    "performance: marks tests for performance optimisation (N+1 queries, DataLoaders)",
 ]
 filterwarnings = [
     "error",

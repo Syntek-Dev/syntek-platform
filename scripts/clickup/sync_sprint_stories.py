@@ -477,7 +477,7 @@ def main():
 
     for sprint_file in sorted(sprint_files):
         try:
-            print(f"{'='*60}")
+            print(f"{'=' * 60}")
             sprint_data = parse_sprint_file(sprint_file)
             if not sprint_data:
                 error_count += 1
@@ -548,7 +548,7 @@ def main():
             json.dump(sprint_mapping, f, indent=2)
         print(f"\nUpdated sprint mapping file: {sprint_mapping_file}")
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"{'[DRY RUN] ' if args.dry_run else ''}Summary:")
     print(f"  Success: {success_count}")
     print(f"  Errors: {error_count}")

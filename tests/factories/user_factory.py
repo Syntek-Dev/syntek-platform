@@ -90,7 +90,7 @@ class UserProfileFactory(DjangoModelFactory):
 
     Attributes:
         user: OneToOne relationship to User
-        phone_number: User's phone number
+        phone: User's phone number (matches UserProfile model field name)
         avatar: Profile picture URL/path
     """
 
@@ -99,8 +99,8 @@ class UserProfileFactory(DjangoModelFactory):
         model = "core.UserProfile"
 
     user = SubFactory(UserFactory)
-    phone_number = Faker("phone_number")
-    avatar = None
+    phone = Faker("phone_number")
+    avatar = ""  # Empty string to match model default
 
 
 class AuditLogFactory(DjangoModelFactory):

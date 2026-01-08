@@ -377,7 +377,7 @@ def main():
 
     for sprint_file in sorted(sprint_files):
         try:
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             sprint_data = parse_sprint_file(sprint_file)
             if sprint_data:
                 print(f"Processing: {sprint_data['sprint_id']} - {sprint_data['title']}")
@@ -426,7 +426,7 @@ def main():
             traceback.print_exc()
             error_count += 1
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"{'[DRY RUN] ' if args.dry_run else ''}Summary:")
     print(f"  Success: {success_count}")
     print(f"  Errors: {error_count}")
