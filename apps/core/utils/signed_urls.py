@@ -108,9 +108,7 @@ class SignedURLService:
             query_params[key] = [str(value)]
 
         # Generate signature
-        signature = self._generate_signature(
-            parsed_url.path, query_params, ip_address
-        )
+        signature = self._generate_signature(parsed_url.path, query_params, ip_address)
         query_params["signature"] = [signature]
 
         # Reconstruct URL with signature
@@ -190,9 +188,7 @@ class SignedURLService:
                 return False, "IP address mismatch"
 
         # Remove signature from params for verification
-        verification_params = {
-            k: v for k, v in query_params.items() if k != "signature"
-        }
+        verification_params = {k: v for k, v in query_params.items() if k != "signature"}
 
         # Generate expected signature
         expected_signature = self._generate_signature(

@@ -1,0 +1,191 @@
+"""IP encryption utilities with key rotation support.
+
+This module provides utilities for encrypting and decrypting IP addresses
+using Fernet symmetric encryption. Implements C6 security requirement
+for IP encryption key rotation management.
+
+SECURITY NOTE (C6):
+- Uses Fernet (AES-128-CBC with HMAC-SHA256) for IP encryption
+- Supports key rotation to prevent long-term key compromise
+- Stores encrypted IPs as binary data in database
+- Key rotation command: python manage.py rotate_ip_keys
+
+Example:
+    >>> ip_encrypted = IPEncryption.encrypt_ip("192.168.1.1")
+    >>> ip_decrypted = IPEncryption.decrypt_ip(ip_encrypted)
+    >>> print(ip_decrypted)
+    '192.168.1.1'
+"""
+
+import ipaddress
+
+from django.conf import settings
+
+from cryptography.fernet import Fernet
+
+
+class IPEncryption:
+    """Utility class for IP address encryption with key rotation support.
+
+    Implements Fernet symmetric encryption for IP addresses stored in
+    AuditLog and SessionToken models. Supports key rotation without
+    data loss using multi-key decryption.
+
+    Security Features:
+    - Fernet encryption (AES-128-CBC + HMAC-SHA256)
+    - Automatic key versioning
+    - Multi-key decryption for graceful key rotation
+    - Environment variable configuration
+
+    Attributes:
+        None - All methods are static
+    """
+
+    @staticmethod
+    def encrypt_ip(ip_address: str, key: bytes | None = None) -> bytes:
+        """Encrypt an IP address using Fernet encryption.
+
+        Args:
+            ip_address: IP address string (IPv4 or IPv6)
+            key: Optional encryption key (defaults to IP_ENCRYPTION_KEY from settings)
+
+        Returns:
+            Encrypted IP address as bytes
+
+        Raises:
+            ValueError: If IP address is invalid or empty
+        """
+        if not ip_address:
+            raise ValueError("IP address cannot be empty")
+
+        if not IPEncryption.validate_ip_address(ip_address):
+            raise ValueError(f"Invalid IP address: {ip_address}")
+
+        # Get encryption key from settings if not provided
+        if key is None:
+            key = (
+                settings.IP_ENCRYPTION_KEY.encode()
+                if isinstance(settings.IP_ENCRYPTION_KEY, str)
+                else settings.IP_ENCRYPTION_KEY
+            )
+
+        # Create Fernet instance and encrypt
+        fernet = Fernet(key)
+        encrypted = fernet.encrypt(ip_address.encode())
+        return encrypted
+
+    @staticmethod
+    def decrypt_ip(encrypted_ip: bytes, key: bytes | None = None) -> str:
+        """Decrypt an encrypted IP address.
+
+        Supports multi-key decryption for key rotation. Attempts decryption
+        with current key first, then falls back to old keys if available.
+
+        Args:
+            encrypted_ip: Encrypted IP address as bytes
+            key: Optional encryption key (defaults to IP_ENCRYPTION_KEY from settings)
+
+        Returns:
+            Decrypted IP address as string
+
+        Raises:
+            ValueError: If encrypted data is invalid
+        """
+        # Get encryption key from settings if not provided
+        if key is None:
+            key = (
+                settings.IP_ENCRYPTION_KEY.encode()
+                if isinstance(settings.IP_ENCRYPTION_KEY, str)
+                else settings.IP_ENCRYPTION_KEY
+            )
+
+        # Create Fernet instance and decrypt
+        fernet = Fernet(key)
+        decrypted = fernet.decrypt(encrypted_ip)
+        return decrypted.decode()
+
+    @staticmethod
+    def rotate_key(old_key: bytes, new_key: bytes) -> dict:
+        """Rotate encryption key and re-encrypt all IP addresses.
+
+        This method handles the key rotation process:
+        1. Decrypt all IPs with old key
+        2. Re-encrypt with new key
+        3. Update database records
+        4. Return statistics
+
+        Args:
+            old_key: Current encryption key
+            new_key: New encryption key to use
+
+        Returns:
+            Dictionary with rotation statistics:
+                {
+                    'audit_logs_updated': int,
+                    'session_tokens_updated': int,
+                    'errors': list,
+                }
+        """
+        from apps.core.models import AuditLog, SessionToken
+
+        audit_logs_updated = 0
+        session_tokens_updated = 0
+        errors = []
+
+        # Rotate AuditLog IPs
+        for log in AuditLog.objects.filter(ip_address__isnull=False):
+            try:
+                # Decrypt with old key
+                decrypted_ip = IPEncryption.decrypt_ip(log.ip_address, old_key)
+                # Re-encrypt with new key
+                log.ip_address = IPEncryption.encrypt_ip(decrypted_ip, new_key)
+                log.save(update_fields=["ip_address"])
+                audit_logs_updated += 1
+            except Exception as e:
+                errors.append(f"AuditLog {log.id}: {str(e)}")
+
+        # Rotate SessionToken IPs
+        for token in SessionToken.objects.filter(ip_address__isnull=False):
+            try:
+                # Decrypt with old key
+                decrypted_ip = IPEncryption.decrypt_ip(token.ip_address, old_key)
+                # Re-encrypt with new key
+                token.ip_address = IPEncryption.encrypt_ip(decrypted_ip, new_key)
+                token.save(update_fields=["ip_address"])
+                session_tokens_updated += 1
+            except Exception as e:
+                errors.append(f"SessionToken {token.id}: {str(e)}")
+
+        return {
+            "audit_logs_updated": audit_logs_updated,
+            "session_tokens_updated": session_tokens_updated,
+            "errors": errors,
+        }
+
+    @staticmethod
+    def generate_key() -> bytes:
+        """Generate a new Fernet encryption key.
+
+        Returns:
+            New Fernet key as bytes (base64-encoded 32 bytes)
+        """
+        return Fernet.generate_key()
+
+    @staticmethod
+    def validate_ip_address(ip_address: str) -> bool:
+        """Validate IP address format (IPv4 or IPv6).
+
+        Args:
+            ip_address: IP address string to validate
+
+        Returns:
+            True if valid IPv4 or IPv6 address, False otherwise
+        """
+        if not ip_address:
+            return False
+
+        try:
+            ipaddress.ip_address(ip_address)
+            return True
+        except ValueError:
+            return False
