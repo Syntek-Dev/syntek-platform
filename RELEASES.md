@@ -1,7 +1,7 @@
 # Release Notes
 
 **Last Updated**: 08/01/2026
-**Version**: 0.4.1
+**Version**: 0.5.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -15,54 +15,161 @@ This file contains user-facing release notes for all versions of the backend tem
 ## Table of Contents
 
 - [Release Notes](#release-notes)
+  - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Latest Release](#latest-release)
-    - [Version 0.4.1 - 8 January 2026](#version-041---8-january-2026)
+    - [Version 0.5.0 - 8 January 2026](#version-050---8-january-2026)
       - [What's New](#whats-new)
       - [Why This Matters](#why-this-matters)
       - [Technical Details](#technical-details)
-      - [Performance Improvements](#performance-improvements)
       - [Coming Soon](#coming-soon)
   - [Previous Releases](#previous-releases)
-    - [Version 0.4.0 - 7 January 2026](#version-040---7-january-2026)
+    - [Version 0.4.1 - 8 January 2026](#version-041---8-january-2026)
       - [What's New](#whats-new-1)
       - [Why This Matters](#why-this-matters-1)
       - [Technical Details](#technical-details-1)
+      - [Performance Improvements](#performance-improvements)
       - [Coming Soon](#coming-soon-1)
-    - [Version 0.3.3 - 7 January 2026](#version-033---7-january-2026)
+    - [Version 0.4.0 - 7 January 2026](#version-040---7-january-2026)
       - [What's New](#whats-new-2)
       - [Why This Matters](#why-this-matters-2)
       - [Technical Details](#technical-details-2)
-    - [Version 0.3.2 - 6 January 2026](#version-032---6-january-2026)
+      - [Coming Soon](#coming-soon-2)
+    - [Version 0.3.3 - 7 January 2026](#version-033---7-january-2026)
       - [What's New](#whats-new-3)
       - [Why This Matters](#why-this-matters-3)
       - [Technical Details](#technical-details-3)
-    - [Version 0.3.1 - 6 January 2026](#version-031---6-january-2026)
+    - [Version 0.3.2 - 6 January 2026](#version-032---6-january-2026)
       - [What's New](#whats-new-4)
       - [Why This Matters](#why-this-matters-4)
       - [Technical Details](#technical-details-4)
-    - [Version 0.3.0 - 6 January 2026](#version-030---6-january-2026)
+    - [Version 0.3.1 - 6 January 2026](#version-031---6-january-2026)
       - [What's New](#whats-new-5)
       - [Why This Matters](#why-this-matters-5)
-      - [Technical Improvements](#technical-improvements)
-      - [Coming Soon](#coming-soon-2)
-  - [Previous Releases (v0.2.x)](#previous-releases-v02x)
-    - [Version 0.2.0 - 3 January 2026](#version-020---3-january-2026)
+      - [Technical Details](#technical-details-5)
+    - [Version 0.3.0 - 6 January 2026](#version-030---6-january-2026)
       - [What's New](#whats-new-6)
       - [Why This Matters](#why-this-matters-6)
-      - [Technical Details](#technical-details-5)
+      - [Technical Improvements](#technical-improvements)
+      - [Coming Soon](#coming-soon-3)
+  - [Previous Releases (v0.2.x)](#previous-releases-v02x)
+    - [Version 0.2.0 - 3 January 2026](#version-020---3-january-2026)
+      - [What's New](#whats-new-7)
+      - [Why This Matters](#why-this-matters-7)
+      - [Technical Details](#technical-details-6)
   - [Previous Releases (v0.1.x)](#previous-releases-v01x)
     - [Version 0.1.0 - 3 January 2026](#version-010---3-january-2026)
-      - [What's New](#whats-new-7)
+      - [What's New](#whats-new-8)
       - [Key Features](#key-features)
       - [Getting Started](#getting-started)
       - [What This Means for You](#what-this-means-for-you)
-      - [Coming Soon](#coming-soon-3)
+      - [Coming Soon](#coming-soon-4)
   - [Previous Releases (Pre-v0.1.0)](#previous-releases-pre-v010)
 
 ---
 
 ## Latest Release
+
+### Version 0.5.0 - 8 January 2026
+
+This release completes US-001 Phase 2, delivering comprehensive authentication services, enhanced security features, and complete backend functionality for user management. Your application now has enterprise-grade authentication capabilities.
+
+#### What's New
+
+**Complete Authentication Services**
+
+We've built the complete service layer for user authentication:
+
+- **Authentication Service**: Handle user registration, login, and session management with a clean, easy-to-use API
+- **Token Service**: Manage all authentication tokens (email verification, password reset, 2FA) with secure hashing
+- **Email Service**: Send verification emails, password reset links, and notifications with customisable templates
+- **Password Reset Service**: Self-service password recovery with secure token generation and validation
+- **Audit Service**: Track all authentication activities with encrypted IP addresses and detailed event logging
+
+**Enhanced Security Features**
+
+Your application is now protected with military-grade security:
+
+- **Token Encryption**: All authentication tokens use HMAC-SHA256 hashing for maximum security against timing attacks
+- **Data Encryption**: Sensitive data is encrypted at rest using industry-standard cryptographic libraries
+- **Secure Password Reset**: One-time tokens with automatic expiry prevent unauthorized account access
+- **Comprehensive Audit Trail**: Every authentication action is logged with timestamp, IP address, and user details
+- **Enhanced Validators**: Password strength validation prevents weak passwords from being used
+
+**Improved Code Quality**
+
+Behind the scenes, we've enhanced the codebase for better maintainability:
+
+- **Service Layer Pattern**: Clean separation of business logic from models and views
+- **Enhanced Models**: User and token models now include additional security tracking
+- **Better Testing**: Comprehensive Phase 2 security tests ensure all features work correctly
+- **Updated Documentation**: Complete documentation for all new services and utilities
+
+#### Why This Matters
+
+**For Users:**
+
+- **Secure Accounts**: Your password reset requests are now handled with enhanced security
+- **Email Verification**: Receive professional-looking verification emails with clear instructions
+- **Activity Tracking**: All your login activity is securely logged for your protection
+- **Better Support**: Support teams can now track and resolve account issues more efficiently
+
+**For Administrators:**
+
+- **Complete Audit Trail**: View detailed logs of all authentication activities
+- **Enhanced Security**: HMAC-SHA256 token hashing prevents timing attacks
+- **Better Monitoring**: Audit service provides comprehensive security event tracking
+- **Easier Management**: Service layer makes it simple to customise authentication workflows
+
+**For Developers:**
+
+- **Clean APIs**: Easy-to-use service classes for all authentication operations
+- **Well Tested**: Comprehensive test suite ensures reliability
+- **Security Best Practices**: All services follow industry-standard security patterns
+- **Easy Integration**: Simple service interfaces make adding authentication features straightforward
+- **Good Documentation**: Complete documentation and code examples for all services
+
+#### Technical Details
+
+This is a minor version bump (0.4.1 → 0.5.0) because we've added significant new features (complete authentication service layer) without breaking any existing functionality.
+
+**What's Included:**
+
+- Authentication service (registration, login, logout)
+- Token service (generation, validation, expiry)
+- Email service (verification, password reset, notifications)
+- Password reset service (secure token workflow)
+- Audit service (activity logging with encryption)
+- Encryption utilities (data protection)
+- Token hashing utilities (HMAC-SHA256)
+- Enhanced models with additional security features
+- Comprehensive Phase 2 testing
+- Updated documentation
+
+**No Database Changes:**
+
+This release focuses on services and utilities without database schema changes. No migrations are required.
+
+**No Breaking Changes:**
+
+- All changes are backwards compatible
+- Existing functionality continues to work
+- No API endpoint changes
+- Safe to deploy to all environments
+
+#### Coming Soon
+
+In our next release (Phase 3), we're working on:
+
+- **GraphQL API Endpoints**: Mutations for registration, login, password reset, and 2FA
+- **API Authentication**: JWT token-based authentication for API access
+- **API Documentation**: Interactive API documentation with examples
+- **Frontend Integration**: Ready-to-use API endpoints for web and mobile applications
+- **Real-time Features**: WebSocket support for real-time notifications
+
+---
+
+## Previous Releases
 
 ### Version 0.4.1 - 8 January 2026
 
@@ -162,8 +269,6 @@ In our next release (Phase 2), we're working on:
 - **Frontend Integration**: API endpoints ready for web and mobile apps
 
 ---
-
-## Previous Releases
 
 ### Version 0.4.0 - 7 January 2026
 

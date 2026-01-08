@@ -1,7 +1,7 @@
 # Version History
 
 **Last Updated**: 08/01/2026
-**Version**: 0.4.1
+**Version**: 0.5.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -15,20 +15,26 @@ This file contains detailed technical version history documenting all file chang
 ## Table of Contents
 
 - [Version History](#version-history)
+  - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [\[Unreleased\]](#unreleased)
     - [Technical Changes](#technical-changes)
-  - [\[0.4.1\] - 08/01/2026](#041---08012026)
+  - [\[0.5.0\] - 08/01/2026](#050---08012026)
     - [Summary](#summary)
     - [Breaking Changes](#breaking-changes)
     - [Database Migrations](#database-migrations)
     - [API Changes](#api-changes)
     - [Files Changed](#files-changed)
-      - [Core App (Updated)](#core-app-updated)
-      - [Documentation (Updated)](#documentation-updated)
-      - [Documentation (Consolidated)](#documentation-consolidated)
+      - [Core Services (New)](#core-services-new)
+      - [Core Utilities (New)](#core-utilities-new)
+      - [Core Management Commands (New)](#core-management-commands-new)
+      - [Models (Updated)](#models-updated)
       - [Configuration (Updated)](#configuration-updated)
-    - [Dependencies Updated](#dependencies-updated)
+      - [Tests (Updated)](#tests-updated)
+      - [Documentation (Updated)](#documentation-updated)
+      - [Scripts (Updated)](#scripts-updated)
+      - [Dependencies (Updated)](#dependencies-updated)
+    - [Dependencies Updated](#dependencies-updated-1)
     - [Configuration Changes](#configuration-changes)
     - [Performance Notes](#performance-notes)
     - [Security Notes](#security-notes)
@@ -36,49 +42,67 @@ This file contains detailed technical version history documenting all file chang
     - [Testing Notes](#testing-notes)
     - [Migration Notes](#migration-notes)
     - [Deployment Notes](#deployment-notes)
-  - [\[0.4.0\] - 07/01/2026](#040---07012026)
+  - [\[0.4.1\] - 08/01/2026](#041---08012026)
     - [Summary](#summary-1)
     - [Breaking Changes](#breaking-changes-1)
     - [Database Migrations](#database-migrations-1)
     - [API Changes](#api-changes-1)
     - [Files Changed](#files-changed-1)
-      - [Core App (New)](#core-app-new)
-      - [Security (New)](#security-new)
-      - [Tests (New)](#tests-new)
+      - [Core App (Updated)](#core-app-updated)
+      - [Documentation (Updated)](#documentation-updated-1)
+      - [Documentation (Consolidated)](#documentation-consolidated)
       - [Configuration (Updated)](#configuration-updated-1)
-      - [Environment Configuration (Updated)](#environment-configuration-updated)
-      - [Scripts (Updated)](#scripts-updated)
-      - [Docker (Updated)](#docker-updated)
-      - [Ignore Files (Updated)](#ignore-files-updated)
-    - [Dependencies Updated](#dependencies-updated-1)
+    - [Dependencies Updated](#dependencies-updated-2)
     - [Configuration Changes](#configuration-changes-1)
     - [Performance Notes](#performance-notes-1)
     - [Security Notes](#security-notes-1)
-    - [Testing Notes](#testing-notes-1)
     - [Documentation Notes](#documentation-notes-1)
+    - [Testing Notes](#testing-notes-1)
     - [Migration Notes](#migration-notes-1)
     - [Deployment Notes](#deployment-notes-1)
-  - [\[0.3.3\] - 07/01/2026](#033---07012026)
+  - [\[0.4.0\] - 07/01/2026](#040---07012026)
     - [Summary](#summary-2)
     - [Breaking Changes](#breaking-changes-2)
     - [Database Migrations](#database-migrations-2)
     - [API Changes](#api-changes-2)
     - [Files Changed](#files-changed-2)
-      - [Documentation (New)](#documentation-new)
-      - [Documentation (Updated)](#documentation-updated-1)
-      - [Documentation (Removed)](#documentation-removed)
-      - [Configuration](#configuration)
-    - [Key Documentation Additions](#key-documentation-additions)
-    - [Technical Details](#technical-details)
-    - [Migration Notes](#migration-notes-2)
+      - [Core App (New)](#core-app-new)
+      - [Security (New)](#security-new)
+      - [Tests (New)](#tests-new)
+      - [Configuration (Updated)](#configuration-updated-2)
+      - [Environment Configuration (Updated)](#environment-configuration-updated)
+      - [Scripts (Updated)](#scripts-updated-1)
+      - [Docker (Updated)](#docker-updated)
+      - [Ignore Files (Updated)](#ignore-files-updated)
+    - [Dependencies Updated](#dependencies-updated-3)
+    - [Configuration Changes](#configuration-changes-2)
+    - [Performance Notes](#performance-notes-2)
+    - [Security Notes](#security-notes-2)
     - [Testing Notes](#testing-notes-2)
+    - [Documentation Notes](#documentation-notes-2)
+    - [Migration Notes](#migration-notes-2)
     - [Deployment Notes](#deployment-notes-2)
-  - [\[0.3.2\] - 06/01/2026](#032---06012026)
+  - [\[0.3.3\] - 07/01/2026](#033---07012026)
     - [Summary](#summary-3)
     - [Breaking Changes](#breaking-changes-3)
     - [Database Migrations](#database-migrations-3)
     - [API Changes](#api-changes-3)
     - [Files Changed](#files-changed-3)
+      - [Documentation (New)](#documentation-new)
+      - [Documentation (Updated)](#documentation-updated-2)
+      - [Documentation (Removed)](#documentation-removed)
+      - [Configuration](#configuration)
+    - [Key Documentation Additions](#key-documentation-additions)
+    - [Technical Details](#technical-details)
+    - [Migration Notes](#migration-notes-3)
+    - [Testing Notes](#testing-notes-3)
+    - [Deployment Notes](#deployment-notes-3)
+  - [\[0.3.2\] - 06/01/2026](#032---06012026)
+    - [Summary](#summary-4)
+    - [Breaking Changes](#breaking-changes-4)
+    - [Database Migrations](#database-migrations-4)
+    - [API Changes](#api-changes-4)
+    - [Files Changed](#files-changed-4)
       - [Git Hooks (Husky)](#git-hooks-husky)
       - [Ruff Linting Fixes (Plugin Files)](#ruff-linting-fixes-plugin-files)
       - [Ruff Linting Fixes (ClickUp Scripts)](#ruff-linting-fixes-clickup-scripts)
@@ -88,22 +112,22 @@ This file contains detailed technical version history documenting all file chang
     - [Developer Notes](#developer-notes)
     - [Migration Instructions](#migration-instructions)
   - [\[0.3.1\] - 06/01/2026](#031---06012026)
-    - [Summary](#summary-4)
-    - [Breaking Changes](#breaking-changes-4)
-    - [Database Migrations](#database-migrations-4)
-    - [API Changes](#api-changes-4)
-    - [Files Changed](#files-changed-4)
+    - [Summary](#summary-5)
+    - [Breaking Changes](#breaking-changes-5)
+    - [Database Migrations](#database-migrations-5)
+    - [API Changes](#api-changes-5)
+    - [Files Changed](#files-changed-5)
       - [Documentation Formatting (Markdown Lint Fixes)](#documentation-formatting-markdown-lint-fixes)
       - [Build and Configuration](#build-and-configuration)
     - [Dependencies](#dependencies-1)
     - [Developer Notes](#developer-notes-1)
     - [Migration Instructions](#migration-instructions-1)
   - [\[0.3.0\] - 06/01/2026](#030---06012026)
-    - [Summary](#summary-5)
-    - [Breaking Changes](#breaking-changes-5)
-    - [Database Migrations](#database-migrations-5)
-    - [API Changes](#api-changes-5)
-    - [Files Changed](#files-changed-5)
+    - [Summary](#summary-6)
+    - [Breaking Changes](#breaking-changes-6)
+    - [Database Migrations](#database-migrations-6)
+    - [API Changes](#api-changes-6)
+    - [Files Changed](#files-changed-6)
       - [Platform Architecture Documentation](#platform-architecture-documentation)
       - [Sprint and User Story Management](#sprint-and-user-story-management)
       - [ClickUp Integration Enhancement](#clickup-integration-enhancement)
@@ -115,34 +139,34 @@ This file contains detailed technical version history documenting all file chang
       - [Automation Scripts](#automation-scripts)
       - [Comprehensive Documentation Updates](#comprehensive-documentation-updates)
       - [Code Refactoring](#code-refactoring)
-    - [Dependencies Updated](#dependencies-updated-2)
-    - [Configuration Changes](#configuration-changes-2)
-    - [Performance Notes](#performance-notes-2)
-    - [Security Notes](#security-notes-2)
+    - [Dependencies Updated](#dependencies-updated-4)
+    - [Configuration Changes](#configuration-changes-3)
+    - [Performance Notes](#performance-notes-3)
+    - [Security Notes](#security-notes-3)
     - [Documentation Standards](#documentation-standards)
     - [Platform Architecture](#platform-architecture)
     - [Git Workflow Plugin Features](#git-workflow-plugin-features)
     - [ClickUp Integration Enhancements](#clickup-integration-enhancements)
   - [\[0.2.0\] - 03/01/2026](#020---03012026)
-    - [Summary](#summary-6)
-    - [Breaking Changes](#breaking-changes-6)
-    - [Database Migrations](#database-migrations-6)
-    - [API Changes](#api-changes-6)
-    - [Files Changed](#files-changed-6)
-      - [Version Management](#version-management)
-      - [Markdown Documentation Headers](#markdown-documentation-headers)
-    - [Dependencies Updated](#dependencies-updated-3)
-    - [Configuration Changes](#configuration-changes-3)
-    - [Performance Notes](#performance-notes-3)
-    - [Security Notes](#security-notes-3)
-    - [Documentation Standards](#documentation-standards-1)
-    - [Version Management Workflow](#version-management-workflow)
-  - [\[0.1.0\] - 03/01/2026](#010---03012026)
     - [Summary](#summary-7)
     - [Breaking Changes](#breaking-changes-7)
     - [Database Migrations](#database-migrations-7)
     - [API Changes](#api-changes-7)
     - [Files Changed](#files-changed-7)
+      - [Version Management](#version-management)
+      - [Markdown Documentation Headers](#markdown-documentation-headers)
+    - [Dependencies Updated](#dependencies-updated-5)
+    - [Configuration Changes](#configuration-changes-4)
+    - [Performance Notes](#performance-notes-4)
+    - [Security Notes](#security-notes-4)
+    - [Documentation Standards](#documentation-standards-1)
+    - [Version Management Workflow](#version-management-workflow)
+  - [\[0.1.0\] - 03/01/2026](#010---03012026)
+    - [Summary](#summary-8)
+    - [Breaking Changes](#breaking-changes-8)
+    - [Database Migrations](#database-migrations-8)
+    - [API Changes](#api-changes-8)
+    - [Files Changed](#files-changed-8)
       - [Core Django Configuration](#core-django-configuration)
       - [API and Security](#api-and-security)
       - [Docker Configuration](#docker-configuration-1)
@@ -156,10 +180,10 @@ This file contains detailed technical version history documenting all file chang
       - [Automation Scripts](#automation-scripts-1)
       - [IDE Configuration](#ide-configuration)
       - [Documentation](#documentation-1)
-    - [Dependencies Updated](#dependencies-updated-4)
-    - [Configuration Changes](#configuration-changes-4)
-    - [Performance Notes](#performance-notes-4)
-    - [Security Notes](#security-notes-4)
+    - [Dependencies Updated](#dependencies-updated-6)
+    - [Configuration Changes](#configuration-changes-5)
+    - [Performance Notes](#performance-notes-5)
+    - [Security Notes](#security-notes-5)
     - [Infrastructure](#infrastructure)
     - [Development Workflow](#development-workflow)
     - [Testing](#testing)
@@ -172,6 +196,214 @@ This file contains detailed technical version history documenting all file chang
 ### Technical Changes
 
 - Nothing yet
+
+---
+
+## [0.5.0] - 08/01/2026
+
+### Summary
+
+Feature enhancement release completing US-001 Phase 2 with comprehensive authentication services, encryption utilities, token management, email services, and enhanced security features. This release builds upon the Phase 1 foundation to provide complete backend authentication functionality.
+
+### Breaking Changes
+
+None - All changes are additive feature enhancements.
+
+### Database Migrations
+
+None - No database schema changes in this release.
+
+### API Changes
+
+None - API endpoints will be added in future releases.
+
+### Files Changed
+
+#### Core Services (New)
+
+| File                                           | Changes                                                          |
+| ---------------------------------------------- | ---------------------------------------------------------------- |
+| `apps/core/services/audit_service.py`          | New audit logging service for tracking user activity             |
+| `apps/core/services/auth_service.py`           | New authentication service (registration, login, password reset) |
+| `apps/core/services/email_service.py`          | New email service for verification and notification emails       |
+| `apps/core/services/password_reset_service.py` | New password reset service with secure token generation          |
+| `apps/core/services/token_service.py`          | New token management service for authentication tokens           |
+
+#### Core Utilities (New)
+
+| File                              | Changes                                                |
+| --------------------------------- | ------------------------------------------------------ |
+| `apps/core/utils/encryption.py`   | New encryption utilities for sensitive data protection |
+| `apps/core/utils/token_hasher.py` | New HMAC-SHA256 token hashing utilities                |
+
+#### Core Management Commands (New)
+
+| File                    | Changes                                      |
+| ----------------------- | -------------------------------------------- |
+| `apps/core/management/` | New directory for Django management commands |
+
+#### Models (Updated)
+
+| File                                   | Changes                                           |
+| -------------------------------------- | ------------------------------------------------- |
+| `apps/core/models/audit_log.py`        | Enhanced with additional security tracking fields |
+| `apps/core/models/session_token.py`    | Enhanced with improved session tracking           |
+| `apps/core/models/base_token.py`       | Refactored for better token management            |
+| `apps/core/models/password_history.py` | Enhanced password history tracking                |
+| `apps/core/models/totp_device.py`      | Enhanced 2FA device management                    |
+| `apps/core/models/user.py`             | Enhanced with additional security methods         |
+
+#### Configuration (Updated)
+
+| File                                | Changes                                            |
+| ----------------------------------- | -------------------------------------------------- |
+| `config/settings/base.py`           | Enhanced with authentication service configuration |
+| `config/settings/dev.py`            | Enhanced development email configuration           |
+| `config/validators/password.py`     | Enhanced password validation rules                 |
+| `config/middleware/ip_allowlist.py` | Enhanced IP allowlist middleware                   |
+
+#### Tests (Updated)
+
+| File                                                  | Changes                                  |
+| ----------------------------------------------------- | ---------------------------------------- |
+| `tests/unit/apps/core/test_phase2_security.py`        | New comprehensive Phase 2 security tests |
+| `tests/bdd/step_defs/test_user_registration_steps.py` | Enhanced user registration BDD tests     |
+| Various test files                                    | Updated for enhanced security features   |
+
+#### Documentation (Updated)
+
+| File                                                        | Changes                                     |
+| ----------------------------------------------------------- | ------------------------------------------- |
+| `docs/LOGGING/US-001/LOGGING-REPORT-US-001.md`              | New comprehensive logging report for US-001 |
+| `docs/SPRINTS/LOGS/COMPLETION-2026-01-08-US-001-PHASE-2.md` | New Phase 2 completion log                  |
+| `docs/TESTS/MANUAL/MANUAL-US-001-PHASE-2.md`                | New manual testing documentation            |
+| Multiple documentation files                                | Updated version headers to 0.5.0            |
+
+#### Scripts (Updated)
+
+| File                                        | Changes                                   |
+| ------------------------------------------- | ----------------------------------------- |
+| `scripts/documentation/check_docstrings.py` | Enhanced docstring validation             |
+| `scripts/documentation/fix_overviews.py`    | Enhanced overview section formatting      |
+| `scripts/env/dev.sh`                        | Enhanced development environment commands |
+| `scripts/env/test.sh`                       | Enhanced testing environment commands     |
+
+#### Dependencies (Updated)
+
+| File             | Changes                                          |
+| ---------------- | ------------------------------------------------ |
+| `pyproject.toml` | Updated dependencies for authentication features |
+| `uv.lock`        | Updated lock file with new dependencies          |
+
+### Dependencies Updated
+
+None - Existing dependencies were sufficient for authentication features.
+
+### Configuration Changes
+
+| File             | Key       | Change                      |
+| ---------------- | --------- | --------------------------- |
+| `pyproject.toml` | `version` | Updated from 0.4.1 to 0.5.0 |
+| `package.json`   | `version` | Updated from 0.4.1 to 0.5.0 |
+
+### Performance Notes
+
+- Encryption utilities use optimised cryptographic libraries for best performance
+- Token hashing uses constant-time comparison to prevent timing attacks
+- Service layer provides clean separation of concerns for better maintainability
+
+### Security Notes
+
+**Enhanced Authentication Security:**
+
+- All authentication tokens now use HMAC-SHA256 hashing for secure storage
+- Encryption utilities protect sensitive data at rest
+- Token service provides centralised token management with security best practices
+- Audit service logs all security-relevant events with encrypted IP addresses
+
+**Password Security:**
+
+- Enhanced password validators prevent weak passwords
+- Password reset service uses secure token generation
+- Password history prevents reuse of old passwords
+
+**Session Security:**
+
+- Session tokens include device and location tracking
+- Automatic session expiry and cleanup
+- Secure session validation with token hashing
+
+### Documentation Notes
+
+**Phase 2 Completion Documentation:**
+
+- Comprehensive logging report documenting all audit and security logging
+- Sprint completion log tracking Phase 2 milestone achievement
+- Manual testing documentation for validation of authentication features
+- Updated all documentation version headers to reflect 0.5.0 release
+
+### Testing Notes
+
+**Enhanced Test Coverage:**
+
+- New Phase 2 security tests validate authentication services
+- Updated BDD tests for user registration workflow
+- Enhanced factory patterns for test data generation
+- Comprehensive testing of encryption and token utilities
+
+**Running Tests:**
+
+```bash
+# Run all Phase 2 tests
+./scripts/env/test.sh run tests/unit/apps/core/test_phase2_security.py
+
+# Run authentication BDD tests
+./scripts/env/test.sh run tests/bdd/
+
+# Run all tests with coverage
+./scripts/env/test.sh coverage
+```
+
+### Migration Notes
+
+**No Database Migrations Required:**
+This release focuses on service layer and utilities without database schema changes.
+
+**To Update:**
+
+```bash
+# Pull latest code
+git pull origin us001/user-authentication
+
+# No migrations needed
+# Start using new services immediately
+```
+
+### Deployment Notes
+
+**What Changed:**
+
+- ✅ New authentication services (auth, token, email, password reset, audit)
+- ✅ New encryption and token hashing utilities
+- ✅ Enhanced models with additional security features
+- ✅ Comprehensive Phase 2 testing and documentation
+- ✅ Updated configuration for authentication features
+
+**No Breaking Changes:**
+
+- All changes are backwards compatible
+- Existing functionality continues to work
+- No API endpoint changes (to be added in future releases)
+- Safe to deploy to all environments
+
+**Next Steps:**
+Phase 3 will add GraphQL API endpoints for:
+
+- User registration
+- Login and authentication
+- Password reset workflow
+- Email verification
+- 2FA setup and verification
 
 ---
 
