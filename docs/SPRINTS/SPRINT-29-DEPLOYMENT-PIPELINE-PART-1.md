@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint establishes the automated CI/CD pipeline using GitHub Actions for continuous integration and deployment. It covers the foundational infrastructure for testing, building Docker images, and deploying the backend and frontend web applications to staging environments. This is the first of two sprints for the deployment pipeline, focusing on CI/CD setup, automated testing on pull requests, backend Docker containerisation, database migration automation, and web frontend deployment. Part 2 (Sprint 30) will handle mobile app deployment, blue-green deployments, and advanced rollback features.
+
+---
+
 ## Sprint Goal
 
 Implement automated CI/CD pipeline with GitHub Actions for testing, building, and deploying

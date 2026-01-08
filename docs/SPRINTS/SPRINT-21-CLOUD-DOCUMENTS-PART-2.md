@@ -8,6 +8,20 @@
 
 ---
 
+## Overview
+
+This sprint completes the Cloud Documents integration by implementing advanced features that enhance document management, collaboration, and productivity. Building on the core functionality from Sprint 20, this iteration adds permissions management, version history, full-text search, folder organisation, export capabilities, and mobile editing support. The focus is on creating a comprehensive, professional document management system comparable to enterprise solutions like Google Drive or OnlyOffice.
+
+**Key Deliverables:**
+- Document permission system with granular access control
+- Version history viewer with rollback capability
+- Full-text search across document names and content
+- Folder operations (create, move, rename, delete)
+- Multi-format export (PDF, DOCX, XLSX, PPTX, ODF)
+- Mobile document editing interface
+
+---
+
 ## Table of Contents
 
 - [Sprint Goal](#sprint-goal)

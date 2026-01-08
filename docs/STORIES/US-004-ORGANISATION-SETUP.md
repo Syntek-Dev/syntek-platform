@@ -5,6 +5,10 @@
 **Last Updated**: 07/01/2026
 **Version**: 1.1
 
+## Overview
+
+This user story implements the organisation creation and multi-tenancy foundation. Users can create organisations during registration, set up custom domains, and manage team members through an email-based invitation system with role-based access control. Multi-tenancy is enforced at the database and GraphQL levels to ensure data isolation between organisations.
+
 ## Story
 
 **As a** new user or organisation admin

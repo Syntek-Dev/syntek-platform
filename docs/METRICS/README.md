@@ -8,7 +8,11 @@
 
 ---
 
-This folder contains data for the self-learning system that improves agent performance over time.
+## Overview
+
+This folder contains data for the self-learning system that improves agent performance over time. The metrics system tracks agent runs, collects user feedback, analyses performance patterns, and generates prompt optimisations to continuously improve Claude agent effectiveness.
+
+---
 
 ## Table of Contents
 

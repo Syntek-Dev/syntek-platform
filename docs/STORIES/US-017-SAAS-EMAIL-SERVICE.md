@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2t9j -->
 
+## Overview
+
+This story covers an integrated email service within the platform, allowing businesses to manage email communications directly from Syntek. Features include custom domain configuration with DNS setup, email account management, inbox interface, message composition with rich text editing, email templates with design token integration, contact management, basic analytics, and spam filtering.
+
 ## Story
 
 **As a** business owner

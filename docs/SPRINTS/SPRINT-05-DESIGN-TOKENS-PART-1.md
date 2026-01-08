@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint implements the core design token system enabling organisations to define and manage brand identity through colours, fonts, spacing, typography, and breakpoints. User story **US-005 (Design Token System Part 1)** creates token models with versioning, a token editor UI with live preview, and GraphQL API support. Token types include colour tokens with contrast ratio calculation, font tokens with Google Fonts integration, spacing tokens with consistent scales, breakpoint tokens for responsive design, and typography tokens. The system caches tokens with 1-hour TTL for performance. This foundation enables consistent branding across all web and mobile applications. Export functionality, templates, and rollback features are deferred to Sprint 6 to focus on core editor quality.
+
+---
+
 ## Sprint Goal
 
 Implement the core design token system enabling organisations to define and manage brand colours,

@@ -8,11 +8,25 @@
 
 ---
 
-> Complete reference for using the Syntek Dev Suite plugin with Claude Code
+## Overview
+
+Complete reference guide for using the Syntek Dev Suite plugin system with Claude Code. This guide covers:
+
+- **Available Agents:** Specialised agents for planning, development, quality, security, and deployment
+- **Typical Workflows:** Step-by-step examples for common development tasks
+- **Self-Learning System:** Feedback, optimisations, and A/B testing for continuous improvement
+- **Django-Specific Tips:** Recommendations for backend, database, and testing agents
+- **Best Practices:** How to get the most from each agent
+- **Troubleshooting:** Solutions for common issues
+
+**Quick Start:** Use `/syntek-dev-suite:plan` to start new features, `/syntek-dev-suite:backend` for implementation, and `/syntek-dev-suite:test-writer` for tests.
+
+---
 
 ## Table of Contents
 
 - [Syntek Dev Suite - Plugin Usage Guide](#syntek-dev-suite---plugin-usage-guide)
+  - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Quick Start](#quick-start)
     - [Most Common Commands](#most-common-commands)

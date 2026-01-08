@@ -8,6 +8,19 @@
 
 ---
 
+## Overview
+
+Second sprint delivering two-factor authentication (2FA) for secure login and establishing the GraphQL API infrastructure. This sprint is critical on the project's critical path - US-011 GraphQL API must be completed by end of week 1 to avoid blocking all future feature development.
+
+**Sprint Focus:**
+
+- **US-002:** Login with 2FA - 8 points (TOTP, backup codes, account lockout)
+- **US-011:** GraphQL API foundation - 3 points (Strawberry setup, auth, depth/complexity limiting)
+
+**Critical Dependency:** GraphQL API blocks 15+ future stories - must complete by 27/01/2026
+
+---
+
 ## Sprint Goal
 
 Implement two-factor authentication (2FA) for secure login and establish the GraphQL API

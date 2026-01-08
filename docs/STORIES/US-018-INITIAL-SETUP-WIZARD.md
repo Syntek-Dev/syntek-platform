@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2trz -->
 
+## Overview
+
+This story covers a comprehensive guided setup wizard that enables rapid deployment and configuration of Syntek instances. The wizard walks administrators through domain configuration, template selection, design token customisation, admin user creation, environment variable setup, and deployment verification. It includes health checks and a post-setup checklist to track remaining configuration tasks.
+
 ## Story
 
 **As a** administrator deploying the Syntek platform

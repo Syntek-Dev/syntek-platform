@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This document provides comprehensive version information for the Django/PostgreSQL/GraphQL project including core framework versions, system requirements, development tools, Docker base images, version management configuration, and procedures for updating versions across the project while maintaining consistency across all configuration files.
+
+---
+
 ## Table of Contents
 
 - [Versions and Dependencies](#versions-and-dependencies)

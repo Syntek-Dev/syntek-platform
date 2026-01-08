@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2ntg -->
 
+## Overview
+
+This user story implements a template selection and initialisation system that allows new users to quickly get started with pre-built website templates. The system provides 9 industry-specific templates (e-commerce, blog, corporate, church, charity, SaaS, sole trader, estate agent, and single-page app), full-page previews, multi-step customisation wizard, and automatic initialisation of page structure, design tokens, and example content.
+
 ## Story
 
 **As a** new user creating their first website

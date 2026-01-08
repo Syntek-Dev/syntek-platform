@@ -10,6 +10,25 @@
 
 This directory contains automated CI/CD workflows for the Django backend template.
 
+---
+
+## Directory Tree
+
+```
+.github/workflows/
+├── README.md                              # This file - Workflow overview
+├── ci.yml                                 # Main CI pipeline (linting, type checking, testing)
+├── pr-validation.yml                      # PR validation (title, branch naming, commits)
+├── deploy-staging.yml                     # Auto-deploy to staging environment
+├── deploy-production.yml                  # Production deployment with approval
+├── dependency-review.yml                  # Dependency vulnerability and license scanning
+├── codeql.yml                             # Security analysis (CodeQL, Semgrep, Bandit)
+├── clickup-sync.yml                       # Sync GitHub activity with ClickUp tasks
+└── clickup-branch-sync.yml                # Branch-specific ClickUp integration
+```
+
+---
+
 ## Table of Contents
 
 - [GitHub Actions Workflows](#github-actions-workflows)
@@ -42,6 +61,14 @@ This directory contains automated CI/CD workflows for the Django backend templat
     - [Timeout Settings](#timeout-settings)
   - [Documentation](#documentation)
   - [Support](#support)
+
+## Overview
+
+This directory contains GitHub Actions workflows for automated CI/CD pipeline execution. Workflows perform testing, security scanning, deployment validation, and automated deployment to staging and production environments.
+
+**Key Point:** All workflows run inside Docker containers to maintain consistency with the development environment.
+
+---
 
 ## Workflow Files
 

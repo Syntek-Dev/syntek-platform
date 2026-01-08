@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint implements the first part of the guided setup wizard for rapid Syntek platform deployment. The wizard provides a comprehensive step-by-step interface for new organisations to configure their instance, including domain setup, template selection, design token configuration, admin user creation, and environment variable management. This is the first of two sprints dedicated to the setup wizard, with Part 2 (Sprint 28) handling verification checks and completion workflows. Successful completion enables rapid onboarding and reduces manual configuration work.
+
+---
+
 ## Sprint Goal
 
 Implement a comprehensive guided setup wizard for rapid Syntek platform deployment with domain

@@ -2,6 +2,12 @@
 
 <!-- CLICKUP_ID: 86c7d2kwy -->
 
+## Overview
+
+Secure login system with optional two-factor authentication (TOTP), JWT token generation, session management, and account security features. Includes backup codes for recovery, rate limiting on failed attempts, account lockout mechanisms, and audit logging of all login events. Enables optional 2FA enforcement policies and remember device functionality.
+
+---
+
 ## Story
 
 **As a** registered user

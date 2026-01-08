@@ -1,19 +1,19 @@
 # Testing Reviews
 
+## Overview
+
+This folder contains consolidated testing strategy reviews and test coverage analysis for user stories. Each review documents the testing approach, coverage analysis, gaps, and recommendations for implementing comprehensive test suites.
+
+Reviews are consolidated documents that merge multiple analysis perspectives into a single, authoritative source for testing guidance.
+
+---
+
 ## Table of Contents
 
 - [Overview](#overview)
 - [Directory Tree](#directory-tree)
 - [Files](#files)
 - [Related Documentation](#related-documentation)
-
----
-
-## Overview
-
-This folder contains consolidated testing strategy reviews and test coverage analysis for user stories. Each review documents the testing approach, coverage analysis, gaps, and recommendations for implementing comprehensive test suites.
-
-Reviews are consolidated documents that merge multiple analysis perspectives into a single, authoritative source for testing guidance.
 
 ---
 

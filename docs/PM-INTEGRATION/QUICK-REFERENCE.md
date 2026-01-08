@@ -8,11 +8,14 @@
 
 ---
 
-One-page reference for daily ClickUp integration usage.
+## Overview
+
+One-page reference for daily ClickUp integration usage, including branch naming patterns, common commands, automatic status updates, and troubleshooting tips.
 
 ## Table of Contents
 
 - [ClickUp Integration Quick Reference](#clickup-integration-quick-reference)
+  - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Branch Naming Pattern](#branch-naming-pattern)
   - [Common Commands](#common-commands)
@@ -31,6 +34,8 @@ One-page reference for daily ClickUp integration usage.
     - [Status Not Updating](#status-not-updating)
   - [Quick Links](#quick-links)
   - [Support](#support)
+
+---
 
 ## Branch Naming Pattern
 

@@ -8,6 +8,34 @@
 
 ---
 
+## Overview
+
+This document provides critical commands for production deployments, migrations, monitoring, and
+rollback procedures. All production operations require confirmation and extreme caution.
+
+**Key Commands:**
+- Deploy to production (requires confirmation)
+- Run database migrations with backups
+- Monitor health and logs
+- Manage maintenance mode
+- Execute rollbacks
+
+---
+
+## Table of Contents
+
+- [Production Commands](#production-commands)
+  - [Overview](#overview)
+  - [Table of Contents](#table-of-contents)
+  - [Deploy to Production](#deploy-to-production)
+  - [Run Migrations on Production](#run-migrations-on-production)
+  - [View Production Logs](#view-production-logs)
+  - [Production Environment Variables](#production-environment-variables)
+  - [Health Check](#health-check)
+  - [Rollback](#rollback)
+
+---
+
 ## Deploy to Production
 
 ```bash

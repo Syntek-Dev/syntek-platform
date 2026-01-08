@@ -46,6 +46,21 @@ base settings with environment-specific overrides.
 
 ---
 
+## Directory Tree
+
+```
+config/settings/
+├── README.md                  # This file - Settings overview and guide
+├── __init__.py                # Package initialisation
+├── base.py                    # Shared base settings for all environments
+├── dev.py                     # Development environment settings
+├── test.py                    # Test environment settings
+├── staging.py                 # Staging environment settings
+└── production.py              # Production environment settings
+```
+
+---
+
 ## Settings Files
 
 ### base.py

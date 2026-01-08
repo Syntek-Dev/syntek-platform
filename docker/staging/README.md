@@ -30,6 +30,16 @@ Staging environment configuration matching production setup for final testing be
 
 ---
 
+## Directory Tree
+
+```
+docker/staging/
+├── README.md                  # This file - Staging Docker setup
+└── docker-compose.yml         # Docker Compose configuration for staging
+```
+
+---
+
 ## Services
 
 ### Gunicorn Application Server

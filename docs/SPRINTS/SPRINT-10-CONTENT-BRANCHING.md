@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint implements a git-like content branching workflow enabling content to flow through feature → testing → dev → staging → production branches. Content editors can promote changes between branches, compare versions, and rollback if needed. The production branch is read-only to prevent accidental changes to live content. Full version history and audit logging track all promotions and rollbacks, providing visibility into content workflow and enabling team collaboration with confidence.
+
+---
+
 ## Sprint Goal
 
 Implement git-like content branching workflow enabling content to flow through

@@ -44,6 +44,18 @@ This folder contains syntax analysis, code quality assessments, and linting repo
 
 ---
 
+## Directory Tree
+
+```
+docs/SYNTAX/
+├── README.md                              # This file - Overview and quick reference
+├── LINTING-REPORT-2026-01-03.md           # Detailed linting and syntax analysis
+└── US-001/
+    └── LINTING-REPORT-US-001.md           # US-001 specific syntax and linting findings
+```
+
+---
+
 ## Available Reports
 
 ### LINTING-REPORT-2026-01-03.md

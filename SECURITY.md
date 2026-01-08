@@ -1,5 +1,36 @@
 # Security Policy
 
+**Last Updated**: 08/01/2026
+**Version**: 0.4.1
+**Maintained By**: Development Team
+**Language**: British English (en_GB)
+**Timezone**: Europe/London
+
+---
+
+## Overview
+
+This security policy outlines how to responsibly report vulnerabilities, which versions are currently supported with security updates, and the security features implemented in this project. Please read this entire policy before reporting any security issues. All vulnerabilities should be reported privately through GitHub Security Advisories rather than public GitHub issues.
+
+---
+
+## Table of Contents
+
+- [Security Policy](#security-policy)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Supported Versions](#supported-versions)
+  - [Reporting a Vulnerability](#reporting-a-vulnerability)
+    - [How to Report](#how-to-report)
+    - [What to Include](#what-to-include)
+    - [Response Timeline](#response-timeline)
+    - [After Reporting](#after-reporting)
+  - [Security Features](#security-features)
+  - [Security Updates](#security-updates)
+  - [Scope](#scope)
+
+---
+
 ## Supported Versions
 
 | Version | Supported          |

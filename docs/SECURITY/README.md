@@ -28,6 +28,22 @@
 This directory contains security documentation for the Django backend template. The implementation
 follows OWASP best practices and Django security guidelines.
 
+---
+
+## Directory Tree
+
+```
+docs/SECURITY/
+├── README.md                                # This file - Overview and quick reference
+├── SECURITY.md                              # Comprehensive security documentation
+├── SECURITY-QUICK-REFERENCE.md              # Quick reference guide for common tasks
+├── SECURITY-IMPLEMENTATION-SUMMARY.md       # Implementation details and checklist
+└── US-001/
+    └── SECURITY-US-001-IMPLEMENTATION.md    # US-001 specific security requirements
+```
+
+---
+
 ## Documents
 
 | Document                                                                 | Purpose                                                    |

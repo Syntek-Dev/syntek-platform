@@ -50,6 +50,19 @@ The API provides a single endpoint that can be queried from frontend application
 
 ---
 
+## Directory Tree
+
+```
+api/
+├── README.md                  # This file - GraphQL API overview
+├── __init__.py                # Package initialisation
+├── schema.py                  # Root GraphQL schema definition (Query, Mutation types)
+├── security.py                # Security extensions and request validation
+└── urls.py                    # URL routing configuration for GraphQL endpoint
+```
+
+---
+
 ## Files
 
 | File          | Purpose                                                              |

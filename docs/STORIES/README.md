@@ -215,3 +215,5 @@ docs/STORIES/
 **Timezone:** Europe/London
 
 For questions or updates, refer to the architecture documentation at `/docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md`.
+
+## Overview

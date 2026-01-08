@@ -5,6 +5,32 @@
 
 ---
 
+## Overview
+
+Summary of enhancements made to the ClickUp integration, including custom field support (Story Points and MoSCoW Priority), subtask creation from markdown files, ClickUp ID writeback, mapping file generation, and enhanced sync scripts with comprehensive configuration.
+
+## Table of Contents
+
+- [ClickUp Sync Enhancement Summary](#clickup-sync-enhancement-summary)
+  - [Overview](#overview)
+  - [Table of Contents](#table-of-contents)
+  - [What Was Implemented](#what-was-implemented)
+    - [1. Custom Field Support](#1-custom-field-support)
+    - [2. Subtask Creation](#2-subtask-creation)
+    - [3. ClickUp ID Writeback](#3-clickup-id-writeback)
+    - [4. Mapping Files](#4-mapping-files)
+  - [New Scripts](#new-scripts)
+  - [Enhanced ClickUp Client](#enhanced-clickup-client)
+  - [Configuration Updates](#configuration-updates)
+  - [Setup Requirements](#setup-requirements)
+  - [Usage Workflow](#usage-workflow)
+  - [What Gets Updated](#what-gets-updated)
+  - [Documentation](#documentation)
+  - [Next Steps](#next-steps)
+  - [Support](#support)
+
+---
+
 ## What Was Implemented
 
 Your ClickUp integration has been enhanced with the following features:

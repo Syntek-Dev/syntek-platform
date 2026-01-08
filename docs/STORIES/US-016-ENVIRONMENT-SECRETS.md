@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2rvw -->
 
+## Overview
+
+This story covers secure management of encrypted environment variables and secrets across development, staging, and production environments. Features include encrypted storage with environment-specific values, secret versioning with rollback capability, granular access controls, audit logging of all operations, and integration with the deployment pipeline for automatic secret injection.
+
 ## Story
 
 **As a** system administrator

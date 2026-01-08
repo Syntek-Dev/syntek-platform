@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2v7b -->
 
+## Overview
+
+This story covers integration of Vaultwarden password manager with the platform for secure credential storage and team management. Features include password vault interface, secure password generation, granular access controls, organisation-wide password policies, browser extension support, SSO integration, access audit logging, password strength analysis, and breach detection integration with haveibeenpwned API.
+
 ## Story
 
 **As a** team member or administrator

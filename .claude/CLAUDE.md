@@ -1,7 +1,7 @@
 # Backend Template - Django Project
 
-**Last Updated**: 07/01/2026
-**Version**: 0.3.3
+**Last Updated**: 08/01/2026
+**Version**: 0.4.1
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -11,7 +11,7 @@
 > **Stack:** Django + PostgreSQL + GraphQL
 > **Container:** Docker Compose
 > **Package:** backend-template
-> **Last Updated:** 2026-01-03
+> **Last Updated:** 2026-01-08
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@
   - [Project Overview](#project-overview)
     - [Architecture](#architecture)
     - [Platform Components](#platform-components)
-  - [Project Structure](#project-structure)
+  - [Structures to Gain Context](#structures-to-gain-context)
   - [Development Workflow](#development-workflow)
     - [Starting Development](#starting-development)
     - [Running Tests](#running-tests)
@@ -82,6 +82,7 @@
     - [Docker Container Access](#docker-container-access)
     - [Quick Reference](#quick-reference)
   - [Syntek Dev Suite Agents](#syntek-dev-suite-agents)
+    - [Versioning Requirements](#versioning-requirements)
   - [Project Management](#project-management)
   - [Platform Architecture](#platform-architecture)
     - [Key Platform Features](#key-platform-features)
@@ -121,48 +122,24 @@ This backend integrates with:
 
 For complete platform architecture and phase breakdown, see [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md).
 
-## Project Structure
+## Structures to Gain Context
 
-```
-backend-template/
-├── .claude/                 # Claude configuration
-│   ├── CLAUDE.md           # This file
-│   ├── SYNTEK-GUIDE.md     # Plugin usage guide
-│   ├── settings.local.json # Local settings
-│   ├── commands/           # Custom commands
-│   └── plugins/            # Syntek Dev Suite agent plugins (*.py)
-├── config/                  # Django settings
-│   ├── settings/
-│   │   ├── base.py
-│   │   ├── dev.py
-│   │   ├── test.py
-│   │   ├── staging.py
-│   │   └── production.py
-│   ├── urls.py
-│   └── wsgi.py
-├── apps/                    # Django applications
-│   ├── core/               # Users, organisations, auth (Phase 1)
-│   ├── design/             # Design tokens (Phase 2)
-│   ├── cms/                # Pages, content, media (Phase 3)
-│   ├── templates/          # Site templates (Phase 4)
-│   ├── integrations/       # Third-party integrations (Phase 11)
-│   ├── ai/                 # AI integration (Phase 12)
-│   ├── secrets/            # Environment variable management (Phase 13)
-│   └── setup/              # Initial setup wizard (Phase 14)
-├── api/                     # GraphQL API
-├── docker/                  # Docker configurations
-│   ├── dev/
-│   ├── test/
-│   ├── staging/
-│   └── production/
-├── docs/                    # Documentation
-│   ├── ARCHITECTURE/       # Platform architecture plans
-│   │   └── CMS-PLATFORM-PLAN.md  # Comprehensive platform plan
-│   └── METRICS/            # Self-learning metrics
-├── manage.py
-├── pyproject.toml            # Python dependencies and project config
-└── docker-compose.yml
-```
+Look at the root `README.md` for the full project structure before carrying out any tasks.
+
+Each directory and sub-directory has a `README.md` with the directory and sub-directory structures.
+Read these structures to identify what needs accessing.
+
+Each .md file should have an overview or executive summary near the start to allow you to gain an
+understanding as to whether this `*.md` file is relevant to the agents task.
+
+Each coding file should have a `docstring` at the very top explaining the overview of the code file. This will help the agent understand if the file needs updating.
+
+Before each agent runs to gain the understanding do the following:
+
+1. Read root `README.md` project structure tree to find all relevant files for the task
+2. Read a directories `README.md` for the directories structure tree
+3. Read the relevant sub-directories `README.md` for the sub-directories structure tree
+4. If a `*.md` file read the `Overview` or `Executive Summary` to gain context of the file, if a code file read the `docstring` at the top of the file to gain context of the file
 
 **Note:** The apps structure reflects the phased implementation plan. See
 [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the
@@ -2066,15 +2043,27 @@ docker compose -f docker/dev/docker-compose.yml exec web python manage.py migrat
 
 ## Syntek Dev Suite Agents
 
-Use these agents for development tasks:
+When an agent from `syntek-marketplace` within `syntek-dev-suite` calls a plugin, remember
+plugins are located in `.claude/plugins/*.py`.
 
-| Agent                           | Purpose               |
-| ------------------------------- | --------------------- |
-| `/syntek-dev-suite:backend`     | API and database work |
-| `/syntek-dev-suite:database`    | Database optimisation |
-| `/syntek-dev-suite:test-writer` | Generate tests        |
-| `/syntek-dev-suite:security`    | Security hardening    |
-| `/syntek-dev-suite:docs`        | Documentation         |
+### Versioning Requirements
+
+When updating version numbers, the following files MUST be updated:
+
+| File                 | Update Required                      |
+| -------------------- | ------------------------------------ |
+| `VERSION`            | Semantic version number              |
+| `CHANGELOG.md`       | Release notes and changes            |
+| `SECURITY.md`        | Supported versions table (root file) |
+| `VERSION-HISTORY.md` | Version history documentation        |
+| `RELEASES.md`        | Release documentation                |
+| `.claude/CLAUDE.md`  | Version in header metadata           |
+| `pyproject.toml`     | Package version                      |
+| `package.json`       | Package version                      |
+
+**CRITICAL:** Always update `SECURITY.md` in the project root when releasing new versions to keep
+the "Supported Versions" table accurate. This ensures users know which versions receive security
+updates.
 
 ## Project Management
 
@@ -2146,3 +2135,5 @@ The platform is being built in 16 phases. Current status:
 - ClickUp integration syncs tasks with Git workflow automatically
 - **Architecture:** Refer to [CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md)
   for the complete system design
+
+## Overview

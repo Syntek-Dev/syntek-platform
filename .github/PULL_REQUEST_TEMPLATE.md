@@ -6,35 +6,11 @@
 
 ---
 
-**Last Updated**: 07/01/2026
-**Version**: 0.3.3
-**Maintained By**: Development Team
-**Language**: British English (en_GB)
-**Timezone**: Europe/London
+## Overview
 
----
+This template guides contributors through creating well-structured pull requests that meet project standards. Use this template for all pull requests to ensure consistency, proper documentation, and alignment with the review process.
 
-**Last Updated**: 07/01/2026
-**Version**: 0.3.3
-**Maintained By**: Development Team
-**Language**: British English (en_GB)
-**Timezone**: Europe/London
-
----
-
-**Last Updated**: 07/01/2026
-**Version**: 0.3.3
-**Maintained By**: Development Team
-**Language**: British English (en_GB)
-**Timezone**: Europe/London
-
----
-
-**Last Updated**: 07/01/2026
-**Version**: 0.3.3
-**Maintained By**: Development Team
-**Language**: British English (en_GB)
-**Timezone**: Europe/London
+**Key Point:** Complete all sections to help reviewers understand changes and ensure smooth integration.
 
 ---
 

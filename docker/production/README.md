@@ -32,6 +32,16 @@ Production environment configuration with maximum reliability, security, and per
 
 ---
 
+## Directory Tree
+
+```
+docker/production/
+├── README.md                  # This file - Production Docker setup
+└── docker-compose.yml         # Docker Compose configuration for production
+```
+
+---
+
 ## Services
 
 ### Gunicorn Application Server

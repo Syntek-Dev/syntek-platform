@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2uqh -->
 
+## Overview
+
+This story covers integration of OnlyOffice with the platform for creating, editing, and collaborating on documents within the Syntek environment. Features include document browser with folder organisation, real-time editing with auto-save, granular permission controls, version history with rollback, full-text search, document metadata, and S3/Digital Ocean Spaces storage integration with custom branding applied from design tokens.
+
 ## Story
 
 **As a** team member or content creator

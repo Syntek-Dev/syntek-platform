@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2ugy -->
 
+## Overview
+
+This story covers an automated CI/CD deployment pipeline using GitHub Actions that ensures consistent, tested releases across backend, frontend web, frontend mobile, and shared UI repositories. Features include automated testing on pull requests, staging deployment on merge, blue-green production deployments, database migration management, health checks, automatic rollback capability, and deployment notifications.
+
 ## Story
 
 **As a** operations team member

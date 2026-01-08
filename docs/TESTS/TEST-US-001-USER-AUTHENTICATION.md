@@ -8,6 +8,22 @@
 
 ---
 
+## Overview
+
+This document specifies all tests for Phase 1 of US-001 User Authentication, which focuses on database models, migrations, and core validation logic. It includes comprehensive unit tests, BDD feature tests, and security-focused test specifications.
+
+The test specification covers:
+
+- Core model tests for User, Organisation, and authentication-related models
+- Token model tests including BaseToken, SessionToken, and verification tokens
+- Security model tests for TOTP devices and password history
+- Password validator tests with edge case coverage
+- BDD feature tests for user registration workflows
+- Test coverage analysis and targets
+- Expected test results and execution commands
+
+---
+
 ## Table of Contents
 
 - [Test Specification: US-001 User Authentication - Phase 1](#test-specification-us-001-user-authentication---phase-1)
@@ -39,19 +55,6 @@
   - [Expected Test Results](#expected-test-results)
 
 ---
-
-## Overview
-
-This document specifies all tests for Phase 1 of US-001 User Authentication, which focuses on
-database models, migrations, and core validation logic.
-
-**Phase 1 Scope:**
-
-- Core models: Organisation, User, UserProfile, AuditLog
-- Token models: BaseToken (abstract), SessionToken, PasswordResetToken, EmailVerificationToken
-- Security models: TOTPDevice, PasswordHistory
-- Password validators: MinimumLength, Complexity, BreachedPassword, PasswordHistory
-- UserManager custom methods
 
 ## Test Coverage Summary
 

@@ -49,6 +49,19 @@ All hooks run inside Docker containers to maintain consistency with the CI envir
 
 ---
 
+## Directory Tree
+
+```
+.husky/
+├── README.md                  # This file - Git hooks overview and guide
+├── pre-commit                 # Hook: runs before commit (linting, formatting)
+├── pre-push                   # Hook: runs before push (tests, coverage)
+├── commit-msg                 # Hook: validates commit message format
+└── post-merge                 # Hook: runs after merge (dependency checks)
+```
+
+---
+
 ## Hooks
 
 ### pre-commit

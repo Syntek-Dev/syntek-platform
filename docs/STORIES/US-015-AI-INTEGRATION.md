@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2rdy -->
 
+## Overview
+
+This story covers the integration of Anthropic's Claude AI throughout the platform, enabling content creators and developers to leverage AI assistance for content generation, SEO optimisation, image descriptions, and code support. The implementation includes usage tracking, budget controls per organisation, conversation history management, and a conversational AI chat interface accessible across web and mobile platforms.
+
 ## Story
 
 **As a** content creator or developer

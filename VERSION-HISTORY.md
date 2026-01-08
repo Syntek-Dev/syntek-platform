@@ -6,6 +6,10 @@
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
 
+## Overview
+
+This file contains detailed technical version history documenting all file changes, database migrations, dependency updates, and configuration changes for each release. Each version entry includes a summary, breaking changes analysis, complete file change lists, and deployment notes. For user-facing release notes, see [RELEASES.md](RELEASES.md). For developer-focused changelog summary, see [CHANGELOG.md](CHANGELOG.md).
+
 ---
 
 ## Table of Contents

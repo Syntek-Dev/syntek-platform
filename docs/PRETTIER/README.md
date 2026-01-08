@@ -27,6 +27,19 @@ JavaScript, GraphQL).
 
 **Python files** are formatted with **Black** (separate configuration).
 
+---
+
+## Directory Tree
+
+```
+docs/PRETTIER/
+├── README.md                              # This file - Overview and quick start
+├── PRETTIER-SETUP.md                      # Complete setup guide and configuration
+└── PRETTIER-IMPLEMENTATION-SUMMARY.md     # Implementation details and decisions
+```
+
+---
+
 ## Documents
 
 | Document                                                                 | Purpose                                                                   |

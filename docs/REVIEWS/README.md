@@ -43,6 +43,20 @@ These reviews cover security, code quality, syntax correctness, and compliance i
 
 ---
 
+## Directory Tree
+
+```
+docs/REVIEWS/
+├── README.md                              # This file - Overview and how to use reviews
+├── CODE-REVIEW-2026-01-03.md              # Security and code quality review findings
+├── REVIEW-CI-WORKFLOWS-2026-01-06.md      # CI/CD workflow review
+├── REVIEW-HUSKY-HOOKS-UPDATE-2026-01-06.md # Git hooks review
+└── US-001/
+    └── REVIEW-US-001.md                   # US-001 specific code review findings
+```
+
+---
+
 ## Available Reviews
 
 ### CODE-REVIEW-2026-01-03.md

@@ -415,3 +415,5 @@ After setup is complete:
 - [ ] Rotate API keys if compromised
 - [ ] Update status mappings when ClickUp workspace changes
 - [ ] Add new team members to ClickUp workspace
+
+## Overview

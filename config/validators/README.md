@@ -47,6 +47,17 @@ This directory contains custom validators for Django forms and model fields.
 
 ---
 
+## Directory Tree
+
+```
+config/validators/
+├── README.md                  # This file - Validators overview and guide
+├── __init__.py                # Package initialisation and exports
+└── password.py                # Password validation rules and strength checking
+```
+
+---
+
 ## Validator Files
 
 ### password.py

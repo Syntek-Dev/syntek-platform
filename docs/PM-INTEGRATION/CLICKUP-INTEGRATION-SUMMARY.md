@@ -592,3 +592,5 @@ The ClickUp integration is fully configured and ready to use. All scripts, workf
 documentation are in place. Simply add your API key to GitHub Secrets and `.env.dev`, pull the
 task mapping, and start using the branch naming convention. The integration will automatically
 sync task statuses as you develop, create PRs, and deploy code.
+
+## Overview

@@ -70,6 +70,24 @@ This integration provides:
 - **Branch-Based Workflow**: Use branch naming conventions to link code to ClickUp tasks
 - **GitHub Actions**: Automatic syncing triggered by Git events
 
+---
+
+## Directory Tree
+
+```
+docs/PM-INTEGRATION/
+├── README.md                              # This file - Complete integration guide
+├── SETUP-GUIDE.md                         # Step-by-step setup instructions
+├── QUICK-REFERENCE.md                     # Quick command reference
+├── GITHUB-SECRETS.md                      # GitHub secrets configuration
+├── TROUBLESHOOTING.md                     # Troubleshooting common issues
+├── CLICKUP-INTEGRATION-SUMMARY.md          # ClickUp setup summary
+├── CLICKUP-SYNC-SUMMARY.md                # ClickUp sync implementation details
+└── INTEGRATION-STATUS.md                  # Current integration status and version
+```
+
+---
+
 ## Quick Start
 
 ### 1. Set Up Environment Variables

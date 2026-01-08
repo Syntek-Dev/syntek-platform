@@ -43,6 +43,20 @@ Middleware components that process requests and responses for the entire Django 
 
 ---
 
+## Directory Tree
+
+```
+config/middleware/
+├── README.md                  # This file - Middleware overview and guide
+├── __init__.py                # Package initialisation
+├── security.py                # Security headers middleware
+├── audit.py                   # Audit logging middleware
+├── ratelimit.py               # Rate limiting middleware
+└── ip_allowlist.py            # IP allowlist middleware
+```
+
+---
+
 ## Middleware Files
 
 ### security.py

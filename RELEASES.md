@@ -6,6 +6,10 @@
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
 
+## Overview
+
+This file contains user-facing release notes for all versions of the backend template. Each release includes what's new, why it matters, technical details, and coming soon features. For technical changelog details, see [CHANGELOG.md](CHANGELOG.md). For detailed technical changes, see [VERSION-HISTORY.md](VERSION-HISTORY.md).
+
 ---
 
 ## Table of Contents
@@ -25,7 +29,6 @@
       - [Why This Matters](#why-this-matters-1)
       - [Technical Details](#technical-details-1)
       - [Coming Soon](#coming-soon-1)
-  - [Previous Releases](#previous-releases-1)
     - [Version 0.3.3 - 7 January 2026](#version-033---7-january-2026)
       - [What's New](#whats-new-2)
       - [Why This Matters](#why-this-matters-2)
@@ -277,8 +280,6 @@ In our next release (Phase 2), we're working on:
 - **Frontend Integration**: API endpoints ready for web and mobile apps
 
 ---
-
-## Previous Releases
 
 ### Version 0.3.3 - 7 January 2026
 

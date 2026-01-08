@@ -30,6 +30,16 @@ Test environment Docker configuration for automated testing, code quality checks
 
 ---
 
+## Directory Tree
+
+```
+docker/test/
+├── README.md                  # This file - Test Docker setup
+└── docker-compose.yml         # Docker Compose configuration for testing
+```
+
+---
+
 ## Services
 
 ### Test Runner

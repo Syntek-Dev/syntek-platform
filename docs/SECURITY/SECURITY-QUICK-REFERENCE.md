@@ -8,7 +8,11 @@
 
 ---
 
-> **Quick reference for common security tasks and configurations**
+## Overview
+
+Quick reference guide for common security tasks and configurations. Provides rapid access to rate limiting, password requirements, GraphQL security settings, session configuration, security headers, and emergency procedures for security incidents.
+
+---
 
 ## Table of Contents
 

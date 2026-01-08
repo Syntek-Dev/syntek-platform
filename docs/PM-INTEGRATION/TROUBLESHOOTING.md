@@ -616,3 +616,5 @@ If none of these solutions work:
 5. **Contact Support**
    - For ClickUp API issues: <support@clickup.com>
    - For integration issues: Check project repository issues
+
+## Overview

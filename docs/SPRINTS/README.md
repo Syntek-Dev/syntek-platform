@@ -12,13 +12,48 @@
 
 ## Table of Contents
 
-- [Sprint Overview](#sprint-overview)
-- [MoSCoW Distribution](#moscow-distribution)
-- [Dependencies Graph](#dependencies-graph)
-- [Sprint Allocation Strategy](#sprint-allocation-strategy)
-- [Phase Breakdown](#phase-breakdown)
-- [Risk Items](#risk-items)
-- [Backlog](#backlog)
+- [Sprint Roadmap - Syntek CMS Platform](#sprint-roadmap---syntek-cms-platform)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Sprint Overview](#sprint-overview)
+  - [MoSCoW Distribution](#moscow-distribution)
+  - [Dependencies Graph](#dependencies-graph)
+  - [Sprint Allocation Strategy](#sprint-allocation-strategy)
+    - [1. Foundation-First Approach](#1-foundation-first-approach)
+    - [2. Design System Implementation](#2-design-system-implementation)
+    - [3. Content Management Core](#3-content-management-core)
+    - [4. Component Library](#4-component-library)
+    - [5. Integration Framework](#5-integration-framework)
+    - [6. SaaS Products](#6-saas-products)
+    - [7. AI \& Automation](#7-ai--automation)
+    - [8. Deployment \& Onboarding](#8-deployment--onboarding)
+  - [Phase Breakdown](#phase-breakdown)
+    - [Phase 1: Core Foundation (Sprints 1-4) - 40 points](#phase-1-core-foundation-sprints-1-4---40-points)
+    - [Phase 2: Design \& Content Foundation (Sprints 5-13) - 67 points](#phase-2-design--content-foundation-sprints-5-13---67-points)
+    - [Phase 3: UI Component Library (Sprints 14-15) - 21 points](#phase-3-ui-component-library-sprints-14-15---21-points)
+    - [Phase 4: Integrations (Sprints 16-20) - 42 points](#phase-4-integrations-sprints-16-20---42-points)
+    - [Phase 5: Deployment \& Setup (Sprints 21-24) - 39 points](#phase-5-deployment--setup-sprints-21-24---39-points)
+  - [Risk Items](#risk-items)
+    - [High-Risk Stories](#high-risk-stories)
+    - [Dependency Risks](#dependency-risks)
+    - [Split Story Strategy](#split-story-strategy)
+  - [Backlog](#backlog)
+    - [Deferred Stories](#deferred-stories)
+  - [Sprint Velocity Tracking](#sprint-velocity-tracking)
+  - [Next Steps](#next-steps)
+
+---
+
+## Overview
+
+The Syntek CMS Platform roadmap spans 30 sprints across 7 phases over approximately 14 months. This document provides the complete sprint allocation strategy, including story point distributions, dependency graphs, critical path items, and risk management. All 23 user stories are scheduled across the sprint timeline with strategic splitting for large stories (13+ points) to maintain sustainable velocity.
+
+**Key Metrics:**
+
+- **Total Points:** 256 across all stories
+- **Sprint Capacity:** 11 points per sprint (10 usable + 1 buffer)
+- **Project Duration:** ~14 months (06/01/2026 - 02/03/2027)
+- **Critical Path:** US-011 (GraphQL API) in Sprint 2 blocks all future API work
 
 ---
 

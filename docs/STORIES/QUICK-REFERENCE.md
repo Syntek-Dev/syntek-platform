@@ -1,5 +1,11 @@
 # Quick Reference Guide - Syntek User Stories
 
+## Overview
+
+Quick lookup tables and story selection guide for the Syntek CMS Platform user stories. Organises 22 stories by effort level, repository, phase, and team role. Use this guide for sprint planning, resource allocation, and understanding story dependencies.
+
+---
+
 ## Stories by Effort Level
 
 ### Small Stories (5 points) - 2-3 days per person

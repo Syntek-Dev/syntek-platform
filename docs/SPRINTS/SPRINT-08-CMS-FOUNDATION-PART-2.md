@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint completes the CMS page editor by adding Video and Embed block types, implementing performance optimisations, and polishing the user experience. User story **US-006 (Part 2)** introduces Video blocks with YouTube/Vimeo support, Embed blocks with secure iframe integration and XSS protection, and comprehensive styling options. Performance enhancements include virtual scrolling for pages with 50+ blocks, block palette search, keyboard shortcuts (Cmd+Z undo, Cmd+D duplicate, etc.), and undo/redo functionality. A large 9-point buffer enables technical debt resolution from Sprint 7, additional styling features, extended performance testing, and accessibility improvements. Security focus: embed blocks require strict URL validation and sandboxed iframes to prevent XSS vulnerabilities.
+
+---
+
 ## Sprint Goal
 
 Complete the CMS page creation system by adding advanced block types, performance optimisation,

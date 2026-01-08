@@ -6,19 +6,13 @@
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
 
+## Overview
+
+This is a comprehensive Django CMS platform backend providing content management, design tokens, multi-tenancy, SaaS integrations, and enterprise-grade security. It's part of the Syntek CMS Platform architecture supporting web and mobile applications. All development happens inside Docker containers - no local Python or PostgreSQL installation needed. Use the environment scripts in `scripts/env/` to run everything inside Docker.
+
+**Platform Architecture:** This backend is one component of a multi-repository CMS platform. See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the complete architectural plan including all 16 development phases.
+
 ---
-
-A comprehensive Django CMS platform backend providing content management, design tokens,
-multi-tenancy, SaaS integrations, and enterprise-grade security. Part of the Syntek CMS Platform
-architecture supporting web and mobile applications.
-
-**Platform Architecture:** This backend is one component of a multi-repository CMS platform.
-See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the
-complete architectural plan including all 16 development phases.
-
-**Important:** All development happens inside Docker containers. You do not need to install Python,
-PostgreSQL, or any other dependencies locally. Simply use the environment scripts in `scripts/env/`
-to run everything inside Docker.
 
 ## Table of Contents
 
@@ -26,12 +20,15 @@ to run everything inside Docker.
   - [Table of Contents](#table-of-contents)
   - [Stack](#stack)
   - [Features](#features)
+    - [Core Platform Features](#core-platform-features)
+    - [Infrastructure \& Security](#infrastructure--security)
   - [Project Structure](#project-structure)
   - [Quick Start](#quick-start)
     - [Prerequisites](#prerequisites)
     - [Development](#development)
     - [Testing](#testing)
   - [Documentation](#documentation)
+    - [Platform Architecture](#platform-architecture)
     - [Getting Started](#getting-started)
     - [Code Quality \& Reviews](#code-quality--reviews)
     - [Architecture \& Operations](#architecture--operations)
@@ -94,25 +91,76 @@ backend_template/
 ├── .vscode/                 # VS Code workspace settings
 ├── api/                     # GraphQL API
 ├── apps/                    # Django applications
+│   └── core/                # Core auth and user management (Phase 1)
+│       ├── managers/        # Custom model managers
+│       ├── migrations/      # Database migrations
+│       ├── models/          # Django models
+│       ├── services/        # Business logic services
+│       ├── utils/           # Utility functions
+│       └── views/           # Views and ViewSets
 ├── config/                  # Django project configuration
 │   ├── middleware/          # Custom middleware
 │   ├── settings/            # Environment-specific settings
 │   └── validators/          # Custom validators
 ├── docker/                  # Docker configuration per environment
 │   ├── dev/                 # Development containers
-│   ├── test/                # Test containers
+│   ├── production/          # Production containers
 │   ├── staging/             # Staging containers
-│   └── production/          # Production containers
+│   └── test/                # Test containers
 ├── docs/                    # Project documentation
+│   ├── ARCHITECTURE/        # Platform architecture and design
+│   ├── AUTH/                # Authentication documentation
+│   ├── BACKEND/             # Backend implementation guides
+│   ├── DATABASE/            # Database schema and migrations
+│   ├── DEBUG/               # Debugging guides
+│   ├── DEVOPS/              # DevOps and CI/CD
+│   ├── GDPR/                # GDPR compliance
+│   ├── GUIDES/              # Contributing, testing, etc.
+│   ├── LOGGING/             # Logging implementation
+│   ├── METRICS/             # Self-learning metrics
+│   ├── PLANS/               # Project plans
+│   ├── PM-INTEGRATION/      # Project management integration
+│   ├── PRETTIER/            # Code formatting
+│   ├── QA/                  # Quality assurance
+│   ├── REFACTORING/         # Refactoring documentation
+│   ├── REVIEWS/             # Code review reports
+│   ├── SECURITY/            # Security documentation
+│   ├── SPRINTS/             # Sprint documentation and logs
+│   ├── STORIES/             # User stories
+│   ├── SYNTAX/              # Code syntax and linting
+│   └── TESTS/               # Testing documentation
 ├── media/                   # User-uploaded media files
 ├── scripts/                 # Helper scripts and utilities
+│   ├── clickup/             # ClickUp project management integration
 │   ├── env/                 # Environment-specific run scripts
-│   └── clickup/             # ClickUp project management integration
+│   ├── run-ci-locally.sh    # Run CI checks locally
+│   ├── setup-ci.sh          # Initial CI/CD setup
+│   └── setup-prettier.sh    # Prettier configuration setup
 ├── static/                  # Static files (CSS, JS, images)
 ├── templates/               # Django HTML templates
 ├── tests/                   # Test suite
+│   ├── bdd/                 # BDD behaviour tests
+│   │   ├── conftest.py      # BDD-specific fixtures
+│   │   ├── features/        # Gherkin feature files
+│   │   └── step_defs/       # Step definitions
+│   ├── conftest.py          # pytest configuration and global fixtures
+│   ├── e2e/                 # End-to-end tests
+│   ├── factories/           # Test data factories
+│   │   ├── token_factory.py # Token factory
+│   │   └── user_factory.py  # User factory
+│   ├── fixtures/            # Test fixtures and sample data
+│   ├── graphql/             # GraphQL API tests
+│   ├── integration/         # Integration tests
+│   └── unit/                # Unit tests
+│       └── apps/            # Tests for each Django app
+│           └── core/        # Core app tests
+├── .env.dev.example         # Development environment example
+├── .env.test.example        # Test environment example
+├── .gitignore               # Git ignore rules
+├── docker-compose.yml       # Docker Compose configuration
 ├── manage.py                # Django management script
 ├── pyproject.toml           # Python project configuration
+├── pytest.ini               # pytest configuration
 ├── Makefile                 # Quick commands reference
 └── README.md                # This file
 ```

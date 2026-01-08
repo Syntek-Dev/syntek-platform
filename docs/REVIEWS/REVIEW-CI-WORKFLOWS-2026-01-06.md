@@ -333,3 +333,5 @@ problems. They should be addressed separately:
 1. Apply the recommended fixes to `.github/workflows/ci.yml`
 2. Run a test workflow to verify validation works correctly
 3. Address pre-existing code quality issues separately (use `/syntek-dev-suite:backend`, `/syntek-dev-suite:security`)
+
+## Overview

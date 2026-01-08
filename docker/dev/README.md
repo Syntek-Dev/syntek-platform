@@ -31,6 +31,16 @@ Development Docker configuration with hot-reloading, debug tools, and convenient
 
 ---
 
+## Directory Tree
+
+```
+docker/dev/
+├── README.md                  # This file - Development Docker setup
+└── docker-compose.yml         # Docker Compose configuration for development
+```
+
+---
+
 ## Services
 
 ### Django Development Server

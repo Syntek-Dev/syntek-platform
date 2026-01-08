@@ -1,7 +1,7 @@
 # Static Files
 
-**Last Updated**: 07/01/2026
-**Version**: 0.3.3
+**Last Updated**: 08/01/2026
+**Version**: 0.4.1
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London

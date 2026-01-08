@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint implements page publication workflow enabling content to go live on public websites with proper routing, SEO metadata, and sitemap generation. Published pages are rendered beautifully using organisation design tokens and block renderers. The system supports URL redirects for changed slugs, generates dynamic sitemaps, and includes comprehensive SEO validation. Content remains editable in draft branches while published production pages are immutable, providing a complete separation between editing and live content.
+
+---
+
 ## Sprint Goal
 
 Implement page publication workflow enabling content to go live on public websites with proper

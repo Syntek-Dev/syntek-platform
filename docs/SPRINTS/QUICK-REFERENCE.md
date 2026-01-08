@@ -4,6 +4,48 @@
 
 ---
 
+## Table of Contents
+
+- [Sprint Planning Quick Reference](#sprint-planning-quick-reference)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Sprint Capacity Rules](#sprint-capacity-rules)
+  - [MoSCoW Balance Guidelines](#moscow-balance-guidelines)
+  - [Story Splitting Strategy](#story-splitting-strategy)
+  - [Critical Path Dependencies](#critical-path-dependencies)
+  - [Phase Milestones](#phase-milestones)
+  - [Sprint Ceremonies](#sprint-ceremonies)
+    - [Sprint Planning (First Monday of Sprint)](#sprint-planning-first-monday-of-sprint)
+    - [Daily Standup](#daily-standup)
+    - [Sprint Review (Last Friday of Sprint)](#sprint-review-last-friday-of-sprint)
+    - [Sprint Retrospective (Last Friday of Sprint)](#sprint-retrospective-last-friday-of-sprint)
+  - [Definition of Done Checklist](#definition-of-done-checklist)
+  - [Repository Activity Per Sprint](#repository-activity-per-sprint)
+  - [Velocity Tracking Template](#velocity-tracking-template)
+  - [Risk Escalation](#risk-escalation)
+    - [When to Escalate](#when-to-escalate)
+    - [Escalation Path](#escalation-path)
+  - [Common Sprint Patterns](#common-sprint-patterns)
+    - [Pattern 1: Foundation Sprint (Sprints 1-4)](#pattern-1-foundation-sprint-sprints-1-4)
+    - [Pattern 2: Feature Sprint (Sprints 5-13)](#pattern-2-feature-sprint-sprints-5-13)
+    - [Pattern 3: Polish Sprint (Sprints 6, 8, 13, 17, 25, 28)](#pattern-3-polish-sprint-sprints-6-8-13-17-25-28)
+    - [Pattern 4: Integration Sprint (Sprints 16-17, 24-26)](#pattern-4-integration-sprint-sprints-16-17-24-26)
+    - [Pattern 5: SaaS Product Sprint (Sprints 18-23)](#pattern-5-saas-product-sprint-sprints-18-23)
+  - [Useful Commands](#useful-commands)
+    - [Create New Sprint File](#create-new-sprint-file)
+    - [View All Sprint Files](#view-all-sprint-files)
+    - [Search Sprint Files](#search-sprint-files)
+    - [Generate Sprint Report](#generate-sprint-report)
+  - [Contact \& Support](#contact--support)
+
+---
+
+## Overview
+
+Quick reference guide for sprint planning rules, capacity calculations, and standard processes. This document provides at-a-glance information about sprint setup, MoSCoW prioritisation, sprint ceremonies, and common patterns used across the 30-sprint product roadmap.
+
+---
+
 ## Sprint Capacity Rules
 
 | Metric                | Value     | Notes                                         |

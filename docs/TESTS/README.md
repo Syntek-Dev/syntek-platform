@@ -1,16 +1,5 @@
 # Tests
 
-## Table of Contents
-
-- [Tests](#tests)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-  - [Directory Tree](#directory-tree)
-  - [Folders](#folders)
-  - [Related Documentation](#related-documentation)
-
----
-
 ## Overview
 
 This folder contains comprehensive testing documentation for the backend template project. It includes testing strategy reviews, test coverage analysis, and testing recommendations for all user stories and features.
@@ -25,6 +14,17 @@ The testing documentation covers:
 - Security testing and validation
 - Test coverage analysis and targets
 - Missing test scenarios and recommendations
+
+---
+
+## Table of Contents
+
+- [Tests](#tests)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Directory Tree](#directory-tree)
+  - [Folders](#folders)
+  - [Related Documentation](#related-documentation)
 
 ---
 

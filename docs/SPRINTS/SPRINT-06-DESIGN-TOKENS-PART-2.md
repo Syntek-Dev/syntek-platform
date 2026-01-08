@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint completes the design token system by implementing export functionality, token templates for nine site types, and polish features including rollback and version comparison. User story **US-005 (Part 2)** adds backend services to export tokens as CSS variables, JSON, and Tailwind configuration; a large 9-point buffer provides flexibility for technical debt from Sprint 5, additional export formats, extended testing, and component library preparation for Sprint 14. The token system foundation enables organisations to define brand identity once and propagate consistently across all platforms. This sprint finalises the design token infrastructure before moving to content management system features.
+
+---
+
 ## Sprint Goal
 
 Complete the design token system by implementing export functionality, token templates,

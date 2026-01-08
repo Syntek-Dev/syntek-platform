@@ -68,6 +68,18 @@ This folder contains GDPR compliance documentation and implementation guidance f
 
 ---
 
+## Directory Tree
+
+```
+docs/GDPR/
+├── README.md                              # This file - Overview and quick start
+├── COMPLIANCE-ASSESSMENT-2026-01-03.md    # Full compliance assessment and implementation plan
+└── US-001/
+    └── GDPR-COMPLIANCE-US-001.md          # US-001 specific GDPR requirements and implementation
+```
+
+---
+
 ## Available Documents
 
 ### COMPLIANCE-ASSESSMENT-2026-01-03.md

@@ -2,6 +2,12 @@
 
 <!-- CLICKUP_ID: 86c7d2pqr -->
 
+## Overview
+
+Frontend developers need a comprehensive GraphQL API that provides efficient data fetching with built-in query complexity and depth limiting to prevent abuse. This story covers schema definition, authentication, pagination, filtering, sorting, real-time subscriptions, and complex query protection mechanisms.
+
+---
+
 ## Story
 
 **As a** frontend developer

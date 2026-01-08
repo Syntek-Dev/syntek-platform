@@ -2,6 +2,12 @@
 
 <!-- CLICKUP_ID: 86c7d2q72 -->
 
+## Overview
+
+Security administrators need detailed audit logging to track all user actions and system changes for security, compliance, and debugging purposes. This story covers action logging, user tracking, IP address encryption, GraphQL query logging, change history, audit log viewing, searching, filtering, and export capabilities.
+
+---
+
 ## Story
 
 **As a** security administrator

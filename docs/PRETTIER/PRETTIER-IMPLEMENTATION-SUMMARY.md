@@ -8,8 +8,14 @@
 
 ---
 
-> **Date:** 2026-01-03
-> **Status:** ✅ Complete
+## Overview
+
+This document summarises the Prettier code formatting implementation for the Django backend template. Prettier has been successfully integrated as the standard formatter for all non-Python files (JSON, YAML, Markdown, HTML templates, CSS, JavaScript, GraphQL).
+
+**Status**: ✅ Complete and fully integrated
+**Date**: 2026-01-03
+
+---
 
 ## What Was Done
 
@@ -385,4 +391,4 @@ Prettier is now fully integrated into the backend_template project:
 
 ---
 
-**Implementation completed successfully!** 🎉
+**Implementation completed successfully!**
