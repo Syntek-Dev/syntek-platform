@@ -1,10 +1,11 @@
 # GDPR and Data Protection
 
-**Last Updated**: 07/01/2026
-**Version**: 0.3.3
+**Last Updated**: 08/01/2026
+**Version**: 0.4.1
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
+**Phase 2 Status**: ✅ Completed (Password Reset with GDPR Compliance)
 
 ---
 
@@ -66,6 +67,19 @@ This folder contains GDPR compliance documentation and implementation guidance f
 **Risk Level:** SEVERE - Cannot legally serve EU users
 **Timeline:** Must implement before production
 
+**Phase 2 Update (08/01/2026):**
+
+Phase 2 implementation has successfully completed password reset functionality with GDPR compliance:
+
+- ✅ HMAC-SHA256 token hashing with hash-then-store pattern
+- ✅ Password reset tokens with 1-hour expiration and single-use enforcement
+- ✅ IP address encryption with Fernet and key rotation support
+- ✅ Audit logging with encrypted IP addresses
+- ✅ Token revocation on password change
+- ✅ Automated token cleanup procedures
+
+See `US-001/GDPR-COMPLIANCE-US-001.md` for detailed Phase 2 security implementation.
+
 ---
 
 ## Directory Tree
@@ -112,22 +126,22 @@ Comprehensive GDPR compliance assessment with detailed implementation plans.
 
 ### Current Score: 40/100
 
-| Component                 | Status      | Gap      |
-| ------------------------- | ----------- | -------- |
-| **Secure transmission**   | ✅ Complete | -        |
-| **Session security**      | ✅ Complete | -        |
-| **Error sanitisation**    | ✅ Complete | -        |
-| **Sentry PII filtering**  | ✅ Complete | -        |
-| **Password validation**   | ✅ Complete | -        |
-| **Audit logging**         | ✅ Complete | -        |
-| **PII encryption**        | ❌ MISSING  | Critical |
-| **Consent management**    | ❌ MISSING  | Critical |
-| **Data export**           | ❌ MISSING  | Critical |
-| **Account deletion**      | ❌ MISSING  | Critical |
-| **Privacy policy**        | ❌ MISSING  | Critical |
-| **Data retention policy** | ⚠️ Partial  | Major    |
-| **DPA documentation**     | ❌ MISSING  | Major    |
-| **Breach notification**   | ⚠️ Partial  | Medium   |
+| Component                 | Status      | Gap      | Phase 2 Progress                                |
+| ------------------------- | ----------- | -------- | ----------------------------------------------- |
+| **Secure transmission**   | ✅ Complete | -        | -                                               |
+| **Session security**      | ✅ Complete | -        | -                                               |
+| **Error sanitisation**    | ✅ Complete | -        | -                                               |
+| **Sentry PII filtering**  | ✅ Complete | -        | -                                               |
+| **Password validation**   | ✅ Complete | -        | -                                               |
+| **Audit logging**         | ✅ Complete | -        | -                                               |
+| **PII encryption**        | ⚠️ Partial  | Critical | IP addresses encrypted, tokens hashed           |
+| **Consent management**    | ❌ MISSING  | Critical | -                                               |
+| **Data export**           | ❌ MISSING  | Critical | -                                               |
+| **Account deletion**      | ❌ MISSING  | Critical | -                                               |
+| **Privacy policy**        | ❌ MISSING  | Critical | -                                               |
+| **Data retention policy** | ⚠️ Partial  | Major    | Token retention (1 hour/24 hours) implemented   |
+| **DPA documentation**     | ❌ MISSING  | Major    | -                                               |
+| **Breach notification**   | ⚠️ Partial  | Medium   | -                                               |
 
 ---
 

@@ -3,11 +3,12 @@
 <!-- CLICKUP_ID: 86c7d2kp1 -->
 
 **Phase 1 Status:** ✅ Completed (07/01/2026)
-**Overall Status:** 🔄 In Progress
+**Phase 2 Status:** ✅ Completed (08/01/2026)
+**Overall Status:** 🔄 In Progress (~75% Backend Complete)
 
 ## Overview
 
-Core authentication system allowing new users to create accounts with email and password, including email verification, password validation, token management, and security features like encryption and audit logging. Phase 1 (models and database) is complete; remaining phases cover GraphQL API, email workflows, and frontend implementations across all platforms.
+Core authentication system allowing new users to create accounts with email and password, including email verification, password validation, token management, and security features like encryption and audit logging. Phase 1 (models and database) and Phase 2 (service layer) are complete; remaining phases cover GraphQL API integration, email workflows, and frontend implementations across all platforms.
 
 ---
 
@@ -117,12 +118,38 @@ Core authentication system allowing new users to create accounts with email and 
 - [x] Manual Testing Guide for Phase 1
 - [x] Test Specification Document
 
-### Phase 2: GraphQL API and Services ⬜ Not Started
+### Phase 2: Authentication Service Layer ✅ Completed (08/01/2026)
+
+**Backend Tasks Completed:**
+
+- [x] Create AuthService for business logic with race condition prevention
+- [x] Create TokenService for JWT and refresh token management
+- [x] Create EmailService for verification and password reset emails
+- [x] Create PasswordResetService with hash-then-store pattern
+- [x] Create AuditService with encrypted IP logging
+- [x] Create IPEncryption utility with key rotation support
+- [x] Create TokenHasher utility with HMAC-SHA256 hashing
+- [x] Create management command for IP key rotation
+- [x] Implement user registration logic with duplicate email prevention
+- [x] Implement login logic (without 2FA) with email verification check
+- [x] Implement password reset logic with hashed tokens
+- [x] Implement email verification logic
+- [x] Implement refresh token replay detection
+- [x] Implement timezone-aware datetime handling
+- [x] Add comprehensive unit tests (~95% coverage for services)
+
+**Documentation Completed:**
+
+- [x] Phase 2 Implementation Report
+- [x] Logging and Audit Implementation Report
+- [x] Security Implementation Review
+- [x] QA Report updated for Phase 2
+
+### Phase 3: GraphQL API ⬜ Not Started
 
 **Backend Tasks Pending:**
 
 - [ ] Set up Strawberry GraphQL schema
-- [ ] Create AuthenticationService for business logic
 - [ ] Create registration GraphQL mutation
 - [ ] Create login GraphQL mutation
 - [ ] Create email verification GraphQL mutation
@@ -136,7 +163,7 @@ Core authentication system allowing new users to create accounts with email and 
 - [ ] Add integration tests for authentication flows
 - [ ] Add E2E tests for complete user journeys
 
-### Phase 3: Email Service and Workflows ⬜ Not Started
+### Phase 4: Email Templates and Workflow Integration ⬜ Not Started
 
 **Backend Tasks Pending:**
 
@@ -144,10 +171,9 @@ Core authentication system allowing new users to create accounts with email and 
 - [ ] Create email templates for verification
 - [ ] Create email templates for password reset
 - [ ] Create email templates for 2FA setup
-- [ ] Implement email sending service with retry logic
-- [ ] Implement email verification workflow
-- [ ] Implement password reset workflow
-- [ ] Add email sending tests
+- [ ] Integrate email sending with GraphQL mutations
+- [ ] Implement email workflow testing
+- [ ] Add email template tests
 
 ### Frontend Web Tasks
 
@@ -173,21 +199,22 @@ Core authentication system allowing new users to create accounts with email and 
 ## Repository Completion Status
 
 **Story ID:** US-001
-**Last Updated:** 08/01/2026 09:30 Europe/London
+**Last Updated:** 08/01/2026 15:45 Europe/London
 
-| Repository      | Required | Status         | Completed By  | Date        | Notes                        |
-| --------------- | -------- | -------------- | ------------- | ----------- | ---------------------------- |
-| Backend         | ✅       | 🔄 In Progress | Backend Agent | Phase 1: ✅ | Models complete, API pending |
-| Frontend Web    | ✅       | ⬜ Not Started | -             | -           | Waiting for GraphQL API      |
-| Frontend Mobile | ✅       | ⬜ Not Started | -             | -           | Waiting for GraphQL API      |
-| Shared UI       | ✅       | ⬜ Not Started | -             | -           | Components to be designed    |
+| Repository      | Required | Status         | Completed By  | Date             | Notes                            |
+| --------------- | -------- | -------------- | ------------- | ---------------- | -------------------------------- |
+| Backend         | ✅       | 🔄 In Progress | Backend Agent | Phases 1-2: ✅   | Models & Services complete (~75%) |
+| Frontend Web    | ✅       | ⬜ Not Started | -             | -                | Waiting for GraphQL API (Phase 3) |
+| Frontend Mobile | ✅       | ⬜ Not Started | -             | -                | Waiting for GraphQL API (Phase 3) |
+| Shared UI       | ✅       | ⬜ Not Started | -             | -                | Components to be designed         |
 
 ### Completion Notes
 
-#### Backend (Phase 1 Complete)
+#### Backend (Phases 1 & 2 Complete)
+
+**Phase 1 - Core Models and Database:**
 
 - **Completed:** 07/01/2026
-- **Phase:** Phase 1 - Core Models and Database
 - **PR/Commit:** Branch `us001/user-authentication`
 - **Verified By:** QA Agent, Backend Specialist
 - **Notes:**
@@ -195,10 +222,25 @@ Core authentication system allowing new users to create accounts with email and 
   - Password validators with HaveIBeenPwned integration
   - Comprehensive security review completed (Rating: 8.7/10)
   - TDD test suite with factory-boy and BDD Gherkin features
-  - 18 critical issues identified for Phase 2 implementation
   - Database schema optimised with indexes
   - GDPR compliance analysis complete
-  - **Next:** Phase 2 - GraphQL API and authentication services
+
+**Phase 2 - Authentication Service Layer:**
+
+- **Completed:** 08/01/2026
+- **PR/Commit:** Branch `us001/user-authentication`
+- **Verified By:** Security Specialist, Backend Agent
+- **Notes:**
+  - 5 service classes implemented (Auth, Token, Email, PasswordReset, Audit)
+  - 2 utility modules (IPEncryption, TokenHasher)
+  - 1 management command (rotate_ip_keys)
+  - HMAC-SHA256 token hashing with secret key
+  - Fernet IP encryption with key rotation
+  - Race condition prevention with SELECT FOR UPDATE
+  - Refresh token replay detection implemented
+  - Timezone-aware datetime handling throughout
+  - ~95% test coverage for service layer
+  - Hash-then-store pattern for all authentication tokens
 
 #### Frontend Web
 

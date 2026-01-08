@@ -40,8 +40,9 @@ The assessment provides detailed implementation plans for each critical gap, alo
 ## Table of Contents
 
 - [GDPR Compliance Assessment](#gdpr-compliance-assessment)
-  - [Table of Contents](#table-of-contents)
   - [Executive Summary](#executive-summary)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
   - [Compliance Status](#compliance-status)
     - [Current Score: 40/100](#current-score-40100)
   - [Strengths](#strengths)
@@ -85,7 +86,7 @@ The assessment provides detailed implementation plans for each critical gap, alo
 
 ---
 
-## Executive Summary
+## Overview
 
 **Compliance Rating: C (Non-Compliant) - 40%**
 

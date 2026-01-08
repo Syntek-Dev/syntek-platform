@@ -1,12 +1,14 @@
-# QA Report: User Authentication System (US-001) Phase 1
+# QA Report: User Authentication System (US-001)
 
-**Last Updated**: 07/01/2026
-**Version**: 1.0
+**Last Updated**: 08/01/2026
+**Version**: 2.1
 **Maintained By**: QA Tester Agent
-**Date Range**: Planning Review & Implementation Assessment
+**Date Range**: Phase 1 (Models) & Phase 2 (Services) Implementation
 **Localisation**: British English (en_GB)
 **Timezone**: Europe/London
-**Phase 1 Status**: ✅ Completed
+**Phase 1 Status**: ✅ Completed (07/01/2026)
+**Phase 2 Status**: ✅ Completed (08/01/2026) - Service Layer Implemented
+**Next Phase**: Phase 3 - GraphQL API Implementation
 
 ---
 
@@ -183,23 +185,80 @@
 
 ## Executive Summary
 
-After comprehensive analysis of both the User Authentication System plan (US-001 v1.1.0) and Phase 1 implementation, the project is in an **incomplete and unsafe state** with **critical security vulnerabilities and missing authentication flows**. The assessment covers two distinct evaluations:
+After comprehensive analysis of the User Authentication System (US-001), covering both Phase 1 (Models) and Phase 2 (Service Layer) implementations, the project has **progressed significantly but retains critical security vulnerabilities** that must be addressed before Phase 3 (GraphQL API).
 
-**Plan Review Assessment** (Hostile analysis of specification document):
+### Phase 1 Assessment (Models) - COMPLETED ✅
 
-- **Status**: Plan is unsafe - cannot be implemented as-is
-- **Critical Issues**: 6 security vulnerabilities requiring design changes
-- **High Issues**: 8 architectural gaps blocking deployment
-- **Edge Cases Not Covered**: 27 critical gaps, 34 areas needing attention
-
-**Implementation Status Assessment** (Review of actual codebase):
-
-- **Status**: Implementation incomplete - core workflows missing
+- **Status**: Models fully implemented and tested
 - **Models Implemented**: 11/11 (100%)
-- **GraphQL API**: 0/15 mutations implemented (0%)
-- **Authentication Services**: NOT IMPLEMENTED
-- **Critical Issues**: 15 blocking features
-- **Test Coverage**: ~15% (models only)
+- **Test Coverage**: ~90% (comprehensive unit tests)
+- **Critical Issues from Plan**: Addressed in Phase 2 design
+- **Overall**: ✅ **READY FOR PHASE 2**
+
+### Phase 2 Assessment (Service Layer) - IMPLEMENTED WITH ISSUES ⚠️
+
+- **Status**: Service layer implemented but with **7 critical security issues**
+- **Services Implemented**: 6/7 (EmailVerificationService missing)
+- **Test Coverage**: 90%+ unit tests (330/330 passing), 0% integration tests
+- **Critical Issues**: 7 blocking deployment
+- **Security Vulnerabilities**: 4 active vulnerabilities discovered
+- **Overall**: ⚠️ **NOT READY FOR PHASE 3 OR DEPLOYMENT**
+
+### Phase 2 Implementation Status
+
+| Component                   | Status             | Test Results | Issues                                     |
+| --------------------------- | ------------------ | ------------ | ------------------------------------------ |
+| IP Encryption               | ✅ IMPLEMENTED     | ✅ PASSING   | Management command not implemented         |
+| Token Hashing (HMAC-SHA256) | ✅ IMPLEMENTED     | ✅ PASSING   | No key strength validation                 |
+| Token Service               | ⚠️ PARTIAL         | ✅ PASSING   | Race condition in family update            |
+| Authentication Service      | ⚠️ PARTIAL         | ✅ PASSING   | No race condition prevention, timing attack |
+| Password Reset Service      | ✅ IMPLEMENTED     | ✅ PASSING   | Wrong token expiry (1h vs 15m)             |
+| Email Service               | ❌ STUB ONLY       | ✅ PASSING   | Returns true without sending emails        |
+| Audit Service               | ✅ IMPLEMENTED     | ✅ PASSING   | Not integrated into auth flows             |
+| EmailVerificationService    | ❌ NOT CREATED     | N/A          | Missing entirely                           |
+| Management Commands         | ❌ NOT IMPLEMENTED | N/A          | rotate_ip_keys raises NotImplementedError  |
+
+### Test Results Summary (08/01/2026)
+
+```
+Total Tests: 330/330 PASSING ✅
+- Unit Tests (Phase 1 Models): 250+ tests passing
+- Unit Tests (Phase 2 Services): 80+ tests passing
+- Integration Tests: 0 (NOT WRITTEN)
+- E2E Tests: 0 (NOT WRITTEN)
+- Coverage: ~90% (unit tests only)
+```
+
+### Critical Issues Discovered in Phase 2
+
+**7 Critical Blockers**:
+
+1. **C1**: Management command `rotate_ip_keys` not implemented (raises NotImplementedError)
+2. **C2**: Race condition in user registration (no database locking)
+3. **C3**: EmailVerificationService missing entirely
+4. **C4**: Token family not maintained correctly in refresh flow (race condition)
+5. **C5**: Email service returns True without sending emails (stub only)
+6. **C6**: User enumeration via error messages (privacy/GDPR violation)
+7. **C7**: Account lockout not implemented (brute-force vulnerability)
+
+**4 Active Security Vulnerabilities**:
+
+1. **SV1**: Timing attack in login flow (can enumerate users via response time)
+2. **SV2**: User enumeration via registration error messages
+3. **SV3**: Token family race condition enables replay attack bypass
+4. **SV4**: IP encryption key not validated on startup
+
+### Overall Project Status
+
+| Phase                | Status                                      |
+| -------------------- | ------------------------------------------- |
+| Planning             | ✅ Complete with known gaps                 |
+| Phase 1 (Models)     | ✅ COMPLETE (11/11 models, 90%+ test coverage) |
+| Phase 2 (Services)   | ⚠️ 60% COMPLETE (7 critical issues)         |
+| Phase 3 (GraphQL)    | ❌ BLOCKED (waiting on Phase 2 fixes)       |
+| Phase 4 (2FA)        | ❌ NOT STARTED                              |
+| Phase 5 (Email)      | ❌ NOT STARTED                              |
+| Production Readiness | 🔴 **NOT READY** (multiple critical blockers) |
 
 ---
 
@@ -226,7 +285,775 @@ After comprehensive analysis of both the User Authentication System plan (US-001
 
 ## Critical Issues (Blocks Deployment)
 
-### Security Vulnerabilities
+### Phase 2 Service Layer Critical Issues (NEW)
+
+The following critical issues were discovered during Phase 2 (Service Layer) implementation and must be fixed before proceeding to Phase 3.
+
+#### P2-C1: CRITICAL - Management Command Not Implemented
+
+**Severity**: CRITICAL
+**Location**: `apps/core/management/commands/rotate_ip_keys.py`
+**Phase**: Phase 2
+**Status**: ❌ NOT IMPLEMENTED
+
+**Issue**: The `rotate_ip_keys` management command raises `NotImplementedError` in both `add_arguments()` and `handle()` methods.
+
+**Code**:
+
+```python
+def add_arguments(self, parser):
+    raise NotImplementedError(
+        "Command.add_arguments() not implemented - TDD red phase"
+    )
+
+def handle(self, *args, **options):
+    raise NotImplementedError("Command.handle() not implemented - TDD red phase")
+```
+
+**Impact**: IP encryption key rotation cannot be performed, violating C6 security requirement. If encryption key is compromised, all historical IP addresses in audit logs remain exposed permanently with no recovery path.
+
+**Recommendation**: Implement management command with `--dry-run`, `--backup`, progress reporting, and rollback mechanism.
+
+---
+
+#### P2-C2: CRITICAL - Race Condition in User Registration
+
+**Severity**: CRITICAL
+**Location**: `apps/core/services/auth_service.py:75-77`
+**Phase**: Phase 2
+**Status**: ⚠️ VULNERABLE
+
+**Issue**: User registration checks for duplicate email without database locking. Two concurrent registrations with the same email can both pass the check and create duplicate users or trigger database errors.
+
+**Code**:
+
+```python
+# Check if email already exists
+if User.objects.filter(email=email).exists():
+    raise ValueError(f"Email address {email} is already registered")
+# Race window here - no lock prevents concurrent registration
+```
+
+**Impact**: Database integrity violation, potential duplicate users, or registration failures under concurrent load.
+
+**Recommendation**: Use `select_for_update()` within transaction to acquire row lock before checking email existence.
+
+---
+
+#### P2-C3: CRITICAL - EmailVerificationService Missing
+
+**Severity**: CRITICAL
+**Location**: Missing file - should be `apps/core/services/email_verification_service.py`
+**Phase**: Phase 2
+**Status**: ❌ NOT CREATED
+
+**Issue**: Phase 2 plan requires email verification service, but no service exists. Email verification tokens can be created via model but there's no service layer for the verification workflow.
+
+**Missing Functionality**:
+
+- Create verification token
+- Send verification email
+- Verify token and mark email as verified
+- Resend verification email with cooldown (5 minutes)
+- Single-use token enforcement
+
+**Impact**: Users cannot verify email addresses, blocking C5 requirement (email verification enforcement on login). Phase 3 GraphQL mutations will have no backend to call.
+
+**Recommendation**: Create `EmailVerificationService` following same pattern as `PasswordResetService`.
+
+---
+
+#### P2-C4: CRITICAL - Token Family Race Condition
+
+**Severity**: CRITICAL
+**Location**: `apps/core/services/token_service.py:159-164`
+**Phase**: Phase 2
+**Status**: ⚠️ RACE CONDITION
+
+**Issue**: Token family update in refresh flow doesn't use database locking, creating race condition that breaks replay detection.
+
+**Code**:
+
+```python
+# Update token family to maintain chain
+new_session = SessionToken.objects.get(
+    refresh_token_hash=TokenHasher.hash_token(new_tokens['refresh_token'])
+)
+new_session.token_family = session_token.token_family
+new_session.save(update_fields=['token_family'])
+```
+
+**Problem**: No transaction wrapping, no `select_for_update()`, no verification family was updated.
+
+**Impact**: Broken token family chain means replay detection (H9) doesn't work correctly. Stolen refresh tokens can potentially be reused.
+
+**Recommendation**: Wrap in transaction with `select_for_update()` and verify family update succeeded.
+
+---
+
+#### P2-C5: CRITICAL - Email Service Stub Only
+
+**Severity**: CRITICAL
+**Location**: `apps/core/services/email_service.py`
+**Phase**: Phase 2
+**Status**: ❌ STUB ONLY
+
+**Issue**: All email service methods return `True` without actually sending emails. Documentation says "For Phase 2, return True to satisfy tests" but this creates false sense of completion.
+
+**Impact**:
+
+- Password reset emails not sent
+- Verification emails not sent
+- Users cannot recover accounts
+- Tests pass but functionality broken
+- Moving to Phase 3 with broken email flow
+
+**Recommendation**: Either implement basic SMTP/Mailpit email sending OR make methods raise `NotImplementedError` so it's clear functionality is missing.
+
+---
+
+#### P2-C6: CRITICAL - User Enumeration via Error Messages
+
+**Severity**: CRITICAL
+**Location**: `apps/core/services/auth_service.py`, multiple methods
+**Phase**: Phase 2
+**Status**: ⚠️ PRIVACY VIOLATION
+
+**Issue**: Error messages reveal whether email addresses exist in system.
+
+**Vulnerable Code**:
+
+```python
+# Registration - reveals email exists
+if User.objects.filter(email=email).exists():
+    raise ValueError(f"Email address {email} is already registered")
+
+# Login - distinguishes non-existent user from wrong password
+except User.DoesNotExist:
+    return None  # Different from password check failure
+```
+
+**Impact**: Privacy violation, GDPR non-compliance, enables targeted phishing attacks.
+
+**Recommendation**: Use generic error messages that don't reveal account existence.
+
+---
+
+#### P2-C7: CRITICAL - Account Lockout Not Implemented
+
+**Severity**: CRITICAL
+**Location**: `apps/core/services/auth_service.py:207-218`
+**Phase**: Phase 2
+**Status**: ❌ STUB ONLY
+
+**Issue**: Account lockout methods are stubs that always return False / do nothing.
+
+**Code**:
+
+```python
+@staticmethod
+def check_account_lockout(user: User) -> bool:
+    # For Phase 2, always return False
+    return False
+```
+
+**Impact**: No protection against brute-force password attacks. Attackers can attempt unlimited login attempts.
+
+**Recommendation**: Implement basic lockout with Redis tracking of failed attempts.
+
+---
+
+### Phase 2 Security Vulnerabilities (New - Implementation Analysis)
+
+The following security vulnerabilities were discovered during Phase 2 (Service Layer) implementation analysis on 08/01/2026.
+
+#### P2-SV1: Email Verification Bypass in Login Flow
+
+**Severity**: 🔴 CRITICAL
+**Location**: `apps/core/services/auth_service.py:96-140`
+**Phase**: Phase 2
+**Status**: ⚠️ VULNERABLE
+**Requirement Violated**: C5 (Email Verification Enforcement)
+
+**Issue**: The `AuthService.login()` method does NOT verify `user.email_verified` before issuing authentication tokens. Users can authenticate with unverified email addresses, violating security requirement C5.
+
+**Code Analysis**:
+
+```python
+# apps/core/services/auth_service.py:96-140
+def login(email: str, password: str, ...) -> Optional[Dict[str, any]]:
+    with transaction.atomic():
+        try:
+            user = User.objects.select_for_update().get(email=email)
+        except User.DoesNotExist:
+            return None
+
+        if not user.check_password(password):
+            return None
+
+        # ❌ MISSING: if not user.email_verified: return None
+
+        tokens = TokenService.create_tokens(user, device_fingerprint)
+        return {'user': user, 'access_token': ..., ...}
+```
+
+**Impact**:
+- Account takeover via email typos (user registers wrong email, real owner verifies, both can login)
+- GDPR compliance violation (unverified contact information)
+- Phishing vulnerability (attacker registers victim's email, victim never verifies, attacker logs in)
+
+**Exploit Scenario**:
+1. Attacker registers account with `victim@company.com` (typo for `victim@company.co`)
+2. Verification email sent to wrong address
+3. Attacker immediately logs in **WITHOUT** email verification
+4. Account active with unverified/incorrect email
+
+**Fix Required**:
+
+```python
+def login(email: str, password: str, ...) -> Optional[Dict[str, any]]:
+    # ... existing code ...
+
+    if not user.check_password(password):
+        return None
+
+    # ✅ ADD EMAIL VERIFICATION CHECK:
+    if not user.email_verified:
+        raise ValueError(
+            "EMAIL_NOT_VERIFIED",
+            "Please verify your email address before logging in. "
+            "Check your inbox for the verification link."
+        )
+
+    # Check lockout, create tokens...
+```
+
+**Test Required**:
+- Unit test: Login with unverified email should fail
+- Integration test: Register → Attempt login (should fail) → Verify email → Login (should succeed)
+
+---
+
+#### P2-SV2: Account Lockout Mechanism Bypassed (Stub Implementation)
+
+**Severity**: 🔴 CRITICAL
+**Location**: `apps/core/services/auth_service.py:206-218`
+**Phase**: Phase 2
+**Status**: ❌ NOT IMPLEMENTED
+**Requirement Violated**: H13 (Account Lockout)
+
+**Issue**: `check_account_lockout()` and `unlock_account()` are stub implementations that always return `False` / do nothing, allowing unlimited brute-force login attempts.
+
+**Code Analysis**:
+
+```python
+@staticmethod
+def check_account_lockout(user: User) -> bool:
+    """Check if user account is locked due to failed login attempts."""
+    # For Phase 2, always return False
+    # Full lockout implementation will be in Phase 6
+    return False  # ❌ ALWAYS ALLOWS LOGIN
+
+@staticmethod
+def unlock_account(user: User) -> None:
+    """Unlock user account (admin action or timeout)."""
+    # For Phase 2, do nothing
+    pass  # ❌ NO-OP
+```
+
+**Impact**:
+- Unlimited brute-force password attempts
+- Credential stuffing attacks enabled
+- No protection against dictionary attacks
+- Violates security best practices (OWASP, NIST)
+
+**Exploit Scenario**:
+1. Attacker obtains user email from data breach
+2. Attempts 10,000 common passwords
+3. **No lockout occurs** - all attempts processed
+4. Eventually guesses password or causes DoS
+
+**Fix Required**:
+
+```python
+from django.core.cache import cache
+
+@staticmethod
+def check_account_lockout(user: User) -> bool:
+    """Check if user account is locked due to failed login attempts."""
+    cache_key = f"failed_login_attempts:{user.id}"
+    failed_attempts = cache.get(cache_key, 0)
+
+    # Lock after 10 failed attempts
+    if failed_attempts >= 10:
+        return True
+
+    return False
+
+@staticmethod
+def record_failed_login(user: User) -> None:
+    """Record failed login attempt."""
+    cache_key = f"failed_login_attempts:{user.id}"
+    attempts = cache.get(cache_key, 0) + 1
+    cache.set(cache_key, attempts, timeout=3600)  # 1 hour window
+```
+
+**Test Required**:
+- Unit test: 10 failed logins → account locked
+- Unit test: Lockout expires after 1 hour
+- Integration test: Locked account rejects correct password
+
+---
+
+#### P2-SV3: Concurrent Session Limit Not Enforced
+
+**Severity**: 🔴 CRITICAL
+**Location**: `apps/core/services/token_service.py:46-86`
+**Phase**: Phase 2
+**Status**: ⚠️ VULNERABLE
+**Requirement Violated**: H12 (Concurrent Session Limit)
+
+**Issue**: `create_tokens()` does NOT enforce maximum concurrent session limit. Users can create unlimited active sessions, increasing risk of session hijacking.
+
+**Code Analysis**:
+
+```python
+def create_tokens(user: User, device_fingerprint: str = "") -> Dict[str, str]:
+    # ❌ NO CHECK for existing session count
+
+    # Generate tokens...
+    SessionToken.objects.create(
+        user=user,
+        # ... creates unlimited sessions
+    )
+
+    return {'access_token': ..., 'refresh_token': ..., 'family_id': ...}
+```
+
+**Impact**:
+- Stolen/leaked tokens remain valid indefinitely
+- Difficult to detect account compromise
+- Session hijacking detection impossible
+- Violates security requirement H12 (max 5 concurrent sessions)
+
+**Exploit Scenario**:
+1. Attacker steals user's session token via XSS/phishing
+2. User continues using account normally (doesn't notice)
+3. Attacker maintains access for 30 days (token expiry)
+4. No session limit alerts user or administrators
+
+**Fix Required**:
+
+```python
+@staticmethod
+def create_tokens(user: User, device_fingerprint: str = "") -> Dict[str, str]:
+    MAX_CONCURRENT_SESSIONS = 5
+
+    # Count active sessions
+    active_sessions = SessionToken.objects.filter(
+        user=user,
+        is_revoked=False,
+        expires_at__gt=timezone.now()
+    ).count()
+
+    # Revoke oldest session if limit reached
+    if active_sessions >= MAX_CONCURRENT_SESSIONS:
+        oldest = SessionToken.objects.filter(
+            user=user,
+            is_revoked=False
+        ).order_by('created_at').first()
+
+        if oldest:
+            oldest.revoke()
+
+    # Generate new tokens...
+```
+
+**Test Required**:
+- Unit test: 6th session creation revokes oldest
+- Integration test: User can see active sessions and logout specific device
+
+---
+
+#### P2-SV4: Rate Limiting Not Implemented (DoS Vulnerability)
+
+**Severity**: 🔴 CRITICAL
+**Location**: All authentication service methods
+**Phase**: Phase 2
+**Status**: ❌ NOT IMPLEMENTED
+**Requirement Violated**: System-wide security requirement
+
+**Issue**: **NO RATE LIMITING** implemented at service layer for authentication operations. This enables:
+- Brute-force attacks on login
+- Email bombing via password reset
+- Resource exhaustion via token generation
+- Distributed Denial of Service (DDoS)
+
+**Impact**:
+- Service can be overwhelmed with authentication requests
+- Email service abuse (password reset bombing)
+- Database connection pool exhaustion
+- Application-level DoS vulnerability
+
+**Exploit Scenarios**:
+
+1. **Login Brute Force**: 1000 req/sec → server overload
+2. **Email Bombing**: Reset password for 1000 users/sec → mail server blacklisted
+3. **Token Generation**: Create 10000 tokens/sec → database locks
+4. **Registration Spam**: Register 1000 accounts/sec → database bloat
+
+**Fix Required**:
+
+```python
+from functools import wraps
+from django.core.cache import cache
+
+def rate_limit(key_prefix: str, limit: int, period: int):
+    """Rate limiting decorator."""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            identifier = kwargs.get('email') or kwargs.get('ip_address', 'unknown')
+            cache_key = f"rate_limit:{key_prefix}:{identifier}"
+
+            attempts = cache.get(cache_key, 0)
+            if attempts >= limit:
+                raise ValueError(
+                    f"RATE_LIMIT_EXCEEDED",
+                    f"Too many requests. Try again in {period // 60} minutes."
+                )
+
+            cache.set(cache_key, attempts + 1, period)
+            return func(*args, **kwargs)
+
+        return wrapper
+    return decorator
+
+# Usage:
+@rate_limit('login', limit=5, period=300)  # 5 attempts per 5 minutes
+def login(email: str, password: str, ...) -> Optional[Dict]:
+    ...
+
+@rate_limit('password_reset', limit=3, period=3600)  # 3 per hour
+def create_reset_token(user: User, ...) -> str:
+    ...
+```
+
+**Test Required**:
+- Unit test: 6th login attempt within 5 minutes should fail with rate limit error
+- Unit test: Rate limit resets after timeout period
+- Integration test: Rate limiting per IP address
+
+---
+
+#### P2-SV5: Password History Not Enforced
+
+**Severity**: 🟠 HIGH
+**Location**: `apps/core/services/auth_service.py:170-204`, `apps/core/services/password_reset_service.py:111-157`
+**Phase**: Phase 2
+**Status**: ⚠️ VULNERABLE
+**Requirement Violated**: H11 (Password History)
+
+**Issue**: Neither `change_password()` nor `reset_password()` check password history. Users can immediately reuse old passwords, violating requirement H11 (prevent reuse of last 5 passwords).
+
+**Code Analysis**:
+
+```python
+# auth_service.py:170-204
+def change_password(user: User, old_password: str, new_password: str) -> bool:
+    # Verify old password...
+    # Validate new password...
+
+    # ❌ NO PASSWORD HISTORY CHECK
+
+    user.set_password(new_password)
+    user.save()
+    return True
+```
+
+**Impact**:
+- Users rotate through same 2-3 passwords
+- Forced password changes become ineffective
+- Compliance violations (PCI-DSS requires password history)
+- Security incident response compromised
+
+**Exploit Scenario**:
+1. User's password compromised in breach
+2. Security team forces password reset
+3. User changes password to `Password123!` → `Password456!`
+4. User immediately changes back to `Password123!`
+5. Compromised password remains active
+
+**Fix Required**:
+
+Create `PasswordHistory` model:
+
+```python
+# models.py
+class PasswordHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    password_hash = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [models.Index(fields=['user', '-created_at'])]
+
+# auth_service.py
+def change_password(user: User, old_password: str, new_password: str) -> bool:
+    # Verify old password...
+
+    # ✅ CHECK PASSWORD HISTORY:
+    history = PasswordHistory.objects.filter(user=user).order_by('-created_at')[:5]
+
+    for old_hash in history:
+        temp_user = User()
+        temp_user.password = old_hash.password_hash
+        if temp_user.check_password(new_password):
+            raise ValueError(
+                "PASSWORD_REUSE_ERROR",
+                "Cannot reuse any of your last 5 passwords. "
+                "Please choose a different password."
+            )
+
+    # Set password...
+    user.set_password(new_password)
+    user.save()
+
+    # Add to history
+    PasswordHistory.objects.create(user=user, password_hash=user.password)
+
+    # Keep only last 5
+    PasswordHistory.objects.filter(user=user).exclude(
+        id__in=history.values_list('id', flat=True)[:5]
+    ).delete()
+
+    return True
+```
+
+**Test Required**:
+- Unit test: Reusing password from last 5 should fail
+- Unit test: 6th password allows reuse of 1st password
+- Migration: Create PasswordHistory model
+
+---
+
+#### P2-SV6: Logout Does Not Revoke Token (Session Persistence Vulnerability)
+
+**Severity**: 🟠 HIGH
+**Location**: `apps/core/services/auth_service.py:142-156`
+**Phase**: Phase 2
+**Status**: ❌ STUB ONLY
+**Requirement Violated**: H10 (Logout Token Revocation)
+
+**Issue**: `logout()` method is a stub that always returns `True` without actually revoking the session token. This means tokens remain valid after "logout", making logout purely client-side.
+
+**Code Analysis**:
+
+```python
+@staticmethod
+def logout(user: User, token: str) -> bool:
+    """Logout user and revoke session token."""
+    # For Phase 2, always return True
+    # Full implementation will revoke specific token
+    return True  # ❌ TOKEN NOT REVOKED
+```
+
+**Impact**:
+- Tokens remain valid for 30 days after "logout"
+- Stolen tokens can be used after user logs out
+- Logout provides **FALSE SENSE OF SECURITY**
+- Violates security requirement H10
+
+**Exploit Scenario**:
+1. User logs in from public/shared computer
+2. User clicks "Logout" (believes session ended)
+3. Attacker uses same computer, finds cached/stolen token
+4. **Token still valid** - attacker gains access for 30 days
+
+**Fix Required**:
+
+```python
+from apps.core.utils.token_hasher import TokenHasher
+from apps.core.models import SessionToken
+
+@staticmethod
+def logout(user: User, token: str) -> bool:
+    """Logout user and revoke session token."""
+    # Hash token to find it
+    token_hash = TokenHasher.hash_token(token)
+
+    try:
+        session_token = SessionToken.objects.get(
+            user=user,
+            token_hash=token_hash
+        )
+
+        # Revoke the token
+        session_token.revoke()
+
+        # Log logout event
+        from apps.core.services.audit_service import AuditService
+        AuditService.log_logout(user)
+
+        return True
+
+    except SessionToken.DoesNotExist:
+        # Token not found (already revoked or invalid)
+        return False
+```
+
+**Test Required**:
+- Unit test: Logout revokes token
+- Integration test: Logout → Verify token invalid → Login with same credentials works
+
+---
+
+#### P2-SV7: Missing Audit Logging for Authentication Events
+
+**Severity**: 🟠 HIGH
+**Location**: `apps/core/services/auth_service.py:96-140`
+**Phase**: Phase 2
+**Status**: ⚠️ PARTIAL
+**Requirement Violated**: Audit logging requirement
+
+**Issue**: `login()` method does NOT create audit logs for **failed login attempts** or **successful logins**. This prevents:
+- Security monitoring and alerting
+- Brute-force attack detection
+- Forensic investigation after breach
+- Account lockout mechanism implementation
+
+**Code Analysis**:
+
+```python
+def login(email: str, password: str, ...) -> Optional[Dict]:
+    try:
+        user = User.objects.select_for_update().get(email=email)
+    except User.DoesNotExist:
+        # ❌ NO AUDIT LOG FOR USER NOT FOUND
+        return None
+
+    if not user.check_password(password):
+        # ❌ NO AUDIT LOG FOR WRONG PASSWORD
+        return None
+
+    # Success - tokens created
+    # ❌ NO SUCCESS AUDIT LOG EITHER
+    return {'user': user, 'access_token': ..., ...}
+```
+
+**Impact**:
+- Security incidents undetectable
+- No forensic trail for investigations
+- Compliance violations (PCI-DSS, HIPAA require audit logs)
+- Account lockout cannot be implemented without failed attempt tracking
+
+**Fix Required**:
+
+```python
+from apps.core.services.audit_service import AuditService
+
+def login(email: str, password: str, ip_address: str = "", ...) -> Optional[Dict]:
+    try:
+        user = User.objects.select_for_update().get(email=email)
+    except User.DoesNotExist:
+        # ✅ LOG FAILED ATTEMPT (user not found)
+        AuditService.log_login_failed(
+            email=email,
+            ip_address=ip_address,
+            device_fingerprint=device_fingerprint
+        )
+        return None
+
+    if not user.check_password(password):
+        # ✅ LOG FAILED ATTEMPT (wrong password)
+        AuditService.log_login_failed(
+            email=email,
+            ip_address=ip_address,
+            device_fingerprint=device_fingerprint,
+            organisation=user.organisation
+        )
+        return None
+
+    # ✅ LOG SUCCESSFUL LOGIN
+    AuditService.log_login(
+        user=user,
+        ip_address=ip_address,
+        device_fingerprint=device_fingerprint
+    )
+
+    tokens = TokenService.create_tokens(user, device_fingerprint)
+    return {'user': user, ...}
+```
+
+**Test Required**:
+- Unit test: Failed login creates audit log
+- Unit test: Successful login creates audit log
+- Integration test: Query audit logs for user
+
+---
+
+#### P2-SV8: Token Service Missing IP Address Storage
+
+**Severity**: 🟠 HIGH
+**Location**: `apps/core/services/token_service.py:46-86`
+**Phase**: Phase 2
+**Status**: ⚠️ MISSING FEATURE
+
+**Issue**: `create_tokens()` accepts `device_fingerprint` but does NOT accept or store IP address. This prevents:
+- IP-based session validation
+- Geographic anomaly detection
+- Forensic investigation after breach
+
+**Code Analysis**:
+
+```python
+def create_tokens(user: User, device_fingerprint: str = "") -> Dict[str, str]:
+    # ❌ NO IP ADDRESS PARAMETER
+
+    SessionToken.objects.create(
+        user=user,
+        device_fingerprint=device_fingerprint,
+        # ❌ ip_address NOT SET (column exists in model but not populated)
+    )
+```
+
+**Impact**:
+- Cannot detect session hijacking via IP change
+- Cannot implement geographic login alerts
+- Cannot block sessions from suspicious IPs
+- Forensic investigation limited
+
+**Fix Required**:
+
+```python
+from apps.core.utils.encryption import IPEncryption
+
+def create_tokens(
+    user: User,
+    device_fingerprint: str = "",
+    ip_address: str = ""  # ✅ ADD IP PARAMETER
+) -> Dict[str, str]:
+    # Encrypt IP if provided
+    encrypted_ip = None
+    if ip_address:
+        encrypted_ip = IPEncryption.encrypt_ip(ip_address)
+
+    SessionToken.objects.create(
+        user=user,
+        device_fingerprint=device_fingerprint,
+        ip_address=encrypted_ip,  # ✅ STORE ENCRYPTED IP
+        ...
+    )
+```
+
+**Test Required**:
+- Unit test: Session token stores encrypted IP
+- Integration test: IP change detection alert
+
+---
+
+### Phase 1 Security Vulnerabilities (From Plan Review)
 
 #### 1. Session Token Storage Vulnerability
 

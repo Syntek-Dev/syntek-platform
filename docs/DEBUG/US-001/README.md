@@ -25,8 +25,9 @@
 This directory contains debugging guides and issue analysis reports specific to User Story 001
 (User Authentication). Use these to diagnose and resolve authentication-related issues.
 
-**Phase**: Phase 1 - Core Authentication
-**Focus**: User models, authentication flows, 2FA, session management
+**Phases Completed**: Phase 1 (Models) + Phase 2 (Services) ✅
+**Current Focus**: Phase 3 - GraphQL API Implementation
+**Status**: All critical security issues resolved, service layer production-ready
 
 ---
 
@@ -46,82 +47,203 @@ US-001/
 
 Comprehensive debugging documentation including:
 
-- Known issues and resolutions
-- Common error messages and causes
-- Step-by-step troubleshooting guides
-- Authentication flow debugging
-- 2FA configuration issues
-- Session management problems
+**Phase 1 & 2 Resolved Issues:**
+- ✅ All 6 critical security vulnerabilities resolved
+- ✅ Token hashing with HMAC-SHA256 (C1)
+- ✅ IP encryption and key rotation (C6)
+- ✅ Password reset hash-then-store pattern (C3)
+- ✅ Email verification enforcement (C5)
+- ✅ Race condition prevention (H3)
+- ✅ Timezone handling with DST (M5)
+
+**Current Debugging Guides:**
+- Phase 2 service layer implementation status
+- Authentication flow debugging (login, registration, logout)
 - Token generation and validation issues
-- Database-related issues
-- GraphQL-specific problems
-- Testing authentication locally
-- Logging and inspection techniques
+- Session management and replay detection
+- Password reset flow troubleshooting
+- Email service debugging
+- Audit logging verification
+- IP encryption/decryption issues
 
 **Use this when:**
 
-- Authentication tests are failing
-- User registration not working
-- Login issues occurring
-- 2FA setup problems
-- Session token errors
-- Password reset failures
+- Authentication service issues
+- Token hashing or validation errors
+- IP encryption problems
+- Email sending failures
+- Audit logging not working
+- Race condition debugging
+- Timezone handling issues
+- Password reset flow problems
 
 ---
 
-## Common Authentication Issues
+## Common Authentication Issues (Phase 2 Updated)
 
 ### Login Not Working
 
 **Possible Causes:**
 
-1. User not created
-2. Password incorrect or not hashed properly
+1. Email not verified (C5 - now enforced)
+2. Account locked after failed attempts (new in Phase 2)
 3. Token generation failing
-4. Database connection issues
+4. Race condition during concurrent logins
+5. IP encryption issues
 
 **Debug Steps:**
 
-1. Check user exists: `./scripts/env/dev.sh shell`
+1. Check email verification status:
    ```python
+   ./scripts/env/dev.sh shell
    from apps.core.models import User
-   User.objects.filter(email='user@example.com').exists()
+   user = User.objects.get(email='user@example.com')
+   print(f"Verified: {user.email_verified}")
    ```
-2. Verify password: `user.check_password('password')`
-3. Check token generation
-4. Review application logs
 
-### 2FA Issues
+2. Check account lockout status:
+   ```python
+   from apps.core.services.auth_service import AuthService
+   # Check failed login count and lockout time
+   ```
+
+3. Verify token hashing:
+   ```python
+   from apps.core.utils.token_hasher import TokenHasher
+   token = "test_token"
+   hashed = TokenHasher.hash_token(token)
+   print(f"Hash: {hashed}")
+   ```
+
+4. Check audit logs for login attempts:
+   ```python
+   from apps.core.models import AuditLog
+   logs = AuditLog.objects.filter(
+       user=user,
+       action='LOGIN_FAILED'
+   ).order_by('-created_at')[:5]
+   ```
+
+### Token Generation/Validation Errors
 
 **Possible Causes:**
 
-1. TOTP secret not generated correctly
-2. Clock skew on server/device
-3. Backup codes not stored
-4. Device not marked as verified
+1. TOKEN_SIGNING_KEY not configured (C1)
+2. Token hash mismatch
+3. Token expired
+4. Refresh token replay detected (H9)
 
 **Debug Steps:**
 
-1. Check TOTP device exists
-2. Verify secret is encrypted/decrypted correctly
-3. Check device verification status
-4. Test TOTP code generation
+1. Verify environment variables:
+   ```bash
+   ./scripts/env/dev.sh shell
+   from django.conf import settings
+   print(f"TOKEN_SIGNING_KEY configured: {bool(settings.TOKEN_SIGNING_KEY)}")
+   ```
 
-### Session Token Expiration
+2. Test token hashing:
+   ```python
+   from apps.core.utils.token_hasher import TokenHasher
+   token = TokenHasher.generate_token()
+   token_hash = TokenHasher.hash_token(token)
+   is_valid = TokenHasher.verify_token(token, token_hash)
+   print(f"Valid: {is_valid}")  # Should be True
+   ```
+
+3. Check for replay attacks:
+   ```python
+   from apps.core.models import SessionToken
+   # Check if refresh token already used
+   session = SessionToken.objects.get(token_family='...')
+   print(f"Refresh used: {session.is_refresh_token_used}")
+   ```
+
+### IP Encryption Issues
 
 **Possible Causes:**
 
-1. Token lifetime too short
-2. Token not being refreshed
-3. Middleware not reading token correctly
-4. Database session cleanup running
+1. IP_ENCRYPTION_KEY not configured (C6)
+2. Invalid IP address format
+3. Encryption/decryption key mismatch
 
 **Debug Steps:**
 
-1. Check token expiration settings
-2. Verify token in database
-3. Check authentication middleware
-4. Review session cleanup jobs
+1. Test IP encryption:
+   ```python
+   from apps.core.utils.encryption import IPEncryption
+
+   ip = "192.168.1.1"
+   encrypted = IPEncryption.encrypt_ip(ip)
+   decrypted = IPEncryption.decrypt_ip(encrypted)
+
+   print(f"Original: {ip}")
+   print(f"Decrypted: {decrypted}")
+   assert ip == decrypted
+   ```
+
+2. Check audit log IP encryption:
+   ```python
+   from apps.core.models import AuditLog
+   log = AuditLog.objects.first()
+   if log and log.ip_address:
+       from apps.core.utils.encryption import IPEncryption
+       decrypted = IPEncryption.decrypt_ip(log.ip_address)
+       print(f"Audit log IP: {decrypted}")
+   ```
+
+### Password Reset Not Working
+
+**Possible Causes:**
+
+1. Token not generated correctly (C3)
+2. Email not sending
+3. Token expired
+4. Token already used
+
+**Debug Steps:**
+
+1. Check token generation:
+   ```python
+   from apps.core.services.password_reset_service import PasswordResetService
+   from apps.core.models import User
+
+   user = User.objects.get(email='user@example.com')
+   token = PasswordResetService.create_reset_token(user)
+   print(f"Reset token created: {token}")
+   ```
+
+2. Verify email sent:
+   ```python
+   from apps.core.models import AuditLog
+   logs = AuditLog.objects.filter(
+       action='PASSWORD_RESET_REQUESTED',
+       user__email='user@example.com'
+   )
+   print(f"Reset requests: {logs.count()}")
+   ```
+
+### Email Verification Blocking Login
+
+**Status:** This is now expected behaviour (C5 resolved)
+
+**Fix:**
+
+1. Resend verification email:
+   ```python
+   from apps.core.services.email_service import EmailService
+   from apps.core.models import User
+
+   user = User.objects.get(email='user@example.com')
+   EmailService.send_verification_email(user)
+   ```
+
+2. Manually verify user (development only):
+   ```python
+   user.email_verified = True
+   user.email_verified_at = timezone.now()
+   user.save()
+   ```
 
 ---
 

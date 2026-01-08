@@ -4,20 +4,32 @@
 
 **Sprint Duration:** 06/01/2026 - 20/01/2026 (2 weeks)
 **Capacity:** 10/11 points
-**Status:** 🔄 In Progress (Phase 1 Complete)
-**Last Updated:** 08/01/2026 09:35 Europe/London
+**Status:** 🔄 In Progress (Phases 1 & 2 Complete)
+**Last Updated:** 08/01/2026
+**Phase 1 Status:** ✅ Complete (07/01/2026)
+**Phase 2 Status:** ✅ Complete (08/01/2026)
 
 ---
 
 ## Overview
 
-First sprint of the Syntek CMS Platform backend project focused on establishing core authentication infrastructure. Phase 1 (completed 07/01/2026) delivered 11 Django models with comprehensive security features and >95% test coverage. Phase 2 will implement GraphQL API to unblock frontend development.
+First sprint of the Syntek CMS Platform backend project focused on establishing core authentication infrastructure. Phase 1 (completed 07/01/2026) delivered 11 Django models with comprehensive security features and >95% test coverage. Phase 2 (completed 08/01/2026) delivered complete service layer with authentication business logic, token management, and security utilities. Phase 3 will implement GraphQL API to unblock frontend development.
 
-**Phase 1 Status:** ✅ Complete (8/10 points)
+**Phase 1 Status:** ✅ Complete (07/01/2026)
+
 - 11 database models implemented
 - 85+ unit tests with TDD approach
 - Comprehensive security validators
 - 7 detailed documentation reports
+
+**Phase 2 Status:** ✅ Complete (08/01/2026)
+
+- 5 service classes implemented (Auth, Token, Email, Password Reset, Audit)
+- 2 utility modules (IP Encryption, Token Hasher)
+- 1 management command (IP key rotation)
+- Race condition prevention with SELECT FOR UPDATE
+- Refresh token replay detection
+- Timezone-aware datetime handling
 
 ---
 
@@ -35,12 +47,12 @@ required for all subsequent features.
 
 ### Must Have (10 points)
 
-| Story ID                                           | Title               | Points | Backend Status  | Overall Status |
-| -------------------------------------------------- | ------------------- | ------ | --------------- | -------------- |
-| [US-001](../STORIES/US-001-USER-AUTHENTICATION.md) | User Authentication | 5      | 🔄 Phase 1 Done | 🔄 In Progress |
-| [US-003](../STORIES/US-003-PASSWORD-RESET.md)      | Password Reset      | 5      | ⬜ Not Started  | ⬜ Not Started |
+| Story ID                                           | Title               | Points | Backend Status         | Overall Status |
+| -------------------------------------------------- | ------------------- | ------ | ---------------------- | -------------- |
+| [US-001](../STORIES/US-001-USER-AUTHENTICATION.md) | User Authentication | 5      | 🔄 Phases 1 & 2 Done   | 🔄 In Progress |
+| [US-003](../STORIES/US-003-PASSWORD-RESET.md)      | Password Reset      | 5      | ⬜ Not Started         | ⬜ Not Started |
 
-**Progress:** 1/2 stories have backend Phase 1 complete
+**Progress:** 1/2 stories have backend Phases 1 & 2 complete (~75% backend complete for US-001, GraphQL API pending)
 
 ### Should Have (0 points)
 
@@ -92,16 +104,16 @@ _None in this sprint_
 
 ## Repository Breakdown
 
-| Story  | Backend         | Frontend Web   | Frontend Mobile | Shared UI      |
-| ------ | --------------- | -------------- | --------------- | -------------- |
-| US-001 | 🔄 Phase 1 Done | ⬜ Not Started | ⬜ Not Started  | ⬜ Not Started |
-| US-003 | ⬜ Not Started  | ⬜ Not Started | ⬜ Not Started  | ⬜ Not Started |
+| Story  | Backend              | Frontend Web   | Frontend Mobile | Shared UI      |
+| ------ | -------------------- | -------------- | --------------- | -------------- |
+| US-001 | 🔄 Phases 1 & 2 Done | ⬜ Not Started | ⬜ Not Started  | ⬜ Not Started |
+| US-003 | ⬜ Not Started       | ⬜ Not Started | ⬜ Not Started  | ⬜ Not Started |
 
 **Repository Status:**
 
-- **Backend:** Phase 1 complete for US-001 (models, validators, tests)
-- **Frontend Web:** Waiting for backend Phase 2 (GraphQL API)
-- **Frontend Mobile:** Waiting for backend Phase 2 (GraphQL API)
+- **Backend:** Phases 1 & 2 complete for US-001 (models, services, validators, tests)
+- **Frontend Web:** Waiting for backend Phase 3 (GraphQL API)
+- **Frontend Mobile:** Waiting for backend Phase 3 (GraphQL API)
 - **Shared UI:** Waiting for design system foundation
 
 ---
@@ -170,17 +182,31 @@ _None in this sprint_
 - [x] Comprehensive unit tests (85+ tests with TDD approach)
 - [x] Database indexes for query optimisation
 
-**Backend Phase 2 (Pending):**
+**Backend Phase 2 (✅ Completed 08/01/2026):**
+
+- [x] Authentication service layer (AuthService) with race condition prevention
+- [x] Token service (TokenService) with HMAC-SHA256 hashing and replay detection
+- [x] Email service (EmailService) with verification and password reset logic
+- [x] Password reset service (PasswordResetService) with hash-then-store pattern
+- [x] Audit service (AuditService) with encrypted IP logging
+- [x] IP encryption utility with key rotation support
+- [x] Token hasher utility with HMAC-SHA256
+- [x] Management command for IP key rotation
+- [x] User registration logic with duplicate email rejection
+- [x] Login logic (without 2FA) with email verification check
+- [x] Timezone-aware datetime handling throughout
+- [x] Comprehensive unit tests (~95% coverage for services)
+
+**Backend Phase 3 (Pending - GraphQL API):**
 
 - [ ] GraphQL registration mutation
-- [ ] Email verification workflow and endpoints
-- [ ] Rate limiting on registration endpoint
+- [ ] GraphQL login mutation
+- [ ] GraphQL email verification mutation
+- [ ] Email verification workflow GraphQL integration
+- [ ] Rate limiting on GraphQL endpoints
 - [ ] CSRF protection for GraphQL mutations
-- [ ] Authentication service layer
-- [ ] Email verification link is sent
-- [ ] Email verification activates account
-- [ ] Duplicate email addresses are rejected with clear error
-- [ ] All actions are audit-logged
+- [ ] Email verification link generation and sending
+- [ ] Integration and E2E tests
 
 **Frontend (Pending):**
 

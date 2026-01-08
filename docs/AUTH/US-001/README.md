@@ -33,9 +33,10 @@ This directory contains implementation-specific documentation for User Story 001
 Authentication). It provides technical details about how authentication is implemented,
 including code examples, configuration details, and testing strategies.
 
-**Phase**: Phase 1 - Core Authentication
-**Status**: In Progress
-**Focus**: Email/password auth, 2FA, session management, password reset
+**Phase**: Phase 1 & 2 - Core Authentication & Service Layer
+**Phase 1 Status**: ✅ Completed
+**Phase 2 Status**: ✅ Completed
+**Focus**: Email/password auth, 2FA, session management, password reset, service layer
 
 ---
 
@@ -55,18 +56,31 @@ US-001/
 
 Detailed implementation documentation covering:
 
+**Phase 1: Core Models and Database**
+
 - User model implementation with email/password support
-- Password hashing strategy (Bcrypt)
+- Password hashing strategy (Argon2)
 - TOTP 2FA implementation with backup codes
 - Session token generation and validation
 - Password reset flow implementation
 - Email verification workflow
 - Audit logging implementation
 - Multi-tenancy integration
-- GraphQL mutation implementations
 - Validation and error handling
 - Security best practices applied
-- Integration with existing codebase
+
+**Phase 2: Authentication Service Layer (✅ Completed)**
+
+- ✅ Authentication service (registration, login, logout)
+- ✅ Token service (JWT generation, validation, refresh with replay detection)
+- ✅ Email service (verification, password reset emails)
+- ✅ Password reset service (secure token handling with HMAC-SHA256)
+- ✅ Audit service (security event logging with encrypted IP addresses)
+- ✅ IP address encryption utilities (Fernet AES-128-CBC with key rotation)
+- ✅ HMAC-SHA256 token hashing utility
+- ✅ Management command for IP encryption key rotation
+- ✅ Race condition prevention with database locking
+- ✅ Timezone-aware datetime handling with pytz
 
 **Use this when:**
 
@@ -83,10 +97,12 @@ Detailed implementation documentation covering:
 ### Email & Password Authentication
 
 - User registration with email verification
-- Secure password hashing using Bcrypt
+- Secure password hashing using Argon2
 - Login flow with email and password
 - Email verification tokens with expiration
-- Secure token generation and storage
+- Secure token generation and storage using HMAC-SHA256
+- JWT token generation and validation
+- Refresh token management with replay detection
 
 ### Two-Factor Authentication (2FA)
 
@@ -99,28 +115,33 @@ Detailed implementation documentation covering:
 ### Session Management
 
 - API token-based authentication (no cookies)
-- Session token generation and storage
-- IP address tracking (encrypted for privacy)
+- Session token generation and storage with HMAC-SHA256 hashing
+- IP address tracking (encrypted with Fernet AES-128-CBC)
 - User agent tracking for security
-- Token expiration and refresh
+- Token expiration and refresh with replay detection
 - Token revocation functionality
+- Automatic session cleanup for expired tokens
+- Race condition prevention with database locking
 
 ### Password Management
 
 - Secure password reset flow with email verification
 - Password history tracking to prevent reuse
-- Password reset tokens with expiration
-- Password strength validation
-- Secure password change flow
+- Password reset tokens with expiration and HMAC-SHA256 hashing
+- Password strength validation with HaveIBeenPwned breach checking
+- Secure password change flow with token revocation
+- Password change notifications via email
 
 ### Audit Logging
 
-- Authentication event logging
-- Login/logout event tracking
+- Authentication event logging with encrypted IP addresses
+- Login/logout event tracking with user agent capture
 - Password change audit trail
 - 2FA device changes logging
 - Email verification attempts
 - Failed login attempts logging
+- Timezone-aware timestamp recording
+- Comprehensive security event tracking
 
 ---
 

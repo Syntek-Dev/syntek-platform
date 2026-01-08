@@ -33,9 +33,10 @@ This directory contains comprehensive database schema documentation for User Sto
 Authentication). It documents all tables, columns, constraints, indexes, and relationships
 required for authentication, session management, and user account management.
 
-**Phase**: Phase 1 - Core Authentication
+**Phase**: Phase 1 & 2 - Core Authentication & Service Layer
 **Database**: PostgreSQL 18.1+
-**Status**: In Progress
+**Phase 1 Status**: ✅ Complete
+**Phase 2 Status**: ✅ Complete
 
 ---
 
@@ -55,6 +56,8 @@ US-001/
 
 Comprehensive database schema documentation covering:
 
+**Phase 1 (Core Models):**
+
 - Complete table definitions
 - Column specifications with types and constraints
 - Primary keys and unique constraints
@@ -69,6 +72,18 @@ Comprehensive database schema documentation covering:
 - Entity relationship diagrams
 - Migration strategies
 
+**Phase 2 (Service Layer & Security):**
+
+- HMAC-SHA256 token hashing implementation (C1, C3)
+- IP encryption with key rotation support (C6)
+- Token family pattern for replay detection (H9)
+- Single-use token validation (H12)
+- Performance indexes for multi-tenant queries
+- Query performance benchmarks
+- Environment configuration requirements
+- Token lifecycle management
+- Migration 0006 documentation
+
 **Use this when:**
 
 - Understanding the authentication schema
@@ -76,6 +91,8 @@ Comprehensive database schema documentation covering:
 - Writing complex queries
 - Optimising database performance
 - Conducting database reviews
+- Implementing security features
+- Configuring environment variables
 
 ---
 

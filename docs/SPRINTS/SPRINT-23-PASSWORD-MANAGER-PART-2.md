@@ -13,6 +13,7 @@
 This sprint completes the Password Manager application by adding advanced features that enhance security, compliance, and user experience. Building on the core password vault functionality from Sprint 22, this iteration adds access history tracking, password policies, health monitoring, browser extension integration, breach detection, emergency access procedures, and backup/export capabilities. The result is an enterprise-grade password management solution with comprehensive security controls and audit trails.
 
 **Key Deliverables:**
+
 - Access history and audit logging for password access
 - Organisation password policies and enforcement
 - Password health dashboard with strength assessment

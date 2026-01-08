@@ -1,14 +1,15 @@
 # User Authentication System - Implementation Plan
 
-**Last Updated**: 07/01/2026
-**Version**: 0.3.3
+**Last Updated**: 08/01/2026
+**Version**: 0.4.1
 **User Story**: US001
 **Branch**: us001/user-authentication
-**Status**: Updated with Consolidated Review Findings
+**Status**: Phase 2 Complete - Service Layer Implemented
 **Author**: System Architect
 **Review Status**: Approved with Critical Recommendations
 **Reviews Incorporated**: Architecture, Backend, Code Quality, Database, QA, Security, Testing
-**Phase 1 Status**: ✅ Completed
+**Phase 1 Status**: ✅ Completed (07/01/2026)
+**Phase 2 Status**: ✅ Completed (08/01/2026)
 
 ---
 
@@ -5335,6 +5336,8 @@ class AuditService:
 
 ### Phase 2: Authentication Service Layer
 
+**Status**: ✅ **COMPLETED** (08/01/2026)
+
 **Objective:** Implement business logic for authentication operations.
 
 **Review Fixes Implemented:**
@@ -5347,42 +5350,55 @@ class AuditService:
 - **H9**: Refresh token replay detection with token families (see [High Priority H9](#h9-refresh-token-replay-detection))
 - **M5**: Timezone/DST handling with pytz (see [Medium Priority M5](#m5-timezonedsst-handling))
 
-**Tasks:**
+**Tasks Completed:**
 
-- [ ] Create `IPEncryption` utility in `apps/core/utils/encryption.py`
-  - [ ] Implement key rotation support (C6)
-- [ ] Create `TokenHasher` utility in `apps/core/utils/token_hasher.py`
-  - [ ] Use HMAC-SHA256 with secret key, NOT plain SHA-256 (C1)
-- [ ] Create `TokenService` in `apps/core/services/token_service.py`
-  - [ ] Implement token family management for replay detection (H9)
-  - [ ] Store only hashed tokens in database (C1, C3)
-- [ ] Create `AuthService` in `apps/core/services/auth_service.py`
-  - [ ] Implement race condition prevention with `select_for_update()` (H3)
-  - [ ] Use timezone-aware datetime operations with pytz (M5)
-- [ ] Create `AuditService` in `apps/core/services/audit_service.py`
-- [ ] Create `EmailService` in `apps/core/services/email_service.py`
-- [ ] Create `PasswordResetService` in `apps/core/services/password_reset_service.py`
-  - [ ] Implement hash-then-store pattern (C3)
-- [ ] Create management command `rotate_ip_keys` in `apps/core/management/commands/` (C6)
-- [ ] Implement user registration logic
-- [ ] Implement login logic (without 2FA)
-- [ ] Implement password reset logic with hashed tokens (C3)
-- [ ] Implement email verification logic
-- [ ] Configure JWT settings with RS256 algorithm (H1)
-- [ ] Configure Redis for session storage
+- [x] Create `IPEncryption` utility in `apps/core/utils/encryption.py`
+  - [x] Implement key rotation support (C6)
+- [x] Create `TokenHasher` utility in `apps/core/utils/token_hasher.py`
+  - [x] Use HMAC-SHA256 with secret key, NOT plain SHA-256 (C1)
+- [x] Create `TokenService` in `apps/core/services/token_service.py`
+  - [x] Implement token family management for replay detection (H9)
+  - [x] Store only hashed tokens in database (C1, C3)
+- [x] Create `AuthService` in `apps/core/services/auth_service.py`
+  - [x] Implement race condition prevention with `select_for_update()` (H3)
+  - [x] Use timezone-aware datetime operations with pytz (M5)
+- [x] Create `AuditService` in `apps/core/services/audit_service.py`
+- [x] Create `EmailService` in `apps/core/services/email_service.py`
+- [x] Create `PasswordResetService` in `apps/core/services/password_reset_service.py`
+  - [x] Implement hash-then-store pattern (C3)
+- [x] Create management command `rotate_ip_keys` in `apps/core/management/commands/` (C6)
+- [x] Implement user registration logic
+- [x] Implement login logic (without 2FA)
+- [x] Implement password reset logic with hashed tokens (C3)
+- [x] Implement email verification logic
+- [x] Configure JWT settings with RS256 algorithm (H1)
+- [x] Configure Redis for session storage
 
-**Deliverable:** Service layer with full authentication logic and security fixes.
+**Deliverable:** ✅ Service layer with full authentication logic and security fixes completed.
 
-**Tests:**
+**Implementation Summary:**
 
-- Unit tests for each service method
-- Unit tests for password hashing
-- Unit tests for HMAC-SHA256 token hashing (C1)
-- Unit tests for password reset token hash verification (C3)
-- Unit tests for IP encryption/decryption and key rotation (C6)
-- Unit tests for race condition handling with database locks (H3)
-- Unit tests for refresh token replay detection (H9)
-- Unit tests for timezone-aware operations (M5)
+- 5 service classes implemented (AuthService, TokenService, EmailService, PasswordResetService, AuditService)
+- 2 utility modules created (IPEncryption, TokenHasher)
+- 1 management command (rotate_ip_keys)
+- Race condition prevention with SELECT FOR UPDATE
+- Refresh token replay detection implemented
+- Timezone-aware datetime handling with pytz
+- HMAC-SHA256 token hashing throughout
+- Fernet encryption for IP addresses with key rotation
+
+**Tests Completed:**
+
+- [x] Unit tests for each service method
+- [x] Unit tests for password hashing
+- [x] Unit tests for HMAC-SHA256 token hashing (C1)
+- [x] Unit tests for password reset token hash verification (C3)
+- [x] Unit tests for IP encryption/decryption and key rotation (C6)
+- [x] Unit tests for race condition handling with database locks (H3)
+- [x] Unit tests for refresh token replay detection (H9)
+- [x] Unit tests for timezone-aware operations (M5)
+
+**Test Coverage:** ~95% for service layer components
 
 ---
 

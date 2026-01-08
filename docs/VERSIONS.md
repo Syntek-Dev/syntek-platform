@@ -17,6 +17,7 @@ This document provides comprehensive version information for the Django/PostgreS
 ## Table of Contents
 
 - [Versions and Dependencies](#versions-and-dependencies)
+  - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Core Framework Versions](#core-framework-versions)
   - [System Requirements](#system-requirements)
