@@ -44,7 +44,9 @@ class BaseToken(models.Model):
         related_name="%(class)s_tokens",
     )
     token = models.CharField(max_length=64, unique=True, db_index=True, blank=True, default="")
-    token_hash = models.CharField(max_length=255, unique=True, db_index=True, blank=True, default="")
+    token_hash = models.CharField(
+        max_length=255, unique=True, db_index=True, blank=True, default=""
+    )
     token_family = models.UUIDField(default=uuid.uuid4, db_index=True)
     used = models.BooleanField(default=False)
     used_at = models.DateTimeField(null=True, blank=True)
@@ -85,7 +87,7 @@ class BaseToken(models.Model):
         if not signing_key:
             raise ImproperlyConfigured(
                 "TOKEN_SIGNING_KEY must be set in settings. "
-                "Generate with: python -c \"import secrets; print(secrets.token_hex(32))\""
+                'Generate with: python -c "import secrets; print(secrets.token_hex(32))"'
             )
         key = signing_key.encode()
         return hmac.new(key, token.encode(), hashlib.sha256).hexdigest()

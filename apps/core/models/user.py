@@ -4,6 +4,8 @@ This is a minimal skeleton for TDD. Tests will fail until fully implemented.
 Minimum fields added to allow migrations to run.
 """
 
+from __future__ import annotations
+
 import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -42,14 +44,12 @@ class UserManager(models.Manager):
 
         try:
             local_part, domain = email.rsplit("@", 1)
-        except ValueError:
-            raise ValueError("Invalid email format")
+        except ValueError as e:
+            raise ValueError("Invalid email format") from e
 
         return f"{local_part}@{domain.lower()}"
 
-    def _create_user(
-        self, email: str, password: str = None, **extra_fields
-    ) -> "User":
+    def _create_user(self, email: str, password: str | None = None, **extra_fields) -> User:
         """Create and save a user with the given email and password.
 
         Internal method for creating users with common validation logic.
@@ -79,9 +79,7 @@ class UserManager(models.Manager):
         user.save(using=self._db)
         return user
 
-    def create_user(
-        self, email: str, password: str = None, **extra_fields
-    ) -> "User":
+    def create_user(self, email: str, password: str | None = None, **extra_fields) -> User:
         """Create and return a regular user.
 
         Sets default values for is_staff and is_superuser to False.
@@ -107,9 +105,7 @@ class UserManager(models.Manager):
 
         return self._create_user(email, password, **extra_fields)
 
-    def create_superuser(
-        self, email: str, password: str = None, **extra_fields
-    ) -> "User":
+    def create_superuser(self, email: str, password: str | None = None, **extra_fields) -> User:
         """Create and return a superuser.
 
         Sets is_staff and is_superuser to True. Superusers have all permissions
@@ -140,7 +136,7 @@ class UserManager(models.Manager):
 
         return self._create_user(email, password, **extra_fields)
 
-    def get_by_natural_key(self, email: str) -> "User":
+    def get_by_natural_key(self, email: str) -> User:
         """Get user by email (case-insensitive).
 
         Used by Django authentication system for looking up users.

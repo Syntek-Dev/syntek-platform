@@ -17,9 +17,8 @@ Permission Hierarchy:
 """
 
 import logging
-from typing import Any
 
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group
 from django.core.cache import cache
 from django.db.models import QuerySet
 
@@ -98,8 +97,7 @@ class PermissionService:
             return True
 
         return any(
-            PermissionService.has_permission(user, perm_code)
-            for perm_code in permission_codes
+            PermissionService.has_permission(user, perm_code) for perm_code in permission_codes
         )
 
     @staticmethod
@@ -124,8 +122,7 @@ class PermissionService:
             return True
 
         return all(
-            PermissionService.has_permission(user, perm_code)
-            for perm_code in permission_codes
+            PermissionService.has_permission(user, perm_code) for perm_code in permission_codes
         )
 
     @staticmethod
@@ -181,9 +178,7 @@ class PermissionService:
             return cached_result
 
         # Check group membership
-        is_admin = user.groups.filter(
-            name__in=["Organisation Owner", "Admin"]
-        ).exists()
+        is_admin = user.groups.filter(name__in=["Organisation Owner", "Admin"]).exists()
 
         # Cache the result
         cache.set(cache_key, is_admin, PermissionService.CACHE_TIMEOUT)
@@ -213,9 +208,7 @@ class PermissionService:
             return cached_result
 
         # Check group membership
-        is_member = user.groups.filter(
-            name__in=["Organisation Owner", "Admin", "Member"]
-        ).exists()
+        is_member = user.groups.filter(name__in=["Organisation Owner", "Admin", "Member"]).exists()
 
         # Cache the result
         cache.set(cache_key, is_member, PermissionService.CACHE_TIMEOUT)
@@ -323,9 +316,7 @@ class PermissionService:
         valid_roles = ["Organisation Owner", "Admin", "Member", "Viewer"]
 
         if role_name not in valid_roles:
-            raise ValueError(
-                f"Invalid role: {role_name}. Must be one of: {', '.join(valid_roles)}"
-            )
+            raise ValueError(f"Invalid role: {role_name}. Must be one of: {', '.join(valid_roles)}")
 
         try:
             group = Group.objects.get(name=role_name)

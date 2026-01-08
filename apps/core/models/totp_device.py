@@ -6,11 +6,12 @@ with Fernet encryption for secrets (C2 security requirement).
 
 import uuid
 
-import pyotp
-from cryptography.fernet import Fernet
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+
+import pyotp
+from cryptography.fernet import Fernet
 
 
 class TOTPDevice(models.Model):
@@ -82,7 +83,9 @@ class TOTPDevice(models.Model):
                 "Generate one with: python -c 'from cryptography.fernet import Fernet; "
                 "print(Fernet.generate_key().decode())'"
             )
-        return Fernet(encryption_key.encode() if isinstance(encryption_key, str) else encryption_key)
+        return Fernet(
+            encryption_key.encode() if isinstance(encryption_key, str) else encryption_key
+        )
 
     def set_secret(self, plain_secret: str) -> None:
         """Set and encrypt the TOTP secret using Fernet (C2).

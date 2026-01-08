@@ -36,8 +36,12 @@ class SessionToken(BaseToken):
     """
 
     # Override token_hash from BaseToken - SessionToken uses its own hashes
-    token_hash = models.CharField(max_length=255, unique=True, db_index=True, blank=True, default="")
-    refresh_token_hash = models.CharField(max_length=255, unique=True, db_index=True, blank=True, default="")
+    token_hash = models.CharField(
+        max_length=255, unique=True, db_index=True, blank=True, default=""
+    )
+    refresh_token_hash = models.CharField(
+        max_length=255, unique=True, db_index=True, blank=True, default=""
+    )
 
     # Security tracking
     ip_address = models.BinaryField(null=True, blank=True)

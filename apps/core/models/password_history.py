@@ -90,7 +90,7 @@ class PasswordHistory(models.Model):
         return False
 
     @classmethod
-    def record_password(cls, user, password_hash: str) -> "PasswordHistory":
+    def record_password(cls, user, password_hash: str) -> PasswordHistory:
         """Record a password in history.
 
         Stores the hashed password in history and cleans up old entries
