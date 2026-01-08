@@ -13,6 +13,7 @@
 Helper scripts for CI/CD setup and local development. This directory contains environment-specific helpers (dev, test, staging, production), ClickUp project management integration, and CI/CD validation tools.
 
 **Key Scripts:**
+
 - `env/` - Environment-specific helper scripts (dev.sh, test.sh, staging.sh, production.sh)
 - `clickup/` - ClickUp API integration for syncing stories and sprints
 - `setup-ci.sh` - Initial CI/CD setup and validation

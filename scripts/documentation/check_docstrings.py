@@ -10,24 +10,24 @@ import sys
 # --- Configuration ---
 # Directories to completely skip
 IGNORE_DIRS = {
-    '.git',
-    '.venv',
-    'venv',
-    'env',
-    'node_modules',
-    '__pycache__',
-    '.pytest_cache',
-    '.vscode',
-    '.idea',
-    'media',
-    'backups'
+    ".git",
+    ".venv",
+    "venv",
+    "env",
+    "node_modules",
+    "__pycache__",
+    ".pytest_cache",
+    ".vscode",
+    ".idea",
+    "media",
+    "backups",
 }
 
 # Substrings to skip if found in the path (good for Django migrations)
-IGNORE_PATH_PARTIALS = {'migrations'}
+IGNORE_PATH_PARTIALS = {"migrations"}
 
 # Specific filenames to ignore
-IGNORE_FILES = {'manage.py', 'asgi.py', 'wsgi.py'}
+IGNORE_FILES = {"manage.py", "asgi.py", "wsgi.py"}
 
 
 def has_docstring(filepath):
@@ -35,7 +35,7 @@ def has_docstring(filepath):
     Parses a python file to determine if it has a module-level docstring.
     """
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding="utf-8") as f:
             content = f.read()
 
         # Parse the code into an Abstract Syntax Tree
@@ -82,7 +82,9 @@ def main():
 
     # --- Report Results ---
     if missing_docstrings:
-        print(f"\033[91m[FAIL] The following {len(missing_docstrings)} files are missing docstrings:\033[0m")
+        print(
+            f"\033[91m[FAIL] The following {len(missing_docstrings)} files are missing docstrings:\033[0m"
+        )
         for f in missing_docstrings:
             print(f"  - {f}")
         sys.exit(1)

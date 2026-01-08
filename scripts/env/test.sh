@@ -330,11 +330,12 @@ cmd_run_report() {
 
     info "Running pytest with markdown and JSON reports..."
     dc run --rm ${WEB_SERVICE} pytest \
+        -v --tb=long \
         --md-report \
         --md-report-output="${md_file}" \
         --json-report \
         --json-report-file="${json_file}" \
-        "$@"
+        "$@" 2>&1
 
     local exit_code=$?
 

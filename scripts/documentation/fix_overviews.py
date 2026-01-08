@@ -12,20 +12,20 @@ import re
 
 # Same ignore config as before to stay consistent
 IGNORE_DIRS = {
-    '.git',
-    '.venv',
-    'venv',
-    'env',
-    'node_modules',
-    '.vscode',
-    '.idea',
-    'media',
-    'backups',
-    '.pytest_cache',
-    '__pycache__',
-    'dist',
-    'build',
-    'static'
+    ".git",
+    ".venv",
+    "venv",
+    "env",
+    "node_modules",
+    ".vscode",
+    ".idea",
+    "media",
+    "backups",
+    ".pytest_cache",
+    "__pycache__",
+    "dist",
+    "build",
+    "static",
 }
 
 TEMPLATE = """
@@ -37,7 +37,9 @@ def has_overview(content):
     """
     Checks if the content already has an Overview or Executive Summary header.
     """
-    return bool(re.search(r'^#+\s+(Overview|Executive Summary)', content, re.MULTILINE | re.IGNORECASE))
+    return bool(
+        re.search(r"^#+\s+(Overview|Executive Summary)", content, re.MULTILINE | re.IGNORECASE)
+    )
 
 
 def should_skip_file(filepath):
@@ -75,13 +77,13 @@ def fix_files(root_dir):
             filepath = os.path.join(dirpath, filename)
 
             try:
-                with open(filepath, 'r+', encoding='utf-8') as f:
+                with open(filepath, "r+", encoding="utf-8") as f:
                     content = f.read()
 
                     if not has_overview(content):
                         # Ensure we start on a new line if the file doesn't end with one
-                        if content and not content.endswith('\n'):
-                            f.write('\n')
+                        if content and not content.endswith("\n"):
+                            f.write("\n")
 
                         f.write(TEMPLATE)
                         print(f"Fixed: {filepath}")
