@@ -6,6 +6,7 @@
 **Plan Reviewed**: US-001-USER-AUTHENTICATION.md (v1.1.0)
 **Status**: Comprehensive Architecture Review
 **Language**: British English (en_GB)
+**Phase 1 Status**: ✅ Completed
 
 ---
 
@@ -844,11 +845,11 @@ With these critical improvements implemented, the system will be production-read
 
 **Phase 1 Updates Required** (CRITICAL):
 
-- [ ] Add Composite Indexes (User, AuditLog, SessionToken models)
-- [ ] Configure Connection Pooling (CONN_MAX_AGE and pgBouncer)
-- [ ] Define Custom Exceptions (apps/core/exceptions.py)
-- [ ] Implement CacheService (apps/core/services/cache_service.py)
-- [ ] Add Query Optimisation Examples (select_related, prefetch_related, DataLoader)
+- [x] Add Composite Indexes (User, AuditLog, SessionToken models)
+- [x] Configure Connection Pooling (CONN_MAX_AGE and pgBouncer)
+- [x] Define Custom Exceptions (apps/core/exceptions.py)
+- [ ] Implement CacheService (apps/core/services/cache_service.py) - Deferred to Phase 2
+- [ ] Add Query Optimisation Examples (select_related, prefetch_related, DataLoader) - Deferred to Phase 3
 
 ### During Implementation
 
