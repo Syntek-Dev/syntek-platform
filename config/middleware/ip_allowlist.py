@@ -35,7 +35,7 @@ import logging
 from collections.abc import Callable
 
 from django.conf import settings
-from django.http import HttpRequest, HttpResponse, Http404
+from django.http import Http404, HttpRequest, HttpResponse
 
 logger = logging.getLogger("security.ip_allowlist")
 
@@ -161,9 +161,7 @@ class IPAllowlistMiddleware:
                 extra={"count": len(allowed_ips)},
             )
         else:
-            logger.warning(
-                "IP allowlist is empty - admin access is NOT IP-restricted"
-            )
+            logger.warning("IP allowlist is empty - admin access is NOT IP-restricted")
 
         return allowed_ips
 

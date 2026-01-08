@@ -146,6 +146,12 @@ AUTH_PASSWORD_VALIDATORS = [
             "timeout": 2,
         },
     },
+    {
+        "NAME": "config.validators.password.PasswordHistoryValidator",
+        "OPTIONS": {
+            "history_count": 5,
+        },
+    },
 ]
 
 # Password hashing configuration

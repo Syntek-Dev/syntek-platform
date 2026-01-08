@@ -14,6 +14,7 @@ This document provides quick reference commands for running tests, linting, type
 quality assurance in the test environment using Docker Compose.
 
 **Key Commands:**
+
 - Run test suites (all, specific files, patterns)
 - Generate coverage reports
 - Run linting and type checks

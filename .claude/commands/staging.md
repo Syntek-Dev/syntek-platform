@@ -13,6 +13,7 @@
 This document provides quick reference commands for deploying to staging, running migrations, managing logs, and monitoring staging environment health checks using Docker Compose.
 
 **Key Commands:**
+
 - Deploy to staging environment
 - Run database migrations
 - View logs and monitor health

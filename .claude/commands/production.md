@@ -14,6 +14,7 @@ This document provides critical commands for production deployments, migrations,
 rollback procedures. All production operations require confirmation and extreme caution.
 
 **Key Commands:**
+
 - Deploy to production (requires confirmation)
 - Run database migrations with backups
 - Monitor health and logs

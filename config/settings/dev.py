@@ -4,6 +4,8 @@ This module contains settings specific to the development environment.
 It extends base.py with development-specific configurations.
 """
 
+import socket  # noqa: E402
+
 from .base import *  # noqa: F403, F401
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -29,8 +31,6 @@ INTERNAL_IPS = [
 ]
 
 # Docker support: add container gateway IP for debug toolbar
-import socket
-
 hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
 INTERNAL_IPS += [ip[: ip.rfind(".")] + ".1" for ip in ips]
 

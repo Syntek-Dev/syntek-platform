@@ -68,26 +68,18 @@ class PasswordComplexityValidator:
         # Check for uppercase letters
         if len(re.findall(r"[A-Z]", password)) < self.min_uppercase:
             errors.append(
-                _(
-                    f"Password must contain at least {self.min_uppercase} "
-                    "uppercase letter(s)."
-                )
+                _(f"Password must contain at least {self.min_uppercase} " "uppercase letter(s).")
             )
 
         # Check for lowercase letters
         if len(re.findall(r"[a-z]", password)) < self.min_lowercase:
             errors.append(
-                _(
-                    f"Password must contain at least {self.min_lowercase} "
-                    "lowercase letter(s)."
-                )
+                _(f"Password must contain at least {self.min_lowercase} " "lowercase letter(s).")
             )
 
         # Check for digits
         if len(re.findall(r"\d", password)) < self.min_digits:
-            errors.append(
-                _(f"Password must contain at least {self.min_digits} digit(s).")
-            )
+            errors.append(_(f"Password must contain at least {self.min_digits} digit(s)."))
 
         # Check for special characters
         special_chars = r"[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]"
@@ -243,20 +235,11 @@ class NoSequentialCharactersValidator:
                 # Check if digits are sequential
                 seq = password[i : i + self.max_sequence_length]
                 digits = [int(d) for d in seq]
-                is_ascending = all(
-                    digits[j] + 1 == digits[j + 1]
-                    for j in range(len(digits) - 1)
-                )
-                is_descending = all(
-                    digits[j] - 1 == digits[j + 1]
-                    for j in range(len(digits) - 1)
-                )
+                is_ascending = all(digits[j] + 1 == digits[j + 1] for j in range(len(digits) - 1))
+                is_descending = all(digits[j] - 1 == digits[j + 1] for j in range(len(digits) - 1))
                 if is_ascending or is_descending:
                     raise ValidationError(
-                        _(
-                            f"Password must not contain sequential numbers "
-                            f"( {seq} )."
-                        ),
+                        _(f"Password must not contain sequential numbers " f"( {seq} )."),
                         code="sequential_numbers",
                     )
 
@@ -267,19 +250,14 @@ class NoSequentialCharactersValidator:
                 chars = seq.lower()
                 # Check if letters are sequential
                 is_ascending = all(
-                    ord(chars[j]) + 1 == ord(chars[j + 1])
-                    for j in range(len(chars) - 1)
+                    ord(chars[j]) + 1 == ord(chars[j + 1]) for j in range(len(chars) - 1)
                 )
                 is_descending = all(
-                    ord(chars[j]) - 1 == ord(chars[j + 1])
-                    for j in range(len(chars) - 1)
+                    ord(chars[j]) - 1 == ord(chars[j + 1]) for j in range(len(chars) - 1)
                 )
                 if is_ascending or is_descending:
                     raise ValidationError(
-                        _(
-                            f"Password must not contain sequential letters "
-                            f"({seq})."
-                        ),
+                        _(f"Password must not contain sequential letters " f"({seq})."),
                         code="sequential_letters",
                     )
 
@@ -424,10 +402,7 @@ class HIBPPasswordValidator:
         Returns:
             Help text string.
         """
-        return _(
-            "Your password cannot be one that has been exposed in "
-            "data breaches."
-        )
+        return _("Your password cannot be one that has been exposed in " "data breaches.")
 
 
 class PasswordHistoryValidator:
@@ -464,9 +439,7 @@ class PasswordHistoryValidator:
         # Import here to avoid circular imports
         from apps.core.models import PasswordHistory
 
-        if PasswordHistory.check_password_reuse(
-            user, password, self.history_count
-        ):
+        if PasswordHistory.check_password_reuse(user, password, self.history_count):
             raise ValidationError(
                 _(
                     f"This password has been recently used. "
@@ -483,6 +456,5 @@ class PasswordHistoryValidator:
             Help text string.
         """
         return _(
-            f"Your password cannot be one of your previous "
-            f"{self.history_count} passwords."
+            f"Your password cannot be one of your previous " f"{self.history_count} passwords."
         )
