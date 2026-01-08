@@ -155,6 +155,14 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
 ]
 
+# Token signing key for HMAC-SHA256 hashing - C1 security requirement
+# Generate with: python -c "import secrets; print(secrets.token_hex(32))"
+# This key is separate from SECRET_KEY for defense-in-depth
+TOKEN_SIGNING_KEY = env(
+    "TOKEN_SIGNING_KEY",
+    default="",  # Must be set in production
+)
+
 # TOTP encryption key (Fernet) - C2 security requirement
 # Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 TOTP_ENCRYPTION_KEY = env(
