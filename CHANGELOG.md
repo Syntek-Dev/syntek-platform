@@ -1,7 +1,7 @@
 # Changelog
 
-**Last Updated**: 07/01/2026
-**Version**: 0.4.0
+**Last Updated**: 08/01/2026
+**Version**: 0.4.1
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -21,45 +21,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [Table of Contents](#table-of-contents)
   - [\[Unreleased\]](#unreleased)
     - [Added](#added)
-  - [\[0.4.0\] - 07/01/2026](#040---07012026)
+  - [\[0.4.1\] - 08/01/2026](#041---08012026)
     - [Added](#added-1)
     - [Changed](#changed)
     - [Fixed](#fixed)
     - [Security](#security)
-  - [\[0.3.3\] - 07/01/2026](#033---07012026)
+  - [\[0.4.0\] - 07/01/2026](#040---07012026)
     - [Added](#added-2)
     - [Changed](#changed-1)
-    - [Removed](#removed)
     - [Fixed](#fixed-1)
-  - [\[0.3.2\] - 06/01/2026](#032---06012026)
+    - [Security](#security-1)
+  - [\[0.3.3\] - 07/01/2026](#033---07012026)
     - [Added](#added-3)
-    - [Fixed](#fixed-2)
     - [Changed](#changed-2)
-  - [\[0.3.1\] - 06/01/2026](#031---06012026)
+    - [Removed](#removed)
+    - [Fixed](#fixed-2)
+  - [\[0.3.2\] - 06/01/2026](#032---06012026)
     - [Added](#added-4)
     - [Fixed](#fixed-3)
     - [Changed](#changed-3)
-  - [\[0.3.0\] - 06/01/2026](#030---06012026)
+  - [\[0.3.1\] - 06/01/2026](#031---06012026)
     - [Added](#added-5)
-    - [Changed](#changed-4)
-    - [Deprecated](#deprecated)
-    - [Removed](#removed-1)
     - [Fixed](#fixed-4)
-    - [Security](#security-1)
-  - [\[0.2.0\] - 03/01/2026](#020---03012026)
+    - [Changed](#changed-4)
+  - [\[0.3.0\] - 06/01/2026](#030---06012026)
     - [Added](#added-6)
     - [Changed](#changed-5)
-    - [Deprecated](#deprecated-1)
-    - [Removed](#removed-2)
+    - [Deprecated](#deprecated)
+    - [Removed](#removed-1)
     - [Fixed](#fixed-5)
     - [Security](#security-2)
-  - [\[0.1.0\] - 03/01/2026](#010---03012026)
+  - [\[0.2.0\] - 03/01/2026](#020---03012026)
     - [Added](#added-7)
     - [Changed](#changed-6)
-    - [Deprecated](#deprecated-2)
-    - [Removed](#removed-3)
+    - [Deprecated](#deprecated-1)
+    - [Removed](#removed-2)
     - [Fixed](#fixed-6)
     - [Security](#security-3)
+  - [\[0.1.0\] - 03/01/2026](#010---03012026)
+    - [Added](#added-8)
+    - [Changed](#changed-7)
+    - [Deprecated](#deprecated-2)
+    - [Removed](#removed-3)
+    - [Fixed](#fixed-7)
+    - [Security](#security-4)
 
 
 ---
@@ -69,6 +74,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Nothing yet
+
+---
+
+## [0.4.1] - 08/01/2026
+
+### Added
+
+- Database indexes for AuditLog model (user_id, action, timestamp) for improved query performance
+- Database indexes for SessionToken model (token, expires_at) for faster authentication checks
+- `is_expired()` helper method to SessionToken model for cleaner expiry validation
+
+### Changed
+
+- Consolidated 13 fragmented documentation files into organised review structure
+- Reorganised US-001 documentation into clear directory hierarchy
+- Updated version headers across all US-001 documentation files
+- Clarified configuration comments in environment variable examples
+
+### Fixed
+
+- None - This is a performance and organisation release
+
+### Security
+
+- Database indexes improve performance without exposing additional data
+- Helper methods maintain consistent security checks across token validation
 
 ---
 
