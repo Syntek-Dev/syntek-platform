@@ -47,10 +47,10 @@ required for all subsequent features.
 
 ### Must Have (10 points)
 
-| Story ID                                           | Title               | Points | Backend Status         | Overall Status |
-| -------------------------------------------------- | ------------------- | ------ | ---------------------- | -------------- |
-| [US-001](../STORIES/US-001-USER-AUTHENTICATION.md) | User Authentication | 5      | 🔄 Phases 1 & 2 Done   | 🔄 In Progress |
-| [US-003](../STORIES/US-003-PASSWORD-RESET.md)      | Password Reset      | 5      | ⬜ Not Started         | ⬜ Not Started |
+| Story ID                                           | Title               | Points | Backend Status       | Overall Status |
+| -------------------------------------------------- | ------------------- | ------ | -------------------- | -------------- |
+| [US-001](../STORIES/US-001-USER-AUTHENTICATION.md) | User Authentication | 5      | 🔄 Phases 1 & 2 Done | 🔄 In Progress |
+| [US-003](../STORIES/US-003-PASSWORD-RESET.md)      | Password Reset      | 5      | ⬜ Not Started       | ⬜ Not Started |
 
 **Progress:** 1/2 stories have backend Phases 1 & 2 complete (~75% backend complete for US-001, GraphQL API pending)
 

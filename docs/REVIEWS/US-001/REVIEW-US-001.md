@@ -548,21 +548,23 @@ def check_password(self, password: str) -> bool:
 **Status:** ✅ **APPROVED WITH MINOR IMPROVEMENTS**
 **Overall Rating:** 8.8/10 (Excellent)
 
-| Category | Score | Status |
-|----------|-------|--------|
-| **Security Implementation** | 9.0/10 | Excellent |
-| **Code Quality** | 8.5/10 | Excellent |
-| **Documentation** | 9.0/10 | Excellent |
-| **Test Coverage** | 9.5/10 | Outstanding |
-| **Overall Phase 2** | **8.8/10** | **Excellent** |
+| Category                    | Score      | Status        |
+| --------------------------- | ---------- | ------------- |
+| **Security Implementation** | 9.0/10     | Excellent     |
+| **Code Quality**            | 8.5/10     | Excellent     |
+| **Documentation**           | 9.0/10     | Excellent     |
+| **Test Coverage**           | 9.5/10     | Outstanding   |
+| **Overall Phase 2**         | **8.8/10** | **Excellent** |
 
 **Files Reviewed (9 files, ~1,700 lines):**
 
 **Utilities:**
+
 - `apps/core/utils/encryption.py` - IP encryption with key rotation (188 lines)
 - `apps/core/utils/token_hasher.py` - HMAC-SHA256 token hashing (137 lines)
 
 **Services:**
+
 - `apps/core/services/auth_service.py` - Authentication business logic (251 lines)
 - `apps/core/services/token_service.py` - JWT token management (219 lines)
 - `apps/core/services/audit_service.py` - Security audit logging (200 lines)
@@ -570,9 +572,11 @@ def check_password(self, password: str) -> bool:
 - `apps/core/services/password_reset_service.py` - Password reset flow (171 lines)
 
 **Management Commands:**
+
 - `apps/core/management/commands/rotate_ip_keys.py` - Key rotation (68 lines, TDD red phase)
 
 **Tests:**
+
 - `tests/unit/apps/core/test_phase2_security.py` - 47 comprehensive unit tests (1,006 lines)
 
 ---
@@ -584,6 +588,7 @@ def check_password(self, password: str) -> bool:
 **File:** `apps/core/utils/token_hasher.py`
 
 **Implementation:**
+
 - ✅ Uses dedicated `TOKEN_SIGNING_KEY` (NOT Django's `SECRET_KEY`)
 - ✅ HMAC-SHA256 with base64 encoding for storage
 - ✅ Constant-time comparison prevents timing attacks
@@ -594,6 +599,7 @@ def check_password(self, password: str) -> bool:
 **Test Coverage:** 10 tests covering all scenarios
 
 **Security Assessment:**
+
 ```python
 # Perfect implementation using dedicated signing key
 key = settings.TOKEN_SIGNING_KEY.encode()
@@ -610,6 +616,7 @@ return base64.b64encode(hmac_hash).decode('utf-8')
 **File:** `apps/core/services/password_reset_service.py`
 
 **Implementation:**
+
 - ✅ Plain token generated with 256 bits of entropy
 - ✅ Token hashed with HMAC-SHA256 before storage
 - ✅ Only hash persisted to database (never plain token)
@@ -621,6 +628,7 @@ return base64.b64encode(hmac_hash).decode('utf-8')
 **Test Coverage:** 8 tests verifying hash-then-store pattern
 
 **Security Assessment:**
+
 ```python
 # Generate and hash token
 plain_token = TokenHasher.generate_token()  # 256 bits
@@ -640,6 +648,7 @@ return plain_token  # Returned once, never stored
 **File:** `apps/core/utils/encryption.py`
 
 **Implementation:**
+
 - ✅ Fernet encryption (AES-128-CBC + HMAC-SHA256)
 - ✅ Key rotation with error tracking
 - ✅ IPv4 and IPv6 validation
@@ -650,6 +659,7 @@ return plain_token  # Returned once, never stored
 **Test Coverage:** 9 tests covering encryption and rotation
 
 **Security Assessment:**
+
 ```python
 # Excellent encryption, needs atomic transactions
 for log in AuditLog.objects.filter(ip_address__isnull=False):
@@ -669,6 +679,7 @@ for log in AuditLog.objects.filter(ip_address__isnull=False):
 **File:** `apps/core/services/auth_service.py`
 
 **Implementation:**
+
 - ✅ SELECT FOR UPDATE prevents concurrent login race conditions
 - ✅ Atomic transaction wrapping
 - ✅ Database-level locking for critical sections
@@ -678,6 +689,7 @@ for log in AuditLog.objects.filter(ip_address__isnull=False):
 **Test Coverage:** 1 test verifying SELECT FOR UPDATE usage
 
 **Security Assessment:**
+
 ```python
 # Perfect race condition prevention
 with transaction.atomic():
@@ -694,6 +706,7 @@ with transaction.atomic():
 **File:** `apps/core/services/token_service.py`
 
 **Implementation:**
+
 - ✅ Token family tracking for replay detection
 - ✅ Used token detection with `is_refresh_token_used` flag
 - ✅ Entire family revocation on replay attempt
@@ -704,6 +717,7 @@ with transaction.atomic():
 **Test Coverage:** 3 tests covering refresh and replay detection
 
 **Security Assessment:**
+
 ```python
 # Outstanding replay detection
 if session_token.is_refresh_token_used:
@@ -729,6 +743,7 @@ new_tokens = TokenService.create_tokens(user, device_fingerprint)
 **File:** `apps/core/services/auth_service.py`
 
 **Implementation:**
+
 - ✅ Uses pytz for timezone handling
 - ✅ Handles DST transitions correctly
 - ✅ Supports both naive and aware datetimes
@@ -738,6 +753,7 @@ new_tokens = TokenService.create_tokens(user, device_fingerprint)
 **Test Coverage:** 2 tests covering timezone conversion and DST
 
 **Security Assessment:**
+
 ```python
 # Proper timezone handling
 tz = pytz.timezone(timezone_str)
@@ -755,6 +771,7 @@ return dt.astimezone(tz)  # Convert aware
 #### Outstanding Implementations
 
 **TokenHasher Utility (9.5/10):**
+
 - Perfect HMAC-SHA256 implementation
 - Constant-time comparison
 - Cryptographically secure token generation
@@ -762,6 +779,7 @@ return dt.astimezone(tz)  # Convert aware
 - No issues identified
 
 **PasswordResetService (9.5/10):**
+
 - Perfect hash-then-store pattern
 - Single-use token enforcement
 - Proper expiry handling
@@ -769,6 +787,7 @@ return dt.astimezone(tz)  # Convert aware
 - No issues identified
 
 **AuditService (9.0/10):**
+
 - IP encryption before storage
 - Immutable logs
 - Specific event methods
@@ -776,6 +795,7 @@ return dt.astimezone(tz)  # Convert aware
 - Device fingerprinting
 
 **TokenService (9.0/10):**
+
 - Token family pattern
 - Replay detection
 - Token rotation
@@ -783,6 +803,7 @@ return dt.astimezone(tz)  # Convert aware
 - Needs atomic transactions
 
 **AuthService (8.5/10):**
+
 - SELECT FOR UPDATE
 - Password validation
 - Token revocation
@@ -790,6 +811,7 @@ return dt.astimezone(tz)  # Convert aware
 - Missing audit logging calls
 
 **IPEncryption (9.0/10):**
+
 - Fernet encryption
 - Key rotation support
 - IPv4/IPv6 validation
@@ -797,6 +819,7 @@ return dt.astimezone(tz)  # Convert aware
 - Needs atomic transactions
 
 **EmailService (N/A):**
+
 - Placeholder (deferred to Phase 5)
 - All methods return `True`
 - Acceptable for Phase 2
@@ -814,6 +837,7 @@ return dt.astimezone(tz)  # Convert aware
 **Impact:** Partial failure leaves database in inconsistent state
 
 **Problem:**
+
 ```python
 # Individual saves, not atomic
 for log in AuditLog.objects.filter(ip_address__isnull=False):
@@ -822,6 +846,7 @@ for log in AuditLog.objects.filter(ip_address__isnull=False):
 ```
 
 **Solution:**
+
 ```python
 from django.db import transaction
 
@@ -842,6 +867,7 @@ with transaction.atomic():
 **Impact:** Security events not logged
 
 **Problem:**
+
 ```python
 # No audit log for registration
 user = User.objects.create_user(...)
@@ -849,6 +875,7 @@ return user  # ❌ No audit log
 ```
 
 **Solution:**
+
 ```python
 user = User.objects.create_user(...)
 AuditService.log_event(
@@ -870,6 +897,7 @@ return user
 **Impact:** Race condition on concurrent refresh
 
 **Problem:**
+
 ```python
 # Not atomic
 session_token.mark_refresh_token_used()
@@ -878,6 +906,7 @@ new_session.save()  # ❌ Not in transaction
 ```
 
 **Solution:**
+
 ```python
 with transaction.atomic():
     session_token.mark_refresh_token_used()
@@ -899,12 +928,14 @@ with transaction.atomic():
 **Impact:** Harder to debug and monitor
 
 **Problem:**
+
 ```python
 except Exception as e:  # ❌ Too broad
     errors.append(str(e))
 ```
 
 **Solution:**
+
 ```python
 except (ValidationError, DatabaseError) as e:  # ✅ Specific
     logger.error(f"Operation failed: {e}")
@@ -922,12 +953,14 @@ except (ValidationError, DatabaseError) as e:  # ✅ Specific
 **Impact:** Performance degradation
 
 **Problem:**
+
 ```python
 for token in tokens:
     token.revoke()  # ❌ N+1 queries
 ```
 
 **Solution:**
+
 ```python
 tokens.update(
     is_revoked=True,
@@ -946,11 +979,13 @@ tokens.update(
 **Impact:** Type checking failures
 
 **Problem:**
+
 ```python
 def login(...) -> Optional[Dict[str, any]]:  # ❌ lowercase 'any'
 ```
 
 **Solution:**
+
 ```python
 from typing import Any
 
@@ -969,6 +1004,7 @@ def login(...) -> Optional[Dict[str, Any]]:  # ✅ uppercase 'Any'
 **Overall Coverage:** ~95%
 
 **Test Classes:**
+
 1. `TestIPEncryption` - 9 tests (IP encryption and key rotation)
 2. `TestTokenHasher` - 10 tests (HMAC-SHA256 hashing)
 3. `TestTokenService` - 7 tests (Token management and replay detection)
@@ -979,16 +1015,17 @@ def login(...) -> Optional[Dict[str, Any]]:  # ✅ uppercase 'Any'
 
 **Coverage by Security Requirement:**
 
-| Requirement | Tests | Coverage |
-|-------------|-------|----------|
-| C1 (HMAC-SHA256) | 10 | 100% |
-| C3 (Hash-then-store) | 8 | 100% |
-| C6 (Key rotation) | 9 | 100% |
-| H3 (Race condition) | 1 | 100% |
-| H9 (Replay detection) | 3 | 100% |
-| M5 (Timezone) | 2 | 100% |
+| Requirement           | Tests | Coverage |
+| --------------------- | ----- | -------- |
+| C1 (HMAC-SHA256)      | 10    | 100%     |
+| C3 (Hash-then-store)  | 8     | 100%     |
+| C6 (Key rotation)     | 9     | 100%     |
+| H3 (Race condition)   | 1     | 100%     |
+| H9 (Replay detection) | 3     | 100%     |
+| M5 (Timezone)         | 2     | 100%     |
 
 **Test Quality:**
+
 - ✅ Given/When/Then structure in all docstrings
 - ✅ Comprehensive positive and negative tests
 - ✅ Edge case coverage
@@ -997,6 +1034,7 @@ def login(...) -> Optional[Dict[str, Any]]:  # ✅ uppercase 'Any'
 - ✅ Clear test names
 
 **Example Excellent Test:**
+
 ```python
 def test_refresh_tokens_with_used_token_revokes_family(self):
     """Test replay detection revokes token family (H9).

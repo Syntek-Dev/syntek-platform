@@ -3,6 +3,7 @@
 This module contains factory-boy factories for creating token test data.
 """
 
+import secrets
 import uuid
 from datetime import timedelta
 
@@ -12,15 +13,12 @@ import factory
 from factory import Faker, LazyFunction, SubFactory
 from factory.django import DjangoModelFactory
 
-# TODO: Import actual models once implemented
-# from apps.core.models import (
-#     SessionToken,
-#     PasswordResetToken,
-#     EmailVerificationToken,
-#     TOTPDevice,
-#     PasswordHistory,
-# )
+from apps.core.utils.token_hasher import TokenHasher
 from tests.factories.user_factory import UserFactory
+
+
+# Default plain token for testing - allows tests to use this known token
+DEFAULT_TEST_TOKEN = "test_token_for_verification_12345678901234567890"
 
 
 class SessionTokenFactory(DjangoModelFactory):
@@ -59,27 +57,46 @@ class SessionTokenFactory(DjangoModelFactory):
 class PasswordResetTokenFactory(DjangoModelFactory):
     """Factory for creating test PasswordResetToken instances.
 
+    The factory generates a plain token and stores its hash. Tests can access
+    the plain token via the `plain_token` attribute after creation.
+
     Attributes:
         user: User requesting password reset
         token_hash: HMAC-SHA256 hash of the reset token
         expires_at: Token expiration timestamp (15 minutes)
         used: Whether token has been used
         used_at: Timestamp when token was used
+
+    Example:
+        token_obj = PasswordResetTokenFactory.create(user=user)
+        plain_token = token_obj.plain_token  # Use this in reset mutation
     """
 
     class Meta:
-        # model = PasswordResetToken  # Uncomment when model exists
         model = "core.PasswordResetToken"
 
     user = SubFactory(UserFactory)
-    token_hash = Faker("sha256")
     expires_at = LazyFunction(lambda: timezone.now() + timedelta(minutes=15))
     used = False
     used_at = None
+    # Token fields are set in _create to ensure hash matches plain token
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        """Create instance and store plain token for test access."""
+        plain_token = kwargs.pop("plain_token", None) or secrets.token_urlsafe(48)
+        kwargs["token"] = plain_token
+        kwargs["token_hash"] = TokenHasher.hash_token(plain_token)
+        obj = super()._create(model_class, *args, **kwargs)
+        obj.plain_token = plain_token  # Store for test access
+        return obj
 
 
 class EmailVerificationTokenFactory(DjangoModelFactory):
     """Factory for creating test EmailVerificationToken instances.
+
+    The factory generates a plain token and stores its hash. Tests can access
+    the plain token via the `plain_token` attribute after creation.
 
     Attributes:
         user: User to verify email for
@@ -87,17 +104,30 @@ class EmailVerificationTokenFactory(DjangoModelFactory):
         expires_at: Token expiration timestamp (24 hours)
         used: Whether token has been used
         used_at: Timestamp when token was used
+
+    Example:
+        token_obj = EmailVerificationTokenFactory.create(user=user)
+        plain_token = token_obj.plain_token  # Use this in verify mutation
     """
 
     class Meta:
-        # model = EmailVerificationToken  # Uncomment when model exists
         model = "core.EmailVerificationToken"
 
     user = SubFactory(UserFactory)
-    token_hash = Faker("sha256")
     expires_at = LazyFunction(lambda: timezone.now() + timedelta(hours=24))
     used = False
     used_at = None
+    # Token fields are set in _create to ensure hash matches plain token
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        """Create instance and store plain token for test access."""
+        plain_token = kwargs.pop("plain_token", None) or secrets.token_urlsafe(48)
+        kwargs["token"] = plain_token
+        kwargs["token_hash"] = TokenHasher.hash_token(plain_token)
+        obj = super()._create(model_class, *args, **kwargs)
+        obj.plain_token = plain_token  # Store for test access
+        return obj
 
 
 class TOTPDeviceFactory(DjangoModelFactory):

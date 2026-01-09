@@ -453,20 +453,20 @@ The plan mentions breach detection but provides no notification procedure.
 
 ### Data Categories Collected
 
-| Data Field           | Data Category       | Sensitivity | Storage Location | Encrypted | Legal Basis         |
-| -------------------- | ------------------- | ----------- | ---------------- | --------- | ------------------- |
-| `email`              | Contact Data        | Medium      | User table       | No        | Contract/Consent    |
-| `first_name`         | Identity Data       | Low         | User table       | No        | Contract            |
-| `last_name`          | Identity Data       | Low         | User table       | No        | Contract            |
-| `password`           | Authentication Data | High        | User table       | Yes       | Contract            |
-| `last_login_ip`      | Technical Data      | High        | User table       | Yes       | Legitimate Interest |
-| `user_agent`         | Technical Data      | Medium      | AuditLog table   | No        | Legitimate Interest |
-| `ip_address`         | Technical Data      | High        | AuditLog table   | Yes       | Legitimate Interest |
-| `phone`              | Contact Data        | Medium      | UserProfile      | No        | Consent             |
-| `avatar`             | Identity Data       | Low         | UserProfile      | No        | Consent             |
-| `timezone`           | Preference Data     | Low         | UserProfile      | No        | Legitimate Interest |
-| `language`           | Preference Data     | Low         | UserProfile      | No        | Legitimate Interest |
-| `bio`                | Identity Data       | Low         | UserProfile      | No        | Consent             |
+| Data Field                 | Data Category       | Sensitivity | Storage Location       | Encrypted | Legal Basis         |
+| -------------------------- | ------------------- | ----------- | ---------------------- | --------- | ------------------- |
+| `email`                    | Contact Data        | Medium      | User table             | No        | Contract/Consent    |
+| `first_name`               | Identity Data       | Low         | User table             | No        | Contract            |
+| `last_name`                | Identity Data       | Low         | User table             | No        | Contract            |
+| `password`                 | Authentication Data | High        | User table             | Yes       | Contract            |
+| `last_login_ip`            | Technical Data      | High        | User table             | Yes       | Legitimate Interest |
+| `user_agent`               | Technical Data      | Medium      | AuditLog table         | No        | Legitimate Interest |
+| `ip_address`               | Technical Data      | High        | AuditLog table         | Yes       | Legitimate Interest |
+| `phone`                    | Contact Data        | Medium      | UserProfile            | No        | Consent             |
+| `avatar`                   | Identity Data       | Low         | UserProfile            | No        | Consent             |
+| `timezone`                 | Preference Data     | Low         | UserProfile            | No        | Legitimate Interest |
+| `language`                 | Preference Data     | Low         | UserProfile            | No        | Legitimate Interest |
+| `bio`                      | Identity Data       | Low         | UserProfile            | No        | Consent             |
 | `totp_secret`              | Authentication Data | High        | TOTPDevice table       | Yes       | Contract            |
 | `session_token_hash`       | Authentication Data | High        | SessionToken           | No        | Contract            |
 | `password_reset_token`     | Authentication Data | High        | PasswordResetToken     | Yes       | Contract            |
@@ -594,14 +594,14 @@ exposure in case of database compromise:
 
 **GDPR Article 5(1)(e) Compliance (Storage Limitation):**
 
-| Lifecycle Stage           | Duration    | Action                         | GDPR Compliance              |
-| ------------------------- | ----------- | ------------------------------ | ---------------------------- |
-| Token creation            | Immediate   | Generate and hash token        | Data minimisation            |
-| Token validity            | 1 hour      | Token usable for password reset | Purpose limitation          |
-| Token expiration          | After 1 hour | Token automatically invalidated | Storage limitation           |
-| Token usage               | Single-use  | Token marked as used           | Security by design           |
-| Token cleanup             | Daily       | Expired tokens deleted         | Storage limitation           |
-| Audit log retention       | 7 years     | Event logged indefinitely      | Accountability (to be added) |
+| Lifecycle Stage     | Duration     | Action                          | GDPR Compliance              |
+| ------------------- | ------------ | ------------------------------- | ---------------------------- |
+| Token creation      | Immediate    | Generate and hash token         | Data minimisation            |
+| Token validity      | 1 hour       | Token usable for password reset | Purpose limitation           |
+| Token expiration    | After 1 hour | Token automatically invalidated | Storage limitation           |
+| Token usage         | Single-use   | Token marked as used            | Security by design           |
+| Token cleanup       | Daily        | Expired tokens deleted          | Storage limitation           |
+| Audit log retention | 7 years      | Event logged indefinitely       | Accountability (to be added) |
 
 ### Audit Logging for Password Reset Events
 
@@ -685,12 +685,12 @@ When user accounts are deleted:
 
 Phase 2 implements the following critical security requirements identified in QA review:
 
-| Issue # | Security Requirement                    | Implementation                                   | Status |
-| ------- | --------------------------------------- | ------------------------------------------------ | ------ |
-| C1      | HMAC-SHA256 token hashing               | `TokenHasher` with `TOKEN_SIGNING_KEY`           | ✅     |
-| C3      | Password reset token hashing            | Hash-then-store pattern in PasswordResetService  | ✅     |
-| C6      | IP encryption with key rotation support | `IPEncryption.rotate_key()` method               | ✅     |
-| H8      | Token revocation on password change     | `TokenService.revoke_user_tokens()`              | ✅     |
+| Issue # | Security Requirement                    | Implementation                                  | Status |
+| ------- | --------------------------------------- | ----------------------------------------------- | ------ |
+| C1      | HMAC-SHA256 token hashing               | `TokenHasher` with `TOKEN_SIGNING_KEY`          | ✅     |
+| C3      | Password reset token hashing            | Hash-then-store pattern in PasswordResetService | ✅     |
+| C6      | IP encryption with key rotation support | `IPEncryption.rotate_key()` method              | ✅     |
+| H8      | Token revocation on password change     | `TokenService.revoke_user_tokens()`             | ✅     |
 
 ### Known GDPR Gaps (Phase 2)
 

@@ -36,6 +36,12 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "Strict"  # Stricter than base setting
 
+# IP allowlist for admin access - production MUST have restricted IPs
+# REQUIRED: Set ADMIN_ALLOWED_IPS environment variable with trusted IPs
+# Example: ADMIN_ALLOWED_IPS="10.0.0.1,192.168.1.0/24,203.0.113.5"
+# WARNING: If not set, admin access will NOT be IP-restricted
+ADMIN_ALLOWED_IPS = env.list("ADMIN_ALLOWED_IPS", default=[])  # noqa: F405
+
 # GraphQL security - disable introspection in production
 GRAPHQL_ENABLE_INTROSPECTION = False
 

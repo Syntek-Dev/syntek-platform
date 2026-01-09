@@ -70,6 +70,7 @@ class IPEncryption:
             )
 
         # Create Fernet instance and encrypt
+        assert key is not None  # Type narrowing for Pylance
         fernet = Fernet(key)
         encrypted = fernet.encrypt(ip_address.encode())
         return encrypted
@@ -100,6 +101,7 @@ class IPEncryption:
             )
 
         # Create Fernet instance and decrypt
+        assert key is not None  # Type narrowing for Pylance
         fernet = Fernet(key)
         decrypted = fernet.decrypt(encrypted_ip)
         return decrypted.decode()
@@ -135,7 +137,8 @@ class IPEncryption:
         # Rotate AuditLog IPs
         for log in AuditLog.objects.filter(ip_address__isnull=False):
             try:
-                # Decrypt with old key
+                # Decrypt with old key (ip_address guaranteed non-null by filter)
+                assert log.ip_address is not None
                 decrypted_ip = IPEncryption.decrypt_ip(log.ip_address, old_key)
                 # Re-encrypt with new key
                 log.ip_address = IPEncryption.encrypt_ip(decrypted_ip, new_key)
@@ -147,7 +150,8 @@ class IPEncryption:
         # Rotate SessionToken IPs
         for token in SessionToken.objects.filter(ip_address__isnull=False):
             try:
-                # Decrypt with old key
+                # Decrypt with old key (ip_address guaranteed non-null by filter)
+                assert token.ip_address is not None
                 decrypted_ip = IPEncryption.decrypt_ip(token.ip_address, old_key)
                 # Re-encrypt with new key
                 token.ip_address = IPEncryption.encrypt_ip(decrypted_ip, new_key)

@@ -62,6 +62,9 @@ MIDDLEWARE = [
     "config.middleware.security.SecurityHeadersMiddleware",
     "config.middleware.ratelimit.RateLimitMiddleware",
     "config.middleware.audit.SecurityAuditMiddleware",
+    # GraphQL middleware (C4 - CSRF, Authentication)
+    "api.middleware.csrf.GraphQLCSRFMiddleware",
+    "api.middleware.auth.GraphQLAuthenticationMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"

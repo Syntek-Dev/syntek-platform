@@ -1,5 +1,3 @@
-
-
 # Manual Testing Guide: US-001 Phase 3 - GraphQL API
 
 **Last Updated:** 08/01/2026
@@ -133,7 +131,7 @@ mutation Register {
 
 - HTTP 200 response
 - `token` and `refreshToken` are non-empty strings
-- `user.email` is "testuser@example.com"
+- `user.email` is "<testuser@example.com>"
 - `user.emailVerified` is `false` (email not verified yet)
 - `user.organisation.name` is "Test Organisation"
 - `requiresTwoFactor` is `false`
@@ -164,9 +162,7 @@ mutation Register {
 
 ```graphql
 mutation Login {
-  login(
-    input: { email: "testuser@example.com", password: "SecurePassword123!@" }
-  ) {
+  login(input: { email: "testuser@example.com", password: "SecurePassword123!@" }) {
     token
     refreshToken
     user {
@@ -217,9 +213,7 @@ mutation RegisterUnverified {
 
 ```graphql
 mutation LoginUnverified {
-  login(
-    input: { email: "unverified@example.com", password: "SecurePassword123!@" }
-  ) {
+  login(input: { email: "unverified@example.com", password: "SecurePassword123!@" }) {
     token
   }
 }
@@ -256,9 +250,7 @@ mutation RequestPasswordReset {
 
 ```graphql
 mutation ResetPassword {
-  resetPassword(
-    input: { token: "TOKEN_FROM_EMAIL", newPassword: "NewSecurePass456!@" }
-  )
+  resetPassword(input: { token: "TOKEN_FROM_EMAIL", newPassword: "NewSecurePass456!@" })
 }
 ```
 
@@ -266,9 +258,7 @@ mutation ResetPassword {
 
 ```graphql
 mutation LoginNewPassword {
-  login(
-    input: { email: "testuser@example.com", password: "NewSecurePass456!@" }
-  ) {
+  login(input: { email: "testuser@example.com", password: "NewSecurePass456!@" }) {
     token
   }
 }
@@ -389,9 +379,7 @@ query GetUsers {
 
 ```graphql
 mutation Login {
-  login(
-    input: { email: "testuser@example.com", password: "SecurePassword123!@" }
-  ) {
+  login(input: { email: "testuser@example.com", password: "SecurePassword123!@" }) {
     token
   }
 }
@@ -428,9 +416,7 @@ mutation Logout {
 
 ```graphql
 mutation LoginWrongPassword {
-  login(
-    input: { email: "testuser@example.com", password: "WrongPassword" }
-  ) {
+  login(input: { email: "testuser@example.com", password: "WrongPassword" }) {
     token
   }
 }

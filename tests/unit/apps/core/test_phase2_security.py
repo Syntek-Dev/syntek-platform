@@ -468,7 +468,7 @@ class TestAuthService:
         with pytest.raises(ValueError):
             AuthService.register_user(
                 email="existing@example.com",
-                password="SecurePass123!@#",
+                password="SecureP@ss1847!#",
                 first_name="Test",
                 last_name="User",
                 organisation=org,
@@ -595,12 +595,12 @@ class TestAuthService:
         When: Calling change_password()
         Then: Returns False
         """
-        user = UserFactory.create(password="CorrectOldPass123!@#")
+        user = UserFactory.create(password="C0rr3ctOldP@ss!#")
 
         result = AuthService.change_password(
             user,
             old_password="WrongOldPass",
-            new_password="NewPass123!@#",
+            new_password="N3wP@ssw0rd!#",
         )
 
         assert result is False
@@ -971,7 +971,7 @@ class TestPasswordResetService:
         result = PasswordResetService.reset_password(
             user,
             "invalid_token",
-            new_password="NewSecure123!@#",
+            new_password="NewSecur3P@ss!#",
         )
 
         assert result is False

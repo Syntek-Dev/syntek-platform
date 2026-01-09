@@ -9,7 +9,8 @@ from .base import *  # noqa: F403, F401
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)  # noqa: F405
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])  # noqa: F405
+# ALLOWED_HOSTS must be explicitly set in staging - no wildcards for security
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # noqa: F405
 
 # Security settings (mirror production for accurate testing)
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)  # noqa: F405
@@ -31,6 +32,11 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 # CSRF security
 CSRF_COOKIE_SAMESITE = "Strict"
+
+# IP allowlist for admin access - staging should use restricted IPs
+# REQUIRED: Set ADMIN_ALLOWED_IPS environment variable with trusted IPs
+# Example: ADMIN_ALLOWED_IPS="10.0.0.1,192.168.1.0/24,203.0.113.5"
+ADMIN_ALLOWED_IPS = env.list("ADMIN_ALLOWED_IPS", default=[])  # noqa: F405
 
 # GraphQL security - optionally enable introspection for staging
 GRAPHQL_ENABLE_INTROSPECTION = env.bool("GRAPHQL_ENABLE_INTROSPECTION", default=True)  # noqa: F405

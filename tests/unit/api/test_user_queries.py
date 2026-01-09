@@ -16,9 +16,23 @@ from django.contrib.auth import get_user_model
 import pytest
 
 from apps.core.models import AuditLog, Organisation
+from apps.core.services.token_service import TokenService
 from tests.factories import AuditLogFactory, OrganisationFactory, UserFactory
 
 User = get_user_model()
+
+
+def get_auth_headers(user) -> dict:
+    """Get JWT authentication headers for GraphQL requests.
+
+    Args:
+        user: User to authenticate
+
+    Returns:
+        Dict with HTTP_AUTHORIZATION header
+    """
+    tokens = TokenService.create_tokens(user)
+    return {"HTTP_AUTHORIZATION": f"Bearer {tokens['access_token']}"}
 
 
 @pytest.mark.unit
@@ -51,7 +65,7 @@ class TestMeQuery:
         Then: User data is returned with all fields
         And: Organisation data is included
         """
-        client.force_login(authenticated_user)
+        auth_headers = get_auth_headers(authenticated_user)
 
         query = """
         query {
@@ -76,6 +90,7 @@ class TestMeQuery:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -121,7 +136,7 @@ class TestMeQuery:
         """
         org = OrganisationFactory.create()
         user = UserFactory.create(organisation=org)
-        client.force_login(user)
+        auth_headers = get_auth_headers(user)
 
         query = """
         query {
@@ -141,6 +156,7 @@ class TestMeQuery:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -180,7 +196,7 @@ class TestUserQuery:
         org, users = organisation_with_users
         requester = users[0]
         target = users[1]
-        client.force_login(requester)
+        auth_headers = get_auth_headers(requester)
 
         query = """
         query GetUser($id: ID!) {
@@ -202,6 +218,7 @@ class TestUserQuery:
                 "variables": {"id": str(target.id)},
             },
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -222,7 +239,7 @@ class TestUserQuery:
         user_a = UserFactory.create(organisation=org_a)
         user_b = UserFactory.create(organisation=org_b)
 
-        client.force_login(user_a)
+        auth_headers = get_auth_headers(user_a)
 
         query = """
         query GetUser($id: ID!) {
@@ -240,6 +257,7 @@ class TestUserQuery:
                 "variables": {"id": str(user_b.id)},
             },
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -312,7 +330,7 @@ class TestUsersQuery:
         """
         org, users = organisation_with_users
         requester = users[0]
-        client.force_login(requester)
+        auth_headers = get_auth_headers(requester)
 
         query = """
         query {
@@ -328,6 +346,7 @@ class TestUsersQuery:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -343,7 +362,7 @@ class TestUsersQuery:
         """
         org, users = organisation_with_users
         requester = users[0]
-        client.force_login(requester)
+        auth_headers = get_auth_headers(requester)
 
         query = """
         query GetUsers($limit: Int, $offset: Int) {
@@ -361,6 +380,7 @@ class TestUsersQuery:
                 "variables": {"limit": 2, "offset": 1},
             },
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -378,9 +398,9 @@ class TestUsersQuery:
         org_b = OrganisationFactory.create(name="Organisation B")
 
         users_a = [UserFactory.create(organisation=org_a) for _ in range(3)]
-        _users_b = [UserFactory.create(organisation=org_b) for _ in range(2)]
+        [UserFactory.create(organisation=org_b) for _ in range(2)]
 
-        client.force_login(users_a[0])
+        auth_headers = get_auth_headers(users_a[0])
 
         query = """
         query {
@@ -397,6 +417,7 @@ class TestUsersQuery:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -470,7 +491,7 @@ class TestAuditLogQueries:
         And: Logs are ordered by most recent first
         """
         user, logs = user_with_audit_logs
-        client.force_login(user)
+        auth_headers = get_auth_headers(user)
 
         query = """
         query {
@@ -486,6 +507,7 @@ class TestAuditLogQueries:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -500,7 +522,7 @@ class TestAuditLogQueries:
         Then: Only 1 log is returned
         """
         user, logs = user_with_audit_logs
-        client.force_login(user)
+        auth_headers = get_auth_headers(user)
 
         query = """
         query GetAuditLogs($limit: Int) {
@@ -518,6 +540,7 @@ class TestAuditLogQueries:
                 "variables": {"limit": 1},
             },
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -535,7 +558,7 @@ class TestAuditLogQueries:
         user = UserFactory.create(organisation=org)  # Regular user
         AuditLogFactory.create_batch(5, organisation=org)
 
-        client.force_login(user)
+        auth_headers = get_auth_headers(user)
 
         query = """
         query {
@@ -550,6 +573,7 @@ class TestAuditLogQueries:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -586,7 +610,7 @@ class TestOrganisationQuery:
             industry="Technology",
         )
         user = UserFactory.create(organisation=org)
-        client.force_login(user)
+        auth_headers = get_auth_headers(user)
 
         query = """
         query {
@@ -606,6 +630,7 @@ class TestOrganisationQuery:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()

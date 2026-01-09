@@ -1,7 +1,7 @@
 # Backend Template - Django Project
 
-**Last Updated**: 08/01/2026
-**Version**: 0.5.0
+**Last Updated**: 09/01/2026
+**Version**: 0.6.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -30,6 +30,7 @@
     - [GraphQL API](#graphql-api)
     - [CMS Content Management](#cms-content-management)
   - [Code Quality Principles](#code-quality-principles)
+    - [Import Rules](#import-rules)
     - [Minimal Code Philosophy](#minimal-code-philosophy)
     - [DRY (Don't Repeat Yourself)](#dry-dont-repeat-yourself)
     - [Code Quality Checklist](#code-quality-checklist)
@@ -88,6 +89,7 @@
     - [Key Platform Features](#key-platform-features)
     - [Development Phases](#development-phases)
   - [Notes](#notes)
+  - [Overview](#overview)
 
 ## Project Overview
 
@@ -216,6 +218,332 @@ for detailed CMS architecture.
 ## Code Quality Principles
 
 This project enforces strict code quality standards to maintain a clean, maintainable codebase.
+
+### Import Rules
+
+**CRITICAL:** All imports must be organised at the top of the file following PEP 8 import order.
+
+**Import Order (enforced by isort):**
+
+1. **Standard library imports** - Python built-in modules
+2. **Third-party imports** - Installed packages (Django, etc.)
+3. **Local application imports** - Your project modules
+
+**Principles:**
+
+- Imports at the top of the file are the default
+- Group imports by type with blank lines between groups
+- Sort imports alphabetically within each group
+- Use absolute imports for clarity (`from apps.core.models import User`)
+- Only import inside functions for specific cases (see exceptions below)
+
+**Examples:**
+
+```python
+# ✅ GOOD - Correct import order and grouping
+"""User authentication service.
+
+Handles user login, logout, and session management.
+"""
+
+# Standard library imports
+import json
+import logging
+from datetime import datetime, timedelta
+from typing import Optional, Dict, Any
+
+# Third-party imports
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.utils import timezone
+import redis
+import strawberry
+
+# Local application imports
+from apps.core.models import User, Organisation, AuditLog
+from apps.core.services.encryption import encrypt_data
+from apps.core.utils.validators import validate_email
+from api.types import UserType
+
+logger = logging.getLogger(__name__)
+
+
+class AuthService:
+    """Service for user authentication operations."""
+
+    def login_user(self, email: str, password: str) -> Optional[User]:
+        """Authenticate user with email and password."""
+        pass
+```
+
+```python
+# ❌ BAD - Mixed import order, no grouping
+"""User authentication service."""
+
+from apps.core.models import User
+import json
+from django.contrib.auth import authenticate
+from apps.core.services.encryption import encrypt_data
+import logging
+from django.utils import timezone
+from typing import Optional
+import redis
+from apps.core.utils.validators import validate_email
+
+class AuthService:
+    def login_user(self, email: str, password: str) -> Optional[User]:
+        pass
+```
+
+**Django-Specific Import Conventions:**
+
+```python
+# ✅ GOOD - Django imports following conventions
+"""Django model definitions."""
+
+# Standard library
+from typing import Optional
+
+# Third-party - Django core first, then contrib packages
+from django.db import models
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+# Local
+from apps.core.managers import UserManager
+from apps.core.validators import validate_username
+
+
+class User(AbstractUser):
+    """Custom user model."""
+    pass
+```
+
+**GraphQL Schema Imports:**
+
+```python
+# ✅ GOOD - GraphQL imports
+"""GraphQL schema for user queries and mutations."""
+
+# Standard library
+from typing import List, Optional
+
+# Third-party - Strawberry
+import strawberry
+from strawberry.types import Info
+
+# Third-party - Django
+from django.contrib.auth import get_user_model
+from django.db import transaction
+
+# Local
+from apps.core.models import Organisation
+from apps.core.services.auth_service import AuthService
+from api.types import UserType, OrganisationType
+from api.permissions import IsAuthenticated
+
+User = get_user_model()
+```
+
+**When to Import Inside Functions (Exceptions):**
+
+Only import inside functions in these specific cases:
+
+1. **Circular Import Resolution** - When two modules import each other
+2. **Optional Dependencies** - When imports are conditionally needed
+3. **Performance Optimisation** - Expensive imports only when needed
+4. **Type Checking Only** - Imports only used for type hints
+
+```python
+# ✅ GOOD - Import inside function to resolve circular dependency
+"""User service module."""
+
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+def get_user_organisation(user_id: int):
+    """Get organisation for a user.
+
+    Import Organisation inside function to avoid circular import
+    since Organisation model also imports User.
+    """
+    # Import here to avoid circular dependency
+    from apps.core.models import Organisation
+
+    user = User.objects.select_related('organisation').get(id=user_id)
+    return user.organisation
+```
+
+```python
+# ✅ GOOD - Optional dependency import
+"""Data export service."""
+
+from django.http import HttpResponse
+
+
+def export_to_excel(data: list) -> HttpResponse:
+    """Export data to Excel format.
+
+    Only import openpyxl if Excel export is actually used.
+    """
+    try:
+        # Import only when needed (openpyxl is optional dependency)
+        import openpyxl
+        from openpyxl.styles import Font
+    except ImportError:
+        raise ImportError(
+            "openpyxl is required for Excel export. "
+            "Install it with: pip install openpyxl"
+        )
+
+    # Excel export logic here
+    workbook = openpyxl.Workbook()
+    return HttpResponse(content_type='application/vnd.ms-excel')
+```
+
+```python
+# ✅ GOOD - Expensive import only when needed
+"""Background task processing."""
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_video(video_path: str) -> None:
+    """Process video file.
+
+    Import heavy video processing library only when task runs,
+    not when module is imported.
+    """
+    # Import expensive library only when function is called
+    import cv2
+    import numpy as np
+
+    logger.info(f"Processing video: {video_path}")
+    # Video processing logic here
+```
+
+```python
+# ✅ GOOD - Type checking only import (TYPE_CHECKING)
+"""User service with type hints."""
+
+from typing import TYPE_CHECKING, Optional
+
+from django.contrib.auth import get_user_model
+
+# Import only for type checking, not at runtime
+if TYPE_CHECKING:
+    from apps.core.models import Organisation
+
+User = get_user_model()
+
+
+def get_user_with_org(user_id: int) -> tuple[User, Optional['Organisation']]:
+    """Get user with their organisation.
+
+    Organisation is only imported for type hints, avoiding circular import.
+    """
+    user = User.objects.select_related('organisation').get(id=user_id)
+    return user, user.organisation
+```
+
+**Import Aliasing Best Practices:**
+
+```python
+# ✅ GOOD - Clear, conventional aliases
+"""GraphQL types and queries."""
+
+import strawberry
+from django.contrib.auth import get_user_model
+from django.db.models import Q, QuerySet
+
+# Conventional alias for user model
+User = get_user_model()
+
+# Avoid naming conflicts
+from apps.core.models import User as CoreUser
+from apps.api.types import User as UserType
+
+
+@strawberry.type
+class Query:
+    """GraphQL queries."""
+    pass
+```
+
+```python
+# ❌ BAD - Confusing or unnecessary aliases
+"""Confusing import aliases."""
+
+import json as j
+from django.db import models as m
+from django.utils import timezone as t
+
+# Too short, unclear
+from apps.core.models import User as U
+
+
+class Article(m.Model):
+    created_at = m.DateTimeField(default=t.now)
+```
+
+**Wildcard Imports (Avoid):**
+
+```python
+# ❌ BAD - Never use wildcard imports
+"""Bad import practices."""
+
+from django.contrib.auth.models import *
+from apps.core.utils import *
+
+# Unclear where User comes from, pollutes namespace
+user = User.objects.get(id=1)
+```
+
+```python
+# ✅ GOOD - Explicit imports
+"""Explicit imports."""
+
+from django.contrib.auth.models import AbstractUser, Group, Permission
+from apps.core.utils import validate_email, hash_password
+
+user = AbstractUser.objects.get(id=1)
+```
+
+**Multi-line Imports:**
+
+```python
+# ✅ GOOD - Multi-line import formatting
+"""Long import lists."""
+
+from django.contrib.auth.models import (
+    AbstractUser,
+    Group,
+    Permission,
+    AnonymousUser,
+)
+
+from apps.core.services import (
+    AuthService,
+    PasswordService,
+    TokenService,
+    NotificationService,
+)
+```
+
+```python
+# ❌ BAD - Long single-line imports (exceeds 100 char limit)
+"""Single line imports."""
+
+from django.contrib.auth.models import AbstractUser, Group, Permission, AnonymousUser, UserManager, BaseUserManager
+```
 
 ### Minimal Code Philosophy
 

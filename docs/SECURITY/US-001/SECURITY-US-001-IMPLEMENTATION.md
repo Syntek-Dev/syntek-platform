@@ -184,6 +184,7 @@ Phase 1 and Phase 2 security implementations for US-001 User Authentication have
 8. **GDPR Gaps** - Consent management, automated data export pending (future phases)
 
 **Phase 2 Achievements:**
+
 - ✅ C1: HMAC-SHA256 token hashing with dedicated signing key
 - ✅ C3: Password reset hash-then-store pattern
 - ✅ C6: IP encryption key rotation management
@@ -485,6 +486,7 @@ Phase 2 introduced critical security enhancements at the service layer, addressi
 **Implementation**: HMAC-SHA256 token hashing with dedicated signing key
 
 **Security Features**:
+
 - Uses HMAC-SHA256 instead of plain SHA-256 to prevent rainbow table attacks
 - Dedicated `TOKEN_SIGNING_KEY` separate from Django `SECRET_KEY`
 - Base64 encoding for database storage
@@ -493,6 +495,7 @@ Phase 2 introduced critical security enhancements at the service layer, addressi
 - Minimum entropy enforcement (16 bytes = 128 bits minimum)
 
 **Key Methods**:
+
 ```python
 TokenHasher.hash_token(token: str) -> str  # HMAC-SHA256 hash
 TokenHasher.verify_token(token: str, hash: str) -> bool  # Constant-time verify
@@ -501,6 +504,7 @@ TokenHasher.constant_time_compare(val1: str, val2: str) -> bool  # Timing-safe
 ```
 
 **Addresses**:
+
 - C1: Session token storage vulnerability
 - Prevents rainbow table attacks on token hashes
 - Prevents timing attacks during token verification
@@ -512,6 +516,7 @@ TokenHasher.constant_time_compare(val1: str, val2: str) -> bool  # Timing-safe
 **Implementation**: Fernet symmetric encryption with key rotation support
 
 **Security Features**:
+
 - Fernet encryption (AES-128-CBC + HMAC-SHA256)
 - IPv4 and IPv6 support with validation
 - Key rotation without data loss
@@ -520,6 +525,7 @@ TokenHasher.constant_time_compare(val1: str, val2: str) -> bool  # Timing-safe
 - Dedicated `IP_ENCRYPTION_KEY` separate from other keys
 
 **Key Methods**:
+
 ```python
 IPEncryption.encrypt_ip(ip: str) -> bytes  # Encrypt IP address
 IPEncryption.decrypt_ip(encrypted: bytes) -> str  # Decrypt IP address
@@ -529,6 +535,7 @@ IPEncryption.validate_ip_address(ip: str) -> bool  # IP validation
 ```
 
 **Key Rotation Statistics**:
+
 ```python
 {
     'audit_logs_updated': int,      # Number of audit logs re-encrypted
@@ -538,6 +545,7 @@ IPEncryption.validate_ip_address(ip: str) -> bool  # IP validation
 ```
 
 **Addresses**:
+
 - C6: IP encryption key rotation not specified
 - Enables quarterly key rotation without data loss
 - Protects historical audit logs during key transitions
@@ -549,6 +557,7 @@ IPEncryption.validate_ip_address(ip: str) -> bool  # IP validation
 **Implementation**: JWT token management with refresh token family tracking
 
 **Security Features**:
+
 - RS256 algorithm (asymmetric signing) for JWT tokens
 - Refresh token rotation on every use
 - Token family tracking for replay detection
@@ -558,6 +567,7 @@ IPEncryption.validate_ip_address(ip: str) -> bool  # IP validation
 - Token expiry enforcement
 
 **Token Family Replay Detection**:
+
 1. Initial token pair created with unique family ID
 2. Each refresh rotates token and maintains family lineage
 3. Reuse of old refresh token detected as replay attack
@@ -565,6 +575,7 @@ IPEncryption.validate_ip_address(ip: str) -> bool  # IP validation
 5. User must re-authenticate after detected compromise
 
 **Addresses**:
+
 - H9: Refresh token replay detection
 - Prevents token theft and replay attacks
 - Automatic compromise detection and mitigation
@@ -576,6 +587,7 @@ IPEncryption.validate_ip_address(ip: str) -> bool  # IP validation
 **Implementation**: Hash-then-store pattern for password reset tokens
 
 **Security Features**:
+
 - Plain token generated once, never stored
 - Only HMAC-SHA256 hash stored in database
 - Token verification uses constant-time comparison
@@ -584,6 +596,7 @@ IPEncryption.validate_ip_address(ip: str) -> bool  # IP validation
 - Audit logging for all reset operations
 
 **Hash-then-Store Pattern**:
+
 ```python
 # Generation (returns plain token once)
 token = TokenHasher.generate_token(32)  # 256 bits entropy
@@ -596,6 +609,7 @@ is_valid = TokenHasher.verify_token(submitted_token, stored_hash)
 ```
 
 **Addresses**:
+
 - C3: Password reset token not hashed
 - Prevents token extraction from database compromise
 - Single-use prevents token reuse after password reset
@@ -607,6 +621,7 @@ is_valid = TokenHasher.verify_token(submitted_token, stored_hash)
 **Implementation**: Database locking to prevent race conditions
 
 **Security Features**:
+
 - `SELECT FOR UPDATE` locking during login
 - Prevents simultaneous login attempts on same account
 - Account lockout after failed attempts
@@ -615,6 +630,7 @@ is_valid = TokenHasher.verify_token(submitted_token, stored_hash)
 - Audit logging for all authentication events
 
 **Race Condition Prevention**:
+
 ```python
 # Acquire row lock before authentication
 user = User.objects.select_for_update().get(email=email)
@@ -623,6 +639,7 @@ user = User.objects.select_for_update().get(email=email)
 ```
 
 **Addresses**:
+
 - H3: Race condition in login flow
 - Prevents concurrent password attempts
 - Ensures atomic account lockout operations
@@ -634,6 +651,7 @@ user = User.objects.select_for_update().get(email=email)
 **Implementation**: Centralised audit logging with encrypted PII
 
 **Security Features**:
+
 - Encrypts IP addresses before storage
 - Structured logging with event metadata
 - User and organisation scoping
@@ -641,6 +659,7 @@ user = User.objects.select_for_update().get(email=email)
 - Comprehensive event coverage (login, logout, password changes, etc.)
 
 **Key Methods**:
+
 ```python
 AuditService.log_login(user, ip_address)
 AuditService.log_logout(user, ip_address)
@@ -656,6 +675,7 @@ AuditService.get_organisation_logs(organisation, limit)
 **Implementation**: Async email delivery with retry logic (H6)
 
 **Security Features**:
+
 - Async processing with Celery (pending Phase 5)
 - Retry logic with exponential backoff
 - Dead letter queue for failed emails
@@ -663,6 +683,7 @@ AuditService.get_organisation_logs(organisation, limit)
 - Secure SMTP configuration
 
 **Addresses**:
+
 - H6: Async email delivery (stub for Phase 5)
 
 ### Environment Variables for Phase 2
@@ -698,15 +719,15 @@ All Phase 2 implementations include comprehensive unit tests:
 
 ### Phase 2 Critical Gap Resolutions
 
-| Gap ID | Description                      | Status      | Implementation                   |
-| ------ | -------------------------------- | ----------- | -------------------------------- |
-| C1     | Session token storage vulnerable | ✅ Resolved | HMAC-SHA256 with dedicated key   |
-| C3     | Password reset token not hashed  | ✅ Resolved | Hash-then-store pattern          |
-| C6     | IP encryption key rotation       | ✅ Resolved | Key rotation management command  |
-| H1     | JWT algorithm specification      | ✅ Resolved | RS256 with token service         |
-| H3     | Race condition prevention        | ✅ Resolved | SELECT FOR UPDATE locking        |
-| H9     | Refresh token replay detection   | ✅ Resolved | Token family tracking            |
-| M5     | Timezone/DST handling            | ✅ Resolved | pytz integration                 |
+| Gap ID | Description                      | Status      | Implementation                  |
+| ------ | -------------------------------- | ----------- | ------------------------------- |
+| C1     | Session token storage vulnerable | ✅ Resolved | HMAC-SHA256 with dedicated key  |
+| C3     | Password reset token not hashed  | ✅ Resolved | Hash-then-store pattern         |
+| C6     | IP encryption key rotation       | ✅ Resolved | Key rotation management command |
+| H1     | JWT algorithm specification      | ✅ Resolved | RS256 with token service        |
+| H3     | Race condition prevention        | ✅ Resolved | SELECT FOR UPDATE locking       |
+| H9     | Refresh token replay detection   | ✅ Resolved | Token family tracking           |
+| M5     | Timezone/DST handling            | ✅ Resolved | pytz integration                |
 
 ### Phase 2 Security Improvements Summary
 
@@ -1797,12 +1818,14 @@ def anonymise_user(user: User) -> None:
 ### Modified Files
 
 **Phase 1**:
+
 1. `config/settings/base.py` - Added IP allowlist middleware to MIDDLEWARE list
 2. `.env.dev.example` - Added security environment variables
 3. `.env.staging.example` - Added security environment variables
 4. `.env.production.example` - Added security environment variables
 
 **Phase 2**:
+
 1. `.env.dev.example` - Added TOKEN_SIGNING_KEY, IP_ENCRYPTION_KEY
 2. `.env.staging.example` - Added TOKEN_SIGNING_KEY, IP_ENCRYPTION_KEY
 3. `.env.production.example` - Added TOKEN_SIGNING_KEY, IP_ENCRYPTION_KEY
@@ -1821,13 +1844,13 @@ def anonymise_user(user: User) -> None:
 
 ### Required Configuration
 
-| Variable              | Purpose                         | Example Value    | Phase       |
-| --------------------- | ------------------------------- | ---------------- | ----------- |
-| `SECRET_KEY`          | Django secret key               | (auto-generated) | Phase 1     |
-| `TOKEN_SIGNING_KEY`   | HMAC token hashing (C1)         | (random secret)  | Phase 2 ✅  |
-| `IP_ENCRYPTION_KEY`   | IP address encryption (C6)      | (Fernet key)     | Phase 2 ✅  |
-| `TOTP_ENCRYPTION_KEY` | TOTP secret encryption          | (Fernet key)     | Phase 4     |
-| `JWT_ALGORITHM`       | JWT signing algorithm (H1)      | RS256            | Phase 2 ✅  |
+| Variable              | Purpose                    | Example Value    | Phase      |
+| --------------------- | -------------------------- | ---------------- | ---------- |
+| `SECRET_KEY`          | Django secret key          | (auto-generated) | Phase 1    |
+| `TOKEN_SIGNING_KEY`   | HMAC token hashing (C1)    | (random secret)  | Phase 2 ✅ |
+| `IP_ENCRYPTION_KEY`   | IP address encryption (C6) | (Fernet key)     | Phase 2 ✅ |
+| `TOTP_ENCRYPTION_KEY` | TOTP secret encryption     | (Fernet key)     | Phase 4    |
+| `JWT_ALGORITHM`       | JWT signing algorithm (H1) | RS256            | Phase 2 ✅ |
 
 ### Optional Configuration
 

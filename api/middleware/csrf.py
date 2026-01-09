@@ -33,22 +33,25 @@ class GraphQLCSRFMiddleware:
     def __call__(self, request: HttpRequest) -> Any:
         """Process request through CSRF middleware.
 
+        Validates CSRF token for mutations, allows queries without validation.
+
         Args:
             request: HTTP request
 
         Returns:
             HTTP response
-
-        Raises:
-            TODO: Implement CSRF validation for mutations
         """
-        # TODO: Implement CSRF middleware
-        # 1. Parse GraphQL request body
-        # 2. Detect if request contains mutation
-        # 3. If mutation, enforce CSRF token validation
-        # 4. If query only, skip CSRF validation
-        # 5. Return appropriate response or error
-        raise NotImplementedError("GraphQL CSRF middleware not implemented yet")
+        # Check if request is to GraphQL endpoint
+        if not request.path.startswith("/graphql"):
+            return self.get_response(request)
+
+        # Check if request contains mutations
+        if self._is_mutation(request):
+            # Enforce CSRF protection for mutations
+            return self.csrf_middleware(request)
+
+        # Allow queries without CSRF token
+        return self.get_response(request)
 
     def _is_mutation(self, request: HttpRequest) -> bool:
         """Check if GraphQL request contains mutations.

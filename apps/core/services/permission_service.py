@@ -236,7 +236,7 @@ class PermissionService:
             return True
 
         # Users can only access their own organisation
-        return user.organisation_id == organisation_id
+        return user.organisation_id == organisation_id  # type: ignore[attr-defined]
 
     @staticmethod
     def filter_by_organisation(user: User, queryset: QuerySet) -> QuerySet:

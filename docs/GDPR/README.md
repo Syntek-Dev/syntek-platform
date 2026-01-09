@@ -126,22 +126,22 @@ Comprehensive GDPR compliance assessment with detailed implementation plans.
 
 ### Current Score: 40/100
 
-| Component                 | Status      | Gap      | Phase 2 Progress                                |
-| ------------------------- | ----------- | -------- | ----------------------------------------------- |
-| **Secure transmission**   | ✅ Complete | -        | -                                               |
-| **Session security**      | ✅ Complete | -        | -                                               |
-| **Error sanitisation**    | ✅ Complete | -        | -                                               |
-| **Sentry PII filtering**  | ✅ Complete | -        | -                                               |
-| **Password validation**   | ✅ Complete | -        | -                                               |
-| **Audit logging**         | ✅ Complete | -        | -                                               |
-| **PII encryption**        | ⚠️ Partial  | Critical | IP addresses encrypted, tokens hashed           |
-| **Consent management**    | ❌ MISSING  | Critical | -                                               |
-| **Data export**           | ❌ MISSING  | Critical | -                                               |
-| **Account deletion**      | ❌ MISSING  | Critical | -                                               |
-| **Privacy policy**        | ❌ MISSING  | Critical | -                                               |
-| **Data retention policy** | ⚠️ Partial  | Major    | Token retention (1 hour/24 hours) implemented   |
-| **DPA documentation**     | ❌ MISSING  | Major    | -                                               |
-| **Breach notification**   | ⚠️ Partial  | Medium   | -                                               |
+| Component                 | Status      | Gap      | Phase 2 Progress                              |
+| ------------------------- | ----------- | -------- | --------------------------------------------- |
+| **Secure transmission**   | ✅ Complete | -        | -                                             |
+| **Session security**      | ✅ Complete | -        | -                                             |
+| **Error sanitisation**    | ✅ Complete | -        | -                                             |
+| **Sentry PII filtering**  | ✅ Complete | -        | -                                             |
+| **Password validation**   | ✅ Complete | -        | -                                             |
+| **Audit logging**         | ✅ Complete | -        | -                                             |
+| **PII encryption**        | ⚠️ Partial  | Critical | IP addresses encrypted, tokens hashed         |
+| **Consent management**    | ❌ MISSING  | Critical | -                                             |
+| **Data export**           | ❌ MISSING  | Critical | -                                             |
+| **Account deletion**      | ❌ MISSING  | Critical | -                                             |
+| **Privacy policy**        | ❌ MISSING  | Critical | -                                             |
+| **Data retention policy** | ⚠️ Partial  | Major    | Token retention (1 hour/24 hours) implemented |
+| **DPA documentation**     | ❌ MISSING  | Major    | -                                             |
+| **Breach notification**   | ⚠️ Partial  | Medium   | -                                             |
 
 ---
 

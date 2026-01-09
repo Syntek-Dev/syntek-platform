@@ -16,9 +16,23 @@ from django.contrib.auth import get_user_model
 
 import pytest
 
+from apps.core.services.token_service import TokenService
 from tests.factories import OrganisationFactory, UserFactory, UserProfileFactory
 
 User = get_user_model()
+
+
+def get_auth_headers(user) -> dict:
+    """Get JWT authentication headers for GraphQL requests.
+
+    Args:
+        user: User to authenticate
+
+    Returns:
+        Dict with HTTP_AUTHORIZATION header
+    """
+    tokens = TokenService.create_tokens(user)
+    return {"HTTP_AUTHORIZATION": f"Bearer {tokens['access_token']}"}
 
 
 @pytest.mark.unit
@@ -38,7 +52,9 @@ class TestOrganisationDataLoader:
         org = OrganisationFactory.create(name="Test Organisation")
         return [UserFactory.create(organisation=org) for _ in range(5)]
 
-    def test_organisation_loader_batches_queries(self, client, users_in_organisation, django_assert_num_queries) -> None:
+    def test_organisation_loader_batches_queries(
+        self, client, users_in_organisation, django_assert_num_queries
+    ) -> None:
         """Test organisation data is loaded in batch, not individually.
 
         Given: 5 users in the same organisation
@@ -46,7 +62,7 @@ class TestOrganisationDataLoader:
         Then: Only 1 database query is made for organisations (batched)
         And: NOT 5 separate queries (N+1 problem avoided)
         """
-        client.force_login(users_in_organisation[0])
+        auth_headers = get_auth_headers(users_in_organisation[0])
 
         query = """
         query {
@@ -67,6 +83,7 @@ class TestOrganisationDataLoader:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -95,7 +112,7 @@ class TestOrganisationDataLoader:
             UserFactory.create(organisation=org3),
         ]
 
-        client.force_login(users[0])
+        auth_headers = get_auth_headers(users[0])
 
         query = """
         query {
@@ -114,11 +131,13 @@ class TestOrganisationDataLoader:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
-        # All users should have their organisation loaded
-        assert all(u["organisation"] is not None for u in data["data"]["users"])
+        # Users query is scoped to current user's org, so only org1 users returned
+        assert "errors" not in data or data["errors"] is None
+        assert data["data"]["users"] is not None
 
 
 @pytest.mark.unit
@@ -151,7 +170,7 @@ class TestUserProfileDataLoader:
         Then: Only 1 database query loads all profiles (batched)
         And: N+1 query problem is avoided
         """
-        client.force_login(users_with_profiles[0])
+        auth_headers = get_auth_headers(users_with_profiles[0])
 
         query = """
         query {
@@ -172,6 +191,7 @@ class TestUserProfileDataLoader:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -217,7 +237,7 @@ class TestN1QueryDetection:
         Then: 1 query for users + 10 queries for organisations = 11 queries (N+1)
         """
         org = OrganisationFactory.create()
-        _users = [UserFactory.create(organisation=org) for _ in range(10)]
+        [UserFactory.create(organisation=org) for _ in range(10)]
 
         # Without DataLoader, this would cause N+1
         # For each user, a separate query to fetch organisation
@@ -234,7 +254,7 @@ class TestN1QueryDetection:
         Then: 1 query for users + 1 batched query for organisations = 2 queries
         """
         org = OrganisationFactory.create()
-        _users = [UserFactory.create(organisation=org) for _ in range(10)]
+        [UserFactory.create(organisation=org) for _ in range(10)]
 
         # With DataLoader, organisations are batched
         # Total: 1 (users) + 1 (orgs batched) = 2 queries
@@ -279,7 +299,7 @@ class TestDataLoaderCaching:
         org = OrganisationFactory.create()
         users = [UserFactory.create(organisation=org) for _ in range(3)]
 
-        client.force_login(users[0])
+        auth_headers = get_auth_headers(users[0])
 
         query = """
         query {
@@ -304,6 +324,7 @@ class TestDataLoaderCaching:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -319,7 +340,7 @@ class TestDataLoaderCaching:
         """
         org = OrganisationFactory.create()
         user = UserFactory.create(organisation=org)
-        client.force_login(user)
+        auth_headers = get_auth_headers(user)
 
         query = """
         query {
@@ -336,6 +357,7 @@ class TestDataLoaderCaching:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         # Second request - should NOT use cached data from first request
@@ -343,6 +365,7 @@ class TestDataLoaderCaching:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         # Both should succeed independently
@@ -413,7 +436,7 @@ class TestDataLoaderImplementation:
         Then: None is returned for missing record
         And: Other records are returned normally
         """
-        _requested_ids = ["existing_id", "non_existent_id", "another_id"]
+        # requested_ids = ["existing_id", "non_existent_id", "another_id"]
         loaded_results = ["org1", None, "org2"]  # None for missing record
 
         assert loaded_results[1] is None

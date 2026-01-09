@@ -18,9 +18,23 @@ from django.contrib.auth.models import Group
 
 import pytest
 
+from apps.core.services.token_service import TokenService
 from tests.factories import OrganisationFactory, UserFactory
 
 User = get_user_model()
+
+
+def get_auth_headers(user) -> dict:
+    """Get JWT authentication headers for GraphQL requests.
+
+    Args:
+        user: User to authenticate
+
+    Returns:
+        Dict with HTTP_AUTHORIZATION header
+    """
+    tokens = TokenService.create_tokens(user)
+    return {"HTTP_AUTHORIZATION": f"Bearer {tokens['access_token']}"}
 
 
 @pytest.mark.unit
@@ -222,7 +236,7 @@ class TestOrganisationBoundaryEnforcement:
         Then: null or error is returned (organisation boundary)
         """
         setup = multi_tenant_setup
-        client.force_login(setup["user_a"])
+        auth_headers = get_auth_headers(setup["user_a"])
 
         query = """
         query GetUser($id: ID!) {
@@ -240,6 +254,7 @@ class TestOrganisationBoundaryEnforcement:
                 "variables": {"id": str(setup["user_b"].id)},
             },
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -254,7 +269,7 @@ class TestOrganisationBoundaryEnforcement:
         Then: Only users from Organisation A are returned
         """
         setup = multi_tenant_setup
-        client.force_login(setup["user_a"])
+        auth_headers = get_auth_headers(setup["user_a"])
 
         query = """
         query {
@@ -272,6 +287,7 @@ class TestOrganisationBoundaryEnforcement:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()
@@ -296,7 +312,7 @@ class TestOrganisationBoundaryEnforcement:
         AuditLogFactory.create_batch(3, organisation=setup["org_a"], action="login_success")
         AuditLogFactory.create_batch(2, organisation=setup["org_b"], action="login_success")
 
-        client.force_login(setup["user_a"])
+        auth_headers = get_auth_headers(setup["user_a"])
 
         query = """
         query {
@@ -313,6 +329,7 @@ class TestOrganisationBoundaryEnforcement:
             "/graphql/",
             {"query": query},
             content_type="application/json",
+            **auth_headers,
         )
 
         data = response.json()

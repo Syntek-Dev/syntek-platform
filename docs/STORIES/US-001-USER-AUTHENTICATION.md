@@ -201,12 +201,12 @@ Core authentication system allowing new users to create accounts with email and 
 **Story ID:** US-001
 **Last Updated:** 08/01/2026 15:45 Europe/London
 
-| Repository      | Required | Status         | Completed By  | Date             | Notes                            |
-| --------------- | -------- | -------------- | ------------- | ---------------- | -------------------------------- |
-| Backend         | ✅       | 🔄 In Progress | Backend Agent | Phases 1-2: ✅   | Models & Services complete (~75%) |
-| Frontend Web    | ✅       | ⬜ Not Started | -             | -                | Waiting for GraphQL API (Phase 3) |
-| Frontend Mobile | ✅       | ⬜ Not Started | -             | -                | Waiting for GraphQL API (Phase 3) |
-| Shared UI       | ✅       | ⬜ Not Started | -             | -                | Components to be designed         |
+| Repository      | Required | Status         | Completed By  | Date           | Notes                             |
+| --------------- | -------- | -------------- | ------------- | -------------- | --------------------------------- |
+| Backend         | ✅       | 🔄 In Progress | Backend Agent | Phases 1-2: ✅ | Models & Services complete (~75%) |
+| Frontend Web    | ✅       | ⬜ Not Started | -             | -              | Waiting for GraphQL API (Phase 3) |
+| Frontend Mobile | ✅       | ⬜ Not Started | -             | -              | Waiting for GraphQL API (Phase 3) |
+| Shared UI       | ✅       | ⬜ Not Started | -             | -              | Components to be designed         |
 
 ### Completion Notes
 

@@ -53,7 +53,7 @@ class SignedURLService:
         Raises:
             ImproperlyConfigured: If no secret key is provided and Django SECRET_KEY is not set.
         """
-        self.secret_key = secret_key or getattr(settings, "SECRET_KEY", None)
+        self.secret_key: str = secret_key or getattr(settings, "SECRET_KEY", None)
 
         if not self.secret_key:
             raise ImproperlyConfigured(

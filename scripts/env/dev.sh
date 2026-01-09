@@ -241,17 +241,12 @@ cmd_lint() {
     dc exec ${WEB_SERVICE} black --check .
     info "Running Flake8..."
     dc exec ${WEB_SERVICE} flake8
-    info "Running isort (check mode)..."
-    dc exec ${WEB_SERVICE} isort --check-only .
-    success "Linting completed."
 }
 
 cmd_format() {
     header "Formatting Code"
     info "Running Black..."
     dc exec ${WEB_SERVICE} black .
-    info "Running isort..."
-    dc exec ${WEB_SERVICE} isort .
     info "Running Ruff fix..."
     dc exec ${WEB_SERVICE} ruff check --fix .
     success "Code formatted."

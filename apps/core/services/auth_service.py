@@ -20,6 +20,7 @@ Example:
 """
 
 from datetime import datetime
+from typing import Any
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -82,7 +83,7 @@ class AuthService:
             raise ValueError("; ".join(e.messages)) from e
 
         # Create user
-        user = User.objects.create_user(
+        user = User.objects.create_user(  # type: ignore[attr-defined]
             email=email,
             password=password,
             first_name=first_name,
@@ -98,7 +99,7 @@ class AuthService:
         password: str,
         device_fingerprint: str = "",
         ip_address: str = "",
-    ) -> dict[str, any] | None:
+    ) -> dict[str, Any] | None:
         """Authenticate user and create session tokens.
 
         Uses SELECT FOR UPDATE to prevent race conditions on concurrent

@@ -74,6 +74,7 @@ class TokenHasher:
             )
 
         # Create HMAC-SHA256 hash
+        assert key is not None  # Type narrowing for Pylance
         token_bytes = token.encode("utf-8")
         hmac_hash = hmac.new(key, token_bytes, hashlib.sha256).digest()
 

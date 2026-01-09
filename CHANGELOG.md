@@ -1,6 +1,6 @@
 # Changelog
 
-**Last Updated**: 08/01/2026
+**Last Updated**: 09/01/2026
 **Version**: 0.6.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
@@ -84,43 +84,57 @@ This changelog documents all notable changes to the backend template project in 
 
 ---
 
-## [0.6.0] - 08/01/2026
+## [0.6.0] - 09/01/2026
 
 ### Added
 
 - **GraphQL API Implementation (US-001 Phase 3):**
   - Complete GraphQL schema with Strawberry GraphQL
-  - Authentication mutations: `register`, `login`, `logout`, `requestPasswordReset`, `resetPassword`
-  - User queries: `me`, `users` with organisation boundary enforcement
-  - Authentication types: `AuthResult`, `UserType`, `LoginInput`, `RegisterInput`
+  - Full implementation of authentication mutations: `register`, `login`, `logout`, `requestPasswordReset`, `resetPassword`, `verifyEmail`
+  - User queries: `me`, `user`, `users`, `auditLogs` with organisation boundary enforcement
+  - Authentication types: `AuthPayload`, `UserType`, `AuditLogType`, input types for all mutations
   - CSRF protection middleware for mutations (C4 requirement)
   - GraphQL security extensions: query depth limiting, complexity analysis, introspection control
   - Permission system for organisation-based access control
-  - DataLoader stubs for N+1 query prevention (H2 requirement)
+  - **DataLoaders for N+1 query prevention (H2 requirement):**
+    - `UserLoader` for batch user loading
+    - `OrganisationLoader` for batch organisation loading
+    - `AuditLogLoader` for batch audit log loading
+  - **Standardised error handling (H4 requirement):**
+    - Custom error types: `AuthenticationError`, `ValidationError`, `PermissionError`
+    - Error code enumeration with unique codes for all error scenarios
+    - Consistent error messages for user enumeration prevention (M7)
+  - **Authentication middleware:**
+    - JWT token validation
+    - User authentication context
+    - Organisation boundary enforcement
 - **Comprehensive Test Suite:**
   - Unit tests for auth mutations, user queries, permissions, CSRF middleware, DataLoaders
   - Integration tests for complete GraphQL authentication flow
   - End-to-end tests for user registration workflow
-  - Manual testing guide with 10 test scenarios covering all requirements
+  - Enhanced test factories with proper field mappings
   - Test markers: `security` and `performance` for targeted test execution
 - **Code Quality Improvements:**
   - Added Flake8 linting to development scripts
-  - Fixed formatting issues in ClickUp sync scripts
-  - Updated user factory to match UserProfile model field names
   - Enhanced pytest configuration with new test markers
+  - Improved code documentation across all modules
 
 ### Changed
 
+- **GraphQL mutations and queries:** Upgraded from stubs to full implementations
+- **Test factories:** Updated to match current model schema
+- **Documentation:** Updated across all domains (Auth, Backend, Debug, GDPR, Logging, QA, Reviews, Security)
+- **Settings:** Enhanced security configurations for production, staging, and test environments
 - Development scripts now include Flake8 in lint checks
-- ClickUp sync scripts formatting improved for consistency
-- Test factories updated for Phase 3 compatibility
 
 ### Security
 
 - **C4 (CSRF Protection):** CSRF middleware enforces CSRF token validation for all mutations
 - **C5 (Email Verification):** Email verification enforcement implemented in login mutation
-- **M7 (User Enumeration Prevention):** Consistent error messages for authentication failures
-- **H2 (N+1 Query Prevention):** DataLoader stubs created for future batch loading implementation
+- **M7 (User Enumeration Prevention):** Standardised error messages prevent user enumeration attacks
+- **H2 (N+1 Query Prevention):** DataLoaders implemented for efficient batch loading
+- **H4 (Error Standardisation):** Consistent error codes and messages across API
+- **H10 (IP Encryption):** IP addresses encrypted in audit logs with decryption on query
 
 ---
 

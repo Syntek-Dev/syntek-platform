@@ -320,13 +320,13 @@ models.Index(fields=["user", "action"])
 
 **Encryption Implementations:**
 
-| Data Type             | Encryption Method    | Storage Type | Key Used          |
-| --------------------- | -------------------- | ------------ | ----------------- |
-| User password         | Argon2id (PBKDF2)    | CharField    | N/A (one-way)     |
-| Session tokens        | HMAC-SHA256          | CharField    | TOKEN_SIGNING_KEY |
-| IP addresses          | Fernet (AES-128-CBC) | BinaryField  | IP_ENCRYPTION_KEY |
+| Data Type             | Encryption Method    | Storage Type | Key Used            |
+| --------------------- | -------------------- | ------------ | ------------------- |
+| User password         | Argon2id (PBKDF2)    | CharField    | N/A (one-way)       |
+| Session tokens        | HMAC-SHA256          | CharField    | TOKEN_SIGNING_KEY   |
+| IP addresses          | Fernet (AES-128-CBC) | BinaryField  | IP_ENCRYPTION_KEY   |
 | TOTP secrets          | Fernet (AES-128-CBC) | BinaryField  | TOTP_ENCRYPTION_KEY |
-| Password reset tokens | HMAC-SHA256          | CharField    | TOKEN_SIGNING_KEY |
+| Password reset tokens | HMAC-SHA256          | CharField    | TOKEN_SIGNING_KEY   |
 
 **Security Features:**
 
@@ -472,31 +472,31 @@ models.Index(fields=["user", "action"])
 
 **All 6 critical security vulnerabilities resolved:**
 
-| ID | Vulnerability                     | Status      | Implementation             |
-| -- | --------------------------------- | ----------- | -------------------------- |
-| C1 | Token hashing uses wrong key      | ✅ Resolved | TokenHasher with TOKEN_SIGNING_KEY |
-| C2 | TOTP encryption not configured    | ⏳ Phase 4  | Model ready, flow pending  |
-| C3 | Password reset token not hashed   | ✅ Resolved | Hash-then-store pattern    |
-| C4 | GraphQL CSRF protection missing   | ⏳ Phase 3  | Middleware pending         |
-| C5 | Email verification not enforced   | ⏳ Phase 3  | Login check pending        |
-| C6 | IP key rotation missing           | ✅ Resolved | IPEncryption.rotate_key()  |
+| ID  | Vulnerability                   | Status      | Implementation                     |
+| --- | ------------------------------- | ----------- | ---------------------------------- |
+| C1  | Token hashing uses wrong key    | ✅ Resolved | TokenHasher with TOKEN_SIGNING_KEY |
+| C2  | TOTP encryption not configured  | ⏳ Phase 4  | Model ready, flow pending          |
+| C3  | Password reset token not hashed | ✅ Resolved | Hash-then-store pattern            |
+| C4  | GraphQL CSRF protection missing | ⏳ Phase 3  | Middleware pending                 |
+| C5  | Email verification not enforced | ⏳ Phase 3  | Login check pending                |
+| C6  | IP key rotation missing         | ✅ Resolved | IPEncryption.rotate_key()          |
 
 ### 4.2 Security Ratings
 
 **Updated Security Scores:**
 
-| Security Domain       | Phase 1 | Phase 2 | Status    | Improvement |
-| --------------------- | ------- | ------- | --------- | ----------- |
-| Password Security     | 9/10    | 9/10    | Excellent | Maintained  |
-| Session Management    | 8/10    | 9/10    | Excellent | +1.0        |
-| IP Encryption         | 8/10    | 9/10    | Excellent | +1.0        |
-| Token Security        | 7/10    | 9.5/10  | Excellent | +2.5        |
-| 2FA Implementation    | 7.5/10  | 7.5/10  | Good      | Phase 4     |
-| Rate Limiting         | 8.5/10  | 8.5/10  | Excellent | Maintained  |
-| Audit Logging         | 9/10    | 9/10    | Excellent | Maintained  |
-| Multi-Tenancy         | 8.5/10  | 8.5/10  | Excellent | Maintained  |
-| Access Control        | 8.5/10  | 8.5/10  | Excellent | Maintained  |
-| **Overall Average**   | 8.3/10  | 8.7/10  | **Good**  | **+0.4**    |
+| Security Domain     | Phase 1 | Phase 2 | Status    | Improvement |
+| ------------------- | ------- | ------- | --------- | ----------- |
+| Password Security   | 9/10    | 9/10    | Excellent | Maintained  |
+| Session Management  | 8/10    | 9/10    | Excellent | +1.0        |
+| IP Encryption       | 8/10    | 9/10    | Excellent | +1.0        |
+| Token Security      | 7/10    | 9.5/10  | Excellent | +2.5        |
+| 2FA Implementation  | 7.5/10  | 7.5/10  | Good      | Phase 4     |
+| Rate Limiting       | 8.5/10  | 8.5/10  | Excellent | Maintained  |
+| Audit Logging       | 9/10    | 9/10    | Excellent | Maintained  |
+| Multi-Tenancy       | 8.5/10  | 8.5/10  | Excellent | Maintained  |
+| Access Control      | 8.5/10  | 8.5/10  | Excellent | Maintained  |
+| **Overall Average** | 8.3/10  | 8.7/10  | **Good**  | **+0.4**    |
 
 ### 4.3 Outstanding Security Gaps
 
@@ -559,14 +559,14 @@ models.Index(fields=["user", "action"])
 
 **Coverage by Component:**
 
-| Component             | Tests | Coverage | Status |
-| --------------------- | ----- | -------- | ------ |
-| Phase 1 Models        | 30+   | 90%      | ✅      |
-| Phase 2 Services      | 47    | 95%      | ✅      |
-| Phase 2 Utilities     | 27    | 100%     | ✅      |
-| GraphQL API (Phase 3) | 0     | 0%       | ⏳      |
-| Integration Tests     | 0     | 0%       | ⏳      |
-| **Overall**           | 77+   | **75%**  | **Good**|
+| Component             | Tests | Coverage | Status   |
+| --------------------- | ----- | -------- | -------- |
+| Phase 1 Models        | 30+   | 90%      | ✅       |
+| Phase 2 Services      | 47    | 95%      | ✅       |
+| Phase 2 Utilities     | 27    | 100%     | ✅       |
+| GraphQL API (Phase 3) | 0     | 0%       | ⏳       |
+| Integration Tests     | 0     | 0%       | ⏳       |
+| **Overall**           | 77+   | **75%**  | **Good** |
 
 ---
 
@@ -607,12 +607,12 @@ All GraphQL resolvers (Phase 3) must use:
 
 **Query Performance Benchmarks:**
 
-| Query Type            | Before    | After   | Improvement |
-| --------------------- | --------- | ------- | ----------- |
-| User login            | 100-500ms | 1-10ms  | 10-100x     |
-| Token validation      | 50-200ms  | 1-5ms   | 10-50x      |
-| Token cleanup         | 30s-5min  | 1-10s   | 100-1000x   |
-| Audit log filtering   | 500ms-2s  | 10-50ms | 10-50x      |
+| Query Type          | Before    | After   | Improvement |
+| ------------------- | --------- | ------- | ----------- |
+| User login          | 100-500ms | 1-10ms  | 10-100x     |
+| Token validation    | 50-200ms  | 1-5ms   | 10-50x      |
+| Token cleanup       | 30s-5min  | 1-10s   | 100-1000x   |
+| Audit log filtering | 500ms-2s  | 10-50ms | 10-50x      |
 
 **Scalability Targets:**
 
@@ -654,7 +654,7 @@ All GraphQL resolvers (Phase 3) must use:
 | Right to Access (Art. 15)  | ❌ Not Implemented | Critical | 2 days |
 | Right to Erasure (Art. 17) | ⚠️ Partial         | Critical | 1 day  |
 | Data Portability (Art. 20) | ❌ Not Implemented | Critical | 2 days |
-| Security (Art. 32)         | ✅ Implemented     | -        | ✅      |
+| Security (Art. 32)         | ✅ Implemented     | -        | ✅     |
 
 **Recommendation:** Implement GDPR enhancements in Phase 5-6 (estimated 9-11 days).
 

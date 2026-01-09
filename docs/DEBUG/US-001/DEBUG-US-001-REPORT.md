@@ -64,15 +64,15 @@ The US-001 User Authentication implementation is **approximately 65% complete**.
 
 **Key Findings:**
 
-| Category      | Status        | Details                                              |
-| ------------- | ------------- | ---------------------------------------------------- |
-| Models        | ✅ 100%       | All 10 models implemented and tested                 |
-| Migrations    | ✅ 100%       | 5 migrations successfully created                    |
-| Service Layer | ✅ 100%       | All 6 services implemented (Auth, Token, Email, etc) |
-| Utilities     | ✅ 100%       | Token hashing, IP encryption, audit logging          |
-| GraphQL API   | 10% Complete  | Schema shell only, no auth mutations (Phase 3)       |
-| Security      | ✅ RESOLVED   | All 6 critical vulnerabilities fixed                 |
-| Tests         | 60% Complete  | Unit tests complete, integration tests pending       |
+| Category      | Status       | Details                                              |
+| ------------- | ------------ | ---------------------------------------------------- |
+| Models        | ✅ 100%      | All 10 models implemented and tested                 |
+| Migrations    | ✅ 100%      | 5 migrations successfully created                    |
+| Service Layer | ✅ 100%      | All 6 services implemented (Auth, Token, Email, etc) |
+| Utilities     | ✅ 100%      | Token hashing, IP encryption, audit logging          |
+| GraphQL API   | 10% Complete | Schema shell only, no auth mutations (Phase 3)       |
+| Security      | ✅ RESOLVED  | All 6 critical vulnerabilities fixed                 |
+| Tests         | 60% Complete | Unit tests complete, integration tests pending       |
 
 **Overall Assessment:** Phase 2 represents a major milestone with all critical security issues resolved. The authentication service layer is production-ready with HMAC-SHA256 token hashing, IP encryption, audit logging, race condition prevention, and timezone handling. GraphQL API implementation (Phase 3) is the next priority.
 
@@ -99,17 +99,17 @@ The US-001 User Authentication implementation is **approximately 65% complete**.
 
 ### Phase 2: Authentication Service Layer
 
-| Component            | Status   | Notes                                                   |
-| -------------------- | -------- | ------------------------------------------------------- |
+| Component            | Status   | Notes                                                  |
+| -------------------- | -------- | ------------------------------------------------------ |
 | AuthService          | COMPLETE | Login, logout, registration with race condition safety |
-| TokenService         | COMPLETE | JWT creation, validation, replay detection (H9)         |
-| PasswordResetService | COMPLETE | Hash-then-store pattern implemented (C3)                |
-| EmailService         | COMPLETE | Email sending with audit logging                        |
-| AuditService         | COMPLETE | Comprehensive audit logging for all auth events         |
-| TokenHasher Utility  | COMPLETE | HMAC-SHA256 with TOKEN_SIGNING_KEY (C1 fixed)           |
-| IP Encryption        | COMPLETE | Fernet encryption with key rotation (C6 fixed)          |
-| Account Lockout      | COMPLETE | Lockout after 5 failed attempts                         |
-| Timezone Handling    | COMPLETE | Proper DST handling with pytz (M5)                      |
+| TokenService         | COMPLETE | JWT creation, validation, replay detection (H9)        |
+| PasswordResetService | COMPLETE | Hash-then-store pattern implemented (C3)               |
+| EmailService         | COMPLETE | Email sending with audit logging                       |
+| AuditService         | COMPLETE | Comprehensive audit logging for all auth events        |
+| TokenHasher Utility  | COMPLETE | HMAC-SHA256 with TOKEN_SIGNING_KEY (C1 fixed)          |
+| IP Encryption        | COMPLETE | Fernet encryption with key rotation (C6 fixed)         |
+| Account Lockout      | COMPLETE | Lockout after 5 failed attempts                        |
+| Timezone Handling    | COMPLETE | Proper DST handling with pytz (M5)                     |
 
 ### Phase 3: GraphQL API Implementation
 
@@ -176,15 +176,15 @@ The US-001 User Authentication implementation is **approximately 65% complete**.
 
 ### New Components Implemented
 
-| Component                                           | Purpose                                     | Security Features                      |
-| --------------------------------------------------- | ------------------------------------------- | -------------------------------------- |
-| [apps/core/services/auth_service.py](../../../apps/core/services/auth_service.py)                     | User registration, login, logout            | Race condition prevention, lockout     |
-| [apps/core/services/token_service.py](../../../apps/core/services/token_service.py)                   | JWT token management                        | Replay detection, family tracking (H9) |
-| [apps/core/services/password_reset_service.py](../../../apps/core/services/password_reset_service.py) | Password reset flow                         | Hash-then-store pattern (C3)           |
-| [apps/core/services/email_service.py](../../../apps/core/services/email_service.py)                   | Email sending with templates                | Audit logging                          |
-| [apps/core/services/audit_service.py](../../../apps/core/services/audit_service.py)                   | Audit logging for auth events               | IP encryption, comprehensive tracking  |
-| [apps/core/utils/token_hasher.py](../../../apps/core/utils/token_hasher.py)                           | HMAC-SHA256 token hashing                   | TOKEN_SIGNING_KEY separation (C1)      |
-| [apps/core/utils/encryption.py](../../../apps/core/utils/encryption.py)                               | IP address encryption                       | Fernet encryption, key rotation (C6)   |
+| Component                                                                                             | Purpose                                      | Security Features                      |
+| ----------------------------------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------- |
+| [apps/core/services/auth_service.py](../../../apps/core/services/auth_service.py)                     | User registration, login, logout             | Race condition prevention, lockout     |
+| [apps/core/services/token_service.py](../../../apps/core/services/token_service.py)                   | JWT token management                         | Replay detection, family tracking (H9) |
+| [apps/core/services/password_reset_service.py](../../../apps/core/services/password_reset_service.py) | Password reset flow                          | Hash-then-store pattern (C3)           |
+| [apps/core/services/email_service.py](../../../apps/core/services/email_service.py)                   | Email sending with templates                 | Audit logging                          |
+| [apps/core/services/audit_service.py](../../../apps/core/services/audit_service.py)                   | Audit logging for auth events                | IP encryption, comprehensive tracking  |
+| [apps/core/utils/token_hasher.py](../../../apps/core/utils/token_hasher.py)                           | HMAC-SHA256 token hashing                    | TOKEN_SIGNING_KEY separation (C1)      |
+| [apps/core/utils/encryption.py](../../../apps/core/utils/encryption.py)                               | IP address encryption                        | Fernet encryption, key rotation (C6)   |
 | [apps/core/management/commands/rotate_ip_encryption_key.py](../../../apps/core/management/commands/)  | IP encryption key rotation (planned Phase 3) | Re-encryption with new key             |
 
 ### Critical Security Issues Resolved (C1-C6)
@@ -257,21 +257,21 @@ The US-001 User Authentication implementation is **approximately 65% complete**.
 
 ### Security Features Added
 
-| Feature                     | Implementation                            | Benefit                                 |
-| --------------------------- | ----------------------------------------- | --------------------------------------- |
-| Account Lockout             | 5 failed attempts = 30 minute lockout     | Prevents brute force attacks            |
-| Token Family Tracking       | UUID-based token families for replay      | Detects stolen refresh tokens           |
-| IP Encryption               | Fernet symmetric encryption               | GDPR compliance for IP storage          |
-| Audit Logging               | All auth events logged with encrypted IPs | Security monitoring, compliance         |
-| Race Condition Prevention   | SELECT FOR UPDATE in critical sections    | Prevents concurrent login exploits      |
-| Constant-Time Comparison    | Token verification immune to timing       | Prevents timing attack vulnerabilities  |
-| Password History Enforcement | Prevents reuse of last 24 passwords       | Compliance with security policies       |
-| Email Verification Blocking | Unverified users cannot login             | Prevents spam/bot account abuse         |
+| Feature                      | Implementation                            | Benefit                                |
+| ---------------------------- | ----------------------------------------- | -------------------------------------- |
+| Account Lockout              | 5 failed attempts = 30 minute lockout     | Prevents brute force attacks           |
+| Token Family Tracking        | UUID-based token families for replay      | Detects stolen refresh tokens          |
+| IP Encryption                | Fernet symmetric encryption               | GDPR compliance for IP storage         |
+| Audit Logging                | All auth events logged with encrypted IPs | Security monitoring, compliance        |
+| Race Condition Prevention    | SELECT FOR UPDATE in critical sections    | Prevents concurrent login exploits     |
+| Constant-Time Comparison     | Token verification immune to timing       | Prevents timing attack vulnerabilities |
+| Password History Enforcement | Prevents reuse of last 24 passwords       | Compliance with security policies      |
+| Email Verification Blocking  | Unverified users cannot login             | Prevents spam/bot account abuse        |
 
 ### Testing Coverage Added
 
-| Test Type      | File                                             | Tests | Coverage |
-| -------------- | ------------------------------------------------ | ----- | -------- |
+| Test Type      | File                                                                                                  | Tests | Coverage |
+| -------------- | ----------------------------------------------------------------------------------------------------- | ----- | -------- |
 | Security Tests | [tests/unit/apps/core/test_phase2_security.py](../../../tests/unit/apps/core/test_phase2_security.py) | 45+   | 95%      |
 | Manual Tests   | [docs/TESTS/MANUAL/MANUAL-US-001-PHASE-2.md](../../../docs/TESTS/MANUAL/MANUAL-US-001-PHASE-2.md)     | 12    | Manual   |
 
@@ -319,22 +319,22 @@ print(Fernet.generate_key().decode())  # 44-character base64 string
 
 ### Documentation Updates
 
-| Document                                                              | Purpose                          | Status   |
-| --------------------------------------------------------------------- | -------------------------------- | -------- |
+| Document                                                                                          | Purpose                          | Status   |
+| ------------------------------------------------------------------------------------------------- | -------------------------------- | -------- |
 | [docs/TESTS/MANUAL/MANUAL-US-001-PHASE-2.md](../../../docs/TESTS/MANUAL/MANUAL-US-001-PHASE-2.md) | Manual testing guide for Phase 2 | COMPLETE |
-| [apps/core/services/README.md](../../../apps/core/services/README.md)                              | Service layer documentation      | COMPLETE |
-| [apps/core/utils/README.md](../../../apps/core/utils/README.md)                                    | Utilities documentation          | COMPLETE |
+| [apps/core/services/README.md](../../../apps/core/services/README.md)                             | Service layer documentation      | COMPLETE |
+| [apps/core/utils/README.md](../../../apps/core/utils/README.md)                                   | Utilities documentation          | COMPLETE |
 
 ### Known Limitations
 
-| Limitation                | Reason                       | Resolution Plan      |
-| ------------------------- | ---------------------------- | -------------------- |
-| GraphQL CSRF middleware   | No GraphQL mutations yet     | Phase 3              |
-| Integration tests         | Service layer just completed | Phase 3              |
-| E2E tests                 | API layer not implemented    | Phase 3              |
-| Composite indexes         | Performance optimisation     | Phase 3              |
-| Row-Level Security (RLS)  | PostgreSQL feature           | Phase 4              |
-| DataLoaders (N+1 prevent) | GraphQL optimisation         | Phase 3              |
+| Limitation                | Reason                       | Resolution Plan |
+| ------------------------- | ---------------------------- | --------------- |
+| GraphQL CSRF middleware   | No GraphQL mutations yet     | Phase 3         |
+| Integration tests         | Service layer just completed | Phase 3         |
+| E2E tests                 | API layer not implemented    | Phase 3         |
+| Composite indexes         | Performance optimisation     | Phase 3         |
+| Row-Level Security (RLS)  | PostgreSQL feature           | Phase 4         |
+| DataLoaders (N+1 prevent) | GraphQL optimisation         | Phase 3         |
 
 ### Next Phase Preview (Phase 3: GraphQL API)
 
@@ -1065,45 +1065,45 @@ All Phase 2 objectives have been successfully completed:
 
 ### Phase 1 Files (Models and Database)
 
-| File                                   | Lines | Purpose                     | Phase   |
-| -------------------------------------- | ----- | --------------------------- | ------- |
-| `apps/core/models/user.py`             | 256   | User model                  | Phase 1 |
-| `apps/core/models/base_token.py`       | 134   | Abstract token model        | Phase 1 |
-| `apps/core/models/session_token.py`    | 108   | Session token model         | Phase 1 |
-| `apps/core/models/totp_device.py`      | 163   | TOTP device model           | Phase 1 |
-| `apps/core/models/audit_log.py`        | 83    | Audit log model             | Phase 1 |
-| `apps/core/models/password_history.py` | 118   | Password history model      | Phase 1 |
-| `apps/core/models/organisation.py`     | 95    | Organisation model          | Phase 1 |
-| `apps/core/models/user_profile.py`     | 72    | User profile model          | Phase 1 |
+| File                                   | Lines | Purpose                | Phase   |
+| -------------------------------------- | ----- | ---------------------- | ------- |
+| `apps/core/models/user.py`             | 256   | User model             | Phase 1 |
+| `apps/core/models/base_token.py`       | 134   | Abstract token model   | Phase 1 |
+| `apps/core/models/session_token.py`    | 108   | Session token model    | Phase 1 |
+| `apps/core/models/totp_device.py`      | 163   | TOTP device model      | Phase 1 |
+| `apps/core/models/audit_log.py`        | 83    | Audit log model        | Phase 1 |
+| `apps/core/models/password_history.py` | 118   | Password history model | Phase 1 |
+| `apps/core/models/organisation.py`     | 95    | Organisation model     | Phase 1 |
+| `apps/core/models/user_profile.py`     | 72    | User profile model     | Phase 1 |
 
 ### Phase 2 Files (Service Layer)
 
-| File                                           | Lines | Purpose                              | Phase   |
-| ---------------------------------------------- | ----- | ------------------------------------ | ------- |
-| `apps/core/services/auth_service.py`           | 350+  | Authentication service               | Phase 2 |
-| `apps/core/services/token_service.py`          | 280+  | Token management service             | Phase 2 |
-| `apps/core/services/password_reset_service.py` | 200+  | Password reset service               | Phase 2 |
-| `apps/core/services/email_service.py`          | 180+  | Email sending service                | Phase 2 |
-| `apps/core/services/audit_service.py`          | 150+  | Audit logging service                | Phase 2 |
-| `apps/core/services/permission_service.py`     | 407   | Permission checking service          | Phase 1 |
-| `apps/core/utils/token_hasher.py`              | 140+  | HMAC-SHA256 token hashing            | Phase 2 |
-| `apps/core/utils/encryption.py`                | 250+  | IP address encryption (Fernet)       | Phase 2 |
-| `apps/core/utils/signed_urls.py`               | 353   | Signed URL generation                | Phase 1 |
+| File                                           | Lines | Purpose                        | Phase   |
+| ---------------------------------------------- | ----- | ------------------------------ | ------- |
+| `apps/core/services/auth_service.py`           | 350+  | Authentication service         | Phase 2 |
+| `apps/core/services/token_service.py`          | 280+  | Token management service       | Phase 2 |
+| `apps/core/services/password_reset_service.py` | 200+  | Password reset service         | Phase 2 |
+| `apps/core/services/email_service.py`          | 180+  | Email sending service          | Phase 2 |
+| `apps/core/services/audit_service.py`          | 150+  | Audit logging service          | Phase 2 |
+| `apps/core/services/permission_service.py`     | 407   | Permission checking service    | Phase 1 |
+| `apps/core/utils/token_hasher.py`              | 140+  | HMAC-SHA256 token hashing      | Phase 2 |
+| `apps/core/utils/encryption.py`                | 250+  | IP address encryption (Fernet) | Phase 2 |
+| `apps/core/utils/signed_urls.py`               | 353   | Signed URL generation          | Phase 1 |
 
 ### Configuration and API Files
 
-| File                       | Lines | Purpose                     | Phase   |
-| -------------------------- | ----- | --------------------------- | ------- |
-| `config/settings/base.py`  | 252   | Base settings               | Phase 1 |
-| `api/schema.py`            | 67    | GraphQL schema              | Phase 1 |
-| `api/security.py`          | 319   | GraphQL security extensions | Phase 1 |
+| File                      | Lines | Purpose                     | Phase   |
+| ------------------------- | ----- | --------------------------- | ------- |
+| `config/settings/base.py` | 252   | Base settings               | Phase 1 |
+| `api/schema.py`           | 67    | GraphQL schema              | Phase 1 |
+| `api/security.py`         | 319   | GraphQL security extensions | Phase 1 |
 
 ### Test Files (Phase 2)
 
-| File                                      | Lines | Purpose                   | Phase   |
-| ----------------------------------------- | ----- | ------------------------- | ------- |
-| `tests/unit/apps/core/test_phase2_security.py` | 1500+ | Phase 2 security tests    | Phase 2 |
-| `docs/TESTS/MANUAL/MANUAL-US-001-PHASE-2.md`   | 800+  | Manual testing guide      | Phase 2 |
+| File                                           | Lines | Purpose                | Phase   |
+| ---------------------------------------------- | ----- | ---------------------- | ------- |
+| `tests/unit/apps/core/test_phase2_security.py` | 1500+ | Phase 2 security tests | Phase 2 |
+| `docs/TESTS/MANUAL/MANUAL-US-001-PHASE-2.md`   | 800+  | Manual testing guide   | Phase 2 |
 
 **Total Lines of Code Added in Phase 2:** ~2,500 lines
 

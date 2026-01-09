@@ -146,26 +146,26 @@
 
 **Implemented**:
 
-| Component                 | Location                                       | Purpose                           |
-| ------------------------- | ---------------------------------------------- | --------------------------------- |
-| `AuditService`            | `apps/core/services/audit_service.py`          | Centralised audit event logging   |
-| `IPEncryption`            | `apps/core/utils/encryption.py`                | Fernet IP encryption + rotation   |
-| `TokenHasher`             | `apps/core/utils/token_hasher.py`              | HMAC-SHA256 token hashing         |
-| `AuthService`             | `apps/core/services/auth_service.py`           | Authentication logic              |
-| `TokenService`            | `apps/core/services/token_service.py`          | Token management + replay detection |
-| `PasswordResetService`    | `apps/core/services/password_reset_service.py` | Password reset with hash-then-store |
-| `EmailService`            | `apps/core/services/email_service.py`          | Email sending (stub)              |
+| Component              | Location                                       | Purpose                             |
+| ---------------------- | ---------------------------------------------- | ----------------------------------- |
+| `AuditService`         | `apps/core/services/audit_service.py`          | Centralised audit event logging     |
+| `IPEncryption`         | `apps/core/utils/encryption.py`                | Fernet IP encryption + rotation     |
+| `TokenHasher`          | `apps/core/utils/token_hasher.py`              | HMAC-SHA256 token hashing           |
+| `AuthService`          | `apps/core/services/auth_service.py`           | Authentication logic                |
+| `TokenService`         | `apps/core/services/token_service.py`          | Token management + replay detection |
+| `PasswordResetService` | `apps/core/services/password_reset_service.py` | Password reset with hash-then-store |
+| `EmailService`         | `apps/core/services/email_service.py`          | Email sending (stub)                |
 
 **Security Fixes Implemented**:
 
-| Issue | Description                      | Solution                          |
-| ----- | -------------------------------- | --------------------------------- |
-| C1    | HMAC-SHA256 token hashing        | `TokenHasher` utility             |
-| C3    | Password reset hash-then-store   | `PasswordResetService`            |
-| C6    | IP encryption key rotation       | `IPEncryption.rotate_key()`       |
-| H3    | Race condition prevention        | `select_for_update()` in services |
-| H9    | Refresh token replay detection   | Token families in `TokenService`  |
-| M5    | Timezone/DST handling            | `pytz` integration                |
+| Issue | Description                    | Solution                          |
+| ----- | ------------------------------ | --------------------------------- |
+| C1    | HMAC-SHA256 token hashing      | `TokenHasher` utility             |
+| C3    | Password reset hash-then-store | `PasswordResetService`            |
+| C6    | IP encryption key rotation     | `IPEncryption.rotate_key()`       |
+| H3    | Race condition prevention      | `select_for_update()` in services |
+| H9    | Refresh token replay detection | Token families in `TokenService`  |
+| M5    | Timezone/DST handling          | `pytz` integration                |
 
 ### 1.3 Upcoming Phases
 
@@ -464,12 +464,12 @@ def log_event(
 
 **Convenience Methods**:
 
-| Method                  | Event Type          | User Required | Example Usage                                    |
-| ----------------------- | ------------------- | ------------- | ------------------------------------------------ |
-| `log_login()`           | `LOGIN`             | Yes           | `AuditService.log_login(user, ip, device)`       |
-| `log_login_failed()`    | `LOGIN_FAILED`      | No            | `AuditService.log_login_failed(email, ip)`       |
-| `log_logout()`          | `LOGOUT`            | Yes           | `AuditService.log_logout(user, ip)`              |
-| `log_password_change()` | `PASSWORD_CHANGE`   | Yes           | `AuditService.log_password_change(user, ip)`     |
+| Method                  | Event Type        | User Required | Example Usage                                |
+| ----------------------- | ----------------- | ------------- | -------------------------------------------- |
+| `log_login()`           | `LOGIN`           | Yes           | `AuditService.log_login(user, ip, device)`   |
+| `log_login_failed()`    | `LOGIN_FAILED`    | No            | `AuditService.log_login_failed(email, ip)`   |
+| `log_logout()`          | `LOGOUT`          | Yes           | `AuditService.log_logout(user, ip)`          |
+| `log_password_change()` | `PASSWORD_CHANGE` | Yes           | `AuditService.log_password_change(user, ip)` |
 
 **Query Methods**:
 
@@ -485,18 +485,18 @@ logs = AuditService.get_organisation_logs(organisation, limit=100)
 
 **Implemented Actions**:
 
-| Action Type           | When Triggered                    | Phase |
-| --------------------- | --------------------------------- | ----- |
-| `LOGIN`               | Successful user login             | P3    |
-| `LOGIN_FAILED`        | Failed login attempt              | P3    |
-| `LOGOUT`              | User logout                       | P3    |
-| `PASSWORD_CHANGE`     | User changes password             | P3    |
-| `PASSWORD_RESET`      | User resets password via email    | P3    |
-| `EMAIL_VERIFIED`      | User verifies email               | P3    |
-| `TWO_FACTOR_ENABLED`  | User enables 2FA                  | P4    |
-| `TWO_FACTOR_DISABLED` | User disables 2FA                 | P4    |
-| `ACCOUNT_LOCKED`      | Account locked after failed logins| P6    |
-| `ACCOUNT_UNLOCKED`    | Account unlocked by admin         | P6    |
+| Action Type           | When Triggered                     | Phase |
+| --------------------- | ---------------------------------- | ----- |
+| `LOGIN`               | Successful user login              | P3    |
+| `LOGIN_FAILED`        | Failed login attempt               | P3    |
+| `LOGOUT`              | User logout                        | P3    |
+| `PASSWORD_CHANGE`     | User changes password              | P3    |
+| `PASSWORD_RESET`      | User resets password via email     | P3    |
+| `EMAIL_VERIFIED`      | User verifies email                | P3    |
+| `TWO_FACTOR_ENABLED`  | User enables 2FA                   | P4    |
+| `TWO_FACTOR_DISABLED` | User disables 2FA                  | P4    |
+| `ACCOUNT_LOCKED`      | Account locked after failed logins | P6    |
+| `ACCOUNT_UNLOCKED`    | Account unlocked by admin          | P6    |
 
 ---
 
@@ -866,15 +866,15 @@ reset_token = PasswordResetToken.objects.get(token_hash=token_hash)
 
 **Critical Security Requirement**: The following data is NEVER logged or stored in audit logs:
 
-| Data Type               | Reason                    | Compliance    |
-| ----------------------- | ------------------------- | ------------- |
-| Plain passwords         | Security best practice    | OWASP, PCI    |
-| Plain session tokens    | Prevents token theft      | OWASP         |
-| Plain refresh tokens    | Prevents replay attacks   | OWASP         |
-| Plain reset tokens      | Single-use security       | OWASP         |
-| Hashed passwords        | No business need          | Minimisation  |
-| Credit card numbers     | PCI-DSS requirement       | PCI-DSS       |
-| API keys                | Security best practice    | OWASP         |
+| Data Type            | Reason                  | Compliance   |
+| -------------------- | ----------------------- | ------------ |
+| Plain passwords      | Security best practice  | OWASP, PCI   |
+| Plain session tokens | Prevents token theft    | OWASP        |
+| Plain refresh tokens | Prevents replay attacks | OWASP        |
+| Plain reset tokens   | Single-use security     | OWASP        |
+| Hashed passwords     | No business need        | Minimisation |
+| Credit card numbers  | PCI-DSS requirement     | PCI-DSS      |
+| API keys             | Security best practice  | OWASP        |
 
 **Code Example** (Password Reset):
 
@@ -893,22 +893,22 @@ AuditService.log_event(
 
 ### 7.2 Data Encrypted Before Storage
 
-| Data Type    | Encryption Method    | Storage Location          | Purpose            |
-| ------------ | -------------------- | ------------------------- | ------------------ |
-| IP addresses | Fernet (AES-128-CBC) | `AuditLog.ip_address`     | GDPR compliance    |
-| IP addresses | Fernet (AES-128-CBC) | `SessionToken.ip_address` | Session tracking   |
+| Data Type    | Encryption Method    | Storage Location          | Purpose          |
+| ------------ | -------------------- | ------------------------- | ---------------- |
+| IP addresses | Fernet (AES-128-CBC) | `AuditLog.ip_address`     | GDPR compliance  |
+| IP addresses | Fernet (AES-128-CBC) | `SessionToken.ip_address` | Session tracking |
 
 ### 7.3 Data Logged Safely
 
-| Data Type           | Storage Format | Location                       | Purpose               |
-| ------------------- | -------------- | ------------------------------ | --------------------- |
-| User ID             | Foreign key    | `AuditLog.user`                | User tracking         |
-| Organisation ID     | Foreign key    | `AuditLog.organisation`        | Multi-tenancy         |
-| Action type         | Enum string    | `AuditLog.action`              | Event classification  |
-| User agent          | Plain text     | `AuditLog.user_agent`          | Device identification |
-| Device fingerprint  | Hash           | `AuditLog.device_fingerprint`  | Session tracking      |
-| Email (failed login)| Plain text     | `AuditLog.metadata`            | Failed login tracking |
-| Timestamp           | DateTime       | `AuditLog.created_at`          | Event chronology      |
+| Data Type            | Storage Format | Location                      | Purpose               |
+| -------------------- | -------------- | ----------------------------- | --------------------- |
+| User ID              | Foreign key    | `AuditLog.user`               | User tracking         |
+| Organisation ID      | Foreign key    | `AuditLog.organisation`       | Multi-tenancy         |
+| Action type          | Enum string    | `AuditLog.action`             | Event classification  |
+| User agent           | Plain text     | `AuditLog.user_agent`         | Device identification |
+| Device fingerprint   | Hash           | `AuditLog.device_fingerprint` | Session tracking      |
+| Email (failed login) | Plain text     | `AuditLog.metadata`           | Failed login tracking |
+| Timestamp            | DateTime       | `AuditLog.created_at`         | Event chronology      |
 
 ---
 
@@ -916,11 +916,11 @@ AuditService.log_event(
 
 ### 8.1 Authentication Events
 
-| Event            | Action Type     | When Logged           | Data Captured              |
-| ---------------- | --------------- | --------------------- | -------------------------- |
-| Successful login | `LOGIN`         | User authenticates    | User, IP, device, UA       |
-| Failed login     | `LOGIN_FAILED`  | Wrong password/email  | Email, IP, device (no user)|
-| Logout           | `LOGOUT`        | User logs out         | User, IP                   |
+| Event            | Action Type    | When Logged          | Data Captured               |
+| ---------------- | -------------- | -------------------- | --------------------------- |
+| Successful login | `LOGIN`        | User authenticates   | User, IP, device, UA        |
+| Failed login     | `LOGIN_FAILED` | Wrong password/email | Email, IP, device (no user) |
+| Logout           | `LOGOUT`       | User logs out        | User, IP                    |
 
 **Example**:
 
@@ -945,12 +945,12 @@ AuditService.log_login_failed(
 
 **Current Implementation**: Token operations logged indirectly through authentication events.
 
-| Operation       | Logged As       | Rationale                                    |
-| --------------- | --------------- | -------------------------------------------- |
-| Token creation  | `LOGIN`         | Part of login flow                           |
-| Token revocation| `LOGOUT`        | Part of logout flow                          |
-| Token refresh   | (Not logged)    | Transparent operation (reduces noise)        |
-| Family revoked  | (Future)        | Replay attack detected (Phase 6)             |
+| Operation        | Logged As    | Rationale                             |
+| ---------------- | ------------ | ------------------------------------- |
+| Token creation   | `LOGIN`      | Part of login flow                    |
+| Token revocation | `LOGOUT`     | Part of logout flow                   |
+| Token refresh    | (Not logged) | Transparent operation (reduces noise) |
+| Family revoked   | (Future)     | Replay attack detected (Phase 6)      |
 
 ### 8.3 Password Management
 
@@ -1385,7 +1385,6 @@ python manage.py cleanup_audit_logs --days=90 --dry-run
    ```
 
 3. **Document Key Rotation Procedure**:
-
    - Create `docs/OPERATIONS/KEY-ROTATION.md`
    - Document backup procedures
    - Document rollback procedures
@@ -1472,7 +1471,6 @@ python manage.py cleanup_audit_logs --days=90 --dry-run
    ```
 
 3. **Implement Request ID Middleware**:
-
    - Generate UUID for each request
    - Add to all log entries and responses
    - Enable correlation across distributed systems

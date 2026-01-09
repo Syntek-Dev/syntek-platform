@@ -48,6 +48,7 @@ US-001/
 Comprehensive debugging documentation including:
 
 **Phase 1 & 2 Resolved Issues:**
+
 - ✅ All 6 critical security vulnerabilities resolved
 - ✅ Token hashing with HMAC-SHA256 (C1)
 - ✅ IP encryption and key rotation (C6)
@@ -57,6 +58,7 @@ Comprehensive debugging documentation including:
 - ✅ Timezone handling with DST (M5)
 
 **Current Debugging Guides:**
+
 - Phase 2 service layer implementation status
 - Authentication flow debugging (login, registration, logout)
 - Token generation and validation issues
@@ -94,6 +96,7 @@ Comprehensive debugging documentation including:
 **Debug Steps:**
 
 1. Check email verification status:
+
    ```python
    ./scripts/env/dev.sh shell
    from apps.core.models import User
@@ -102,12 +105,14 @@ Comprehensive debugging documentation including:
    ```
 
 2. Check account lockout status:
+
    ```python
    from apps.core.services.auth_service import AuthService
    # Check failed login count and lockout time
    ```
 
 3. Verify token hashing:
+
    ```python
    from apps.core.utils.token_hasher import TokenHasher
    token = "test_token"
@@ -136,6 +141,7 @@ Comprehensive debugging documentation including:
 **Debug Steps:**
 
 1. Verify environment variables:
+
    ```bash
    ./scripts/env/dev.sh shell
    from django.conf import settings
@@ -143,6 +149,7 @@ Comprehensive debugging documentation including:
    ```
 
 2. Test token hashing:
+
    ```python
    from apps.core.utils.token_hasher import TokenHasher
    token = TokenHasher.generate_token()
@@ -170,6 +177,7 @@ Comprehensive debugging documentation including:
 **Debug Steps:**
 
 1. Test IP encryption:
+
    ```python
    from apps.core.utils.encryption import IPEncryption
 
@@ -204,6 +212,7 @@ Comprehensive debugging documentation including:
 **Debug Steps:**
 
 1. Check token generation:
+
    ```python
    from apps.core.services.password_reset_service import PasswordResetService
    from apps.core.models import User
@@ -230,6 +239,7 @@ Comprehensive debugging documentation including:
 **Fix:**
 
 1. Resend verification email:
+
    ```python
    from apps.core.services.email_service import EmailService
    from apps.core.models import User

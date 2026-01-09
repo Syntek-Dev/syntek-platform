@@ -61,7 +61,7 @@ class TestUserRegistrationE2E:
                 "variables": {
                     "input": {
                         "email": "newuser@example.com",
-                        "password": "SecurePass123!@",
+                        "password": "SecureP@ss1847!#",
                         "firstName": "New",
                         "lastName": "User",
                         "organisationSlug": "new-org",
@@ -99,7 +99,7 @@ class TestUserRegistrationE2E:
                 "variables": {
                     "input": {
                         "email": "newuser@example.com",
-                        "password": "SecurePass123!@",
+                        "password": "SecureP@ss1847!#",
                     }
                 },
             },
@@ -111,26 +111,27 @@ class TestUserRegistrationE2E:
             assert login_data["data"]["login"]["token"] is not None
             assert login_data["data"]["login"]["user"]["firstName"] == "New"
 
-        # Step 6: User accesses authenticated feature
-        client.force_login(user)
+            # Step 6: User accesses authenticated feature using JWT token from login
+            auth_token = login_data["data"]["login"]["token"]
 
-        me_query = """
-        query {
-            me {
-                email
-                organisation {
-                    name
+            me_query = """
+            query {
+                me {
+                    email
+                    organisation {
+                        name
+                    }
                 }
             }
-        }
-        """
+            """
 
-        me_response = client.post(
-            "/graphql/",
-            {"query": me_query},
-            content_type="application/json",
-        )
+            me_response = client.post(
+                "/graphql/",
+                {"query": me_query},
+                content_type="application/json",
+                HTTP_AUTHORIZATION=f"Bearer {auth_token}",
+            )
 
-        me_data = me_response.json()
-        assert me_data["data"]["me"]["email"] == "newuser@example.com"
-        assert me_data["data"]["me"]["organisation"]["name"] == "New Organisation"
+            me_data = me_response.json()
+            assert me_data["data"]["me"]["email"] == "newuser@example.com"
+            assert me_data["data"]["me"]["organisation"]["name"] == "New Organisation"

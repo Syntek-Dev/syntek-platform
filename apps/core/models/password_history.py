@@ -4,6 +4,8 @@ This module implements password history tracking to prevent users from
 reusing recent passwords, as specified in the security review.
 """
 
+from __future__ import annotations
+
 import uuid
 
 from django.contrib.auth.hashers import check_password

@@ -34,6 +34,19 @@ INTERNAL_IPS = [
 hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
 INTERNAL_IPS += [ip[: ip.rfind(".")] + ".1" for ip in ips]
 
+# IP allowlist for admin access - development allows localhost only
+# In development, admin access is restricted to localhost and Docker network
+ADMIN_ALLOWED_IPS = env.list(  # noqa: F405
+    "ADMIN_ALLOWED_IPS",
+    default=[
+        "127.0.0.1",      # localhost IPv4
+        "::1",            # localhost IPv6
+        "172.16.0.0/12",  # Docker networks
+        "10.0.0.0/8",     # Private network range
+        "192.168.0.0/16", # Private network range
+    ],
+)
+
 # Email backend for development (Mailpit)
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env("EMAIL_HOST", default="mailpit")  # noqa: F405
