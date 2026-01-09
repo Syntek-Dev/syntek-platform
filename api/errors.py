@@ -113,7 +113,7 @@ class GraphQLError(Exception):
         code: ErrorCode,
         message: str | None = None,
         extensions: dict[str, Any] | None = None,
-    ):
+    ) -> None:
         """Initialise GraphQL error.
 
         Args:
@@ -136,7 +136,7 @@ class AuthenticationError(GraphQLError):
         code: ErrorCode = ErrorCode.INVALID_CREDENTIALS,
         message: str | None = None,
         extensions: dict[str, Any] | None = None,
-    ):
+    ) -> None:
         """Initialise authentication error.
 
         Args:
@@ -155,7 +155,7 @@ class ValidationError(GraphQLError):
         code: ErrorCode = ErrorCode.INVALID_INPUT,
         message: str | None = None,
         extensions: dict[str, Any] | None = None,
-    ):
+    ) -> None:
         """Initialise validation error.
 
         Args:
@@ -174,7 +174,7 @@ class PermissionError(GraphQLError):
         code: ErrorCode = ErrorCode.PERMISSION_DENIED,
         message: str | None = None,
         extensions: dict[str, Any] | None = None,
-    ):
+    ) -> None:
         """Initialise permission error.
 
         Args:
@@ -193,7 +193,7 @@ class NotFoundError(GraphQLError):
         code: ErrorCode = ErrorCode.RESOURCE_NOT_FOUND,
         message: str | None = None,
         extensions: dict[str, Any] | None = None,
-    ):
+    ) -> None:
         """Initialise not found error.
 
         Args:
@@ -212,7 +212,7 @@ class RateLimitError(GraphQLError):
         code: ErrorCode = ErrorCode.RATE_LIMIT_EXCEEDED,
         message: str | None = None,
         extensions: dict[str, Any] | None = None,
-    ):
+    ) -> None:
         """Initialise rate limit error.
 
         Args:

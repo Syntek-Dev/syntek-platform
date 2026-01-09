@@ -31,7 +31,7 @@ class IsAuthenticated(BasePermission):
 class HasPermission(BasePermission):
     """Permission class requiring specific Django permission."""
 
-    def __init__(self, permission: str):
+    def __init__(self, permission: str) -> None:
         """Initialize with required permission.
 
         Args:

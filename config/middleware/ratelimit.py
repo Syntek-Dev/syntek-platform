@@ -15,6 +15,8 @@ from django.core.cache import cache
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.deprecation import MiddlewareMixin
 
+from config.utils.request import get_client_ip
+
 logger = logging.getLogger(__name__)
 
 
@@ -58,8 +60,8 @@ class RateLimitMiddleware(MiddlewareMixin):
         ):
             return None
 
-        # Get client IP address
-        client_ip = self._get_client_ip(request)
+        # Get client IP address (using centralised utility)
+        client_ip = get_client_ip(request)
 
         # Determine rate limit based on request path
         rate_limit, period = self._get_rate_limit(request)
@@ -83,26 +85,6 @@ class RateLimitMiddleware(MiddlewareMixin):
             )
 
         return None
-
-    def _get_client_ip(self, request: HttpRequest) -> str:
-        """Extract the client IP address from the request.
-
-        Checks X-Forwarded-For header first (for reverse proxy setups),
-        then falls back to REMOTE_ADDR.
-
-        Args:
-            request: The HTTP request object.
-
-        Returns:
-            The client's IP address as a string.
-        """
-        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-        if x_forwarded_for:
-            # Take the first IP in the chain (client's real IP)
-            ip = str(x_forwarded_for).split(",")[0].strip()
-        else:
-            ip = str(request.META.get("REMOTE_ADDR", "unknown"))
-        return ip
 
     def _get_rate_limit(self, request: HttpRequest) -> tuple[int, int]:
         """Determine the appropriate rate limit for the request.
@@ -188,8 +170,9 @@ class RateLimitMiddleware(MiddlewareMixin):
             cache.set(cache_key, current_count + 1, period)
             return False
 
-        except Exception as e:
+        except (ConnectionError, TimeoutError, OSError) as e:
             # If cache is unavailable, log the error but don't block the request
+            # Fail open - allow requests through if cache is down
             logger.error(f"Rate limiting cache error: {e}")
             return False
 

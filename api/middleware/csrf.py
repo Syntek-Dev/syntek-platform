@@ -21,7 +21,7 @@ class GraphQLCSRFMiddleware:
     queries to proceed without CSRF tokens (C4 requirement).
     """
 
-    def __init__(self, get_response: Callable):
+    def __init__(self, get_response: Callable) -> None:
         """Initialize middleware.
 
         Args:

@@ -11,7 +11,7 @@ from django.db import models
 from django.utils import timezone
 
 import pyotp
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 
 
 class TOTPDevice(models.Model):
@@ -142,7 +142,7 @@ class TOTPDevice(models.Model):
                 self.save(update_fields=["last_used_at"])
 
             return is_valid
-        except Exception:
+        except (ValueError, TypeError, InvalidToken):
             return False
 
     def generate_qr_code_uri(self, issuer_name: str = "Backend Template") -> str:

@@ -5,7 +5,7 @@ load balancers, and monitoring services to verify application health.
 """
 
 from django.conf import settings
-from django.db import connection
+from django.db import connection, DatabaseError, OperationalError
 from django.http import JsonResponse
 from django.views import View
 
@@ -50,7 +50,7 @@ class HealthCheckView(View):
             with connection.cursor() as cursor:
                 cursor.execute("SELECT 1")
             checks["database"] = "ok"
-        except Exception as e:
+        except (DatabaseError, OperationalError) as e:
             checks["database"] = f"error: {str(e)}"
             healthy = False
 

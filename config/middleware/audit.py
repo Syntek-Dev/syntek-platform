@@ -15,7 +15,6 @@ GDPR Compliance:
 - Recommended retention: 90 days for security logs, 30 days for general logs
 """
 
-import ipaddress
 import logging
 
 from django.contrib.auth.signals import (
@@ -28,71 +27,13 @@ from django.dispatch import receiver
 from django.http import HttpRequest, HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 
+from config.utils.request import anonymise_ip, get_client_ip
+
 # Security audit logger (configured separately from application logs)
 security_logger = logging.getLogger("security.audit")
 
-
-def anonymise_ip(ip_address: str) -> str:
-    """Anonymise an IP address for GDPR-compliant non-security logging.
-
-    For IPv4: Zeros the last octet (e.g., 192.168.1.45 -> 192.168.1.0)
-    For IPv6: Zeros the last 80 bits (keeps /48 prefix)
-
-    This follows Google Analytics' IP anonymisation approach and is
-    accepted as GDPR-compliant by most EU DPAs.
-
-    Args:
-        ip_address: The IP address to anonymise.
-
-    Returns:
-        The anonymised IP address, or 'unknown' if parsing fails.
-
-    Example:
-        >>> anonymise_ip('192.168.1.45')
-        '192.168.1.0'
-        >>> anonymise_ip('2001:db8:85a3::8a2e:370:7334')
-        '2001:db8:85a3::'
-    """
-    if not ip_address or ip_address == "unknown":
-        return "unknown"
-
-    try:
-        ip = ipaddress.ip_address(ip_address)
-        if isinstance(ip, ipaddress.IPv4Address):
-            # Zero the last octet for IPv4
-            ipv4_network = ipaddress.IPv4Network(f"{ip_address}/24", strict=False)
-            return str(ipv4_network.network_address)
-        else:
-            # Zero the last 80 bits for IPv6 (keep /48 prefix)
-            ipv6_network = ipaddress.IPv6Network(f"{ip_address}/48", strict=False)
-            return str(ipv6_network.network_address)
-    except ValueError:
-        # Invalid IP address format
-        return "unknown"
-
-
-def get_client_ip(request: HttpRequest, anonymise: bool = False) -> str:
-    """Extract the client IP address from the request.
-
-    Handles X-Forwarded-For header from reverse proxies (nginx, load balancers).
-
-    Args:
-        request: The HTTP request object.
-        anonymise: If True, return GDPR-compliant anonymised IP.
-
-    Returns:
-        The client's IP address (full or anonymised based on parameter).
-    """
-    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-    if x_forwarded_for:
-        # Take the first IP in the chain (client's real IP)
-        ip = str(x_forwarded_for).split(",")[0].strip()
-    else:
-        ip = str(request.META.get("REMOTE_ADDR", "unknown"))
-
-    if anonymise:
-        return anonymise_ip(ip)
-    return ip
+# Re-export for backwards compatibility
+__all__ = ["anonymise_ip", "get_client_ip", "SecurityAuditMiddleware"]
 
 
 class SecurityAuditMiddleware(MiddlewareMixin):

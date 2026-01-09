@@ -174,6 +174,25 @@ This story covers secure management of encrypted environment variables and secre
 - [ ] Add unit tests for encryption/decryption
 - [ ] Add integration tests for secret operations
 
+### Security Gap Remediation Tasks (from Security Review)
+
+- [ ] **H001**: Implement comprehensive key management strategy:
+  - [ ] Integrate with AWS Secrets Manager or HashiCorp Vault for production
+  - [ ] Create key inventory documentation (all encryption keys used in system)
+  - [ ] Define key hierarchy (master keys, data encryption keys, signing keys)
+  - [ ] Implement automated key rotation schedule:
+    - [ ] Quarterly rotation for encryption keys
+    - [ ] Annual rotation for master keys
+    - [ ] Immediate rotation capability for compromised keys
+  - [ ] Create key backup and recovery procedures
+  - [ ] Document key access controls and audit requirements
+  - [ ] Implement key escrow for disaster recovery
+  - [ ] Create key rotation management command
+  - [ ] Add alerting for key expiry (30 days before rotation due)
+- [ ] Add unit tests for key rotation
+- [ ] Add integration tests for Secrets Manager/Vault integration
+- [ ] Add documentation for key management procedures
+
 ### Frontend Web Tasks
 
 - [ ] Create Secrets management page
@@ -217,8 +236,18 @@ This story covers secure management of encrypted environment variables and secre
 
 ---
 
+## Security Gaps Addressed
+
+This story addresses the following security gaps from the US-001 Security Implementation Review:
+
+| Gap ID | Description | Implementation |
+|--------|-------------|----------------|
+| **H001** | Key management strategy incomplete | AWS Secrets Manager/HashiCorp Vault integration, key hierarchy, automated rotation |
+
+---
+
 ## Related Stories
 
 - US-012: Audit Logging System (logging secret access)
 - US-014: Third-Party Integration Adapter System (storing integration credentials)
-- US-025: Deployment Pipeline (secret injection during deployment)
+- US-020: Deployment Pipeline (secret injection during deployment)

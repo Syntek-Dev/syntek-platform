@@ -78,9 +78,21 @@ This changelog documents all notable changes to the backend template project in 
 
 ## [Unreleased]
 
-### Added
+### Changed
 
-- Nothing yet
+- **Refactored IP utilities (DRY):** Consolidated duplicate `get_client_ip` and `anonymise_ip` functions from multiple middleware modules into centralised `config/utils/request.py` module
+- **Improved exception handling:** Replaced broad `except Exception` with specific exception types in:
+  - `apps/core/models/totp_device.py` - Now catches `ValueError`, `TypeError`, `InvalidToken`
+  - `apps/core/utils/encryption.py` - Now catches `ValueError`, `TypeError`
+  - `apps/core/views/health.py` - Now catches `DatabaseError`, `OperationalError`
+- **Added type hints:** Added `-> None` return type annotations to `__init__` methods in API error classes, middleware, and permissions
+
+### Documentation
+
+- Updated US-001 implementation plan with comprehensive security implementation details
+- Updated security implementation documentation for US-001
+- Updated user stories: US-001, US-002, US-012, US-016, US-020
+- Updated linting report for US-001
 
 ---
 

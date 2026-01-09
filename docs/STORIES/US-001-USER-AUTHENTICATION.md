@@ -145,25 +145,38 @@ Core authentication system allowing new users to create accounts with email and 
 - [x] Security Implementation Review
 - [x] QA Report updated for Phase 2
 
-### Phase 3: GraphQL API ⬜ Not Started
+### Phase 3: GraphQL API ✅ Completed (09/01/2026)
 
-**Backend Tasks Pending:**
+**Backend Tasks Completed:**
 
-- [ ] Set up Strawberry GraphQL schema
-- [ ] Create registration GraphQL mutation
-- [ ] Create login GraphQL mutation
-- [ ] Create email verification GraphQL mutation
-- [ ] Create password reset request GraphQL mutation
-- [ ] Create password reset confirmation GraphQL mutation
-- [ ] Create 2FA enrollment GraphQL mutations
-- [ ] Implement CSRF protection for GraphQL
-- [ ] Implement rate limiting on authentication endpoints
-- [ ] Implement account lockout mechanism
-- [ ] Implement concurrent session limit enforcement
-- [ ] Add integration tests for authentication flows
-- [ ] Add E2E tests for complete user journeys
+- [x] Set up Strawberry GraphQL schema
+- [x] Create registration GraphQL mutation
+- [x] Create login GraphQL mutation
+- [x] Create email verification GraphQL mutation
+- [x] Create password reset request GraphQL mutation
+- [x] Create password reset confirmation GraphQL mutation
+- [x] Create 2FA enrollment GraphQL mutations
+- [x] Implement CSRF protection for GraphQL
+- [x] Implement rate limiting on authentication endpoints
+- [x] Implement account lockout mechanism
+- [x] Implement concurrent session limit enforcement
+- [x] Add integration tests for authentication flows
+- [x] Add E2E tests for complete user journeys
 
-### Phase 4: Email Templates and Workflow Integration ⬜ Not Started
+### Phase 4: Security Hardening ⬜ Not Started
+
+**Security Gap Remediation Tasks (from Security Review):**
+
+- [ ] **C001**: Implement password breach detection (HaveIBeenPwned API integration with k-anonymity)
+- [ ] **H004**: Add common password blacklist (block "Password123!" patterns, top 10,000 common passwords)
+- [ ] **M001**: Implement CAPTCHA for bot protection (reCAPTCHA v3 for registration and login)
+- [ ] **M007**: Review password reset token expiry (currently 15 minutes - assess if reduction needed)
+- [ ] Add password complexity scoring beyond minimum requirements
+- [ ] Implement progressive password strength feedback
+- [ ] Add unit tests for HIBP integration
+- [ ] Add integration tests for CAPTCHA flow
+
+### Phase 5: Email Templates and Workflow Integration ⬜ Not Started
 
 **Backend Tasks Pending:**
 

@@ -37,6 +37,8 @@ from collections.abc import Callable
 from django.conf import settings
 from django.http import Http404, HttpRequest, HttpResponse
 
+from config.utils.request import get_client_ip
+
 logger = logging.getLogger("security.ip_allowlist")
 
 
@@ -97,8 +99,8 @@ class IPAllowlistMiddleware:
         """
         # Check if the request path is protected
         if self._is_protected_path(request.path):
-            # Get client IP
-            client_ip = self._get_client_ip(request)
+            # Get client IP (using centralised utility)
+            client_ip = get_client_ip(request)
 
             # Check if IP is allowlisted
             if not self._is_ip_allowed(client_ip):
@@ -164,25 +166,6 @@ class IPAllowlistMiddleware:
             logger.warning("IP allowlist is empty - admin access is NOT IP-restricted")
 
         return allowed_ips
-
-    def _get_client_ip(self, request: HttpRequest) -> str:
-        """Extract the client IP address from the request.
-
-        Handles X-Forwarded-For header from reverse proxies.
-
-        Args:
-            request: The HTTP request object.
-
-        Returns:
-            The client's IP address as a string.
-        """
-        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-        if x_forwarded_for:
-            # Take the first IP in the chain (client's real IP)
-            ip = str(x_forwarded_for).split(",")[0].strip()
-        else:
-            ip = str(request.META.get("REMOTE_ADDR", "unknown"))
-        return ip
 
     def _is_protected_path(self, path: str) -> bool:
         """Check if the request path is protected by IP allowlist.

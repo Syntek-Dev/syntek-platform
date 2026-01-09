@@ -158,6 +158,28 @@ Security administrators need detailed audit logging to track all user actions an
 - [ ] Add unit tests for logging functionality
 - [ ] Add integration tests for audit trails
 
+### Security Gap Remediation Tasks (from Security Review)
+
+- [ ] **M002**: Implement database-level audit protection (PostgreSQL triggers to prevent DELETE/UPDATE on audit_log table)
+- [ ] **M003**: Implement log signing for tamper detection (HMAC-SHA256 signatures on log entries, nightly verification job)
+- [ ] **M005**: Implement alerting on suspicious activity:
+  - [ ] Alert on multiple failed login attempts (threshold: 10 in 5 minutes)
+  - [ ] Alert on new IP address logins for admin users
+  - [ ] Alert on privilege escalation events
+  - [ ] Alert on bulk data exports
+  - [ ] Alert on unusual access patterns (off-hours, geographic anomalies)
+- [ ] **L004**: Define and implement log retention policy:
+  - [ ] 90 days retention for INFO level logs
+  - [ ] 180 days retention for WARNING level logs
+  - [ ] 365 days retention for ERROR/CRITICAL level logs
+  - [ ] 7 years retention for security audit logs (compliance)
+  - [ ] Automated archival to cold storage
+  - [ ] Automated deletion after retention period
+- [ ] Add unit tests for database-level audit protection
+- [ ] Add unit tests for log signing verification
+- [ ] Add integration tests for alerting triggers
+- [ ] Add tests for retention policy enforcement
+
 ### Frontend Web Tasks
 
 - [ ] Create AuditLog page/dashboard
@@ -199,6 +221,19 @@ Security administrators need detailed audit logging to track all user actions an
 - Permission-based field visibility
 - Change history tracking and comparison
 - Cleanup and archival strategy
+
+---
+
+## Security Gaps Addressed
+
+This story addresses the following security gaps from the US-001 Security Implementation Review:
+
+| Gap ID | Description | Implementation |
+|--------|-------------|----------------|
+| **M002** | Database-level audit protection | PostgreSQL triggers to prevent DELETE/UPDATE on audit_log |
+| **M003** | Log signing for tamper detection | HMAC-SHA256 signatures, nightly verification job |
+| **M005** | Alerting on suspicious activity | Configurable alerts for failed logins, privilege escalation, anomalies |
+| **L004** | Log retention policy | Tiered retention (90/180/365 days), 7 years for security logs |
 
 ---
 

@@ -89,7 +89,6 @@
     - [Key Platform Features](#key-platform-features)
     - [Development Phases](#development-phases)
   - [Notes](#notes)
-  - [Overview](#overview)
 
 ## Project Overview
 
@@ -2463,5 +2462,3 @@ The platform is being built in 16 phases. Current status:
 - ClickUp integration syncs tasks with Git workflow automatically
 - **Architecture:** Refer to [CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md)
   for the complete system design
-
-## Overview

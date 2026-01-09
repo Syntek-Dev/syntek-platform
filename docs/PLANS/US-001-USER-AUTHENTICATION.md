@@ -1,15 +1,16 @@
 # User Authentication System - Implementation Plan
 
-**Last Updated**: 08/01/2026
-**Version**: 0.4.1
+**Last Updated**: 09/01/2026
+**Version**: 0.6.0
 **User Story**: US001
 **Branch**: us001/user-authentication
-**Status**: Phase 2 Complete - Service Layer Implemented
+**Status**: Phase 3 Complete - GraphQL API Implemented
 **Author**: System Architect
 **Review Status**: Approved with Critical Recommendations
 **Reviews Incorporated**: Architecture, Backend, Code Quality, Database, QA, Security, Testing
 **Phase 1 Status**: ✅ Completed (07/01/2026)
 **Phase 2 Status**: ✅ Completed (08/01/2026)
+**Phase 3 Status**: ✅ Completed (09/01/2026)
 
 ---
 
@@ -119,10 +120,11 @@
     - [Phase 1: Core Models and Database](#phase-1-core-models-and-database)
     - [Phase 2: Authentication Service Layer](#phase-2-authentication-service-layer)
     - [Phase 3: GraphQL API Implementation](#phase-3-graphql-api-implementation)
-    - [Phase 4: Two-Factor Authentication (2FA)](#phase-4-two-factor-authentication-2fa)
-    - [Phase 5: Password Reset and Email Verification](#phase-5-password-reset-and-email-verification)
-    - [Phase 6: Audit Logging and Security](#phase-6-audit-logging-and-security)
-    - [Phase 7: Testing and Documentation](#phase-7-testing-and-documentation)
+    - [Phase 4: Security Hardening](#phase-4-security-hardening)
+    - [Phase 5: Two-Factor Authentication (2FA)](#phase-5-two-factor-authentication-2fa)
+    - [Phase 6: Password Reset and Email Verification](#phase-6-password-reset-and-email-verification)
+    - [Phase 7: Audit Logging and Security](#phase-7-audit-logging-and-security)
+    - [Phase 8: Testing and Documentation](#phase-8-testing-and-documentation)
   - [Testing Strategy](#testing-strategy)
     - [Unit Tests (TDD)](#unit-tests-tdd)
     - [BDD Tests](#bdd-tests)
@@ -5404,6 +5406,8 @@ class AuditService:
 
 ### Phase 3: GraphQL API Implementation
 
+**Status**: ✅ **COMPLETED** (09/01/2026)
+
 **Objective:** Expose authentication functionality via GraphQL API.
 
 **Review Fixes Implemented:**
@@ -5415,54 +5419,778 @@ class AuditService:
 - **H10**: Proper logout with token revocation (see [High Priority H10](#h10-logout-token-revocation))
 - **M1**: Rate limit headers in responses (see [Medium Priority M1](#m1-rate-limit-headers))
 
-**Tasks:**
+**Tasks Completed:**
 
-- [ ] Create GraphQL types in `api/types/user.py`
-- [ ] Create GraphQL types in `api/types/organisation.py`
-- [ ] Create GraphQL types in `api/types/auth.py`
-- [ ] Create GraphQL inputs in `api/inputs/auth.py`
-- [ ] Create permission classes in `api/permissions.py`
-  - [ ] `IsAuthenticated` permission class
-  - [ ] `HasPermission` permission class
-  - [ ] `IsOrganisationOwner` permission class
-- [ ] Create `GraphQLCSRFMiddleware` in `api/middleware/csrf.py` (C4)
-  - [ ] Allow queries without CSRF token
-  - [ ] Require CSRF token for all mutations
-- [ ] Create DataLoaders in `api/dataloaders/` for N+1 prevention (H2)
-  - [ ] `UserLoader`, `OrganisationLoader`, `SessionLoader`
-- [ ] Create mutations in `api/mutations/auth.py`
-  - [ ] Block login for unverified email addresses (C5)
-  - [ ] Implement proper logout with token revocation (H10)
-- [ ] Create queries in `api/queries/user.py`
-  - [ ] Implement organisation boundary checks in all queries
-  - [ ] Add permission checking examples using `user.has_perm()`
-  - [ ] Use DataLoaders for related object fetching (H2)
-- [ ] Update `api/schema.py` to include auth types
-- [ ] Implement authentication middleware
-- [ ] Implement organisation boundary enforcement in querysets
-- [ ] Add standardised error handling with error codes (H4)
-- [ ] Add rate limit headers to GraphQL responses (M1)
+- [x] Create GraphQL types in `api/types/user.py`
+- [x] Create GraphQL types in `api/types/organisation.py`
+- [x] Create GraphQL types in `api/types/auth.py`
+- [x] Create GraphQL inputs in `api/inputs/auth.py`
+- [x] Create permission classes in `api/permissions.py`
+  - [x] `IsAuthenticated` permission class
+  - [x] `HasPermission` permission class
+  - [x] `IsOrganisationOwner` permission class
+- [x] Create `GraphQLCSRFMiddleware` in `api/middleware/csrf.py` (C4)
+  - [x] Allow queries without CSRF token
+  - [x] Require CSRF token for all mutations
+- [x] Create DataLoaders in `api/dataloaders/` for N+1 prevention (H2)
+  - [x] `UserLoader`, `OrganisationLoader`, `AuditLogLoader`
+- [x] Create mutations in `api/mutations/auth.py`
+  - [x] Block login for unverified email addresses (C5)
+  - [x] Implement proper logout with token revocation (H10)
+- [x] Create queries in `api/queries/user.py`
+  - [x] Implement organisation boundary checks in all queries
+  - [x] Add permission checking examples using `user.has_perm()`
+  - [x] Use DataLoaders for related object fetching (H2)
+- [x] Update `api/schema.py` to include auth types
+- [x] Implement authentication middleware
+- [x] Implement organisation boundary enforcement in querysets
+- [x] Add standardised error handling with error codes (H4)
+- [x] Add rate limit headers to GraphQL responses (M1)
+- [x] Implement query depth limiting (max 10 levels)
+- [x] Implement query complexity analysis (max 1000 complexity)
 
-**Deliverable:** Full GraphQL API for authentication with permission checking and security fixes.
+**Deliverable:** ✅ Full GraphQL API for authentication with permission checking and security fixes.
 
-**Tests:**
+**Implementation Summary:**
 
-- GraphQL mutation tests for registration
-- GraphQL mutation tests for login
-- GraphQL mutation tests for password reset
-- GraphQL query tests for user data
-- GraphQL tests for organisation boundaries
-- GraphQL tests for permission checking (authenticated vs unauthenticated)
-- GraphQL tests for cross-organisation access denial
-- GraphQL tests for error handling with standardised codes (H4)
-- GraphQL tests for CSRF protection on mutations (C4)
-- GraphQL tests for email verification enforcement (C5)
-- GraphQL tests for logout token revocation (H10)
-- Performance tests verifying DataLoader effectiveness (H2)
+- GraphQL schema with Strawberry framework
+- 3 DataLoaders for N+1 query prevention
+- CSRF middleware for mutation protection
+- Standardised error codes across all mutations
+- Rate limit headers in all responses
+- Query depth and complexity limiting
+- Email verification enforcement on login
+- Token revocation on logout
+
+**Tests Completed:**
+
+- [x] GraphQL mutation tests for registration
+- [x] GraphQL mutation tests for login
+- [x] GraphQL mutation tests for password reset
+- [x] GraphQL query tests for user data
+- [x] GraphQL tests for organisation boundaries
+- [x] GraphQL tests for permission checking (authenticated vs unauthenticated)
+- [x] GraphQL tests for cross-organisation access denial
+- [x] GraphQL tests for error handling with standardised codes (H4)
+- [x] GraphQL tests for CSRF protection on mutations (C4)
+- [x] GraphQL tests for email verification enforcement (C5)
+- [x] GraphQL tests for logout token revocation (H10)
+- [x] Performance tests verifying DataLoader effectiveness (H2)
+- [x] Query depth limiting tests
+- [x] Query complexity analysis tests
+
+**Test Coverage:** ~90% for GraphQL layer components
 
 ---
 
-### Phase 4: Two-Factor Authentication (2FA)
+### Phase 4: Security Hardening
+
+**Status**: ⬜ **NOT STARTED**
+
+**Objective:** Address remaining security gaps identified in the Security Implementation Review to achieve production-ready security posture.
+
+**Security Gaps Addressed:**
+
+| Gap ID | Description | Priority | Impact |
+|--------|-------------|----------|--------|
+| **C001** | Password breach detection (HaveIBeenPwned API) | CRITICAL | Weak/compromised passwords accepted |
+| **H004** | Common password blacklist | HIGH | Predictable passwords accepted |
+| **M001** | CAPTCHA for bot protection | MEDIUM | Automated attacks easier |
+| **M007** | Password reset token expiry review | MEDIUM | Token exposure window too long |
+
+#### 4.1 Password Breach Detection (C001)
+
+**Objective:** Integrate HaveIBeenPwned API to check passwords against known data breaches.
+
+**Implementation Details:**
+
+```python
+# apps/core/validators/passwords.py
+
+import hashlib
+import requests
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
+
+class HIBPPasswordValidator:
+    """Validate passwords against HaveIBeenPwned breach database.
+
+    Uses k-anonymity model to check password hashes without sending
+    the full password hash to the API.
+
+    The first 5 characters of the SHA-1 hash are sent to the API,
+    which returns all matching hash suffixes. We then check locally
+    if our full hash appears in the results.
+    """
+
+    HIBP_API_URL = "https://api.pwnedpasswords.com/range/"
+    BREACH_THRESHOLD = 3  # Passwords seen more than 3 times are rejected
+
+    def validate(self, password: str, user=None) -> None:
+        """Check password against HIBP database.
+
+        Args:
+            password: The plain text password to validate.
+            user: Optional user instance (not used).
+
+        Raises:
+            ValidationError: If password has been found in breaches.
+        """
+        sha1_hash = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
+        prefix = sha1_hash[:5]
+        suffix = sha1_hash[5:]
+
+        try:
+            response = requests.get(
+                f"{self.HIBP_API_URL}{prefix}",
+                headers={"User-Agent": "SyntekCMS-PasswordValidator"},
+                timeout=5,
+            )
+            response.raise_for_status()
+
+            # Parse response: each line is "SUFFIX:COUNT"
+            for line in response.text.splitlines():
+                hash_suffix, count = line.split(':')
+                if hash_suffix == suffix and int(count) > self.BREACH_THRESHOLD:
+                    raise ValidationError(
+                        _(
+                            "This password has been found in %(count)s data breaches "
+                            "and cannot be used. Please choose a different password."
+                        ),
+                        code='password_breached',
+                        params={'count': count},
+                    )
+
+        except requests.RequestException:
+            # Fail open: if API is unavailable, allow the password
+            # Log the failure for monitoring
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning("HIBP API unavailable, skipping breach check")
+
+    def get_help_text(self) -> str:
+        """Return help text for this validator."""
+        return _(
+            "Your password cannot be one that has appeared in known data breaches."
+        )
+```
+
+**Configuration:**
+
+```python
+# config/settings/base.py
+
+AUTH_PASSWORD_VALIDATORS = [
+    # ... existing validators ...
+    {
+        'NAME': 'apps.core.validators.passwords.HIBPPasswordValidator',
+        'OPTIONS': {
+            'breach_threshold': 3,  # Reject if seen > 3 times
+        },
+    },
+]
+
+# Environment variables
+HIBP_API_ENABLED = env.bool('HIBP_API_ENABLED', default=True)
+HIBP_BREACH_THRESHOLD = env.int('HIBP_BREACH_THRESHOLD', default=3)
+```
+
+**API Contract:**
+
+```graphql
+# Error response when password is breached
+type AuthError {
+  code: String!  # "PASSWORD_BREACHED"
+  message: String!  # "This password has been found in X data breaches..."
+  field: String  # "password"
+}
+```
+
+**Tests:**
+
+- Unit tests for HIBP validator with mocked API responses
+- Unit tests for k-anonymity hash splitting
+- Unit tests for breach threshold configuration
+- Unit tests for API timeout handling (fail open)
+- Integration tests for registration with breached password
+- Integration tests for password change with breached password
+
+---
+
+#### 4.2 Common Password Blacklist (H004)
+
+**Objective:** Block commonly used passwords that pass other validation rules.
+
+**Implementation Details:**
+
+```python
+# apps/core/validators/passwords.py
+
+import os
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
+
+class CommonPasswordValidator:
+    """Validate passwords against a blacklist of common passwords.
+
+    Includes:
+    - Top 10,000 most common passwords
+    - Common patterns (Password123!, Qwerty123, etc.)
+    - Keyboard walks (qwertyuiop, 1234567890)
+    - Company/service-specific common passwords
+    """
+
+    DEFAULT_COMMON_PASSWORD_FILE = os.path.join(
+        os.path.dirname(__file__),
+        'common_passwords.txt'
+    )
+
+    PATTERN_BLACKLIST = [
+        # Common patterns that pass complexity rules
+        r'^[A-Z][a-z]+\d+[!@#$%^&*]$',  # Password123!
+        r'^[A-Z][a-z]+[!@#$%^&*]\d+$',  # Password!123
+        r'^[a-z]+[A-Z]+\d+[!@#$%^&*]$',  # passwordABC123!
+        r'^(qwerty|asdf|zxcv)',  # Keyboard walks
+        r'(123456|654321|111111|000000)',  # Sequential/repeated numbers
+    ]
+
+    def __init__(self, password_list_path: str = None):
+        """Initialise with custom password list path.
+
+        Args:
+            password_list_path: Path to common passwords file.
+        """
+        self.password_list_path = password_list_path or self.DEFAULT_COMMON_PASSWORD_FILE
+        self._common_passwords = None
+
+    @property
+    def common_passwords(self) -> set:
+        """Lazy load common passwords into memory."""
+        if self._common_passwords is None:
+            try:
+                with open(self.password_list_path, 'r', encoding='utf-8') as f:
+                    self._common_passwords = {
+                        line.strip().lower()
+                        for line in f
+                        if line.strip()
+                    }
+            except FileNotFoundError:
+                self._common_passwords = set()
+        return self._common_passwords
+
+    def validate(self, password: str, user=None) -> None:
+        """Check password against common password list and patterns.
+
+        Args:
+            password: The plain text password to validate.
+            user: Optional user instance for context-aware validation.
+
+        Raises:
+            ValidationError: If password is too common.
+        """
+        import re
+
+        password_lower = password.lower()
+
+        # Check against common passwords list
+        if password_lower in self.common_passwords:
+            raise ValidationError(
+                _("This password is too common. Please choose a more unique password."),
+                code='password_too_common',
+            )
+
+        # Check against pattern blacklist
+        for pattern in self.PATTERN_BLACKLIST:
+            if re.search(pattern, password, re.IGNORECASE):
+                raise ValidationError(
+                    _("This password follows a common pattern. Please choose a more unique password."),
+                    code='password_common_pattern',
+                )
+
+        # Context-aware: check if password contains username
+        if user and hasattr(user, 'email'):
+            email_local = user.email.split('@')[0].lower()
+            if email_local and email_local in password_lower:
+                raise ValidationError(
+                    _("Your password cannot contain your email address."),
+                    code='password_contains_email',
+                )
+
+    def get_help_text(self) -> str:
+        """Return help text for this validator."""
+        return _(
+            "Your password cannot be a commonly used password or follow predictable patterns."
+        )
+```
+
+**Data File:**
+
+```
+# apps/core/validators/common_passwords.txt
+# Top 10,000 most common passwords
+# Source: SecLists + custom additions
+password
+123456
+12345678
+qwerty
+abc123
+monkey
+1234567
+letmein
+trustno1
+dragon
+baseball
+# ... (10,000 entries)
+```
+
+**Tests:**
+
+- Unit tests for common password rejection
+- Unit tests for pattern detection
+- Unit tests for context-aware validation (email in password)
+- Unit tests for case-insensitive matching
+- Performance tests for large password list loading
+
+---
+
+#### 4.3 CAPTCHA for Bot Protection (M001)
+
+**Objective:** Implement reCAPTCHA v3 to prevent automated attacks on authentication endpoints.
+
+**Implementation Details:**
+
+```python
+# apps/core/services/captcha_service.py
+
+import requests
+from django.conf import settings
+from typing import Tuple
+
+
+class CaptchaService:
+    """Service for validating reCAPTCHA v3 tokens.
+
+    reCAPTCHA v3 returns a score from 0.0 to 1.0, where:
+    - 1.0 is very likely a good interaction
+    - 0.0 is very likely a bot
+
+    We use different thresholds for different actions:
+    - Registration: 0.5 (moderate protection)
+    - Login: 0.3 (lower threshold to avoid blocking legitimate users)
+    - Password Reset: 0.5 (moderate protection)
+    """
+
+    VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify"
+
+    SCORE_THRESHOLDS = {
+        'register': 0.5,
+        'login': 0.3,
+        'password_reset': 0.5,
+        'email_verification': 0.3,
+    }
+
+    def __init__(self):
+        """Initialise with secret key from settings."""
+        self.secret_key = settings.RECAPTCHA_SECRET_KEY
+        self.enabled = settings.RECAPTCHA_ENABLED
+
+    def verify_token(
+        self,
+        token: str,
+        action: str,
+        remote_ip: str = None
+    ) -> Tuple[bool, float, str]:
+        """Verify a reCAPTCHA token.
+
+        Args:
+            token: The reCAPTCHA response token from the client.
+            action: The expected action name (register, login, etc.).
+            remote_ip: Optional client IP address for additional validation.
+
+        Returns:
+            Tuple of (is_valid, score, error_message).
+        """
+        if not self.enabled:
+            return True, 1.0, None
+
+        if not token:
+            return False, 0.0, "CAPTCHA token is required"
+
+        try:
+            response = requests.post(
+                self.VERIFY_URL,
+                data={
+                    'secret': self.secret_key,
+                    'response': token,
+                    'remoteip': remote_ip,
+                },
+                timeout=5,
+            )
+            result = response.json()
+
+            if not result.get('success'):
+                error_codes = result.get('error-codes', [])
+                return False, 0.0, f"CAPTCHA validation failed: {error_codes}"
+
+            # Verify action matches
+            if result.get('action') != action:
+                return False, 0.0, "CAPTCHA action mismatch"
+
+            score = result.get('score', 0.0)
+            threshold = self.SCORE_THRESHOLDS.get(action, 0.5)
+
+            if score < threshold:
+                return False, score, f"CAPTCHA score too low ({score:.2f} < {threshold})"
+
+            return True, score, None
+
+        except requests.RequestException as e:
+            # Fail open: if CAPTCHA service is unavailable, allow the request
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"CAPTCHA service unavailable: {e}")
+            return True, 1.0, None
+
+
+# Singleton instance
+captcha_service = CaptchaService()
+```
+
+**GraphQL Integration:**
+
+```python
+# api/inputs/auth.py
+
+import strawberry
+from typing import Optional
+
+
+@strawberry.input
+class RegisterInput:
+    """Input for user registration."""
+    email: str
+    password: str
+    first_name: str
+    last_name: str
+    captcha_token: Optional[str] = None  # Required in production
+
+
+@strawberry.input
+class LoginInput:
+    """Input for user login."""
+    email: str
+    password: str
+    captcha_token: Optional[str] = None  # Required in production
+```
+
+```python
+# api/mutations/auth.py
+
+@strawberry.mutation
+async def register(
+    self,
+    info: Info,
+    input: RegisterInput,
+) -> AuthPayload:
+    """Register a new user account."""
+    # Verify CAPTCHA
+    request = info.context.request
+    is_valid, score, error = captcha_service.verify_token(
+        token=input.captcha_token,
+        action='register',
+        remote_ip=get_client_ip(request),
+    )
+
+    if not is_valid:
+        raise AuthenticationError(
+            code='CAPTCHA_FAILED',
+            message=error or "CAPTCHA verification failed",
+        )
+
+    # Log CAPTCHA score for monitoring
+    audit_service.log_captcha_score(
+        action='register',
+        score=score,
+        ip_address=get_client_ip(request),
+    )
+
+    # Proceed with registration...
+```
+
+**Configuration:**
+
+```python
+# config/settings/base.py
+
+# reCAPTCHA v3 configuration
+RECAPTCHA_ENABLED = env.bool('RECAPTCHA_ENABLED', default=True)
+RECAPTCHA_SITE_KEY = env.str('RECAPTCHA_SITE_KEY', default='')
+RECAPTCHA_SECRET_KEY = env.str('RECAPTCHA_SECRET_KEY', default='')
+
+# Score thresholds (0.0 = bot, 1.0 = human)
+RECAPTCHA_SCORE_THRESHOLD_REGISTER = env.float('RECAPTCHA_SCORE_REGISTER', default=0.5)
+RECAPTCHA_SCORE_THRESHOLD_LOGIN = env.float('RECAPTCHA_SCORE_LOGIN', default=0.3)
+```
+
+**Environment Variables:**
+
+```bash
+# .env.example
+RECAPTCHA_ENABLED=true
+RECAPTCHA_SITE_KEY=6LxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxAB
+RECAPTCHA_SECRET_KEY=6LxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxCD
+RECAPTCHA_SCORE_REGISTER=0.5
+RECAPTCHA_SCORE_LOGIN=0.3
+```
+
+**Tests:**
+
+- Unit tests for CAPTCHA token verification with mocked API
+- Unit tests for score threshold enforcement
+- Unit tests for action mismatch detection
+- Unit tests for fail-open behaviour on API timeout
+- Integration tests for registration with CAPTCHA
+- Integration tests for login with CAPTCHA
+- E2E tests with real reCAPTCHA tokens (staging only)
+
+---
+
+#### 4.4 Password Reset Token Expiry Review (M007)
+
+**Objective:** Review and optimise password reset token expiry time for security.
+
+**Current State:**
+
+- Token expiry: 15 minutes
+- Issue: May be too generous, increasing window for token interception
+
+**Analysis:**
+
+| Expiry Time | Pros | Cons |
+|-------------|------|------|
+| 5 minutes | Minimal attack window | Users may not check email in time |
+| 10 minutes | Good balance | Slightly larger attack window |
+| 15 minutes | User-friendly | Larger attack window |
+| 30 minutes | Very user-friendly | Unacceptable security risk |
+
+**Decision:** Reduce to 10 minutes with UX improvements.
+
+**Implementation Details:**
+
+```python
+# apps/core/models/password_reset_token.py
+
+from django.conf import settings
+from datetime import timedelta
+
+
+class PasswordResetToken(BaseToken):
+    """Token for password reset requests.
+
+    Expiry: 10 minutes (configurable via settings)
+
+    Security measures:
+    - Single-use only (marked as used after reset)
+    - Token is hashed before storage
+    - User receives plain token via email
+    - IP address logged for audit
+    """
+
+    class Meta:
+        db_table = 'core_password_reset_token'
+        indexes = [
+            models.Index(fields=['token_hash']),
+            models.Index(fields=['expires_at']),
+        ]
+
+    @classmethod
+    def get_expiry_duration(cls) -> timedelta:
+        """Return the token expiry duration from settings."""
+        minutes = getattr(settings, 'PASSWORD_RESET_TOKEN_EXPIRY_MINUTES', 10)
+        return timedelta(minutes=minutes)
+```
+
+```python
+# config/settings/base.py
+
+# Password reset token expiry (in minutes)
+# Reduced from 15 to 10 minutes for improved security
+PASSWORD_RESET_TOKEN_EXPIRY_MINUTES = env.int(
+    'PASSWORD_RESET_TOKEN_EXPIRY_MINUTES',
+    default=10
+)
+```
+
+**UX Improvements:**
+
+```python
+# apps/core/services/email_service.py
+
+def send_password_reset_email(self, user: User, token: str) -> None:
+    """Send password reset email with clear expiry warning.
+
+    Args:
+        user: The user requesting password reset.
+        token: The plain text reset token.
+    """
+    expiry_minutes = settings.PASSWORD_RESET_TOKEN_EXPIRY_MINUTES
+
+    context = {
+        'user': user,
+        'reset_url': f"{settings.FRONTEND_URL}/reset-password?token={token}",
+        'expiry_minutes': expiry_minutes,
+        'expiry_warning': f"This link will expire in {expiry_minutes} minutes.",
+    }
+
+    self.send_email(
+        to=user.email,
+        subject="Reset your password",
+        template='emails/password_reset.html',
+        context=context,
+    )
+```
+
+**Email Template Update:**
+
+```html
+<!-- templates/emails/password_reset.html -->
+<p>Hi {{ user.first_name }},</p>
+
+<p>We received a request to reset your password. Click the button below to create a new password:</p>
+
+<p style="text-align: center;">
+  <a href="{{ reset_url }}" class="button">Reset Password</a>
+</p>
+
+<p><strong>⏰ Important:</strong> {{ expiry_warning }}</p>
+
+<p>If you didn't request this, you can safely ignore this email. Your password will remain unchanged.</p>
+```
+
+**Tests:**
+
+- Unit tests for token expiry duration
+- Unit tests for expired token rejection
+- Integration tests for password reset flow with timing
+- E2E tests verifying email content includes expiry warning
+
+---
+
+#### 4.5 Database Schema Changes
+
+No new database tables required for Phase 4. Changes are configuration and validator-based.
+
+**Migration Required:** None
+
+---
+
+#### 4.6 Environment Variables
+
+Add the following to `.env.example`:
+
+```bash
+# Phase 4: Security Hardening
+
+# HaveIBeenPwned Integration (C001)
+HIBP_API_ENABLED=true
+HIBP_BREACH_THRESHOLD=3
+
+# reCAPTCHA v3 (M001)
+RECAPTCHA_ENABLED=true
+RECAPTCHA_SITE_KEY=your_site_key_here
+RECAPTCHA_SECRET_KEY=your_secret_key_here
+RECAPTCHA_SCORE_REGISTER=0.5
+RECAPTCHA_SCORE_LOGIN=0.3
+
+# Password Reset Token (M007)
+PASSWORD_RESET_TOKEN_EXPIRY_MINUTES=10
+```
+
+---
+
+#### 4.7 Tasks Checklist
+
+**Backend Tasks:**
+
+- [ ] **C001**: Implement HIBPPasswordValidator
+  - [ ] Create validator class with k-anonymity model
+  - [ ] Configure breach threshold setting
+  - [ ] Add to AUTH_PASSWORD_VALIDATORS
+  - [ ] Handle API timeout gracefully (fail open)
+- [ ] **H004**: Implement CommonPasswordValidator
+  - [ ] Create validator class
+  - [ ] Add common_passwords.txt file (10,000 entries)
+  - [ ] Implement pattern blacklist
+  - [ ] Add context-aware validation (email in password)
+- [ ] **M001**: Implement CaptchaService
+  - [ ] Create reCAPTCHA v3 verification service
+  - [ ] Add score thresholds per action
+  - [ ] Integrate with registration mutation
+  - [ ] Integrate with login mutation
+  - [ ] Add CAPTCHA score audit logging
+- [ ] **M007**: Update password reset token expiry
+  - [ ] Reduce expiry from 15 to 10 minutes
+  - [ ] Update email template with expiry warning
+  - [ ] Add expiry_minutes to settings
+- [ ] Add environment variables to .env.example
+- [ ] Update configuration documentation
+
+**Testing Tasks:**
+
+- [ ] Unit tests for HIBPPasswordValidator (mocked API)
+- [ ] Unit tests for CommonPasswordValidator
+- [ ] Unit tests for CaptchaService (mocked API)
+- [ ] Unit tests for password reset token expiry
+- [ ] Integration tests for registration with HIBP check
+- [ ] Integration tests for registration with CAPTCHA
+- [ ] Integration tests for login with CAPTCHA
+- [ ] Integration tests for password reset flow
+- [ ] E2E tests for complete registration flow with all validators
+
+**Documentation Tasks:**
+
+- [ ] Update API documentation with CAPTCHA requirements
+- [ ] Update security documentation
+- [ ] Add CAPTCHA integration guide for frontend
+
+---
+
+#### 4.8 Risks and Mitigations
+
+| Risk | Impact | Probability | Mitigation |
+|------|--------|-------------|------------|
+| HIBP API unavailable | Users cannot register | Low | Fail open with logging and alerting |
+| reCAPTCHA service down | Users cannot register/login | Low | Fail open with logging; fallback to rate limiting |
+| False positives blocking legitimate users | User frustration | Medium | Lower CAPTCHA thresholds; monitor scores |
+| Common password list too aggressive | User frustration | Medium | Allow override for specific use cases; provide clear feedback |
+| Token expiry too short for slow email delivery | Users cannot reset password | Medium | Monitor failure rates; provide resend option |
+
+---
+
+#### 4.9 Success Criteria
+
+- [ ] All passwords checked against HIBP database before acceptance
+- [ ] Common passwords (top 10,000) blocked at registration
+- [ ] CAPTCHA required for registration and login in production
+- [ ] CAPTCHA scores logged for monitoring and tuning
+- [ ] Password reset token expiry reduced to 10 minutes
+- [ ] All unit tests passing with >90% coverage
+- [ ] Integration tests verifying end-to-end flows
+- [ ] No increase in legitimate user registration failures
+
+---
+
+**Deliverable:** Production-ready security hardening with password breach detection, common password blocking, CAPTCHA protection, and optimised token expiry.
+
+**Estimated Effort:** 3-5 days
+
+---
+
+### Phase 5: Two-Factor Authentication (2FA)
+
+**Status**: ⬜ **NOT STARTED**
 
 **Objective:** Implement TOTP-based 2FA.
 
@@ -5514,7 +6242,9 @@ class AuditService:
 
 ---
 
-### Phase 5: Password Reset and Email Verification
+### Phase 6: Password Reset and Email Verification
+
+**Status**: ⬜ **NOT STARTED**
 
 **Objective:** Complete email-based workflows.
 
@@ -5566,7 +6296,9 @@ class AuditService:
 
 ---
 
-### Phase 6: Audit Logging and Security
+### Phase 7: Audit Logging and Security
+
+**Status**: ⬜ **NOT STARTED**
 
 **Objective:** Add comprehensive audit logging and security features.
 
@@ -5622,7 +6354,9 @@ class AuditService:
 
 ---
 
-### Phase 7: Testing and Documentation
+### Phase 8: Testing and Documentation
+
+**Status**: ⬜ **NOT STARTED**
 
 **Objective:** Comprehensive testing and documentation.
 

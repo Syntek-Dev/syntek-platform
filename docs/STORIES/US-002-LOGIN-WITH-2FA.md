@@ -92,18 +92,24 @@ Secure login system with optional two-factor authentication (TOTP), JWT token ge
 - [ ] Install and configure django-otp package
 - [ ] Create 2FA setup flow with secret generation
 - [ ] Implement TOTP verification logic
-- [ ] Generate backup codes (8 codes, single-use)
+- [ ] **C002**: Encrypt TOTP secrets using Fernet encryption (separate key from IP encryption)
+- [ ] **C003**: Generate backup codes (8 codes, single-use, hashed before storage)
 - [ ] Create failed login attempt tracking
-- [ ] Implement account lockout mechanism (5 attempts in 15 min)
+- [ ] **C004**: Implement account lockout mechanism (5 attempts in 15 min, progressive lockout)
 - [ ] Create JWT token generation and validation
 - [ ] Implement token refresh mechanism
+- [ ] **L005**: Implement absolute session timeout (90-day maximum regardless of activity)
 - [ ] Create login GraphQL mutation with 2FA support
 - [ ] Create 2FA setup GraphQL mutation
 - [ ] Create audit logging for login events
 - [ ] Implement rate limiting on login endpoint
 - [ ] Create email notifications for failed login attempts
+- [ ] **L001**: Implement disposable email detection (block throwaway email services)
 - [ ] Add unit tests for 2FA flow
 - [ ] Add integration tests for complete login flow
+- [ ] Add unit tests for TOTP secret encryption
+- [ ] Add unit tests for backup code hashing
+- [ ] Add unit tests for disposable email detection
 
 ### Frontend Web Tasks
 
@@ -147,8 +153,22 @@ Secure login system with optional two-factor authentication (TOTP), JWT token ge
 
 ---
 
+## Security Gaps Addressed
+
+This story addresses the following security gaps from the US-001 Security Implementation Review:
+
+| Gap ID | Description | Implementation |
+|--------|-------------|----------------|
+| **C002** | TOTP secret encryption | Fernet encryption with dedicated key |
+| **C003** | Backup codes incomplete | 8 codes, hashed with HMAC-SHA256, single-use |
+| **C004** | Account lockout mechanism | 5 failed attempts = 15 min lock, progressive duration |
+| **L001** | Disposable email detection | Block throwaway email services at registration/login |
+| **L005** | Absolute session timeout | 90-day maximum session regardless of activity |
+
+---
+
 ## Related Stories
 
 - US-001: User Authentication with Email and Password
 - US-003: Password Reset and Recovery
-- US-025: Audit Logging System
+- US-012: Audit Logging System

@@ -27,7 +27,7 @@ class GraphQLAuthenticationMiddleware:
         Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
     """
 
-    def __init__(self, get_response: Callable):
+    def __init__(self, get_response: Callable) -> None:
         """Initialize middleware.
 
         Args:
