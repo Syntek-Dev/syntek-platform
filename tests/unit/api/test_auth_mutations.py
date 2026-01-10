@@ -20,9 +20,8 @@ from django.utils import timezone
 
 import pytest
 
-from apps.core.models import Organisation, PasswordResetToken
+from apps.core.models import Organisation
 from apps.core.services.token_service import TokenService
-from apps.core.utils.token_hasher import TokenHasher
 from tests.factories import (
     EmailVerificationTokenFactory,
     OrganisationFactory,
@@ -120,7 +119,10 @@ class TestRegisterMutation:
 
         Given: A user with email "newuser@example.com" exists
         When: register mutation is called with same email
-        Then: Error is returned with code EMAIL_ALREADY_EXISTS
+        Then: Error is returned with code INVALID_INPUT (generic for security)
+
+        Note: Uses generic error to prevent user enumeration (SV2 security requirement).
+        The system does not reveal whether an email already exists.
         """
         # Create existing user
         org = Organisation.objects.get(slug="test-org")
@@ -146,14 +148,18 @@ class TestRegisterMutation:
         data = response.json()
         assert "errors" in data
         assert len(data["errors"]) > 0
-        assert "EMAIL_ALREADY_EXISTS" in str(data["errors"][0])
+        # Generic error code for security (prevents user enumeration)
+        assert "INVALID_INPUT" in str(data["errors"][0])
 
     def test_register_mutation_invalid_email(self, graphql_client) -> None:
         """Test registration fails with invalid email format.
 
         Given: Registration input with invalid email format
         When: register mutation is called
-        Then: Validation error is returned
+        Then: Validation error is returned with generic message
+
+        Note: Uses generic error message to prevent user enumeration (SV2).
+        The system does not reveal specific validation failures.
         """
         OrganisationFactory.create(slug="test-org")
         invalid_input = {
@@ -184,14 +190,18 @@ class TestRegisterMutation:
         data = response.json()
         assert "errors" in data
         assert len(data["errors"]) > 0
-        assert "email" in str(data["errors"][0]).lower()
+        # Generic error for invalid input (does not reveal specific field)
+        assert "invalid" in str(data["errors"][0]).lower()
 
     def test_register_mutation_weak_password(self, graphql_client) -> None:
         """Test registration fails with weak password.
 
         Given: Registration input with weak password (too short, no special chars)
         When: register mutation is called
-        Then: Validation error is returned with guidance
+        Then: Validation error is returned with generic message
+
+        Note: Uses generic error message to prevent user enumeration (SV2).
+        The system does not reveal specific validation failures.
         """
         OrganisationFactory.create(slug="test-org")
         weak_password_input = {
@@ -222,7 +232,8 @@ class TestRegisterMutation:
         data = response.json()
         assert "errors" in data
         assert len(data["errors"]) > 0
-        assert "password" in str(data["errors"][0]).lower()
+        # Generic error for invalid input (does not reveal specific field)
+        assert "invalid" in str(data["errors"][0]).lower()
 
     def test_register_mutation_invalid_organisation(self, graphql_client) -> None:
         """Test registration fails with non-existent organisation.

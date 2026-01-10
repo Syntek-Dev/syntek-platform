@@ -51,8 +51,10 @@ RATELIMIT_DEFAULT_REQUESTS_PER_MINUTE = 10000
 
 # Remove rate limiting middleware for tests (keep IP allowlist for security tests)
 MIDDLEWARE = [
-    m for m in MIDDLEWARE  # noqa: F405
-    if m not in [
+    m
+    for m in MIDDLEWARE  # noqa: F405
+    if m
+    not in [
         "config.middleware.ratelimit.RateLimitMiddleware",
     ]
 ]
@@ -60,11 +62,11 @@ MIDDLEWARE = [
 # IP allowlist for admin access - test environment allows localhost only
 # Tests run locally, so restrict to localhost addresses
 ADMIN_ALLOWED_IPS = [
-    "127.0.0.1",      # localhost IPv4
-    "::1",            # localhost IPv6
+    "127.0.0.1",  # localhost IPv4
+    "::1",  # localhost IPv6
     "172.16.0.0/12",  # Docker networks (for CI/CD containers)
-    "10.0.0.0/8",     # Private network range
-    "192.168.0.0/16", # Private network range
+    "10.0.0.0/8",  # Private network range
+    "192.168.0.0/16",  # Private network range
 ]
 
 # Logging configuration (minimal for tests)

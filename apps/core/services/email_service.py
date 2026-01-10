@@ -1,7 +1,8 @@
 """Email service for sending authentication-related emails.
 
 This module provides email sending functionality for verification,
-password reset, and notification emails.
+password reset, and notification emails. Supports both SMTP
+and Mailpit for development/testing.
 
 SECURITY NOTE:
 - Rate limiting prevents email bombing
@@ -14,7 +15,15 @@ Example:
     >>> EmailService.send_password_reset_email(user, token)
 """
 
+import logging
+
+from django.conf import settings
+from django.core.mail import send_mail
+from django.utils.html import strip_tags
+
 from apps.core.models import User
+
+logger = logging.getLogger(__name__)
 
 
 class EmailService:
@@ -44,9 +53,51 @@ class EmailService:
         Returns:
             True if email sent successfully, False otherwise
         """
-        # For Phase 2, return True to satisfy tests
-        # Full email implementation will be in Phase 5
-        return True
+        try:
+            # Build verification URL
+            base_url = getattr(settings, "FRONTEND_URL", "http://localhost:3000")
+            verification_url = f"{base_url}/verify-email/{token}"
+
+            # Email context
+            context = {
+                "user": user,
+                "verification_url": verification_url,
+                "site_name": getattr(settings, "SITE_NAME", "Backend Template"),
+            }
+
+            # Render email templates (HTML and plain text)
+            subject = f"Verify your email address - {context['site_name']}"
+            html_message = f"""
+            <html>
+                <body>
+                    <h2>Welcome {user.get_full_name() or user.email}!</h2>
+                    <p>Thank you for registering. Please verify your email address by clicking the link below:</p>
+                    <p><a href="{verification_url}">Verify Email Address</a></p>
+                    <p>Or copy and paste this URL into your browser:</p>
+                    <p>{verification_url}</p>
+                    <p>This link will expire in 24 hours.</p>
+                    <p>If you did not create an account, please ignore this email.</p>
+                </body>
+            </html>
+            """
+            plain_message = strip_tags(html_message)
+
+            # Send email
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Verification email sent to {user.email}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to send verification email to {user.email}: {e}")
+            return False
 
     @staticmethod
     def send_password_reset_email(user: User, token: str) -> bool:
@@ -59,9 +110,43 @@ class EmailService:
         Returns:
             True if email sent successfully, False otherwise
         """
-        # For Phase 2, return True to satisfy tests
-        # Full email implementation will be in Phase 5
-        return True
+        try:
+            base_url = getattr(settings, "FRONTEND_URL", "http://localhost:3000")
+            reset_url = f"{base_url}/reset-password/{token}"
+            site_name = getattr(settings, "SITE_NAME", "Backend Template")
+
+            subject = f"Reset your password - {site_name}"
+            html_message = f"""
+            <html>
+                <body>
+                    <h2>Password Reset Request</h2>
+                    <p>Hi {user.get_full_name() or user.email},</p>
+                    <p>You requested to reset your password. Click the link below to set a new password:</p>
+                    <p><a href="{reset_url}">Reset Password</a></p>
+                    <p>Or copy and paste this URL into your browser:</p>
+                    <p>{reset_url}</p>
+                    <p>This link will expire in 15 minutes.</p>
+                    <p>If you did not request a password reset, please ignore this email.</p>
+                </body>
+            </html>
+            """
+            plain_message = strip_tags(html_message)
+
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Password reset email sent to {user.email}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to send password reset email to {user.email}: {e}")
+            return False
 
     @staticmethod
     def send_welcome_email(user: User) -> bool:
@@ -73,9 +158,37 @@ class EmailService:
         Returns:
             True if email sent successfully, False otherwise
         """
-        # For Phase 2, return True to satisfy tests
-        # Full email implementation will be in Phase 5
-        return True
+        try:
+            site_name = getattr(settings, "SITE_NAME", "Backend Template")
+
+            subject = f"Welcome to {site_name}!"
+            html_message = f"""
+            <html>
+                <body>
+                    <h2>Welcome {user.get_full_name() or user.email}!</h2>
+                    <p>Thank you for joining {site_name}.</p>
+                    <p>Your account has been successfully verified and is now active.</p>
+                    <p>You can now log in and start using our platform.</p>
+                </body>
+            </html>
+            """
+            plain_message = strip_tags(html_message)
+
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Welcome email sent to {user.email}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to send welcome email to {user.email}: {e}")
+            return False
 
     @staticmethod
     def send_password_changed_notification(user: User) -> bool:
@@ -87,9 +200,37 @@ class EmailService:
         Returns:
             True if email sent successfully, False otherwise
         """
-        # For Phase 2, return True to satisfy tests
-        # Full email implementation will be in Phase 5
-        return True
+        try:
+            site_name = getattr(settings, "SITE_NAME", "Backend Template")
+
+            subject = f"Password Changed - {site_name}"
+            html_message = f"""
+            <html>
+                <body>
+                    <h2>Password Changed</h2>
+                    <p>Hi {user.get_full_name() or user.email},</p>
+                    <p>Your password was successfully changed.</p>
+                    <p>If you did not make this change, please contact support immediately.</p>
+                </body>
+            </html>
+            """
+            plain_message = strip_tags(html_message)
+
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Password changed notification sent to {user.email}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to send password changed notification to {user.email}: {e}")
+            return False
 
     @staticmethod
     def send_2fa_enabled_notification(user: User) -> bool:
@@ -101,6 +242,35 @@ class EmailService:
         Returns:
             True if email sent successfully, False otherwise
         """
-        # For Phase 2, return True to satisfy tests
-        # Full email implementation will be in Phase 5
-        return True
+        try:
+            site_name = getattr(settings, "SITE_NAME", "Backend Template")
+
+            subject = f"Two-Factor Authentication Enabled - {site_name}"
+            html_message = f"""
+            <html>
+                <body>
+                    <h2>Two-Factor Authentication Enabled</h2>
+                    <p>Hi {user.get_full_name() or user.email},</p>
+                    <p>Two-factor authentication has been successfully enabled on your account.</p>
+                    <p>Your account is now more secure.</p>
+                    <p>If you did not enable this feature, please contact support immediately.</p>
+                </body>
+            </html>
+            """
+            plain_message = strip_tags(html_message)
+
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"2FA enabled notification sent to {user.email}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to send 2FA enabled notification to {user.email}: {e}")
+            return False

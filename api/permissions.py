@@ -8,6 +8,8 @@ from typing import Any
 from strawberry.permission import BasePermission
 from strawberry.types import Info
 
+from api.utils.context import get_request
+
 
 class IsAuthenticated(BasePermission):
     """Permission class requiring user to be authenticated."""
@@ -25,7 +27,8 @@ class IsAuthenticated(BasePermission):
         Returns:
             True if authenticated, False otherwise
         """
-        return info.context.request.user.is_authenticated
+        request = get_request(info)
+        return request.user.is_authenticated
 
 
 class HasPermission(BasePermission):
@@ -51,7 +54,8 @@ class HasPermission(BasePermission):
         Returns:
             True if user has permission, False otherwise
         """
-        user = info.context.request.user
+        request = get_request(info)
+        user = request.user
         return user.is_authenticated and user.has_perm(self.permission)
 
 
@@ -71,7 +75,8 @@ class IsOrganisationOwner(BasePermission):
         Returns:
             True if organisation owner, False otherwise
         """
-        user = info.context.request.user
+        request = get_request(info)
+        user = request.user
         if not user.is_authenticated:
             return False
         return user.groups.filter(name="Organisation Owner").exists()

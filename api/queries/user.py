@@ -4,8 +4,6 @@ Implements organisation boundary enforcement and uses DataLoaders (H2).
 All queries respect multi-tenancy isolation.
 """
 
-from typing import Any
-
 from django.contrib.auth import get_user_model
 
 import strawberry
@@ -13,34 +11,12 @@ from strawberry.types import Info
 
 from api.errors import AuthenticationError, ErrorCode, PermissionError
 from api.types.user import AuditLogType, UserType
+from api.utils.context import get_request
+from api.utils.converters import user_to_graphql_type
 from apps.core.models import AuditLog
 from apps.core.utils.encryption import IPEncryption
 
 User = get_user_model()
-
-
-def _user_to_graphql_type(user: Any) -> UserType:
-    """Convert Django User to GraphQL UserType.
-
-    Args:
-        user: Django User instance
-
-    Returns:
-        UserType for GraphQL with organisation_id and user_instance for DataLoaders
-    """
-    return UserType(
-        id=strawberry.ID(str(user.id)),
-        email=user.email,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        email_verified=user.email_verified,
-        two_factor_enabled=user.two_factor_enabled,
-        is_active=user.is_active,
-        created_at=user.created_at,
-        updated_at=user.updated_at,
-        _organisation_id=user.organisation_id,
-        _user_instance=user,
-    )
 
 
 def _audit_log_to_graphql_type(log: AuditLog) -> AuditLogType:
@@ -79,12 +55,13 @@ class UserQueries:
         Returns:
             Current user or None if not authenticated
         """
-        user = info.context.request.user
+        request = get_request(info)
+        user = request.user
 
         if not user.is_authenticated:
             return None
 
-        return _user_to_graphql_type(user)
+        return user_to_graphql_type(user)
 
     @strawberry.field
     def user(self, info: Info, id: strawberry.ID) -> UserType | None:
@@ -100,7 +77,8 @@ class UserQueries:
         Returns:
             User if in same organisation, None otherwise
         """
-        current_user = info.context.request.user
+        request = get_request(info)
+        current_user = request.user
 
         if not current_user.is_authenticated:
             raise AuthenticationError(ErrorCode.NOT_AUTHENTICATED, "Authentication required")
@@ -111,7 +89,7 @@ class UserQueries:
             user = User.objects.select_related("organisation").get(
                 id=str(id), organisation=current_user.organisation
             )
-            return _user_to_graphql_type(user)
+            return user_to_graphql_type(user)
 
         except (User.DoesNotExist, ValueError):
             return None
@@ -134,7 +112,8 @@ class UserQueries:
         Raises:
             AuthenticationError: If user not authenticated
         """
-        current_user = info.context.request.user
+        request = get_request(info)
+        current_user = request.user
 
         if not current_user.is_authenticated:
             raise AuthenticationError(ErrorCode.NOT_AUTHENTICATED, "Authentication required")
@@ -150,7 +129,7 @@ class UserQueries:
             .order_by("email")[offset : offset + limit]
         )
 
-        return [_user_to_graphql_type(u) for u in users]
+        return [user_to_graphql_type(u) for u in users]
 
     @strawberry.field
     def my_audit_logs(self, info: Info, limit: int = 50, offset: int = 0) -> list[AuditLogType]:
@@ -169,7 +148,8 @@ class UserQueries:
         Raises:
             AuthenticationError: If user not authenticated
         """
-        current_user = info.context.request.user
+        request = get_request(info)
+        current_user = request.user
 
         if not current_user.is_authenticated:
             raise AuthenticationError(ErrorCode.NOT_AUTHENTICATED, "Authentication required")
@@ -208,7 +188,8 @@ class UserQueries:
             AuthenticationError: If user not authenticated
             PermissionError: If user not organisation admin
         """
-        current_user = info.context.request.user
+        request = get_request(info)
+        current_user = request.user
 
         if not current_user.is_authenticated:
             raise AuthenticationError(ErrorCode.NOT_AUTHENTICATED, "Authentication required")

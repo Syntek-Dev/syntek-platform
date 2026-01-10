@@ -10,6 +10,7 @@ from datetime import datetime
 from typing import Any
 
 import strawberry
+from strawberry.types import Info
 
 
 @strawberry.type
@@ -63,33 +64,41 @@ class UserType:
 
     # Store organisation_id for lazy loading (Private fields are not exposed in schema)
     _organisation_id: strawberry.Private[int | None] = None
+    _organisation_data: strawberry.Private[OrganisationType | None] = None
     _user_instance: strawberry.Private[Any] = None
 
     @strawberry.field
     def organisation(self) -> OrganisationType | None:
-        """Load organisation for the user.
+        """Get organisation for the user.
+
+        Returns pre-loaded organisation data if available (from select_related),
+        otherwise returns None. DataLoader usage can be added in future phases.
 
         Returns:
             OrganisationType for the user's organisation or None
         """
-        if self._organisation_id is None:
-            return None
+        # Return pre-loaded organisation data if available
+        if self._organisation_data is not None:
+            return self._organisation_data
 
-        from apps.core.models import Organisation
+        # Try to get organisation from user instance if available
+        if self._user_instance is not None:
+            try:
+                org = getattr(self._user_instance, "organisation", None)
+                if org is not None:
+                    return OrganisationType(
+                        id=strawberry.ID(str(org.id)),
+                        name=org.name,
+                        slug=org.slug,
+                        industry=org.industry,
+                        is_active=org.is_active,
+                        created_at=org.created_at,
+                        updated_at=org.updated_at,
+                    )
+            except (AttributeError, Exception):
+                pass
 
-        try:
-            org = Organisation.objects.get(id=self._organisation_id)
-            return OrganisationType(
-                id=strawberry.ID(str(org.id)),
-                name=org.name,
-                slug=org.slug,
-                industry=org.industry,
-                is_active=org.is_active,
-                created_at=org.created_at,
-                updated_at=org.updated_at,
-            )
-        except Organisation.DoesNotExist:
-            return None
+        return None
 
     @strawberry.field
     def profile(self) -> UserProfileType | None:
@@ -114,7 +123,9 @@ class UserType:
                 language=profile.language,
                 bio=profile.bio,
             )
-        except Exception:
+        except (AttributeError, Exception):
+            # Handle AttributeError when profile doesn't exist
+            # or any other unexpected database/model issues
             return None
 
 

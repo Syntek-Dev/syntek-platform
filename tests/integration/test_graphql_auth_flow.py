@@ -151,7 +151,10 @@ class TestCompleteRegistrationFlow:
 
         Given: User with email "test@example.com" exists
         When: Another user tries to register with same email
-        Then: Registration fails with EMAIL_ALREADY_EXISTS error
+        Then: Registration fails with INVALID_INPUT error (generic for security)
+
+        Note: Uses generic error to prevent user enumeration (SV2 security requirement).
+        The system does not reveal whether an email already exists.
         """
         # Create existing user
         UserFactory.create(email="test@example.com", organisation=organisation)
@@ -184,7 +187,8 @@ class TestCompleteRegistrationFlow:
 
         data = response.json()
         assert "errors" in data
-        assert "EMAIL_ALREADY_EXISTS" in str(data["errors"])
+        # Generic error code for security (prevents user enumeration)
+        assert "INVALID_INPUT" in str(data["errors"])
 
 
 @pytest.mark.integration

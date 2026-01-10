@@ -608,16 +608,20 @@ class TestAuthService:
     def test_check_account_lockout_after_failed_attempts(self):
         """Test account lockout after multiple failed logins.
 
-        Given: User with 5+ failed login attempts
+        Given: User with account locked until future time
         When: Calling check_account_lockout()
         Then: Returns True (account is locked)
         """
+        from django.utils import timezone as tz
+
         user = Mock()
         user.id = uuid.uuid4()
+        user.account_locked_until = tz.now() + tz.timedelta(minutes=30)
+        user.failed_login_attempts = 5
 
         result = AuthService.check_account_lockout(user)
 
-        assert isinstance(result, bool)
+        assert result is True
 
     def test_unlock_account_clears_lockout(self):
         """Test unlocking account clears failed attempts.

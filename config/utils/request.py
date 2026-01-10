@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
-def get_client_ip(request: "HttpRequest", anonymise: bool = False) -> str:
+def get_client_ip(request: HttpRequest, anonymise: bool = False) -> str:
     """Extract the client IP address from an HTTP request.
 
     Handles X-Forwarded-For header from reverse proxies (nginx, load balancers).

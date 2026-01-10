@@ -39,11 +39,11 @@ INTERNAL_IPS += [ip[: ip.rfind(".")] + ".1" for ip in ips]
 ADMIN_ALLOWED_IPS = env.list(  # noqa: F405
     "ADMIN_ALLOWED_IPS",
     default=[
-        "127.0.0.1",      # localhost IPv4
-        "::1",            # localhost IPv6
+        "127.0.0.1",  # localhost IPv4
+        "::1",  # localhost IPv6
         "172.16.0.0/12",  # Docker networks
-        "10.0.0.0/8",     # Private network range
-        "192.168.0.0/16", # Private network range
+        "10.0.0.0/8",  # Private network range
+        "192.168.0.0/16",  # Private network range
     ],
 )
 

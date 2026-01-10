@@ -5,7 +5,7 @@ load balancers, and monitoring services to verify application health.
 """
 
 from django.conf import settings
-from django.db import connection, DatabaseError, OperationalError
+from django.db import DatabaseError, OperationalError, connection
 from django.http import JsonResponse
 from django.views import View
 

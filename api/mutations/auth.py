@@ -4,8 +4,6 @@ This module defines all authentication-related mutations with full implementatio
 for Phase 3 including security requirements C4, C5, H2, H4, H10, M1.
 """
 
-from typing import Any
-
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone as tz
@@ -24,7 +22,8 @@ from api.types.auth import (
     RegisterInput,
     TwoFactorSetupPayload,
 )
-from api.types.user import UserType
+from api.utils.context import get_bearer_token, get_ip_address, get_request, get_user_agent
+from api.utils.converters import user_to_graphql_type
 from apps.core.models import EmailVerificationToken, Organisation
 from apps.core.services.audit_service import AuditService
 from apps.core.services.auth_service import AuthService
@@ -34,28 +33,6 @@ from apps.core.services.token_service import TokenService
 from apps.core.utils.token_hasher import TokenHasher
 
 User = get_user_model()
-
-
-def _user_to_graphql(user: Any) -> UserType:
-    """Convert Django User instance to GraphQL UserType.
-
-    Args:
-        user: Django User instance
-
-    Returns:
-        UserType for GraphQL response
-    """
-    return UserType(
-        id=strawberry.ID(str(user.id)),
-        email=user.email,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        email_verified=user.email_verified,
-        two_factor_enabled=user.two_factor_enabled,
-        is_active=user.is_active,
-        created_at=user.created_at,
-        updated_at=user.updated_at,
-    )
 
 
 @strawberry.type
@@ -80,7 +57,7 @@ class AuthMutations:
             ValidationError: If email exists or organisation not found (H4)
         """
         # Get client IP for audit logging
-        ip_address = info.context.request.META.get("REMOTE_ADDR", "")
+        ip_address = get_ip_address(info)
 
         # Find organisation by slug
         try:
@@ -103,8 +80,6 @@ class AuthMutations:
                 )
 
                 # Create email verification token (expires in 24 hours)
-                from django.utils import timezone as tz
-
                 token = TokenHasher.generate_token()
                 token_hash = TokenHasher.hash_token(token)
                 EmailVerificationToken.objects.create(
@@ -130,12 +105,16 @@ class AuthMutations:
                 return AuthPayload(
                     token=tokens["access_token"],
                     refresh_token=tokens["refresh_token"],
-                    user=_user_to_graphql(user),
+                    user=user_to_graphql_type(user),
                     requires_two_factor=False,
                 )
 
         except ValueError as e:
             # Convert to standardised error (H4)
+            # TODO (Phase 4): Improve service layer exception handling by creating
+            # custom exception types (EmailAlreadyExistsError, InvalidInputError, etc.)
+            # in apps/core/services/exceptions.py to avoid string matching.
+            # This will allow more precise error handling without parsing error messages.
             if "already registered" in str(e):
                 raise ValidationError(ErrorCode.EMAIL_ALREADY_EXISTS, str(e)) from e
             raise ValidationError(ErrorCode.INVALID_INPUT, str(e)) from e
@@ -157,8 +136,8 @@ class AuthMutations:
             AuthenticationError: If credentials invalid or email not verified (H4)
         """
         # Get client IP and device fingerprint
-        ip_address = info.context.request.META.get("REMOTE_ADDR", "")
-        user_agent = info.context.request.META.get("HTTP_USER_AGENT", "")
+        ip_address = get_ip_address(info)
+        user_agent = get_user_agent(info)
 
         # Authenticate user
         result = AuthService.login(
@@ -204,7 +183,7 @@ class AuthMutations:
             return AuthPayload(
                 token="",  # No token until 2FA verified
                 refresh_token="",
-                user=_user_to_graphql(user),
+                user=user_to_graphql_type(user),
                 requires_two_factor=True,
             )
 
@@ -219,7 +198,7 @@ class AuthMutations:
         return AuthPayload(
             token=result["access_token"],
             refresh_token=result["refresh_token"],
-            user=_user_to_graphql(user),
+            user=user_to_graphql_type(user),
             requires_two_factor=False,
         )
 
@@ -238,24 +217,21 @@ class AuthMutations:
         Raises:
             AuthenticationError: If user not authenticated
         """
-        user = info.context.request.user
+        request = get_request(info)
+        user = request.user
 
         if not user.is_authenticated:
             raise AuthenticationError(ErrorCode.NOT_AUTHENTICATED, "Authentication required")
 
         # Get access token from request headers
-        auth_header = info.context.request.META.get("HTTP_AUTHORIZATION", "")
-        if auth_header.startswith("Bearer "):
-            token = auth_header[7:]  # Remove "Bearer " prefix
-        else:
-            token = ""
+        token = get_bearer_token(info)
 
         # Revoke current session token (H10 requirement)
         if token:
             AuthService.logout(user, token)
 
         # Log logout
-        ip_address = info.context.request.META.get("REMOTE_ADDR", "")
+        ip_address = get_ip_address(info)
         AuditService.log_event(
             action="logout",
             user=user,
@@ -281,7 +257,7 @@ class AuthMutations:
         Raises:
             AuthenticationError: If refresh token invalid, expired, or replayed
         """
-        user_agent = info.context.request.META.get("HTTP_USER_AGENT", "")
+        user_agent = get_user_agent(info)
 
         # Get session token to find user
         token_hash = TokenHasher.hash_token(refresh_token)
@@ -307,7 +283,7 @@ class AuthMutations:
         return AuthPayload(
             token=tokens["access_token"],
             refresh_token=tokens["refresh_token"],
-            user=_user_to_graphql(user),
+            user=user_to_graphql_type(user),
             requires_two_factor=False,
         )
 
@@ -324,7 +300,7 @@ class AuthMutations:
         Returns:
             True (always, to prevent user enumeration - M7)
         """
-        ip_address = info.context.request.META.get("REMOTE_ADDR", "")
+        ip_address = get_ip_address(info)
 
         try:
             user = User.objects.get(email=input.email)
@@ -366,7 +342,7 @@ class AuthMutations:
             AuthenticationError: If token invalid or expired
             ValidationError: If password weak
         """
-        ip_address = info.context.request.META.get("REMOTE_ADDR", "")
+        ip_address = get_ip_address(info)
 
         # Verify reset token (C3 - hash comparison)
         user = PasswordResetService.verify_reset_token(input.token)
@@ -407,12 +383,13 @@ class AuthMutations:
             AuthenticationError: If user not authenticated or current password wrong
             ValidationError: If new password weak or in history
         """
-        user = info.context.request.user
+        request = get_request(info)
+        user = request.user
 
         if not user.is_authenticated:
             raise AuthenticationError(ErrorCode.NOT_AUTHENTICATED, "Authentication required")
 
-        ip_address = info.context.request.META.get("REMOTE_ADDR", "")
+        ip_address = get_ip_address(info)
 
         # Change password (validates and revokes sessions)
         success = AuthService.change_password(user, input.current_password, input.new_password)
@@ -448,7 +425,7 @@ class AuthMutations:
         Raises:
             AuthenticationError: If token invalid or expired
         """
-        ip_address = info.context.request.META.get("REMOTE_ADDR", "")
+        ip_address = get_ip_address(info)
 
         # Hash token for lookup (C3)
         token_hash = TokenHasher.hash_token(token)
@@ -501,7 +478,8 @@ class AuthMutations:
             AuthenticationError: If user not authenticated
             ValidationError: If email already verified
         """
-        user = info.context.request.user
+        request = get_request(info)
+        user = request.user
 
         if not user.is_authenticated:
             raise AuthenticationError(ErrorCode.NOT_AUTHENTICATED, "Authentication required")

@@ -123,9 +123,9 @@ class AuditLogFactory(DjangoModelFactory):
     organisation = factory.SelfAttribute("user.organisation")
     action = Faker("random_element", elements=["login", "logout", "password_change", "2fa_enabled"])
     ip_address = factory.LazyFunction(
-        lambda: __import__("apps.core.utils.encryption", fromlist=["IPEncryption"]).IPEncryption.encrypt_ip(
-            "127.0.0.1"
-        )
+        lambda: __import__(
+            "apps.core.utils.encryption", fromlist=["IPEncryption"]
+        ).IPEncryption.encrypt_ip("127.0.0.1")
     )
     user_agent = Faker("user_agent")
     metadata = factory.Dict({})

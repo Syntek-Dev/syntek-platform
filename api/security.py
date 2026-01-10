@@ -62,6 +62,7 @@ class QueryDepthLimitExtension(SchemaExtension):
             max_depth: Maximum allowed query depth (overrides settings).
         """
         super().__init__(execution_context=execution_context)
+        self.execution_context = execution_context
         configured_depth = getattr(settings, "GRAPHQL_MAX_QUERY_DEPTH", 10)
         self.max_depth: int = max_depth if max_depth is not None else (configured_depth or 10)
 
@@ -151,6 +152,7 @@ class QueryComplexityLimitExtension(SchemaExtension):
             max_complexity: Maximum allowed complexity (overrides settings).
         """
         super().__init__(execution_context=execution_context)
+        self.execution_context = execution_context
         configured_complexity = getattr(settings, "GRAPHQL_MAX_QUERY_COMPLEXITY", 1000)
         self.max_complexity: int = (
             max_complexity if max_complexity is not None else (configured_complexity or 1000)
@@ -206,11 +208,9 @@ class QueryComplexityLimitExtension(SchemaExtension):
         elif hasattr(document, "selection_set"):
             if document.selection_set:
                 for selection in document.selection_set.selections:
-                    # Each field adds base complexity
-                    field_complexity = 1 * multiplier
-
-                    # List fields are more expensive (multiply nested queries)
+                    # Determine if this is a list field (more expensive)
                     # This is a simplified heuristic; in production, you'd check field types
+                    field_multiplier = 1
                     if hasattr(selection, "name"):
                         field_name = (
                             selection.name.value
@@ -225,10 +225,9 @@ class QueryComplexityLimitExtension(SchemaExtension):
                         ]:
                             # Assume list fields return 10 items on average
                             field_multiplier = 10
-                        else:
-                            field_multiplier = 1
-                    else:
-                        field_multiplier = 1
+
+                    # Each field adds base complexity (with multiplier for list fields)
+                    field_complexity = 1 * multiplier * field_multiplier
 
                     # Add nested complexity
                     nested_complexity = self._calculate_query_complexity(
@@ -251,6 +250,15 @@ class IntrospectionControlExtension(SchemaExtension):
 
     Introspection is always enabled in development/test environments.
     """
+
+    def __init__(self, *, execution_context: ExecutionContext) -> None:
+        """Initialize the extension.
+
+        Args:
+            execution_context: The GraphQL execution context.
+        """
+        super().__init__(execution_context=execution_context)
+        self.execution_context = execution_context
 
     def on_execute(self) -> Iterator[None]:
         """Execute before the GraphQL query is processed.
@@ -296,23 +304,62 @@ class IntrospectionControlExtension(SchemaExtension):
         if not document:
             return False
 
-        # Check for __schema or __type fields
         if hasattr(document, "definitions"):
-            for definition in document.definitions:
-                if self._is_introspection_query(definition):
-                    return True
-        elif hasattr(document, "selection_set"):
-            if document.selection_set:
-                for selection in document.selection_set.selections:
-                    if hasattr(selection, "name"):
-                        field_name = (
-                            selection.name.value
-                            if hasattr(selection.name, "value")
-                            else str(selection.name)
-                        )
-                        if field_name in ["__schema", "__type"]:
-                            return True
-                    if self._is_introspection_query(selection):
-                        return True
+            return self._check_definitions(document.definitions)
+
+        if hasattr(document, "selection_set"):
+            return self._check_selection_set(document.selection_set)
 
         return False
+
+    def _check_definitions(self, definitions: list[Any]) -> bool:
+        """Check if any definition is an introspection query.
+
+        Args:
+            definitions: List of GraphQL definitions.
+
+        Returns:
+            True if any definition is an introspection query.
+        """
+        for definition in definitions:
+            if self._is_introspection_query(definition):
+                return True
+        return False
+
+    def _check_selection_set(self, selection_set: Any) -> bool:
+        """Check if selection set contains introspection fields.
+
+        Args:
+            selection_set: GraphQL selection set.
+
+        Returns:
+            True if selection set contains __schema or __type.
+        """
+        if not selection_set or not selection_set.selections:
+            return False
+
+        for selection in selection_set.selections:
+            if self._is_introspection_field(selection):
+                return True
+            if self._is_introspection_query(selection):
+                return True
+
+        return False
+
+    def _is_introspection_field(self, selection: Any) -> bool:
+        """Check if a field is an introspection field (__schema or __type).
+
+        Args:
+            selection: GraphQL selection node.
+
+        Returns:
+            True if the field is __schema or __type, False otherwise.
+        """
+        if not hasattr(selection, "name"):
+            return False
+
+        field_name = (
+            selection.name.value if hasattr(selection.name, "value") else str(selection.name)
+        )
+
+        return field_name in ["__schema", "__type"]

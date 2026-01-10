@@ -211,6 +211,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_login_ip = models.BinaryField(null=True, blank=True)
     password_changed_at = models.DateTimeField(null=True, blank=True)
 
+    # Account lockout (P2-C7)
+    failed_login_attempts = models.IntegerField(default=0)
+    account_locked_until = models.DateTimeField(null=True, blank=True)
+
+    # Email verification token storage
+    email_verification_token = models.CharField(max_length=255, null=True, blank=True)
+    email_verification_token_created = models.DateTimeField(null=True, blank=True)
+
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

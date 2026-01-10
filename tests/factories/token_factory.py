@@ -16,7 +16,6 @@ from factory.django import DjangoModelFactory
 from apps.core.utils.token_hasher import TokenHasher
 from tests.factories.user_factory import UserFactory
 
-
 # Default plain token for testing - allows tests to use this known token
 DEFAULT_TEST_TOKEN = "test_token_for_verification_12345678901234567890"
 

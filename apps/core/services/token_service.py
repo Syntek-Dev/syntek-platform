@@ -18,6 +18,7 @@ Example:
 import uuid
 from datetime import timedelta
 
+from django.db import transaction
 from django.utils import timezone
 
 from apps.core.models import SessionToken, User
@@ -118,7 +119,8 @@ class TokenService:
 
         Implements token rotation: old refresh token is invalidated and
         new pair is issued. If used refresh token is detected, entire
-        token family is revoked (H9).
+        token family is revoked (H9). Uses SELECT FOR UPDATE to prevent
+        race conditions (P2-C4, SV3).
 
         Args:
             refresh_token: JWT refresh token string
@@ -131,34 +133,38 @@ class TokenService:
         refresh_token_hash = TokenHasher.hash_token(refresh_token)
 
         try:
-            session_token = SessionToken.objects.select_related("user").get(
-                refresh_token_hash=refresh_token_hash
-            )
+            # Use SELECT FOR UPDATE with NOWAIT to prevent race conditions
+            with transaction.atomic():
+                session_token = (
+                    SessionToken.objects.select_for_update(nowait=True)
+                    .select_related("user")
+                    .get(refresh_token_hash=refresh_token_hash)
+                )
 
-            # Check if refresh token was already used (replay attack)
-            if session_token.is_refresh_token_used:
-                # Revoke entire token family
-                TokenService.revoke_token_family(session_token.token_family)
-                return None
+                # Check if refresh token was already used (replay attack)
+                if session_token.is_refresh_token_used:
+                    # Revoke entire token family
+                    TokenService.revoke_token_family(session_token.token_family)
+                    return None
 
-            # Check if token is valid
-            if not session_token.is_valid():
-                return None
+                # Check if token is valid
+                if not session_token.is_valid():
+                    return None
 
-            # Mark refresh token as used
-            session_token.mark_refresh_token_used()
+                # Mark refresh token as used (atomic operation)
+                session_token.mark_refresh_token_used()
 
-            # Create new token pair
-            new_tokens = TokenService.create_tokens(session_token.user, device_fingerprint)
+                # Create new token pair
+                new_tokens = TokenService.create_tokens(session_token.user, device_fingerprint)
 
-            # Update token family to maintain chain
-            new_session = SessionToken.objects.get(
-                refresh_token_hash=TokenHasher.hash_token(new_tokens["refresh_token"])
-            )
-            new_session.token_family = session_token.token_family
-            new_session.save(update_fields=["token_family"])
+                # Update token family to maintain chain (atomic operation)
+                new_session = SessionToken.objects.select_for_update().get(
+                    refresh_token_hash=TokenHasher.hash_token(new_tokens["refresh_token"])
+                )
+                new_session.token_family = session_token.token_family
+                new_session.save(update_fields=["token_family"])
 
-            return new_tokens
+                return new_tokens
 
         except SessionToken.DoesNotExist:
             return None

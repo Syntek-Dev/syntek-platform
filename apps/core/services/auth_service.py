@@ -19,12 +19,15 @@ Example:
     >>> tokens = AuthService.login(email, password)
 """
 
+import secrets
+import time
 from datetime import datetime
 from typing import Any
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.utils import timezone
 
 import pytz
 
@@ -59,6 +62,9 @@ class AuthService:
     ) -> User:
         """Register a new user with email verification.
 
+        Uses SELECT FOR UPDATE with NOWAIT to prevent race conditions
+        on concurrent registrations with the same email (P2-C2).
+
         Args:
             email: User email address
             password: Plain password (will be hashed)
@@ -70,28 +76,40 @@ class AuthService:
             Created User instance
 
         Raises:
-            ValueError: If email already exists or validation fails
+            ValueError: If validation fails (generic message to prevent enumeration)
         """
-        # Check if email already exists
-        if User.objects.filter(email=email).exists():
-            raise ValueError(f"Email address {email} is already registered")
-
-        # Validate password
+        # Validate password first (before database check)
         try:
             validate_password(password)
         except ValidationError as e:
-            raise ValueError("; ".join(e.messages)) from e
+            # Generic error message to prevent user enumeration (SV2)
+            raise ValueError("Registration failed due to invalid data") from e
 
-        # Create user
-        user = User.objects.create_user(  # type: ignore[attr-defined]
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            organisation=organisation,
-        )
+        # Use database transaction with row-level locking to prevent race conditions
+        try:
+            with transaction.atomic():
+                # Check if email exists with SELECT FOR UPDATE to prevent race condition
+                # Use NOWAIT to fail fast if another transaction is registering same email
+                if User.objects.select_for_update(nowait=True).filter(email=email).exists():
+                    # Generic error message to prevent user enumeration (SV2, P2-C6)
+                    raise ValueError("Registration failed due to invalid data")
 
-        return user
+                # Create user
+                user = User.objects.create_user(  # type: ignore[attr-defined]
+                    email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    organisation=organisation,
+                )
+
+                return user
+
+        except Exception as e:
+            # Generic error for all failures to prevent user enumeration
+            if "Registration failed" in str(e):
+                raise
+            raise ValueError("Registration failed due to invalid data") from e
 
     @staticmethod
     def login(
@@ -103,7 +121,8 @@ class AuthService:
         """Authenticate user and create session tokens.
 
         Uses SELECT FOR UPDATE to prevent race conditions on concurrent
-        login attempts (H3). Returns None if authentication fails.
+        login attempts (H3). Uses constant-time comparison to prevent
+        timing attacks (SV1).
 
         Args:
             email: User email address
@@ -114,20 +133,40 @@ class AuthService:
         Returns:
             Dictionary with tokens and user data if successful, None otherwise
         """
+        # Add small random delay to prevent timing attacks (SV1)
+        # Randomize between 0-50ms to mask database query timing differences
+        time.sleep(secrets.randbelow(50) / 1000.0)
+
         # Use SELECT FOR UPDATE to prevent race conditions (H3)
         with transaction.atomic():
             try:
                 user = User.objects.select_for_update().get(email=email)
+                user_exists = True
             except User.DoesNotExist:
-                return None
+                user_exists = False
+                # Create dummy user to perform password check for constant time
+                user = User()
+                user.set_password("dummy_password_for_timing")
 
-            # Check password
-            if not user.check_password(password):
+            # Always check password (even if user doesn't exist) to prevent timing attack
+            password_valid = user.check_password(password)
+
+            # If user doesn't exist or password invalid, return None
+            if not user_exists or not password_valid:
+                # Record failed login attempt if user exists
+                if user_exists:
+                    AuthService.record_failed_login(user)
+
+                # Add another small delay to match successful login timing
+                time.sleep(secrets.randbelow(50) / 1000.0)
                 return None
 
             # Check if account is locked
             if AuthService.check_account_lockout(user):
                 return None
+
+            # Reset failed login attempts on successful login
+            AuthService.reset_failed_login_attempts(user)
 
             # Create tokens
             tokens = TokenService.create_tokens(user, device_fingerprint)
@@ -213,8 +252,16 @@ class AuthService:
         Returns:
             True if account is locked, False otherwise
         """
-        # For Phase 2, always return False
-        # Full lockout implementation will be in Phase 6
+        # Check if account is locked and lockout period hasn't expired
+        if user.account_locked_until:
+            if timezone.now() < user.account_locked_until:
+                return True
+            else:
+                # Lockout period expired, reset failed attempts
+                user.failed_login_attempts = 0
+                user.account_locked_until = None
+                user.save(update_fields=["failed_login_attempts", "account_locked_until"])
+
         return False
 
     @staticmethod
@@ -224,9 +271,43 @@ class AuthService:
         Args:
             user: User instance to unlock
         """
-        # For Phase 2, do nothing
-        # Full lockout implementation will be in Phase 6
-        pass
+        user.failed_login_attempts = 0
+        user.account_locked_until = None
+        user.save(update_fields=["failed_login_attempts", "account_locked_until"])
+
+    @staticmethod
+    def record_failed_login(user: User) -> None:
+        """Record failed login attempt and lock account if threshold exceeded.
+
+        Locks account for 30 minutes after 5 failed attempts.
+
+        Args:
+            user: User instance that had failed login
+        """
+        MAX_FAILED_ATTEMPTS = 5
+        LOCKOUT_DURATION_MINUTES = 30
+
+        # Increment failed login attempts
+        user.failed_login_attempts += 1
+
+        # Check if threshold exceeded
+        if user.failed_login_attempts >= MAX_FAILED_ATTEMPTS:
+            # Lock account for 30 minutes
+            user.account_locked_until = timezone.now() + timedelta(minutes=LOCKOUT_DURATION_MINUTES)
+
+        user.save(update_fields=["failed_login_attempts", "account_locked_until"])
+
+    @staticmethod
+    def reset_failed_login_attempts(user: User) -> None:
+        """Reset failed login attempts after successful login.
+
+        Args:
+            user: User instance that successfully logged in
+        """
+        if user.failed_login_attempts > 0:
+            user.failed_login_attempts = 0
+            user.account_locked_until = None
+            user.save(update_fields=["failed_login_attempts", "account_locked_until"])
 
     @staticmethod
     def get_timezone_aware_datetime(dt: datetime, timezone_str: str = "UTC") -> datetime:
