@@ -1,7 +1,7 @@
 # Version History
 
-**Last Updated**: 08/01/2026
-**Version**: 0.5.0
+**Last Updated**: 16/01/2026
+**Version**: 0.7.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -19,6 +19,30 @@ This file contains detailed technical version history documenting all file chang
   - [Table of Contents](#table-of-contents)
   - [\[Unreleased\]](#unreleased)
     - [Technical Changes](#technical-changes)
+  - [\[0.7.0\] - 16/01/2026](#070---16012026)
+    - [Summary](#summary)
+    - [Breaking Changes](#breaking-changes)
+    - [Database Migrations](#database-migrations)
+    - [API Changes](#api-changes)
+    - [Files Changed](#files-changed)
+      - [Core Services (New)](#core-services-new)
+      - [Core Utilities (New)](#core-utilities-new)
+      - [Models (New)](#models-new)
+      - [Models (Updated)](#models-updated)
+      - [API Mutations (New)](#api-mutations-new)
+      - [API Types (New)](#api-types-new)
+      - [API (Updated)](#api-updated)
+      - [Tests (New)](#tests-new)
+      - [Tests (Updated)](#tests-updated)
+      - [Dependencies (Updated)](#dependencies-updated)
+    - [Dependencies Updated](#dependencies-updated-1)
+    - [Configuration Changes](#configuration-changes)
+    - [Performance Notes](#performance-notes)
+    - [Security Notes](#security-notes)
+    - [Documentation Notes](#documentation-notes)
+    - [Testing Notes](#testing-notes)
+    - [Migration Notes](#migration-notes)
+    - [Deployment Notes](#deployment-notes)
   - [\[0.5.0\] - 08/01/2026](#050---08012026)
     - [Summary](#summary)
     - [Breaking Changes](#breaking-changes)
@@ -196,6 +220,171 @@ This file contains detailed technical version history documenting all file chang
 ### Technical Changes
 
 - Nothing yet
+
+---
+
+## [0.7.0] - 16/01/2026
+
+### Summary
+
+Major feature release implementing Phase 5: Two-Factor Authentication (2FA) for US-001. This release adds complete TOTP-based two-factor authentication with encrypted secret storage, multiple device support, backup codes, and comprehensive GraphQL API mutations and queries.
+
+### Breaking Changes
+
+None - All changes are additive feature enhancements.
+
+### Database Migrations
+
+| Migration                                 | Description                                          |
+| ----------------------------------------- | ---------------------------------------------------- |
+| `apps/core/migrations/0008_backupcode.py` | New BackupCode model for storing hashed backup codes |
+
+### API Changes
+
+#### New GraphQL Mutations
+
+| Mutation                   | Description                                          |
+| -------------------------- | ---------------------------------------------------- |
+| `setup2fa`                 | Create new TOTP device with QR code and backup codes |
+| `confirm2fa`               | Confirm device setup with valid TOTP token           |
+| `remove2faDevice`          | Remove a specific TOTP device                        |
+| `regenerate2faBackupCodes` | Generate new backup codes (invalidates old ones)     |
+| `disable2fa`               | Disable 2FA completely (removes all devices/codes)   |
+
+#### New GraphQL Queries
+
+| Query              | Description                                      |
+| ------------------ | ------------------------------------------------ |
+| `twoFactorStatus`  | Get user's 2FA status, devices, and backup count |
+| `twoFactorDevices` | List all registered TOTP devices                 |
+
+### Files Changed
+
+#### Core Services (New)
+
+| File                                 | Changes                                                                   |
+| ------------------------------------ | ------------------------------------------------------------------------- |
+| `apps/core/services/totp_service.py` | New TOTP service with device management, token verification, backup codes |
+
+#### Core Utilities (New)
+
+| File                                 | Changes                                                         |
+| ------------------------------------ | --------------------------------------------------------------- |
+| `apps/core/utils/totp_encryption.py` | New Fernet encryption utility for TOTP secrets (C2 requirement) |
+
+#### Models (New)
+
+| File                              | Changes                                                     |
+| --------------------------------- | ----------------------------------------------------------- |
+| `apps/core/models/backup_code.py` | New BackupCode model with SHA-256 hashing (H14 requirement) |
+
+#### Models (Updated)
+
+| File                              | Changes                                                     |
+| --------------------------------- | ----------------------------------------------------------- |
+| `apps/core/models/totp_device.py` | Enhanced with encrypted secret storage, device naming (H13) |
+| `apps/core/models/__init__.py`    | Added BackupCode export                                     |
+
+#### API Mutations (New)
+
+| File                    | Changes                                                         |
+| ----------------------- | --------------------------------------------------------------- |
+| `api/mutations/totp.py` | New TOTP mutations: setup, confirm, remove, regenerate, disable |
+
+#### API Types (New)
+
+| File                | Changes                                             |
+| ------------------- | --------------------------------------------------- |
+| `api/types/totp.py` | New GraphQL types for TOTP operations and responses |
+
+#### API (Updated)
+
+| File                | Changes                                                         |
+| ------------------- | --------------------------------------------------------------- |
+| `api/schema.py`     | Added TOTPMutations and TOTPQueries to schema                   |
+| `api/types/user.py` | Fixed Python 3.14 Strawberry compatibility (Optional[], List[]) |
+
+#### Tests (New)
+
+| File                                        | Changes                                         |
+| ------------------------------------------- | ----------------------------------------------- |
+| `tests/unit/apps/core/test_totp_service.py` | 30 unit tests for TOTP service                  |
+| `tests/unit/api/test_totp_mutations.py`     | 18 unit tests for GraphQL mutations             |
+| `tests/integration/test_2fa_login_flow.py`  | 7 integration tests for complete 2FA login flow |
+
+#### Tests (Updated)
+
+| File                               | Changes                         |
+| ---------------------------------- | ------------------------------- |
+| `tests/factories/token_factory.py` | Added BackupCodeFactory         |
+| `tests/factories/__init__.py`      | Exported BackupCodeFactory      |
+| `tests/conftest.py`                | Added BackupCodeFactory fixture |
+
+#### Dependencies (Updated)
+
+| File      | Changes                                     |
+| --------- | ------------------------------------------- |
+| `uv.lock` | Added qrcode package for QR code generation |
+
+### Dependencies Updated
+
+| Package  | Version | Purpose                                    |
+| -------- | ------- | ------------------------------------------ |
+| `qrcode` | 8.0+    | QR code generation for authenticator setup |
+
+### Configuration Changes
+
+None - Uses existing encryption keys from environment.
+
+### Performance Notes
+
+- TOTP verification uses time window tolerance (±1 period) to reduce failed attempts
+- Backup codes are hashed with SHA-256 for O(1) verification
+- Device queries use select_related for efficient database access
+
+### Security Notes
+
+| Requirement | Implementation                                                   |
+| ----------- | ---------------------------------------------------------------- |
+| C2          | TOTP secrets encrypted at rest using Fernet symmetric encryption |
+| H13         | Multiple TOTP devices per user with custom naming                |
+| H14         | Backup codes stored as SHA-256 hashes, never plain text          |
+| M3          | Backup code format XXXX-XXXX-XXXX for easier manual entry        |
+| M6          | Time window tolerance ±1 period (90-second window)               |
+
+### Documentation Notes
+
+- Updated CHANGELOG.md with 0.7.0 release notes
+- Updated .claude/CLAUDE.md version header
+
+### Testing Notes
+
+| Test Type   | Count  | Coverage                           |
+| ----------- | ------ | ---------------------------------- |
+| Unit        | 30     | TOTPService methods                |
+| Mutation    | 18     | GraphQL TOTP mutations and queries |
+| Integration | 7      | Complete 2FA login flow            |
+| **Total**   | **55** | 98% coverage on totp_service.py    |
+
+### Migration Notes
+
+1. Run migrations to create BackupCode table:
+
+   ```bash
+   ./scripts/env/dev.sh migrate
+   ```
+
+2. Ensure TOTP encryption key is set in environment:
+   ```bash
+   TOTP_ENCRYPTION_KEY=<base64-encoded-fernet-key>
+   ```
+
+### Deployment Notes
+
+1. **Pre-deployment**: Ensure TOTP_ENCRYPTION_KEY environment variable is configured
+2. **Database**: Run migration 0008_backupcode
+3. **Dependencies**: qrcode package added to requirements
+4. **Rollback**: Safe to rollback - 2FA is opt-in per user
 
 ---
 
