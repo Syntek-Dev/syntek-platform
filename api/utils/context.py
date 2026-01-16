@@ -6,13 +6,13 @@ GraphQL Info context in a consistent way.
 
 from typing import TYPE_CHECKING
 
-from strawberry.types import Info
-
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
+    from strawberry.types import Info
 
-def get_request(info: Info) -> "HttpRequest":
+
+def get_request(info: Info) -> HttpRequest:
     """Extract Django request from GraphQL Info context.
 
     Handles both dict-based context (from CustomGraphQLView) and
@@ -67,7 +67,7 @@ def get_user_agent(info: Info) -> str:
         'Mozilla/5.0...'
     """
     request = get_request(info)
-    return request.META.get("HTTP_USER_AGENT", "")
+    return request.headers.get("user-agent", "")
 
 
 def get_authorization_header(info: Info) -> str:
@@ -84,7 +84,7 @@ def get_authorization_header(info: Info) -> str:
         'Bearer eyJ0eXAi...'
     """
     request = get_request(info)
-    return request.META.get("HTTP_AUTHORIZATION", "")
+    return request.headers.get("authorization", "")
 
 
 def get_bearer_token(info: Info) -> str:

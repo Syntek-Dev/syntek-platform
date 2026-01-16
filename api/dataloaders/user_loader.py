@@ -4,12 +4,14 @@ Prevents N+1 query problems when loading users in GraphQL resolvers.
 Batches user lookups within a single request.
 """
 
-from collections.abc import Iterable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.contrib.auth import get_user_model
 
 from strawberry.dataloader import DataLoader
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 User = get_user_model()
 

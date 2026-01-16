@@ -16,12 +16,14 @@ Example:
 """
 
 import logging
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils.html import strip_tags
 
-from apps.core.models import User
+if TYPE_CHECKING:
+    from apps.core.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +73,10 @@ class EmailService:
             <html>
                 <body>
                     <h2>Welcome {user.get_full_name() or user.email}!</h2>
-                    <p>Thank you for registering. Please verify your email address by clicking the link below:</p>
+                    <p>
+                    Thank you for registering. Please verify your email address by clicking the
+                    link below:
+                    </p>
                     <p><a href="{verification_url}">Verify Email Address</a></p>
                     <p>Or copy and paste this URL into your browser:</p>
                     <p>{verification_url}</p>
@@ -103,6 +108,8 @@ class EmailService:
     def send_password_reset_email(user: User, token: str) -> bool:
         """Send password reset email to user.
 
+        Phase 4 (M007): Token expiry reduced from 15 to 10 minutes for improved security.
+
         Args:
             user: User to send email to
             token: Password reset token (plain, not hashed)
@@ -115,18 +122,29 @@ class EmailService:
             reset_url = f"{base_url}/reset-password/{token}"
             site_name = getattr(settings, "SITE_NAME", "Backend Template")
 
+            # Get expiry minutes from settings (M007 - Phase 4)
+            expiry_minutes = getattr(settings, "PASSWORD_RESET_TOKEN_EXPIRY_MINUTES", 10)
+
             subject = f"Reset your password - {site_name}"
             html_message = f"""
             <html>
                 <body>
                     <h2>Password Reset Request</h2>
                     <p>Hi {user.get_full_name() or user.email},</p>
-                    <p>You requested to reset your password. Click the link below to set a new password:</p>
-                    <p><a href="{reset_url}">Reset Password</a></p>
+                    <p>You requested to reset your password. Click the link below to set a new
+                    password:</p>
+                    <p><a href="{reset_url}" style="display: inline-block; padding: 10px 20px;
+                    background-color: #007bff; color: white; text-decoration: none; border-radius:
+                        5px;">Reset Password</a></p>
                     <p>Or copy and paste this URL into your browser:</p>
                     <p>{reset_url}</p>
-                    <p>This link will expire in 15 minutes.</p>
-                    <p>If you did not request a password reset, please ignore this email.</p>
+                    <p style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 10px;
+                        margin: 15px 0; border-radius: 5px;">
+                        <strong>⏰ Important:</strong> This link will expire in
+                        <strong>{expiry_minutes} minutes</strong>.
+                    </p>
+                    <p>If you did not request a password reset, please ignore this email.
+                    Your password will remain unchanged.</p>
                 </body>
             </html>
             """

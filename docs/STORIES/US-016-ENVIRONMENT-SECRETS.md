@@ -240,8 +240,8 @@ This story covers secure management of encrypted environment variables and secre
 
 This story addresses the following security gaps from the US-001 Security Implementation Review:
 
-| Gap ID | Description | Implementation |
-|--------|-------------|----------------|
+| Gap ID   | Description                        | Implementation                                                                     |
+| -------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
 | **H001** | Key management strategy incomplete | AWS Secrets Manager/HashiCorp Vault integration, key hierarchy, automated rotation |
 
 ---

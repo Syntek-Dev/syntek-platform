@@ -17,7 +17,8 @@ Example:
     >>> verified = EmailVerificationService.verify_email(token)
 """
 
-from datetime import timedelta
+from datetime import datetime, timedelta
+from typing import cast
 
 from django.utils import timezone
 
@@ -143,9 +144,8 @@ class EmailVerificationService:
             return False
 
         # Check if token is expired
-        expiry_time = user.email_verification_token_created + timedelta(
-            hours=EmailVerificationService.TOKEN_EXPIRY_HOURS
-        )
+        token_created = cast("datetime", user.email_verification_token_created)
+        expiry_time = token_created + timedelta(hours=EmailVerificationService.TOKEN_EXPIRY_HOURS)
         return timezone.now() < expiry_time
 
     @staticmethod

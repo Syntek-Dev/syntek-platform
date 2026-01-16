@@ -32,12 +32,15 @@ References:
 
 import ipaddress
 import logging
-from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.http import Http404, HttpRequest, HttpResponse
 
 from config.utils.request import get_client_ip
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger("security.ip_allowlist")
 
@@ -112,7 +115,7 @@ class IPAllowlistMiddleware:
                         "client_ip": client_ip,
                         "path": request.path,
                         "method": request.method,
-                        "user_agent": request.META.get("HTTP_USER_AGENT", ""),
+                        "user_agent": request.headers.get("user-agent", ""),
                     },
                 )
 
@@ -203,8 +206,4 @@ class IPAllowlistMiddleware:
             return False
 
         # Check if IP is in any of the allowed networks
-        for network in self.allowed_ips:
-            if client_ip in network:
-                return True
-
-        return False
+        return any(client_ip in network for network in self.allowed_ips)

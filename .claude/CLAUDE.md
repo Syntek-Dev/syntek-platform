@@ -1,7 +1,7 @@
 # Backend Template - Django Project
 
-**Last Updated**: 09/01/2026
-**Version**: 0.6.0
+**Last Updated**: 16/01/2026
+**Version**: 0.7.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -222,7 +222,7 @@ This project enforces strict code quality standards to maintain a clean, maintai
 
 **CRITICAL:** All imports must be organised at the top of the file following PEP 8 import order.
 
-**Import Order (enforced by isort):**
+**Import Order (enforced by Ruff):**
 
 1. **Standard library imports** - Python built-in modules
 2. **Third-party imports** - Installed packages (Django, etc.)
@@ -727,16 +727,15 @@ Before committing code, verify:
 All files in this project must adhere to consistent line length limits. These are enforced by
 linters and formatters in CI/CD pipelines.
 
-| File Type          | Max Line Length | Enforced By  | Configuration File   |
-| ------------------ | --------------- | ------------ | -------------------- |
-| Python (`.py`)     | 100 characters  | Black, isort | `pyproject.toml`     |
-| Markdown (`.md`)   | 120 characters  | markdownlint | `.markdownlint.json` |
-| JavaScript (`.js`) | 100 characters  | Prettier     | `.prettierrc`        |
-| TypeScript (`.ts`) | 100 characters  | Prettier     | `.prettierrc`        |
-| HTML (`.html`)     | 120 characters  | Prettier     | `.prettierrc`        |
-| CSS (`.css`)       | 100 characters  | Prettier     | `.prettierrc`        |
-| YAML (`.yml`)      | 100 characters  | Prettier     | `.prettierrc`        |
-| JSON (`.json`)     | 100 characters  | Prettier     | `.prettierrc`        |
+| File Type        | Max Line Length | Enforced By  | Configuration File   |
+| ---------------- | --------------- | ------------ | -------------------- |
+| Python (`.py`)   | 100 characters  | Ruff         | `pyproject.toml`     |
+| Markdown (`.md`) | 120 characters  | markdownlint | `.markdownlint.json` |
+| HTML (`.html`)   | 120 characters  | Prettier     | `.prettierrc`        |
+| CSS (`.css`)     | 100 characters  | Prettier     | `.prettierrc`        |
+| YAML (`.yml`)    | 100 characters  | Prettier     | `.prettierrc`        |
+| JSON (`.json`)   | 100 characters  | Prettier     | `.prettierrc`        |
+| GraphQL (`.gql`) | 100 characters  | Prettier     | `.prettierrc`        |
 
 ### Exceptions
 
@@ -747,11 +746,16 @@ linters and formatters in CI/CD pipelines.
 ### Running Lint Checks
 
 ```bash
-# Check all formatting and linting
-npm run lint
+# Run all pre-commit hooks
+pre-commit run --all-files
 
-# Check Python formatting
-npm run lint:prettier
+# Check Python linting and formatting
+ruff check .
+ruff format --check .
+
+# Auto-fix Python issues
+ruff check --fix .
+ruff format .
 
 # Check Markdown linting
 npm run lint:markdown

@@ -85,11 +85,7 @@ class PasswordHistory(models.Model):
         """
         recent_passwords = cls.objects.filter(user=user).order_by("-created_at")[:history_count]
 
-        for history in recent_passwords:
-            if history.check_password(password):
-                return True
-
-        return False
+        return any(history.check_password(password) for history in recent_passwords)
 
     @classmethod
     def record_password(cls, user, password_hash: str) -> PasswordHistory:

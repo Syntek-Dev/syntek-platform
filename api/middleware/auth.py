@@ -4,14 +4,17 @@ Extracts JWT tokens from Authorization header and authenticates users
 for GraphQL requests. Uses TokenService for token verification.
 """
 
-from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.http import HttpRequest
 
 from apps.core.services.token_service import TokenService
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from django.http import HttpRequest
 
 User = get_user_model()
 
@@ -52,7 +55,7 @@ class GraphQLAuthenticationMiddleware:
             return self.get_response(request)
 
         # Extract token from Authorization header
-        auth_header = request.META.get("HTTP_AUTHORIZATION", "")
+        auth_header = request.headers.get("authorization", "")
 
         if auth_header.startswith("Bearer "):
             token = auth_header[7:]  # Remove "Bearer " prefix

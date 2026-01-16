@@ -54,4 +54,4 @@ class Organisation(models.Model):
 
     def __str__(self) -> str:
         """Return organisation name."""
-        return self.name
+        return str(self.name)

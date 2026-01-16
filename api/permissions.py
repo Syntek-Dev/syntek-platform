@@ -3,12 +3,14 @@
 Implementation stub for TDD - permissions return placeholder values.
 """
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from strawberry.permission import BasePermission
-from strawberry.types import Info
 
 from api.utils.context import get_request
+
+if TYPE_CHECKING:
+    from strawberry.types import Info
 
 
 class IsAuthenticated(BasePermission):

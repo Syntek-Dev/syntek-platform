@@ -8,7 +8,7 @@ SECURITY NOTE (C3):
 - Plain token never persisted, only sent via email once
 - HMAC-SHA256 hashing with TOKEN_SIGNING_KEY
 - Constant-time comparison prevents timing attacks
-- Tokens expire after 15 minutes
+- Tokens expire after 10 minutes (M007 - Phase 4)
 
 Example:
     >>> token = PasswordResetService.create_reset_token(user)
@@ -18,7 +18,9 @@ Example:
 """
 
 from datetime import timedelta
+from typing import cast
 
+from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -37,7 +39,7 @@ class PasswordResetService:
     Security Features:
     - Hash-then-store pattern (C3)
     - HMAC-SHA256 token hashing
-    - 15-minute token expiry
+    - 10-minute token expiry (M007 - Phase 4)
     - Single-use tokens
     - Rate limiting on reset requests
 
@@ -65,8 +67,9 @@ class PasswordResetService:
         # Hash the token for storage
         token_hash = TokenHasher.hash_token(plain_token)
 
-        # Create password reset token (expires in 1 hour)
-        expires_at = timezone.now() + timedelta(hours=1)
+        # Get token expiry from settings (default 10 minutes - M007)
+        expiry_minutes = getattr(settings, "PASSWORD_RESET_TOKEN_EXPIRY_MINUTES", 10)
+        expires_at = timezone.now() + timedelta(minutes=expiry_minutes)
         PasswordResetToken.objects.create(
             user=user,
             token_hash=token_hash,
@@ -132,7 +135,7 @@ class PasswordResetService:
         try:
             validate_password(new_password, user=user)
         except ValidationError as e:
-            raise ValueError("; ".join(e.messages)) from e
+            raise ValueError("; ".join(cast("list[str]", e.messages))) from e
 
         # Hash the token to find it
         token_hash = TokenHasher.hash_token(token)

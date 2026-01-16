@@ -235,18 +235,16 @@ cmd_test_cov() {
 
 cmd_lint() {
     header "Running Linters"
-    info "Running Ruff..."
+    info "Running Ruff check..."
     dc exec ${WEB_SERVICE} ruff check .
-    info "Running Black (check mode)..."
-    dc exec ${WEB_SERVICE} black --check .
-    info "Running Flake8..."
-    dc exec ${WEB_SERVICE} flake8
+    info "Running Ruff format check..."
+    dc exec ${WEB_SERVICE} ruff format --check .
 }
 
 cmd_format() {
     header "Formatting Code"
-    info "Running Black..."
-    dc exec ${WEB_SERVICE} black .
+    info "Running Ruff format..."
+    dc exec ${WEB_SERVICE} ruff format .
     info "Running Ruff fix..."
     dc exec ${WEB_SERVICE} ruff check --fix .
     success "Code formatted."
@@ -437,7 +435,7 @@ cmd_help() {
     echo -e "${YELLOW}Testing & Quality:${NC}"
     echo "  test [args]        Run pytest tests"
     echo "  test-cov           Run tests with coverage report"
-    echo "  lint               Run linters (ruff, black, isort)"
+    echo "  lint               Run linters (ruff check + format)"
     echo "  format             Auto-format code"
     echo "  typecheck          Run mypy type checker"
     echo ""

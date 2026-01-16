@@ -145,7 +145,7 @@ class IPEncryption:
                 log.save(update_fields=["ip_address"])
                 audit_logs_updated += 1
             except (ValueError, TypeError) as e:
-                errors.append(f"AuditLog {log.id}: {str(e)}")
+                errors.append(f"AuditLog {log.id}: {e!s}")
 
         # Rotate SessionToken IPs
         for token in SessionToken.objects.filter(ip_address__isnull=False):
@@ -158,7 +158,7 @@ class IPEncryption:
                 token.save(update_fields=["ip_address"])
                 session_tokens_updated += 1
             except (ValueError, TypeError) as e:
-                errors.append(f"SessionToken {token.id}: {str(e)}")
+                errors.append(f"SessionToken {token.id}: {e!s}")
 
         return {
             "audit_logs_updated": audit_logs_updated,

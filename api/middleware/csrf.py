@@ -7,11 +7,14 @@ Implementation stub for TDD.
 """
 
 import json
-from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from django.http import HttpRequest
 from django.middleware.csrf import CsrfViewMiddleware
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from django.http import HttpRequest
 
 
 class GraphQLCSRFMiddleware:

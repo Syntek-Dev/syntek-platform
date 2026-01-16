@@ -11,13 +11,17 @@ Tests cover:
 These tests follow TDD - they test against minimal implementation stubs.
 """
 
+from typing import TYPE_CHECKING
+
 from django.contrib.auth import get_user_model
 
 import pytest
 
-from apps.core.models import AuditLog, Organisation
 from apps.core.services.token_service import TokenService
 from tests.factories import AuditLogFactory, OrganisationFactory, UserFactory
+
+if TYPE_CHECKING:
+    from apps.core.models import AuditLog, Organisation
 
 User = get_user_model()
 
@@ -193,7 +197,7 @@ class TestUserQuery:
         When: user query is executed for another user in organisation A
         Then: User data is returned
         """
-        org, users = organisation_with_users
+        _org, users = organisation_with_users
         requester = users[0]
         target = users[1]
         auth_headers = get_auth_headers(requester)
@@ -328,7 +332,7 @@ class TestUsersQuery:
         Then: All 5 users are returned
         And: No users from other organisations are included
         """
-        org, users = organisation_with_users
+        _org, users = organisation_with_users
         requester = users[0]
         auth_headers = get_auth_headers(requester)
 
@@ -360,7 +364,7 @@ class TestUsersQuery:
         When: users query is executed with limit=2, offset=1
         Then: 2 users are returned starting from offset 1
         """
-        org, users = organisation_with_users
+        _org, users = organisation_with_users
         requester = users[0]
         auth_headers = get_auth_headers(requester)
 
@@ -490,7 +494,7 @@ class TestAuditLogQueries:
         Then: All audit logs for that user are returned
         And: Logs are ordered by most recent first
         """
-        user, logs = user_with_audit_logs
+        user, _logs = user_with_audit_logs
         auth_headers = get_auth_headers(user)
 
         query = """
@@ -521,7 +525,7 @@ class TestAuditLogQueries:
         When: myAuditLogs query is executed with limit=1
         Then: Only 1 log is returned
         """
-        user, logs = user_with_audit_logs
+        user, _logs = user_with_audit_logs
         auth_headers = get_auth_headers(user)
 
         query = """

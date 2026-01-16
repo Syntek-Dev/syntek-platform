@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # CI/CD Setup Script for Django Backend Template
-# This script sets up Git hooks and validates the CI/CD environment
+# This script sets up Git hooks via pre-commit and validates the CI/CD environment
 # All checks run inside Docker containers - no local Python installation needed
 
 set -e
@@ -47,52 +47,28 @@ else
     exit 1
 fi
 
-# Set up Git hooks (Husky-style)
+# Set up Git hooks via pre-commit
 echo ""
-echo "Setting up Git hooks..."
+echo "Setting up Git hooks via pre-commit..."
 
-# Create .husky directory if it doesn't exist
-mkdir -p .husky
-
-# Make hook scripts executable
-chmod +x .husky/pre-commit 2>/dev/null || true
-chmod +x .husky/pre-push 2>/dev/null || true
-chmod +x .husky/commit-msg 2>/dev/null || true
-chmod +x .husky/post-merge 2>/dev/null || true
-
-# Create Git hook symlinks
-if [ -d .git/hooks ]; then
-    # Pre-commit hook
-    cat > .git/hooks/pre-commit << 'EOF'
-#!/bin/sh
-.husky/pre-commit
-EOF
-    chmod +x .git/hooks/pre-commit
-
-    # Pre-push hook
-    cat > .git/hooks/pre-push << 'EOF'
-#!/bin/sh
-.husky/pre-push
-EOF
-    chmod +x .git/hooks/pre-push
-
-    # Commit-msg hook
-    cat > .git/hooks/commit-msg << 'EOF'
-#!/bin/sh
-.husky/commit-msg "$1"
-EOF
-    chmod +x .git/hooks/commit-msg
-
-    # Post-merge hook
-    cat > .git/hooks/post-merge << 'EOF'
-#!/bin/sh
-.husky/post-merge
-EOF
-    chmod +x .git/hooks/post-merge
-
-    echo -e "${GREEN}✅ Git hooks installed${NC}"
+# Check if pre-commit is available
+if command -v pre-commit > /dev/null 2>&1; then
+    echo "pre-commit found locally, installing hooks..."
+    pre-commit install
+    pre-commit install --hook-type commit-msg
+    echo -e "${GREEN}✅ Git hooks installed via pre-commit${NC}"
+elif [ -d .venv ] && [ -f .venv/bin/pre-commit ]; then
+    echo "pre-commit found in .venv, installing hooks..."
+    .venv/bin/pre-commit install
+    .venv/bin/pre-commit install --hook-type commit-msg
+    echo -e "${GREEN}✅ Git hooks installed via pre-commit${NC}"
 else
-    echo -e "${YELLOW}⚠️  Not a Git repository - hooks not installed${NC}"
+    echo -e "${YELLOW}⚠️  pre-commit not found locally${NC}"
+    echo "Installing pre-commit via pip..."
+    pip install pre-commit
+    pre-commit install
+    pre-commit install --hook-type commit-msg
+    echo -e "${GREEN}✅ Git hooks installed via pre-commit${NC}"
 fi
 
 # Validate workflow files
@@ -143,28 +119,20 @@ done
 echo ""
 echo "Testing code quality tools in Docker..."
 
-echo -n "Testing Black... "
+echo -n "Testing Ruff... "
 if docker compose -f docker/test/docker-compose.yml run --rm --no-deps web \
-    bash -c "which black > /dev/null" > /dev/null 2>&1; then
+    bash -c "which ruff > /dev/null" > /dev/null 2>&1; then
     echo -e "${GREEN}✓${NC}"
 else
-    echo -e "${YELLOW}⚠️  Black not found in container${NC}"
+    echo -e "${YELLOW}⚠️  Ruff not found in container${NC}"
 fi
 
-echo -n "Testing isort... "
+echo -n "Testing mypy... "
 if docker compose -f docker/test/docker-compose.yml run --rm --no-deps web \
-    bash -c "which isort > /dev/null" > /dev/null 2>&1; then
+    bash -c "which mypy > /dev/null" > /dev/null 2>&1; then
     echo -e "${GREEN}✓${NC}"
 else
-    echo -e "${YELLOW}⚠️  isort not found in container${NC}"
-fi
-
-echo -n "Testing flake8... "
-if docker compose -f docker/test/docker-compose.yml run --rm --no-deps web \
-    bash -c "which flake8 > /dev/null" > /dev/null 2>&1; then
-    echo -e "${GREEN}✓${NC}"
-else
-    echo -e "${YELLOW}⚠️  flake8 not found in container${NC}"
+    echo -e "${YELLOW}⚠️  mypy not found in container${NC}"
 fi
 
 echo -n "Testing pytest... "
@@ -182,7 +150,7 @@ echo "Setup Summary"
 echo "=========================================="
 echo ""
 echo -e "${GREEN}✅ Docker environment configured${NC}"
-echo -e "${GREEN}✅ Git hooks installed${NC}"
+echo -e "${GREEN}✅ Git hooks installed via pre-commit${NC}"
 echo -e "${GREEN}✅ CI/CD workflows validated${NC}"
 echo ""
 echo "Next steps:"
@@ -191,6 +159,10 @@ echo "2. Set up GitHub Environments (staging, production, production-approval)"
 echo "3. Test locally:"
 echo "   docker compose -f docker/test/docker-compose.yml run --rm web pytest"
 echo "4. Commit your changes using Conventional Commits format"
+echo ""
+echo "pre-commit commands:"
+echo "  pre-commit run --all-files  # Run all hooks on all files"
+echo "  pre-commit autoupdate       # Update hook versions"
 echo ""
 echo "Documentation:"
 echo "- Full guide: docs/DEVOPS/CICD-GITHUB-ACTIONS.MD"

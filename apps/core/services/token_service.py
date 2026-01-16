@@ -12,7 +12,7 @@ SECURITY NOTE (H9):
 
 Example:
     >>> tokens = TokenService.create_tokens(user)
-    >>> {'access_token': '...', 'refresh_token': '...', 'family_id': '...'}
+    >>> {"access_token": "...", "refresh_token": "...", "family_id": "..."}
 """
 
 import uuid

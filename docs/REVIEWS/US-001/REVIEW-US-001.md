@@ -1833,12 +1833,14 @@ api/
 #### ✅ Critical Issues Resolved
 
 **C4: CSRF Protection** - ✅ IMPLEMENTED
+
 - GraphQL CSRF middleware created in `api/middleware/csrf.py`
 - Queries allowed without CSRF token (read-only operations)
 - All mutations require CSRF token
 - **Status**: Properly implemented and enforced
 
 **C5: Email Verification Bypass** - ✅ IMPLEMENTED
+
 - Login mutation blocks unverified users (lines 184-195 in `api/mutations/auth.py`)
 - Audit logging for blocked login attempts
 - Clear error message with `EMAIL_NOT_VERIFIED` error code
@@ -1847,6 +1849,7 @@ api/
 #### ✅ High Priority Issues Resolved
 
 **H2: N+1 Query Prevention** - ✅ IMPLEMENTED (with caveat)
+
 - DataLoaders created for User, Organisation, and AuditLog models
 - Batch loading with `select_related()` and `prefetch_related()`
 - **Issue Found**: DataLoaders created but not yet utilised in GraphQL resolvers
@@ -1854,6 +1857,7 @@ api/
 - **Recommendation**: Migrate to DataLoader pattern in future optimisation pass
 
 **H4: Error Message Standardisation** - ✅ EXCELLENT
+
 - Comprehensive error code enum in `api/errors.py`
 - Custom exception classes: `AuthenticationError`, `ValidationError`, `PermissionError`
 - Consistent error structure with code, message, and extensions
@@ -1861,6 +1865,7 @@ api/
 - **Status**: Excellently implemented with 27 error codes
 
 **H10: Logout Token Revocation** - ✅ IMPLEMENTED
+
 - Logout mutation properly revokes session tokens (lines 226-266 in `auth.py`)
 - Extracts Bearer token from Authorization header
 - Calls `AuthService.logout()` to revoke token
@@ -1870,6 +1875,7 @@ api/
 #### ✅ Additional Security Features
 
 **Query Depth Limiting** - ✅ IMPLEMENTED
+
 - `QueryDepthLimitExtension` in `api/security.py`
 - Maximum depth: 10 levels (configurable via `GRAPHQL_MAX_QUERY_DEPTH`)
 - Recursive depth calculation algorithm
@@ -1877,18 +1883,21 @@ api/
 - **Status**: Production-ready implementation
 
 **Query Complexity Analysis** - ✅ IMPLEMENTED
+
 - `QueryComplexityLimitExtension` in `api/security.py`
 - Maximum complexity: 1000 (configurable via `GRAPHQL_MAX_QUERY_COMPLEXITY`)
 - List fields multiply complexity (heuristic: 10x multiplier for plural fields)
 - **Status**: Good heuristic implementation
 
 **Introspection Control** - ✅ IMPLEMENTED
+
 - `IntrospectionControlExtension` in `api/security.py`
 - Enabled in DEBUG mode, disabled in production
 - Can be explicitly enabled via `GRAPHQL_ENABLE_INTROSPECTION` setting
 - **Status**: Secure defaults
 
 **Organisation Boundary Enforcement** - ✅ EXCELLENT
+
 - All user queries filter by `organisation=current_user.organisation`
 - No cross-organisation data leakage possible
 - Enforced in both queries (`user()`, `users()`) and audit logs
@@ -1948,6 +1957,7 @@ async def organisation(self, info: Info) -> OrganisationType | None:
 ```
 
 **Impact**:
+
 - N+1 queries still occur when fetching lists of users with organisations
 - Example: `users { id email organisation { name } }` triggers 1 + N queries
 - Performance degradation with large result sets
@@ -2093,6 +2103,7 @@ except Exception:
    - Data leakage prevention
 
 **Test Quality**:
+
 - All tests use pytest markers (`@pytest.mark.integration`, `@pytest.mark.graphql`)
 - Fixtures properly isolate test data
 - Clear Given/When/Then documentation in docstrings
@@ -2101,12 +2112,14 @@ except Exception:
 #### ⚠️ Test Coverage Gaps
 
 **Missing Unit Tests**:
+
 - No unit tests for permission classes (`api/permissions.py`)
 - No unit tests for DataLoaders (`api/dataloaders/*.py`)
 - No unit tests for security extensions (`api/security.py`)
 - No tests for error code enum completeness
 
 **Missing Integration Tests**:
+
 - CSRF protection not tested (C4 requirement marked complete but no test found)
 - Email verification enforcement tested indirectly (should have explicit test)
 - Query depth limiting mentioned in plan but no test found
@@ -2178,6 +2191,7 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
 #### Issues Resolved
 
 **✅ DRY-1: DataLoader Implementation**
+
 - **Status**: RESOLVED
 - **Impact**: N+1 query elimination for organisation loading
 - **Changes**:
@@ -2189,6 +2203,7 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
   - Performance improvement: Batch loading now active for organisation queries
 
 **✅ DRY-2: User Conversion Duplication**
+
 - **Status**: RESOLVED
 - **Impact**: Eliminated code duplication across mutations and queries
 - **Changes**:
@@ -2200,6 +2215,7 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
   - Single source of truth for User → GraphQL type conversion
 
 **✅ CQ-1: Duplicate Import**
+
 - **Status**: RESOLVED
 - **Impact**: Code cleanliness and import organisation
 - **Changes**:
@@ -2207,6 +2223,7 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
   - Module-level import now used throughout (line 11)
 
 **✅ CQ-3: Generic Exception Catching**
+
 - **Status**: RESOLVED
 - **Impact**: Better error handling and debugging
 - **Changes**:
@@ -2215,6 +2232,7 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
   - Prevents masking unexpected errors while handling expected cases
 
 **📝 CQ-2: Service Layer Exceptions**
+
 - **Status**: DOCUMENTED (deferred to Phase 4)
 - **Impact**: More specific error handling
 - **Changes**:
@@ -2258,12 +2276,14 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
 #### Performance Improvements
 
 **N+1 Query Elimination**:
+
 - Before: Querying multiple users with organisations triggered 1 + N database queries
 - After: Single query loads all users, DataLoader batches organisation loading
 - Example query: `users { id email organisation { name } }` now triggers 2 queries instead of N+1
 - Significant performance improvement for list queries with related data
 
 **DataLoader Batching**:
+
 - Organisation loading now batched per-request
 - Uses `Organisation.objects.in_bulk()` for efficient retrieval
 - Maintains correct order of results
@@ -2272,20 +2292,24 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
 #### Code Quality Improvements
 
 **DRY Compliance**:
+
 - User conversion logic now in single location
 - Mutations and queries share same converter
 - Future changes only need to update one function
 
 **Import Organisation**:
+
 - Cleaner import structure with no duplication
 - Easier to maintain and understand
 
 **Exception Handling**:
+
 - More specific exception catching
 - Better error diagnostics
 - Clear comments explaining exception handling strategy
 
 **DataLoader Integration**:
+
 - Async/await pattern correctly implemented
 - Context properly propagated to resolvers
 - Bug-free DataLoader instantiation
@@ -2293,6 +2317,7 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
 #### Refactoring Summary
 
 **Total Changes**:
+
 - 4 files modified
 - 2 files created
 - 5 issues addressed (4 resolved, 1 documented)
@@ -2300,6 +2325,7 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
 - 0 test failures
 
 **Quality Metrics**:
+
 - Code duplication: Reduced from 2 duplicate functions to 1 shared utility
 - Import cleanliness: 100% (no duplicate imports)
 - Exception handling: Improved specificity in critical paths
@@ -2307,6 +2333,7 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
 - DataLoader coverage: Organisation loading now optimised
 
 **Testing Impact**:
+
 - All existing tests pass without modification
 - No new tests required (functionality unchanged)
 - Performance improvement measurable in integration tests
@@ -2317,6 +2344,7 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
 **Updated Rating**: ⭐⭐⭐⭐⭐ (4.8/5)
 
 **Rating Improvement Justification**:
+
 - DRY violations eliminated (+0.2)
 - DataLoader implementation completed (+0.1)
 - Code quality issues resolved (+0.1)
@@ -2338,6 +2366,7 @@ All identified code quality issues and DRY violations from the Phase 3 review ha
 The implementation demonstrates mature engineering practices with security-first thinking, comprehensive documentation, and a well-structured codebase. Test coverage is good with excellent integration tests, though unit tests for some modules would strengthen the test suite.
 
 **Post-Refactoring Quality**:
+
 - ✅ DRY compliance: Excellent (no duplication)
 - ✅ DataLoader usage: Fully implemented and optimised
 - ✅ Code cleanliness: Import organisation perfect
@@ -2366,20 +2395,24 @@ The implementation demonstrates mature engineering practices with security-first
 ### Phase 3 Action Items
 
 **High Priority** (Before Phase 4):
+
 - [ ] Add unit tests for permission classes
 - [ ] Add integration tests for CSRF protection
 - [ ] Add tests for query depth/complexity limiting
 - [x] ~~Fix duplicate import (CQ-1)~~ ✅ COMPLETED
 
 **Medium Priority** (Future optimisation):
+
 - [x] ~~Migrate to DataLoader pattern for N+1 prevention (DRY-1)~~ ✅ COMPLETED
 - [x] ~~Extract shared user conversion function (DRY-2)~~ ✅ COMPLETED
 - [x] ~~Improve service layer exception specificity (CQ-2)~~ 📝 DOCUMENTED (deferred to Phase 4)
 
 **Low Priority**:
+
 - [x] ~~Refine exception handling to be more specific (CQ-3)~~ ✅ COMPLETED
 
 **Refactoring Completed**: 10/01/2026
+
 - All code quality issues resolved
 - All DRY violations eliminated
 - DataLoader implementation complete

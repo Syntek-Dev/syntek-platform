@@ -155,6 +155,12 @@ AUTH_PASSWORD_VALIDATORS = [
             "history_count": 5,
         },
     },
+    {
+        "NAME": "config.validators.password.CommonPasswordValidator",
+        "OPTIONS": {
+            "password_list_path": None,  # Uses default common_passwords.txt
+        },
+    },
 ]
 
 # Password hashing configuration
@@ -173,14 +179,16 @@ TOKEN_SIGNING_KEY = env(
 )
 
 # TOTP encryption key (Fernet) - C2 security requirement
-# Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+# Generate with: python -c "from cryptography.fernet import Fernet;
+# print(Fernet.generate_key().decode())"
 TOTP_ENCRYPTION_KEY = env(
     "TOTP_ENCRYPTION_KEY",
     default="",  # Must be set in production
 )
 
 # IP address encryption key (Fernet) - for audit logs and session tracking
-# Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+# Generate with: python -c "from cryptography.fernet import Fernet;
+# print(Fernet.generate_key().decode())"
 IP_ENCRYPTION_KEY = env(
     "IP_ENCRYPTION_KEY",
     default="",  # Must be set in production
@@ -198,7 +206,14 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Media files
 MEDIA_URL = "/media/"
@@ -266,3 +281,22 @@ SESSION_COOKIE_AGE = env.int("SESSION_COOKIE_AGE", default=1209600)  # 2 weeks
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_USE_SESSIONS = False  # Store CSRF token in cookie for API compatibility
+
+# Phase 4: Security Hardening Configuration
+
+# HaveIBeenPwned Integration (C001 - Phase 4)
+# Checks passwords against known data breaches using k-anonymity model
+HIBP_API_ENABLED = env.bool("HIBP_API_ENABLED", default=True)
+HIBP_BREACH_THRESHOLD = env.int("HIBP_BREACH_THRESHOLD", default=3)
+
+# reCAPTCHA v3 Configuration (M001 - Phase 4)
+# Bot protection for registration and login endpoints
+RECAPTCHA_ENABLED = env.bool("RECAPTCHA_ENABLED", default=False)
+RECAPTCHA_SITE_KEY = env("RECAPTCHA_SITE_KEY", default="")
+RECAPTCHA_SECRET_KEY = env("RECAPTCHA_SECRET_KEY", default="")
+RECAPTCHA_SCORE_REGISTER = env.float("RECAPTCHA_SCORE_REGISTER", default=0.5)
+RECAPTCHA_SCORE_LOGIN = env.float("RECAPTCHA_SCORE_LOGIN", default=0.3)
+
+# Password Reset Token Configuration (M007 - Phase 4)
+# Token expiry reduced from 15 to 10 minutes for improved security
+PASSWORD_RESET_TOKEN_EXPIRY_MINUTES = env.int("PASSWORD_RESET_TOKEN_EXPIRY_MINUTES", default=10)

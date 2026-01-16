@@ -16,6 +16,7 @@ GDPR Compliance:
 """
 
 import logging
+from typing import TYPE_CHECKING
 
 from django.contrib.auth.signals import (
     user_logged_in,
@@ -24,16 +25,18 @@ from django.contrib.auth.signals import (
 )
 from django.core.exceptions import PermissionDenied
 from django.dispatch import receiver
-from django.http import HttpRequest, HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 
 from config.utils.request import anonymise_ip, get_client_ip
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest, HttpResponse
 
 # Security audit logger (configured separately from application logs)
 security_logger = logging.getLogger("security.audit")
 
 # Re-export for backwards compatibility
-__all__ = ["anonymise_ip", "get_client_ip", "SecurityAuditMiddleware"]
+__all__ = ["SecurityAuditMiddleware", "anonymise_ip", "get_client_ip"]
 
 
 class SecurityAuditMiddleware(MiddlewareMixin):
@@ -114,8 +117,8 @@ class SecurityAuditMiddleware(MiddlewareMixin):
                 "method": request.method,
                 "user": str(request.user) if request.user.is_authenticated else "anonymous",
                 "user_id": request.user.id if request.user.is_authenticated else None,
-                "user_agent": request.META.get("HTTP_USER_AGENT", ""),
-                "referer": request.META.get("HTTP_REFERER", ""),
+                "user_agent": request.headers.get("user-agent", ""),
+                "referer": request.headers.get("referer", ""),
             },
         )
 
@@ -135,7 +138,7 @@ class SecurityAuditMiddleware(MiddlewareMixin):
                 "client_ip": get_client_ip(request),  # Full IP for security
                 "path": request.path,
                 "method": request.method,
-                "user_agent": request.META.get("HTTP_USER_AGENT", ""),
+                "user_agent": request.headers.get("user-agent", ""),
             },
         )
 
@@ -165,7 +168,7 @@ def log_user_login(sender, request: HttpRequest, user, **kwargs) -> None:
             "user_id": user.id,
             "email": user_identifier,
             "client_ip": get_client_ip(request),  # Full IP for security
-            "user_agent": request.META.get("HTTP_USER_AGENT", ""),
+            "user_agent": request.headers.get("user-agent", ""),
         },
     )
 
@@ -227,6 +230,6 @@ def log_user_login_failed(
             "event_type": "login_failure",
             "email": user_identifier,
             "client_ip": client_ip,
-            "user_agent": request.META.get("HTTP_USER_AGENT", ""),
+            "user_agent": request.headers.get("user-agent", ""),
         },
     )

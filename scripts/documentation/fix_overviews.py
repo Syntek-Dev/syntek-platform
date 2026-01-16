@@ -9,6 +9,7 @@ headers like 'Overview' or 'Executive Summary' before modifying files.
 
 import os
 import re
+from pathlib import Path
 
 # Same ignore config as before to stay consistent
 IGNORE_DIRS = {
@@ -48,14 +49,11 @@ def should_skip_file(filepath):
     Used for auto-generated test results that are read-only or shouldn't be edited.
     """
     norm_path = os.path.normpath(filepath)
-    filename = os.path.basename(filepath)
+    filename = Path(filepath).name
 
     # Specific Ignore: Auto-generated test results
     # Pattern: docs/TESTS/RESULTS/test-*.md
-    if "docs/TESTS/RESULTS" in norm_path and filename.startswith("test-"):
-        return True
-
-    return False
+    return bool("docs/TESTS/RESULTS" in norm_path and filename.startswith("test-"))
 
 
 def fix_files(root_dir):
@@ -63,8 +61,6 @@ def fix_files(root_dir):
     Walks the directory tree and appends the template to compliant missing files.
     """
     fixed_count = 0
-
-    print("--- Auto-Appending 'Overview' sections ---")
 
     for dirpath, dirnames, filenames in os.walk(root_dir):
         # Filter directories in-place
@@ -74,10 +70,10 @@ def fix_files(root_dir):
             if not filename.endswith(".md"):
                 continue
 
-            filepath = os.path.join(dirpath, filename)
+            filepath = str(Path(dirpath) / filename)
 
             try:
-                with open(filepath, "r+", encoding="utf-8") as f:
+                with Path(filepath).open("r+", encoding="utf-8") as f:
                     content = f.read()
 
                     if not has_overview(content):
@@ -86,12 +82,9 @@ def fix_files(root_dir):
                             f.write("\n")
 
                         f.write(TEMPLATE)
-                        print(f"Fixed: {filepath}")
                         fixed_count += 1
-            except Exception as e:
-                print(f"Error fixing {filepath}: {e}")
-
-    print(f"\nSuccessfully added placeholders to {fixed_count} files.")
+            except Exception:
+                pass
 
 
 if __name__ == "__main__":

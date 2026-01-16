@@ -4,6 +4,8 @@ Implements organisation boundary enforcement and uses DataLoaders (H2).
 All queries respect multi-tenancy isolation.
 """
 
+from __future__ import annotations
+
 from django.contrib.auth import get_user_model
 
 import strawberry

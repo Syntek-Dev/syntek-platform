@@ -49,13 +49,13 @@ class TestQueryDepthLimitExtension:
         Returns:
             Mock document with single level query
         """
-        document = Mock(spec=['definitions'])
-        definition = Mock(spec=['selection_set'])
-        selection = Mock(spec=['selection_set'])
+        document = Mock(spec=["definitions"])
+        definition = Mock(spec=["selection_set"])
+        selection = Mock(spec=["selection_set"])
 
         # query { me { id } } - depth 1
         selection.selection_set = None
-        definition.selection_set = Mock(spec=['selections'], selections=[selection])
+        definition.selection_set = Mock(spec=["selections"], selections=[selection])
         document.definitions = [definition]
 
         return document
@@ -67,26 +67,26 @@ class TestQueryDepthLimitExtension:
         Returns:
             Mock document with 5-level nested query
         """
-        document = Mock(spec=['definitions'])
-        definition = Mock(spec=['selection_set'])
+        document = Mock(spec=["definitions"])
+        definition = Mock(spec=["selection_set"])
 
         # Create nested structure: level1 -> level2 -> level3 -> level4 -> level5
-        level5 = Mock(spec=['selection_set'])
+        level5 = Mock(spec=["selection_set"])
         level5.selection_set = None
 
-        level4 = Mock(spec=['selection_set'])
-        level4.selection_set = Mock(spec=['selections'], selections=[level5])
+        level4 = Mock(spec=["selection_set"])
+        level4.selection_set = Mock(spec=["selections"], selections=[level5])
 
-        level3 = Mock(spec=['selection_set'])
-        level3.selection_set = Mock(spec=['selections'], selections=[level4])
+        level3 = Mock(spec=["selection_set"])
+        level3.selection_set = Mock(spec=["selections"], selections=[level4])
 
-        level2 = Mock(spec=['selection_set'])
-        level2.selection_set = Mock(spec=['selections'], selections=[level3])
+        level2 = Mock(spec=["selection_set"])
+        level2.selection_set = Mock(spec=["selections"], selections=[level3])
 
-        level1 = Mock(spec=['selection_set'])
-        level1.selection_set = Mock(spec=['selections'], selections=[level2])
+        level1 = Mock(spec=["selection_set"])
+        level1.selection_set = Mock(spec=["selections"], selections=[level2])
 
-        definition.selection_set = Mock(spec=['selections'], selections=[level1])
+        definition.selection_set = Mock(spec=["selections"], selections=[level1])
         document.definitions = [definition]
 
         return document
@@ -213,26 +213,26 @@ class TestQueryDepthLimitExtension:
         Then: Returns maximum depth across all definitions
         """
         # Definition 1: depth 2
-        def1_level2 = Mock(spec=['selection_set'])
+        def1_level2 = Mock(spec=["selection_set"])
         def1_level2.selection_set = None
-        def1_level1 = Mock(spec=['selection_set'])
-        def1_level1.selection_set = Mock(spec=['selections'], selections=[def1_level2])
-        def1 = Mock(spec=['selection_set'])
-        def1.selection_set = Mock(spec=['selections'], selections=[def1_level1])
+        def1_level1 = Mock(spec=["selection_set"])
+        def1_level1.selection_set = Mock(spec=["selections"], selections=[def1_level2])
+        def1 = Mock(spec=["selection_set"])
+        def1.selection_set = Mock(spec=["selections"], selections=[def1_level1])
 
         # Definition 2: depth 4 (deeper)
-        def2_level4 = Mock(spec=['selection_set'])
+        def2_level4 = Mock(spec=["selection_set"])
         def2_level4.selection_set = None
-        def2_level3 = Mock(spec=['selection_set'])
-        def2_level3.selection_set = Mock(spec=['selections'], selections=[def2_level4])
-        def2_level2 = Mock(spec=['selection_set'])
-        def2_level2.selection_set = Mock(spec=['selections'], selections=[def2_level3])
-        def2_level1 = Mock(spec=['selection_set'])
-        def2_level1.selection_set = Mock(spec=['selections'], selections=[def2_level2])
-        def2 = Mock(spec=['selection_set'])
-        def2.selection_set = Mock(spec=['selections'], selections=[def2_level1])
+        def2_level3 = Mock(spec=["selection_set"])
+        def2_level3.selection_set = Mock(spec=["selections"], selections=[def2_level4])
+        def2_level2 = Mock(spec=["selection_set"])
+        def2_level2.selection_set = Mock(spec=["selections"], selections=[def2_level3])
+        def2_level1 = Mock(spec=["selection_set"])
+        def2_level1.selection_set = Mock(spec=["selections"], selections=[def2_level2])
+        def2 = Mock(spec=["selection_set"])
+        def2.selection_set = Mock(spec=["selections"], selections=[def2_level1])
 
-        document = Mock(spec=['definitions'])
+        document = Mock(spec=["definitions"])
         document.definitions = [def1, def2]
 
         extension = QueryDepthLimitExtension(execution_context=mock_execution_context)
@@ -286,19 +286,19 @@ class TestQueryComplexityLimitExtension:
         Returns:
             Mock document with 2 fields
         """
-        document = Mock(spec=['definitions'])
-        definition = Mock(spec=['selection_set'])
+        document = Mock(spec=["definitions"])
+        definition = Mock(spec=["selection_set"])
 
         # query { me { id } } - complexity: 1 (me) + 1 (id) = 2
-        field_id = Mock(spec=['name', 'selection_set'])
+        field_id = Mock(spec=["name", "selection_set"])
         field_id.name = Mock(value="id")
         field_id.selection_set = None
 
-        field_me = Mock(spec=['name', 'selection_set'])
+        field_me = Mock(spec=["name", "selection_set"])
         field_me.name = Mock(value="me")
-        field_me.selection_set = Mock(spec=['selections'], selections=[field_id])
+        field_me.selection_set = Mock(spec=["selections"], selections=[field_id])
 
-        definition.selection_set = Mock(spec=['selections'], selections=[field_me])
+        definition.selection_set = Mock(spec=["selections"], selections=[field_me])
         document.definitions = [definition]
 
         return document
@@ -310,8 +310,8 @@ class TestQueryComplexityLimitExtension:
         Returns:
             Mock document with list field
         """
-        document = Mock(spec=['definitions'])
-        definition = Mock(spec=['selection_set'])
+        document = Mock(spec=["definitions"])
+        definition = Mock(spec=["selection_set"])
 
         # query { users { posts { comments } } }
         # users is list field (10x multiplier)
@@ -319,19 +319,19 @@ class TestQueryComplexityLimitExtension:
         # comments is list field (10x multiplier)
         # complexity: 1 * 10 (users) * 10 (posts) * 10 (comments) = 1000
 
-        field_comments = Mock(spec=['name', 'selection_set'])
+        field_comments = Mock(spec=["name", "selection_set"])
         field_comments.name = Mock(value="comments")  # List field (plural)
         field_comments.selection_set = None
 
-        field_posts = Mock(spec=['name', 'selection_set'])
+        field_posts = Mock(spec=["name", "selection_set"])
         field_posts.name = Mock(value="posts")  # List field (plural)
-        field_posts.selection_set = Mock(spec=['selections'], selections=[field_comments])
+        field_posts.selection_set = Mock(spec=["selections"], selections=[field_comments])
 
-        field_users = Mock(spec=['name', 'selection_set'])
+        field_users = Mock(spec=["name", "selection_set"])
         field_users.name = Mock(value="users")  # List field (plural)
-        field_users.selection_set = Mock(spec=['selections'], selections=[field_posts])
+        field_users.selection_set = Mock(spec=["selections"], selections=[field_posts])
 
-        definition.selection_set = Mock(spec=['selections'], selections=[field_users])
+        definition.selection_set = Mock(spec=["selections"], selections=[field_users])
         document.definitions = [definition]
 
         return document
@@ -459,21 +459,21 @@ class TestQueryComplexityLimitExtension:
         Then: Complexity is higher than single field
         """
         # Single field query
-        single_doc = Mock(spec=['definitions'])
-        single_def = Mock(spec=['selection_set'])
-        single_field = Mock(spec=['name', 'selection_set'])
+        single_doc = Mock(spec=["definitions"])
+        single_def = Mock(spec=["selection_set"])
+        single_field = Mock(spec=["name", "selection_set"])
         single_field.name = Mock(value="user")  # Singular (not a list)
         single_field.selection_set = None
-        single_def.selection_set = Mock(spec=['selections'], selections=[single_field])
+        single_def.selection_set = Mock(spec=["selections"], selections=[single_field])
         single_doc.definitions = [single_def]
 
         # List field query
-        list_doc = Mock(spec=['definitions'])
-        list_def = Mock(spec=['selection_set'])
-        list_field = Mock(spec=['name', 'selection_set'])
+        list_doc = Mock(spec=["definitions"])
+        list_def = Mock(spec=["selection_set"])
+        list_field = Mock(spec=["name", "selection_set"])
         list_field.name = Mock(value="users")  # Plural (list field)
         list_field.selection_set = None
-        list_def.selection_set = Mock(spec=['selections'], selections=[list_field])
+        list_def.selection_set = Mock(spec=["selections"], selections=[list_field])
         list_doc.definitions = [list_def]
 
         extension = QueryComplexityLimitExtension(execution_context=mock_execution_context)
@@ -531,12 +531,12 @@ class TestIntrospectionControlExtension:
         Returns:
             Mock document with __schema introspection
         """
-        document = Mock(spec=['definitions'])
-        definition = Mock(spec=['selection_set'])
-        field = Mock(spec=['name', 'selection_set'])
+        document = Mock(spec=["definitions"])
+        definition = Mock(spec=["selection_set"])
+        field = Mock(spec=["name", "selection_set"])
         field.name = Mock(value="__schema")
         field.selection_set = None
-        definition.selection_set = Mock(spec=['selections'], selections=[field])
+        definition.selection_set = Mock(spec=["selections"], selections=[field])
         document.definitions = [definition]
 
         return document
@@ -548,12 +548,12 @@ class TestIntrospectionControlExtension:
         Returns:
             Mock document with __type introspection
         """
-        document = Mock(spec=['definitions'])
-        definition = Mock(spec=['selection_set'])
-        field = Mock(spec=['name', 'selection_set'])
+        document = Mock(spec=["definitions"])
+        definition = Mock(spec=["selection_set"])
+        field = Mock(spec=["name", "selection_set"])
         field.name = Mock(value="__type")
         field.selection_set = None
-        definition.selection_set = Mock(spec=['selections'], selections=[field])
+        definition.selection_set = Mock(spec=["selections"], selections=[field])
         document.definitions = [definition]
 
         return document
@@ -565,12 +565,12 @@ class TestIntrospectionControlExtension:
         Returns:
             Mock document with regular query
         """
-        document = Mock(spec=['definitions'])
-        definition = Mock(spec=['selection_set'])
-        field = Mock(spec=['name', 'selection_set'])
+        document = Mock(spec=["definitions"])
+        definition = Mock(spec=["selection_set"])
+        field = Mock(spec=["name", "selection_set"])
         field.name = Mock(value="users")
         field.selection_set = None
-        definition.selection_set = Mock(spec=['selections'], selections=[field])
+        definition.selection_set = Mock(spec=["selections"], selections=[field])
         document.definitions = [definition]
 
         return document

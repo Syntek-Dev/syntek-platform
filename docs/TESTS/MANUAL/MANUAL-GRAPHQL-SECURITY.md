@@ -93,10 +93,7 @@ query {
 
 ```graphql
 mutation {
-  login(input: {
-    email: "owner@test.com"
-    password: "TestPassword123!@"
-  }) {
+  login(input: { email: "owner@test.com", password: "TestPassword123!@" }) {
     token
     user {
       id
@@ -129,10 +126,7 @@ mutation {
 
 ```graphql
 mutation {
-  login(input: {
-    email: "owner@test.com"
-    password: "TestPassword123!@"
-  }) {
+  login(input: { email: "owner@test.com", password: "TestPassword123!@" }) {
     token
   }
 }
@@ -196,10 +190,7 @@ query {
 
 ```graphql
 mutation {
-  login(input: {
-    email: "member@test.com"
-    password: "TestPassword123!@"
-  }) {
+  login(input: { email: "member@test.com", password: "TestPassword123!@" }) {
     token
   }
 }

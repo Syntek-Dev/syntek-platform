@@ -11,11 +11,19 @@ Phase 3 Implementation:
 - DataLoader integration for N+1 prevention (H2)
 - Standardised error codes (H4)
 - Token revocation on logout (H10)
+
+Phase 5 Implementation:
+- TOTP-based two-factor authentication (2FA)
+- Multiple TOTP devices per user (H13)
+- Backup codes with hashing (H14) and improved format (M3)
+- TOTP secret encryption (C2)
+- Time window tolerance (M6)
 """
 
 import strawberry
 
 from api.mutations.auth import AuthMutations
+from api.mutations.totp import TOTPMutations, TOTPQueries
 from api.queries.user import UserQueries
 from api.security import (
     IntrospectionControlExtension,
@@ -25,10 +33,12 @@ from api.security import (
 
 
 @strawberry.type
-class Query(UserQueries):
+class Query(UserQueries, TOTPQueries):
     """Root query type for the GraphQL API.
 
-    Inherits from UserQueries to provide user-related queries.
+    Inherits from:
+    - UserQueries: user-related queries
+    - TOTPQueries: 2FA status and device queries (H13)
 
     Security features:
     - Query depth limiting (max 10 levels by default)
@@ -48,10 +58,12 @@ class Query(UserQueries):
 
 
 @strawberry.type
-class Mutation(AuthMutations):
+class Mutation(AuthMutations, TOTPMutations):
     """Root mutation type for the GraphQL API.
 
-    Inherits from AuthMutations to provide authentication operations.
+    Inherits from:
+    - AuthMutations: authentication operations
+    - TOTPMutations: 2FA setup, verification, and management (Phase 5)
 
     Security features:
     - Rate limiting (30 mutations per minute by default)
@@ -59,6 +71,7 @@ class Mutation(AuthMutations):
     - CSRF protection (C4 requirement)
     - Email verification enforcement (C5 requirement)
     - Token revocation on logout (H10 requirement)
+    - TOTP secret encryption (C2 requirement)
     """
 
     pass

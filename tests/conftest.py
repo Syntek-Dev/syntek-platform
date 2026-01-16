@@ -17,6 +17,7 @@ import pytest
 # This allows tests to use factories without explicit imports
 from tests.factories import (
     AuditLogFactory,
+    BackupCodeFactory,
     EmailVerificationTokenFactory,
     OrganisationFactory,
     PasswordHistoryFactory,
@@ -37,6 +38,7 @@ pytest.PasswordResetTokenFactory = PasswordResetTokenFactory
 pytest.EmailVerificationTokenFactory = EmailVerificationTokenFactory
 pytest.TOTPDeviceFactory = TOTPDeviceFactory
 pytest.PasswordHistoryFactory = PasswordHistoryFactory
+pytest.BackupCodeFactory = BackupCodeFactory
 
 
 @pytest.fixture
@@ -61,8 +63,8 @@ def clean_db(django_db_setup, django_db_blocker):
         django_db_blocker: pytest-django database blocker fixture
     """
     with django_db_blocker.unblock():
-        User = get_user_model()
-        User.objects.all().delete()
+        user_model = get_user_model()
+        user_model.objects.all().delete()
 
 
 @pytest.fixture

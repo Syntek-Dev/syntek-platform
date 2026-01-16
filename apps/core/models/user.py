@@ -243,7 +243,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self) -> str:
         """Return user email."""
-        return self.email
+        return str(self.email)
 
     def save(self, *args, **kwargs):
         """Save user with normalised email.
@@ -260,4 +260,4 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self) -> str:
         """Return first name."""
-        return self.first_name
+        return str(self.first_name)

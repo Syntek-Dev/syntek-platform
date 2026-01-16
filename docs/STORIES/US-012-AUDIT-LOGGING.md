@@ -228,12 +228,12 @@ Security administrators need detailed audit logging to track all user actions an
 
 This story addresses the following security gaps from the US-001 Security Implementation Review:
 
-| Gap ID | Description | Implementation |
-|--------|-------------|----------------|
-| **M002** | Database-level audit protection | PostgreSQL triggers to prevent DELETE/UPDATE on audit_log |
-| **M003** | Log signing for tamper detection | HMAC-SHA256 signatures, nightly verification job |
-| **M005** | Alerting on suspicious activity | Configurable alerts for failed logins, privilege escalation, anomalies |
-| **L004** | Log retention policy | Tiered retention (90/180/365 days), 7 years for security logs |
+| Gap ID   | Description                      | Implementation                                                         |
+| -------- | -------------------------------- | ---------------------------------------------------------------------- |
+| **M002** | Database-level audit protection  | PostgreSQL triggers to prevent DELETE/UPDATE on audit_log              |
+| **M003** | Log signing for tamper detection | HMAC-SHA256 signatures, nightly verification job                       |
+| **M005** | Alerting on suspicious activity  | Configurable alerts for failed logins, privilege escalation, anomalies |
+| **L004** | Log retention policy             | Tiered retention (90/180/365 days), 7 years for security logs          |
 
 ---
 

@@ -210,7 +210,7 @@ class TestUserProfileDataLoader:
 class TestN1QueryDetection:
     """Test N+1 query detection and prevention."""
 
-    def assertNumQueries(self, expected_num: int):
+    def assert_num_queries(self, expected_num: int):
         """Assert expected number of database queries.
 
         This is a simplified version for TDD - real implementation would use

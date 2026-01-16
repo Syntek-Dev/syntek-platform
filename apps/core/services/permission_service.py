@@ -17,12 +17,15 @@ Permission Hierarchy:
 """
 
 import logging
+from typing import TYPE_CHECKING
 
 from django.contrib.auth.models import Group
 from django.core.cache import cache
-from django.db.models import QuerySet
 
-from apps.core.models.user import User
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+
+    from apps.core.models.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +54,7 @@ class PermissionService:
             True if the user has the permission, False otherwise.
 
         Example:
-            >>> has_permission(user, 'core.add_user')
+            >>> has_permission(user, "core.add_user")
             True
         """
         if not user or not user.is_authenticated:
@@ -87,7 +90,7 @@ class PermissionService:
             True if the user has at least one of the permissions, False otherwise.
 
         Example:
-            >>> has_any_permission(user, ['core.add_user', 'core.change_user'])
+            >>> has_any_permission(user, ["core.add_user", "core.change_user"])
             True
         """
         if not user or not user.is_authenticated:
@@ -112,7 +115,7 @@ class PermissionService:
             True if the user has all of the permissions, False otherwise.
 
         Example:
-            >>> has_all_permissions(user, ['core.view_user', 'core.change_user'])
+            >>> has_all_permissions(user, ["core.view_user", "core.change_user"])
             False
         """
         if not user or not user.is_authenticated:

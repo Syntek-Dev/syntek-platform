@@ -20,12 +20,12 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 
 ## Test Files
 
-| Test File                                     | Test Type   | Coverage                                      |
-| --------------------------------------------- | ----------- | --------------------------------------------- |
-| `tests/unit/api/test_permissions_comprehensive.py` | Unit        | Permission classes with edge cases            |
-| `tests/unit/api/test_csrf_comprehensive.py`         | Unit        | CSRF middleware and token validation          |
-| `tests/unit/api/test_graphql_security_extensions.py`| Unit        | Query depth, complexity, introspection limits |
-| `docs/TESTS/MANUAL/MANUAL-GRAPHQL-SECURITY.md`      | Manual      | Manual testing guide for developers           |
+| Test File                                            | Test Type | Coverage                                      |
+| ---------------------------------------------------- | --------- | --------------------------------------------- |
+| `tests/unit/api/test_permissions_comprehensive.py`   | Unit      | Permission classes with edge cases            |
+| `tests/unit/api/test_csrf_comprehensive.py`          | Unit      | CSRF middleware and token validation          |
+| `tests/unit/api/test_graphql_security_extensions.py` | Unit      | Query depth, complexity, introspection limits |
+| `docs/TESTS/MANUAL/MANUAL-GRAPHQL-SECURITY.md`       | Manual    | Manual testing guide for developers           |
 
 ---
 
@@ -34,6 +34,7 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 ### Permission Classes (test_permissions_comprehensive.py)
 
 **Classes Tested:**
+
 - `IsAuthenticated`
 - `HasPermission`
 - `IsOrganisationOwner`
@@ -41,6 +42,7 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 **Test Classes:**
 
 #### TestIsAuthenticatedPermission
+
 - ✅ Authenticated user passes permission check
 - ✅ Unauthenticated user (AnonymousUser) fails check
 - ✅ Inactive user fails check
@@ -48,6 +50,7 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 - ✅ Permission handles additional kwargs
 
 #### TestHasPermissionClass
+
 - ✅ User with required permission is granted access
 - ✅ User without required permission is denied
 - ✅ Unauthenticated user always denied
@@ -57,6 +60,7 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 - ✅ Permission format validation (app.action_model)
 
 #### TestIsOrganisationOwnerPermission
+
 - ✅ Organisation owner passes check
 - ✅ Admin user (non-owner) fails check
 - ✅ Regular member fails check
@@ -66,10 +70,12 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 - ✅ Owner from different organisation still passes
 
 #### TestPermissionCombinations
+
 - ✅ User with multiple permission types
 - ✅ Permission checking order independence
 
 #### TestPermissionEdgeCases
+
 - ✅ Permission handles None user gracefully
 - ✅ Permission handles missing request object
 - ✅ HasPermission with empty permission string
@@ -82,15 +88,18 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 ### CSRF Protection (test_csrf_comprehensive.py)
 
 **Classes Tested:**
+
 - `GraphQLCSRFMiddleware`
 
 **Test Classes:**
 
 #### TestCSRFMiddlewareInitialization
+
 - ✅ Middleware initializes with get_response callable
 - ✅ Middleware creates CsrfViewMiddleware instance
 
 #### TestCSRFMutationDetection
+
 - ✅ Detects mutation keyword in GraphQL query
 - ✅ Does not detect mutation in regular query
 - ✅ Detects mutation case-insensitive (MUTATION)
@@ -101,31 +110,37 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 - ✅ Handles empty request body
 
 #### TestCSRFPathFiltering
+
 - ✅ Only processes /graphql endpoint
 - ✅ Processes /graphql endpoint correctly
 - ✅ Processes /graphql without trailing slash
 
 #### TestCSRFIntegrationWithDjango
+
 - ✅ Query succeeds without CSRF token
 - ✅ CSRF token can be retrieved from endpoint
 - ✅ CSRF token is unique per session
 
 #### TestCSRFErrorHandling
+
 - ✅ Handles request without body
 - ✅ Handles request with None body
 - ✅ Handles very large request body
 - ✅ Handles malformed GraphQL syntax
 
 #### TestCSRFMultipartRequests
+
 - ✅ Handles multipart/form-data requests
 
 #### TestCSRFBatchedRequests
+
 - ✅ Handles batched queries (array of queries)
 - ✅ Handles batched mutations
 
 #### TestCSRFIntrospectionQueries
-- ✅ Introspection query not treated as mutation (__schema)
-- ✅ Type introspection not treated as mutation (__type)
+
+- ✅ Introspection query not treated as mutation (\_\_schema)
+- ✅ Type introspection not treated as mutation (\_\_type)
 
 **Total Tests:** 24
 
@@ -134,6 +149,7 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 ### GraphQL Security Extensions (test_graphql_security_extensions.py)
 
 **Classes Tested:**
+
 - `QueryDepthLimitExtension`
 - `QueryComplexityLimitExtension`
 - `IntrospectionControlExtension`
@@ -141,6 +157,7 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 **Test Classes:**
 
 #### TestQueryDepthLimitExtension
+
 - ✅ Extension initializes with default max depth (10)
 - ✅ Extension accepts custom max depth
 - ✅ Extension uses GRAPHQL_MAX_QUERY_DEPTH from settings
@@ -153,6 +170,7 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 - ✅ Depth limit error message includes details
 
 #### TestQueryComplexityLimitExtension
+
 - ✅ Extension initializes with default max complexity (1000)
 - ✅ Extension accepts custom max complexity
 - ✅ Extension uses GRAPHQL_MAX_QUERY_COMPLEXITY from settings
@@ -164,17 +182,19 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 - ✅ Complexity error message includes details
 
 #### TestIntrospectionControlExtension
+
 - ✅ Introspection allowed in DEBUG mode
 - ✅ Introspection allowed when explicitly enabled
 - ✅ Introspection blocked in production (DEBUG=False)
-- ✅ Type introspection (__type) blocked in production
+- ✅ Type introspection (\_\_type) blocked in production
 - ✅ Regular queries allowed when introspection disabled
-- ✅ _is_introspection_query detects __schema
-- ✅ _is_introspection_query detects __type
-- ✅ _is_introspection_query returns False for regular queries
-- ✅ _is_introspection_query handles empty document
+- ✅ \_is_introspection_query detects \_\_schema
+- ✅ \_is_introspection_query detects \_\_type
+- ✅ \_is_introspection_query returns False for regular queries
+- ✅ \_is_introspection_query handles empty document
 
 #### TestSecurityExtensionIntegration
+
 - ✅ All extensions can be initialized together
 - ✅ Extensions have independent configuration
 
@@ -184,12 +204,12 @@ All tests follow TDD (Test-Driven Development) principles and are written before
 
 ## Total Test Count
 
-| Test Suite                  | Unit Tests | Integration Tests | E2E Tests | Total |
-| --------------------------- | ---------- | ----------------- | --------- | ----- |
-| Permission Classes          | 28         | 0                 | 0         | 28    |
-| CSRF Protection             | 24         | 0                 | 0         | 24    |
-| GraphQL Security Extensions | 30         | 0                 | 0         | 30    |
-| **TOTAL**                   | **82**     | **0**             | **0**     | **82**|
+| Test Suite                  | Unit Tests | Integration Tests | E2E Tests | Total  |
+| --------------------------- | ---------- | ----------------- | --------- | ------ |
+| Permission Classes          | 28         | 0                 | 0         | 28     |
+| CSRF Protection             | 24         | 0                 | 0         | 24     |
+| GraphQL Security Extensions | 30         | 0                 | 0         | 30     |
+| **TOTAL**                   | **82**     | **0**             | **0**     | **82** |
 
 ---
 
@@ -243,17 +263,20 @@ Tests are organised using pytest markers:
 ### Permission Classes
 
 **IsAuthenticated:**
+
 - Authenticated users: ✅ Allowed
 - Unauthenticated users (AnonymousUser): ❌ Denied
 - Inactive users: ❌ Denied
 
 **HasPermission:**
+
 - Users with specific permission: ✅ Allowed
 - Users without permission: ❌ Denied
 - Superusers: ✅ Always allowed
 - Permission via groups: ✅ Allowed
 
 **IsOrganisationOwner:**
+
 - Users in "Organisation Owner" group: ✅ Allowed
 - Users in other groups: ❌ Denied
 - Unauthenticated users: ❌ Denied
@@ -261,25 +284,30 @@ Tests are organised using pytest markers:
 ### CSRF Protection
 
 **Mutations:**
+
 - With valid CSRF token: ✅ Allowed
 - Without CSRF token: ❌ 403 Forbidden
 - With invalid CSRF token: ❌ 403 Forbidden
 
 **Queries:**
+
 - With CSRF token: ✅ Allowed
 - Without CSRF token: ✅ Allowed (CSRF not required)
 
 ### Query Security
 
 **Depth Limiting:**
+
 - Queries within max depth: ✅ Allowed
 - Queries exceeding max depth: ❌ Rejected with error
 
 **Complexity Limiting:**
+
 - Queries within max complexity: ✅ Allowed
 - Queries exceeding max complexity: ❌ Rejected with error
 
 **Introspection:**
+
 - DEBUG=True: ✅ Introspection allowed
 - DEBUG=False + GRAPHQL_ENABLE_INTROSPECTION=True: ✅ Allowed
 - DEBUG=False + GRAPHQL_ENABLE_INTROSPECTION=False: ❌ Blocked
@@ -289,6 +317,7 @@ Tests are organised using pytest markers:
 ## Edge Cases Tested
 
 ### Permission Classes
+
 - None user object
 - Missing request object
 - Empty permission string
@@ -297,6 +326,7 @@ Tests are organised using pytest markers:
 - Multiple permission types
 
 ### CSRF Middleware
+
 - Invalid JSON in request body
 - Missing 'query' field
 - Non-JSON content types
@@ -308,6 +338,7 @@ Tests are organised using pytest markers:
 - Introspection queries
 
 ### Security Extensions
+
 - Empty/None documents
 - Documents with no selections
 - Multiple query definitions
@@ -319,17 +350,17 @@ Tests are organised using pytest markers:
 
 ## Security Requirements Mapping
 
-| Requirement | Feature                  | Test Coverage |
-| ----------- | ------------------------ | ------------- |
-| C4          | CSRF protection          | ✅ 24 tests    |
-| C5          | Email verification       | (Separate)    |
-| H2          | DataLoader integration   | (Separate)    |
-| H4          | Standardised errors      | (Separate)    |
-| H10         | Token revocation         | (Separate)    |
-| NEW         | Query depth limiting     | ✅ 10 tests    |
-| NEW         | Query complexity         | ✅ 9 tests     |
-| NEW         | Introspection control    | ✅ 9 tests     |
-| NEW         | Permission classes       | ✅ 28 tests    |
+| Requirement | Feature                | Test Coverage |
+| ----------- | ---------------------- | ------------- |
+| C4          | CSRF protection        | ✅ 24 tests   |
+| C5          | Email verification     | (Separate)    |
+| H2          | DataLoader integration | (Separate)    |
+| H4          | Standardised errors    | (Separate)    |
+| H10         | Token revocation       | (Separate)    |
+| NEW         | Query depth limiting   | ✅ 10 tests   |
+| NEW         | Query complexity       | ✅ 9 tests    |
+| NEW         | Introspection control  | ✅ 9 tests    |
+| NEW         | Permission classes     | ✅ 28 tests   |
 
 ---
 

@@ -4,9 +4,8 @@ This module defines the URL patterns for the GraphQL endpoint
 with DataLoader context for N+1 query prevention.
 """
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from django.http import HttpRequest
 from django.urls import path
 
 from strawberry.django.views import GraphQLView
@@ -16,6 +15,9 @@ from api.dataloaders.organisation_loader import OrganisationLoader
 from api.dataloaders.user_loader import UserLoader
 
 from .schema import schema
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 def get_graphql_context(request: HttpRequest) -> dict[str, Any]:

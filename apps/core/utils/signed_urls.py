@@ -81,10 +81,10 @@ class SignedURLService:
         Example:
             >>> service = SignedURLService()
             >>> url = service.generate_signed_url(
-            ...     '/download/file/',
-            ...     params={'file_id': '123'},
+            ...     "/download/file/",
+            ...     params={"file_id": "123"},
             ...     expires_in_seconds=900,  # 15 minutes
-            ...     ip_address='192.168.1.1'
+            ...     ip_address="192.168.1.1",
             ... )
             >>> print(url)
             '/download/file/?file_id=123&expires=1234567890&signature=abc123...'
@@ -145,8 +145,8 @@ class SignedURLService:
         Example:
             >>> service = SignedURLService()
             >>> is_valid, error = service.verify_signed_url(
-            ...     '/download/file/?file_id=123&expires=1234567890&signature=abc123...',
-            ...     current_ip='192.168.1.1'
+            ...     "/download/file/?file_id=123&expires=1234567890&signature=abc123...",
+            ...     current_ip="192.168.1.1",
             ... )
             >>> if is_valid:
             ...     # Proceed with action
@@ -263,7 +263,7 @@ def generate_password_reset_url(
         The signed password reset URL.
 
     Example:
-        >>> url = generate_password_reset_url(user_id=123, token='abc123')
+        >>> url = generate_password_reset_url(user_id=123, token="abc123")
     """
     service = SignedURLService()
     return service.generate_signed_url(
@@ -289,7 +289,7 @@ def generate_email_verification_url(
         The signed email verification URL.
 
     Example:
-        >>> url = generate_email_verification_url(user_id=123, token='xyz789')
+        >>> url = generate_email_verification_url(user_id=123, token="xyz789")
     """
     service = SignedURLService()
     return service.generate_signed_url(
@@ -315,10 +315,7 @@ def generate_file_download_url(
         The signed file download URL.
 
     Example:
-        >>> url = generate_file_download_url(
-        ...     file_id='document-123',
-        ...     ip_address='192.168.1.1'
-        ... )
+        >>> url = generate_file_download_url(file_id="document-123", ip_address="192.168.1.1")
     """
     service = SignedURLService()
     return service.generate_signed_url(
@@ -340,7 +337,7 @@ def verify_url(url: str, current_ip: str | None = None) -> tuple[bool, str | Non
         A tuple of (is_valid, error_message).
 
     Example:
-        >>> is_valid, error = verify_url('/api/auth/reset-password/?...')
+        >>> is_valid, error = verify_url("/api/auth/reset-password/?...")
         >>> if not is_valid:
         ...     print(f"Invalid URL: {error}")
     """

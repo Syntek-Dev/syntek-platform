@@ -1,0 +1,199 @@
+{
+  // ============================================
+  // PROJECT DIAGNOSTICS - Excluded directories
+  // ============================================
+  "diagnostics": {
+    "include_warnings": true
+  },
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.venv",
+    "**/venv",
+    "**/__pycache__",
+    "**/node_modules",
+    "**/staticfiles",
+    "**/media",
+    "**/.claude/",
+    "**/scripts/",
+    "**/tests/",
+    "**/migrations"
+  ],
+
+  // ============================================
+  // LANGUAGE SETTINGS
+  // ============================================
+  "languages": {
+    "Python": {
+      "tab_size": 4,
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "ruff",
+          "arguments": ["format", "-"]
+        }
+      },
+      "language_servers": ["pyright", "ruff"],
+      "code_actions_on_format": {
+        "source.fixAll": true,
+        "source.organizeImports.ruff": true
+      }
+    },
+    "Markdown": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "prettier",
+      "soft_wrap": "preferred_line_length",
+      "preferred_line_length": 120
+    },
+    "JSON": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "prettier"
+    },
+    "JSONC": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "prettier"
+    },
+    "HTML": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "prettier"
+    },
+    "CSS": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "prettier"
+    },
+    "YAML": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "prettier"
+    },
+    "GraphQL": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "prettier"
+    },
+    "SQL": {
+      "tab_size": 2,
+      "format_on_save": "on"
+    },
+    "Dockerfile": {
+      "tab_size": 2,
+      "format_on_save": "on"
+    },
+    "Shell Script": {
+      "tab_size": 2,
+      "format_on_save": "on"
+    }
+  },
+
+  // ============================================
+  // LSP SETTINGS (Django/Python focused)
+  // ============================================
+  "lsp": {
+    "pyright": {
+      "settings": {
+        "python": {
+          "pythonPath": ".venv/bin/python"
+        },
+        "python.analysis": {
+          "typeCheckingMode": "basic",
+          "diagnosticSeverityOverrides": {
+            // Django ORM patterns (managers, DoesNotExist, ForeignKey access, etc.)
+            "reportAttributeAccessIssue": "none",
+            "reportGeneralTypeIssues": "none",
+            "reportArgumentType": "none",
+            "reportAssignmentType": "none",
+            "reportReturnType": "none",
+            "reportMissingImports": "warning",
+            "reportMissingModuleSource": "none",
+            "reportOptionalMemberAccess": "none",
+            "reportCallIssue": "none",
+            "reportInvalidTypeForm": "none"
+          },
+          "exclude": [
+            "**/.claude/**",
+            "**/scripts/**",
+            "**/tests/**",
+            "**/migrations/**",
+            "**/node_modules/**",
+            "**/.venv/**",
+            "**/venv/**",
+            "**/staticfiles/**",
+            "**/media/**"
+          ]
+        }
+      }
+    },
+    "ruff": {
+      "initialization_options": {
+        "settings": {
+          "lineLength": 100,
+          "lint": {
+            "enable": true,
+            "select": [
+              "E",
+              "W",
+              "F",
+              "I",
+              "B",
+              "C4",
+              "DJ",
+              "UP",
+              "N",
+              "S",
+              "T20",
+              "SIM",
+              "TCH",
+              "PTH",
+              "RUF"
+            ],
+            "ignore": [
+              "E501",
+              "B008",
+              "W191",
+              "S101",
+              "S105",
+              "S106",
+              "S110",
+              "S112",
+              "S311",
+              "S324",
+              "S603",
+              "S607",
+              "RUF012",
+              "DJ001"
+            ]
+          },
+          "format": {
+            "enable": true
+          },
+          "exclude": [
+            ".claude",
+            "scripts",
+            "tests",
+            "node_modules",
+            ".venv",
+            "venv",
+            "staticfiles",
+            "media",
+            "migrations"
+          ]
+        }
+      }
+    }
+  },
+
+  // ============================================
+  // FILE TYPE ASSOCIATIONS
+  // ============================================
+  "file_types": {
+    "Django HTML": ["*.html"],
+    "TOML": ["pyproject.toml", "poetry.lock"],
+    "Dockerfile": ["Dockerfile", "Dockerfile.*", "*.dockerfile"],
+    "Shell Script": ["*.sh", ".env", ".env.*"],
+    "YAML": ["*.yml", "*.yaml", "docker-compose*.yml"]
+  }
+}

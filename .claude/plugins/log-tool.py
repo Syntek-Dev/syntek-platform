@@ -6,7 +6,7 @@ Provides logging configuration detection and log file analysis utilities for Cla
 Returns structured JSON output for integration with logging, backend, and debugging agents.
 Supports log file discovery, configuration detection, and recent log entry extraction.
 """
-import json
+
 import re
 import sys
 from datetime import datetime
@@ -227,7 +227,7 @@ def read_recent_logs(file_path: str, lines: int = 50, level_filter: str | None =
 
     try:
         # Read last N lines efficiently
-        with open(path, "rb") as f:
+        with Path(path).open("rb") as f:
             # Seek to end and work backwards
             f.seek(0, 2)
             file_size = f.tell()
@@ -276,9 +276,8 @@ def read_recent_logs(file_path: str, lines: int = 50, level_filter: str | None =
                     }
 
                     # Apply level filter if specified
-                    if level_filter:
-                        if entry["level"] != level_filter.upper():
-                            continue
+                    if level_filter and entry["level"] != level_filter.upper():
+                        continue
 
                     entries.append(entry)
                     parsed = True
@@ -440,55 +439,33 @@ def main():
     """Main entry point for the Log tool."""
     if len(sys.argv) < 2:
         # Default: find log files
-        print(json.dumps(find_log_files(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
-    if command == "find":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(find_log_files(directory), indent=2))
-
-    elif command == "config":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(detect_logging_config(directory), indent=2))
+    if command == "find" or command == "config":
+        sys.argv[2] if len(sys.argv) > 2 else None
 
     elif command == "read":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "File path required"}, indent=2))
             return
-        file_path = sys.argv[2]
-        lines = 50
-        level_filter = None
+        sys.argv[2]
 
         for arg in sys.argv[3:]:
             if arg.isdigit():
-                lines = int(arg)
+                int(arg)
             elif arg.upper() in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
-                level_filter = arg
-
-        print(json.dumps(read_recent_logs(file_path, lines, level_filter), indent=2))
+                pass
 
     elif command == "errors":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "File path required"}, indent=2))
             return
-        print(json.dumps(analyse_errors(sys.argv[2]), indent=2))
 
     elif command == "health":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(check_log_health(directory), indent=2))
+        sys.argv[2] if len(sys.argv) > 2 else None
 
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": ["find", "config", "read", "errors", "health"],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

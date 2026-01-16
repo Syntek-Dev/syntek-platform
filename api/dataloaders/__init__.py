@@ -19,7 +19,7 @@ from api.dataloaders.organisation_loader import OrganisationLoader
 from api.dataloaders.user_loader import UserLoader
 
 __all__ = [
-    "UserLoader",
-    "OrganisationLoader",
     "AuditLogLoader",
+    "OrganisationLoader",
+    "UserLoader",
 ]

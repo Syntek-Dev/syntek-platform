@@ -387,18 +387,13 @@ cmd_lint() {
 
     local exit_code=0
 
-    info "Running Ruff..."
+    info "Running Ruff check..."
     if ! dc run --rm ${WEB_SERVICE} ruff check .; then
         exit_code=1
     fi
 
-    info "Running Black (check mode)..."
-    if ! dc run --rm ${WEB_SERVICE} black --check .; then
-        exit_code=1
-    fi
-
-    info "Running isort (check mode)..."
-    if ! dc run --rm ${WEB_SERVICE} isort --check-only .; then
+    info "Running Ruff format check..."
+    if ! dc run --rm ${WEB_SERVICE} ruff format --check .; then
         exit_code=1
     fi
 
@@ -596,7 +591,7 @@ cmd_help() {
     echo "  graphql            Run GraphQL tests only"
     echo ""
     echo -e "${YELLOW}Code Quality:${NC}"
-    echo "  lint               Run linters (ruff, black, isort)"
+    echo "  lint               Run linters (ruff check + format)"
     echo "  typecheck          Run mypy type checker"
     echo "  security           Run security checks"
     echo "  all                Run all quality checks + tests"

@@ -167,3 +167,35 @@ class PasswordHistoryFactory(DjangoModelFactory):
     user = SubFactory(UserFactory)
     password_hash = Faker("sha256")
     created_at = LazyFunction(timezone.now)
+
+
+class BackupCodeFactory(DjangoModelFactory):
+    """Factory for creating test BackupCode instances.
+
+    Attributes:
+        user: User who owns the backup code
+        code_hash: SHA-256 hash of the backup code (H14)
+        used: Whether the code has been used
+        used_at: Timestamp when code was used
+    """
+
+    class Meta:
+        model = "core.BackupCode"
+
+    user = SubFactory(UserFactory)
+    code_hash = Faker("sha256")
+    used = False
+    used_at = None
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        """Create instance and optionally store plain code for test access."""
+        plain_code = kwargs.pop("plain_code", None)
+        if plain_code:
+            from apps.core.models import BackupCode
+
+            kwargs["code_hash"] = BackupCode.hash_code(plain_code)
+        obj = super()._create(model_class, *args, **kwargs)
+        if plain_code:
+            obj.plain_code = plain_code
+        return obj

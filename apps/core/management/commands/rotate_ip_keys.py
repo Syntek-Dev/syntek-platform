@@ -115,28 +115,23 @@ class Command(BaseCommand):
 
         # Confirm rotation
         if total_count > 0:
-            confirm = input(
-                f"\nThis will re-encrypt {total_count} IP addresses. Continue? [y/N]: "
-            )
+            confirm = input(f"\nThis will re-encrypt {total_count} IP addresses. Continue? [y/N]: ")
             if confirm.lower() != "y":
                 self.stdout.write(self.style.WARNING("Key rotation cancelled"))
                 return
 
         # Backup old key if requested
         if backup:
-            import os
             from pathlib import Path
 
             backup_dir = Path(settings.BASE_DIR) / "backups"
             backup_dir.mkdir(exist_ok=True)
             backup_file = backup_dir / f"ip_key_backup_{int(__import__('time').time())}.txt"
 
-            with open(backup_file, "w") as f:
+            with backup_file.open("w") as f:
                 f.write(current_key.decode())
 
-            self.stdout.write(
-                self.style.SUCCESS(f"Old key backed up to: {backup_file}")
-            )
+            self.stdout.write(self.style.SUCCESS(f"Old key backed up to: {backup_file}"))
 
         # Perform rotation
         self.stdout.write("Starting key rotation...")
@@ -144,9 +139,7 @@ class Command(BaseCommand):
 
         # Report results
         self.stdout.write(
-            self.style.SUCCESS(
-                f"✅ Rotated {result['audit_logs_updated']} AuditLog records"
-            )
+            self.style.SUCCESS(f"✅ Rotated {result['audit_logs_updated']} AuditLog records")
         )
         self.stdout.write(
             self.style.SUCCESS(
@@ -155,16 +148,12 @@ class Command(BaseCommand):
         )
 
         if result["errors"]:
-            self.stdout.write(
-                self.style.ERROR(f"❌ {len(result['errors'])} errors occurred:")
-            )
+            self.stdout.write(self.style.ERROR(f"❌ {len(result['errors'])} errors occurred:"))
             for error in result["errors"][:10]:  # Show first 10 errors
                 self.stdout.write(self.style.ERROR(f"  - {error}"))
             if len(result["errors"]) > 10:
                 self.stdout.write(
-                    self.style.ERROR(
-                        f"  ... and {len(result['errors']) - 10} more errors"
-                    )
+                    self.style.ERROR(f"  ... and {len(result['errors']) - 10} more errors")
                 )
         else:
             self.stdout.write(self.style.SUCCESS("✅ No errors occurred"))
@@ -174,7 +163,5 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Key rotation complete!"))
         self.stdout.write("=" * 60)
         self.stdout.write(f"\nNew key: {new_key.decode()}")
-        self.stdout.write(
-            "\n⚠️  IMPORTANT: Update your IP_ENCRYPTION_KEY environment variable"
-        )
+        self.stdout.write("\n⚠️  IMPORTANT: Update your IP_ENCRYPTION_KEY environment variable")
         self.stdout.write("⚠️  to the new key shown above, then restart your application.\n")

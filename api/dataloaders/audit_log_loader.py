@@ -4,11 +4,14 @@ Prevents N+1 query problems when loading audit logs in GraphQL resolvers.
 Batches audit log lookups within a single request.
 """
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from strawberry.dataloader import DataLoader
 
 from apps.core.models import AuditLog
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 async def load_audit_logs_batch(keys: Iterable[int]) -> list[AuditLog | None]:

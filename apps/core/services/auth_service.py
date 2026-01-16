@@ -21,8 +21,8 @@ Example:
 
 import secrets
 import time
-from datetime import datetime
-from typing import Any
+from datetime import timedelta
+from typing import TYPE_CHECKING, Any, cast
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -33,6 +33,9 @@ import pytz
 
 from apps.core.models import Organisation, User
 from apps.core.services.token_service import TokenService
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class AuthService:
@@ -231,7 +234,7 @@ class AuthService:
         try:
             validate_password(new_password, user=user)
         except ValidationError as e:
-            raise ValueError("; ".join(e.messages)) from e
+            raise ValueError("; ".join(cast("list[str]", e.messages))) from e
 
         # Set new password
         user.set_password(new_password)
@@ -284,16 +287,16 @@ class AuthService:
         Args:
             user: User instance that had failed login
         """
-        MAX_FAILED_ATTEMPTS = 5
-        LOCKOUT_DURATION_MINUTES = 30
+        max_failed_attempts = 5
+        lockout_duration_minutes = 30
 
         # Increment failed login attempts
-        user.failed_login_attempts += 1
+        user.failed_login_attempts = int(user.failed_login_attempts) + 1
 
         # Check if threshold exceeded
-        if user.failed_login_attempts >= MAX_FAILED_ATTEMPTS:
+        if user.failed_login_attempts >= max_failed_attempts:
             # Lock account for 30 minutes
-            user.account_locked_until = timezone.now() + timedelta(minutes=LOCKOUT_DURATION_MINUTES)
+            user.account_locked_until = timezone.now() + timedelta(minutes=lockout_duration_minutes)
 
         user.save(update_fields=["failed_login_attempts", "account_locked_until"])
 

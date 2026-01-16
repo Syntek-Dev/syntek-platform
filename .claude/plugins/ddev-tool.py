@@ -6,6 +6,7 @@ Provides DDEV project status and management utilities for Claude Code agents.
 Returns structured JSON output for integration with setup, cicd, and backend agents.
 Supports project listing, service status, and configuration detection.
 """
+
 import json
 import shutil
 import subprocess
@@ -29,7 +30,7 @@ def run_ddev_command(args: list[str], timeout: int = 30) -> tuple[bool, str, str
         Tuple of (success, stdout, stderr)
     """
     try:
-        result = subprocess.run(["ddev"] + args, capture_output=True, text=True, timeout=timeout)
+        result = subprocess.run(["ddev", *args], capture_output=True, text=True, timeout=timeout)
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return False, "", "Command timed out"
@@ -196,30 +197,18 @@ def main():
     """Main entry point for the DDEV tool."""
     if len(sys.argv) < 2:
         # Default: return project status
-        print(json.dumps(get_ddev_status(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
     if command == "status":
-        print(json.dumps(get_ddev_status(), indent=2))
+        pass
     elif command == "config":
-        project_name = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(get_project_config(project_name), indent=2))
-    elif command == "services":
-        print(json.dumps(get_ddev_services(), indent=2))
-    elif command == "installed":
-        print(json.dumps({"installed": is_ddev_installed()}, indent=2))
+        sys.argv[2] if len(sys.argv) > 2 else None
+    elif command == "services" or command == "installed":
+        pass
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": ["status", "config", "services", "installed"],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

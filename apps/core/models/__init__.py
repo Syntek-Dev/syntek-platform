@@ -5,6 +5,7 @@ Models are organized into separate files for better maintainability.
 """
 
 from apps.core.models.audit_log import AuditLog
+from apps.core.models.backup_code import BackupCode
 from apps.core.models.base_token import BaseToken
 from apps.core.models.email_verification_token import EmailVerificationToken
 from apps.core.models.organisation import Organisation
@@ -16,14 +17,15 @@ from apps.core.models.user import User
 from apps.core.models.user_profile import UserProfile
 
 __all__ = [
+    "AuditLog",
+    "BackupCode",
+    "BaseToken",
+    "EmailVerificationToken",
     "Organisation",
+    "PasswordHistory",
+    "PasswordResetToken",
+    "SessionToken",
+    "TOTPDevice",
     "User",
     "UserProfile",
-    "AuditLog",
-    "BaseToken",
-    "SessionToken",
-    "PasswordResetToken",
-    "EmailVerificationToken",
-    "TOTPDevice",
-    "PasswordHistory",
 ]

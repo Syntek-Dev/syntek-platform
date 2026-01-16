@@ -5,6 +5,7 @@ Minimum fields added to allow migrations to run.
 """
 
 import uuid
+from typing import ClassVar
 
 from django.db import models
 
@@ -31,16 +32,16 @@ class AuditLog(models.Model):
     class ActionType(models.TextChoices):
         """Choices for audit log action types."""
 
-        LOGIN = "LOGIN", "Login"
-        LOGOUT = "LOGOUT", "Logout"
-        LOGIN_FAILED = "LOGIN_FAILED", "Login Failed"
-        PASSWORD_CHANGE = "PASSWORD_CHANGE", "Password Change"
-        PASSWORD_RESET = "PASSWORD_RESET", "Password Reset"
-        EMAIL_VERIFIED = "EMAIL_VERIFIED", "Email Verified"
-        TWO_FACTOR_ENABLED = "TWO_FACTOR_ENABLED", "Two Factor Enabled"
-        TWO_FACTOR_DISABLED = "TWO_FACTOR_DISABLED", "Two Factor Disabled"
-        ACCOUNT_LOCKED = "ACCOUNT_LOCKED", "Account Locked"
-        ACCOUNT_UNLOCKED = "ACCOUNT_UNLOCKED", "Account Unlocked"
+        LOGIN: ClassVar[str] = "LOGIN", "Login"  # type: ignore[assignment]
+        LOGOUT: ClassVar[str] = "LOGOUT", "Logout"  # type: ignore[assignment]
+        LOGIN_FAILED: ClassVar[str] = "LOGIN_FAILED", "Login Failed"  # type: ignore[assignment]
+        PASSWORD_CHANGE: ClassVar[str] = "PASSWORD_CHANGE", "Password Change"  # type: ignore[assignment]
+        PASSWORD_RESET: ClassVar[str] = "PASSWORD_RESET", "Password Reset"  # type: ignore[assignment]
+        EMAIL_VERIFIED: ClassVar[str] = "EMAIL_VERIFIED", "Email Verified"  # type: ignore[assignment]
+        TWO_FACTOR_ENABLED: ClassVar[str] = "TWO_FACTOR_ENABLED", "Two Factor Enabled"  # type: ignore[assignment]
+        TWO_FACTOR_DISABLED: ClassVar[str] = "TWO_FACTOR_DISABLED", "Two Factor Disabled"  # type: ignore[assignment]
+        ACCOUNT_LOCKED: ClassVar[str] = "ACCOUNT_LOCKED", "Account Locked"  # type: ignore[assignment]
+        ACCOUNT_UNLOCKED: ClassVar[str] = "ACCOUNT_UNLOCKED", "Account Unlocked"  # type: ignore[assignment]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(

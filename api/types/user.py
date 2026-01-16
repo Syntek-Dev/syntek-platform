@@ -4,13 +4,10 @@ This module defines Strawberry GraphQL types for User-related data.
 Implements H2 requirement for N+1 query prevention using DataLoaders.
 """
 
-from __future__ import annotations
-
 from datetime import datetime
 from typing import Any
 
 import strawberry
-from strawberry.types import Info
 
 
 @strawberry.type

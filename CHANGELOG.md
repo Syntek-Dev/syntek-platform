@@ -1,7 +1,7 @@
 # Changelog
 
-**Last Updated**: 09/01/2026
-**Version**: 0.6.0
+**Last Updated**: 16/01/2026
+**Version**: 0.7.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -78,6 +78,27 @@ This changelog documents all notable changes to the backend template project in 
 
 ## [Unreleased]
 
+---
+
+## [0.7.0] - 16/01/2026
+
+### Added
+
+- **Phase 5: Two-Factor Authentication (2FA)** - Complete TOTP-based 2FA implementation
+  - `apps/core/services/totp_service.py` - Core TOTP service with device management, token verification, and backup codes
+  - `apps/core/utils/totp_encryption.py` - Fernet encryption for TOTP secrets (C2 requirement)
+  - `apps/core/models/totp_device.py` - TOTP device model with encrypted secret storage
+  - `apps/core/models/backup_code.py` - Backup code model with SHA-256 hashing (H14 requirement)
+  - `api/mutations/totp.py` - GraphQL mutations for 2FA setup, confirmation, and management
+  - `api/types/totp.py` - GraphQL types for TOTP operations
+- **Multiple TOTP devices per user (H13)** - Users can register multiple authenticator apps with custom names
+- **Backup codes with improved format (M3)** - XXXX-XXXX-XXXX format for easier entry
+- **Time window tolerance (M6)** - ±1 period tolerance for TOTP verification (90-second window)
+- **Comprehensive test coverage** - 55 tests for 2FA functionality:
+  - 30 unit tests for TOTP service
+  - 18 unit tests for GraphQL mutations
+  - 7 integration tests for 2FA login flow
+
 ### Changed
 
 - **Refactored IP utilities (DRY):** Consolidated duplicate `get_client_ip` and `anonymise_ip` functions from multiple middleware modules into centralised `config/utils/request.py` module
@@ -86,6 +107,13 @@ This changelog documents all notable changes to the backend template project in 
   - `apps/core/utils/encryption.py` - Now catches `ValueError`, `TypeError`
   - `apps/core/views/health.py` - Now catches `DatabaseError`, `OperationalError`
 - **Added type hints:** Added `-> None` return type annotations to `__init__` methods in API error classes, middleware, and permissions
+- **Fixed Python 3.14 compatibility** - Updated type annotations in `api/types/user.py` and `api/types/totp.py` to use `Optional[]` and `List[]` for Strawberry GraphQL compatibility
+
+### Security
+
+- **TOTP secret encryption (C2)** - All TOTP secrets encrypted at rest using Fernet symmetric encryption
+- **Backup code hashing (H14)** - Backup codes stored as SHA-256 hashes, not plain text
+- **Audit logging** - All 2FA operations logged for security monitoring
 
 ### Documentation
 

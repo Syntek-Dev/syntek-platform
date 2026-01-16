@@ -216,25 +216,25 @@ Phase 3 (GraphQL API Implementation) added 10 new files implementing the full Gr
 
 **Critical Requirements Implemented (Phase 3 focus):**
 
-| Requirement                       | File                     | Implementation                                      | Status         |
-| --------------------------------- | ------------------------ | --------------------------------------------------- | -------------- |
-| **C4: CSRF Protection**           | `api/middleware/csrf.py` | `GraphQLCSRFMiddleware` exempts queries            | ✅ Implemented |
-| **C5: Email Verification**        | `api/mutations/auth.py`  | Login blocked for unverified emails (line 185)     | ✅ Implemented |
-| **H2: N+1 Query Prevention**      | `api/dataloaders/`       | DataLoader for batch user loading                  | ✅ Implemented |
-| **H4: Error Code Standardisation**| `api/errors.py`          | ErrorCode enum with consistent messages            | ✅ Implemented |
-| **H10: Token Revocation**         | `api/mutations/auth.py`  | Logout revokes session tokens (line 255)           | ✅ Implemented |
-| **M7: User Enumeration Prevention**| `api/mutations/auth.py` | Always return True on password reset (line 350)    | ✅ Implemented |
+| Requirement                         | File                     | Implementation                                  | Status         |
+| ----------------------------------- | ------------------------ | ----------------------------------------------- | -------------- |
+| **C4: CSRF Protection**             | `api/middleware/csrf.py` | `GraphQLCSRFMiddleware` exempts queries         | ✅ Implemented |
+| **C5: Email Verification**          | `api/mutations/auth.py`  | Login blocked for unverified emails (line 185)  | ✅ Implemented |
+| **H2: N+1 Query Prevention**        | `api/dataloaders/`       | DataLoader for batch user loading               | ✅ Implemented |
+| **H4: Error Code Standardisation**  | `api/errors.py`          | ErrorCode enum with consistent messages         | ✅ Implemented |
+| **H10: Token Revocation**           | `api/mutations/auth.py`  | Logout revokes session tokens (line 255)        | ✅ Implemented |
+| **M7: User Enumeration Prevention** | `api/mutations/auth.py`  | Always return True on password reset (line 350) | ✅ Implemented |
 
 **Code Quality Metrics for Phase 3:**
 
-| Metric                | Target | Actual | Status                    |
-| --------------------- | ------ | ------ | ------------------------- |
-| Docstring Coverage    | 90%+   | 100%   | ✅ Excellent              |
+| Metric                | Target | Actual | Status                           |
+| --------------------- | ------ | ------ | -------------------------------- |
+| Docstring Coverage    | 90%+   | 100%   | ✅ Excellent                     |
 | Type Hint Coverage    | 90%+   | 100%   | ✅ Perfect (all `-> None` added) |
-| Line Length (max 100) | 100%   | 100%   | ✅ Perfect                |
-| Complexity (max 15)   | 100%   | 100%   | ✅ All within limits      |
-| PEP 8 Compliance      | 95%+   | 99%    | ✅ Excellent              |
-| Security Coverage     | 80%+   | 100%   | ✅ All critical requirements |
+| Line Length (max 100) | 100%   | 100%   | ✅ Perfect                       |
+| Complexity (max 15)   | 100%   | 100%   | ✅ All within limits             |
+| PEP 8 Compliance      | 95%+   | 99%    | ✅ Excellent                     |
+| Security Coverage     | 80%+   | 100%   | ✅ All critical requirements     |
 
 **Code Examples of Excellence in Phase 3:**
 
@@ -411,17 +411,17 @@ Phase 2 (Authentication Service Layer) added 8 new files implementing critical s
 
 ~~Nine `__init__` methods in Phase 3 code do not have explicit `-> None` return type hints:~~
 
-| File                      | Line | Class/Method                                    |
-| ------------------------- | ---- | ----------------------------------------------- |
-| `api/errors.py`           | 111  | `GraphQLError.__init__`                        |
-| `api/errors.py`           | 134  | `AuthenticationError.__init__`                 |
-| `api/errors.py`           | 153  | `ValidationError.__init__`                     |
-| `api/errors.py`           | 172  | `PermissionError.__init__`                     |
-| `api/errors.py`           | 191  | `NotFoundError.__init__`                       |
-| `api/errors.py`           | 210  | `RateLimitError.__init__`                      |
-| `api/permissions.py`      | 34   | `HasPermission.__init__`                       |
-| `api/middleware/csrf.py`  | 24   | `GraphQLCSRFMiddleware.__init__`               |
-| `api/middleware/auth.py`  | 30   | `GraphQLAuthenticationMiddleware.__init__`     |
+| File                     | Line | Class/Method                               |
+| ------------------------ | ---- | ------------------------------------------ |
+| `api/errors.py`          | 111  | `GraphQLError.__init__`                    |
+| `api/errors.py`          | 134  | `AuthenticationError.__init__`             |
+| `api/errors.py`          | 153  | `ValidationError.__init__`                 |
+| `api/errors.py`          | 172  | `PermissionError.__init__`                 |
+| `api/errors.py`          | 191  | `NotFoundError.__init__`                   |
+| `api/errors.py`          | 210  | `RateLimitError.__init__`                  |
+| `api/permissions.py`     | 34   | `HasPermission.__init__`                   |
+| `api/middleware/csrf.py` | 24   | `GraphQLCSRFMiddleware.__init__`           |
+| `api/middleware/auth.py` | 30   | `GraphQLAuthenticationMiddleware.__init__` |
 
 **Example:**
 
@@ -464,6 +464,7 @@ mypy api/
 **Timeline:** ~~Low priority - fix during next code cleanup~~ ✅ COMPLETED
 **Effort:** ~~5 minutes - simple, mechanical change~~ ✅ DONE
 **Files Updated (09/01/2026):**
+
 - ✅ `api/errors.py` (6 methods) - Lines 116, 139, 158, 177, 196, 215
 - ✅ `api/permissions.py` (1 method) - Line 34
 - ✅ `api/middleware/csrf.py` (1 method) - Line 24
@@ -481,6 +482,7 @@ mypy api/
 **Status:** ✅ **FIXED** - All generic exceptions replaced with specific exception types
 
 **Files Fixed (09/01/2026):**
+
 - ✅ `apps/core/utils/encryption.py` (lines 147, 160) - Changed to `(ValueError, TypeError)`
 - ✅ `apps/core/views/health.py` (line 53) - Changed to `(DatabaseError, OperationalError)`
 - ✅ `apps/core/models/totp_device.py` (line 145) - Changed to `(ValueError, TypeError, InvalidToken)`
@@ -698,6 +700,7 @@ class TestSecurityExceptions:
 
 **Timeline:** ~~High priority - include in next sprint~~ ✅ COMPLETED (09/01/2026)
 **Files Updated:**
+
 - ✅ `apps/core/utils/encryption.py` - Uses `(ValueError, TypeError)` for encryption errors
 - ✅ `apps/core/views/health.py` - Uses `(DatabaseError, OperationalError)` for DB health checks
 - ✅ `apps/core/models/totp_device.py` - Uses `(ValueError, TypeError, InvalidToken)` for TOTP verification
@@ -729,6 +732,7 @@ Upon review (09/01/2026), the `config/middleware/audit.py` file does not contain
 #### Problem (RESOLVED)
 
 ~~IP extraction logic duplicated in three places with slight variations:~~
+
 - ~~`config/middleware/audit.py` - `get_client_ip()` function~~
 - ~~`config/middleware/ratelimit.py` - `_get_client_ip()` method~~
 - ~~`config/middleware/ip_allowlist.py` - `_get_client_ip()` method~~
@@ -747,6 +751,7 @@ anonymised_ip = get_client_ip(request, anonymise=True)
 ```
 
 **Files Updated:**
+
 - ✅ `config/utils/__init__.py` - New package with exports
 - ✅ `config/utils/request.py` - New centralised IP extraction utility
 - ✅ `config/middleware/audit.py` - Now imports from `config.utils.request`
@@ -754,9 +759,11 @@ anonymised_ip = get_client_ip(request, anonymise=True)
 - ✅ `config/middleware/ip_allowlist.py` - Removed duplicate `_get_client_ip()`, uses centralised utility
 
 **Additional Fix:**
+
 - ✅ `config/middleware/ratelimit.py` - Fixed generic exception `except Exception` to specific `except (ConnectionError, TimeoutError, OSError)`
 
 **Benefits:**
+
 1. Single source of truth for IP extraction logic
 2. Consistent handling of X-Forwarded-For headers
 3. Easier to maintain and update security logic

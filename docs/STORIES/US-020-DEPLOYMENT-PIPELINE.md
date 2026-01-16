@@ -305,10 +305,10 @@ This story covers an automated CI/CD deployment pipeline using GitHub Actions th
 
 This story addresses the following security gaps from the US-001 Security Implementation Review:
 
-| Gap ID | Description | Implementation |
-|--------|-------------|----------------|
-| **H005** | Security headers not fully specified | HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Permissions-Policy |
-| **L003** | No dependency scanning | Safety/Snyk integration, npm audit, Dependabot, vulnerability thresholds |
+| Gap ID   | Description                          | Implementation                                                           |
+| -------- | ------------------------------------ | ------------------------------------------------------------------------ |
+| **H005** | Security headers not fully specified | HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Permissions-Policy   |
+| **L003** | No dependency scanning               | Safety/Snyk integration, npm audit, Dependabot, vulnerability thresholds |
 
 ---
 

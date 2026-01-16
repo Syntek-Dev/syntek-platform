@@ -51,7 +51,7 @@ class HealthCheckView(View):
                 cursor.execute("SELECT 1")
             checks["database"] = "ok"
         except (DatabaseError, OperationalError) as e:
-            checks["database"] = f"error: {str(e)}"
+            checks["database"] = f"error: {e!s}"
             healthy = False
 
         # Build response

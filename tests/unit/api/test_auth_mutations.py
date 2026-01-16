@@ -515,7 +515,7 @@ class TestLogoutMutation:
         Then: Session token is revoked in database
         And: Subsequent requests with that token fail authentication
         """
-        client, user, token = authenticated_user_and_token
+        client, _user, token = authenticated_user_and_token
 
         mutation = """
         mutation {

@@ -51,7 +51,7 @@ def get_client_ip(request: HttpRequest, anonymise: bool = False) -> str:
         For security logging, use full IP (legitimate interest under GDPR).
         For analytics/non-security logging, use anonymise=True.
     """
-    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    x_forwarded_for = request.headers.get("x-forwarded-for")
     if x_forwarded_for:
         # Take the first IP in the chain (client's real IP)
         ip = str(x_forwarded_for).split(",")[0].strip()
@@ -79,9 +79,9 @@ def anonymise_ip(ip_address: str) -> str:
         The anonymised IP address, or 'unknown' if parsing fails.
 
     Example:
-        >>> anonymise_ip('192.168.1.45')
+        >>> anonymise_ip("192.168.1.45")
         '192.168.1.0'
-        >>> anonymise_ip('2001:db8:85a3::8a2e:370:7334')
+        >>> anonymise_ip("2001:db8:85a3::8a2e:370:7334")
         '2001:db8:85a3::'
     """
     if not ip_address or ip_address == "unknown":
@@ -112,9 +112,9 @@ def validate_ip_address(ip_address: str) -> bool:
         True if valid IPv4 or IPv6 address, False otherwise.
 
     Example:
-        >>> validate_ip_address('192.168.1.1')
+        >>> validate_ip_address("192.168.1.1")
         True
-        >>> validate_ip_address('invalid-ip')
+        >>> validate_ip_address("invalid-ip")
         False
     """
     if not ip_address or ip_address == "unknown":

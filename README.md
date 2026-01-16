@@ -87,7 +87,7 @@ complete platform architecture and phased development plan.
 backend_template/
 ├── .claude/                 # Claude Code configuration
 ├── .github/                 # GitHub configuration (workflows, templates, CodeQL)
-├── .husky/                  # Git hooks
+├── .pre-commit-config.yaml  # Pre-commit hooks configuration
 ├── .vscode/                 # VS Code workspace settings
 ├── api/                     # GraphQL API
 ├── apps/                    # Django applications

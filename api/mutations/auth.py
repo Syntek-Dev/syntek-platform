@@ -4,6 +4,8 @@ This module defines all authentication-related mutations with full implementatio
 for Phase 3 including security requirements C4, C5, H2, H4, H10, M1.
 """
 
+from __future__ import annotations
+
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone as tz
@@ -27,6 +29,7 @@ from api.utils.converters import user_to_graphql_type
 from apps.core.models import EmailVerificationToken, Organisation
 from apps.core.services.audit_service import AuditService
 from apps.core.services.auth_service import AuthService
+from apps.core.services.captcha_service import captcha_service
 from apps.core.services.email_service import EmailService
 from apps.core.services.password_reset_service import PasswordResetService
 from apps.core.services.token_service import TokenService
@@ -44,7 +47,7 @@ class AuthMutations:
         """Register a new user account.
 
         Creates user, sends verification email, and returns auth tokens.
-        Implements error code standardisation (H4).
+        Implements error code standardisation (H4) and CAPTCHA protection (M001).
 
         Args:
             info: GraphQL execution info
@@ -55,9 +58,47 @@ class AuthMutations:
 
         Raises:
             ValidationError: If email exists or organisation not found (H4)
+            AuthenticationError: If CAPTCHA validation fails (M001)
         """
         # Get client IP for audit logging
         ip_address = get_ip_address(info)
+
+        # Verify CAPTCHA (M001 - Phase 4 requirement)
+        is_valid, score, error = captcha_service.verify_token(
+            token=input.captcha_token,
+            action="register",
+            remote_ip=ip_address,
+        )
+
+        if not is_valid:
+            # Log CAPTCHA failure
+            AuditService.log_event(
+                action="captcha_failed",
+                user=None,
+                organisation=None,
+                ip_address=ip_address,
+                metadata={
+                    "action": "register",
+                    "score": score,
+                    "error": error,
+                },
+            )
+            raise AuthenticationError(
+                ErrorCode.CAPTCHA_FAILED,
+                error or "CAPTCHA verification failed",
+            )
+
+        # Log CAPTCHA score for monitoring
+        AuditService.log_event(
+            action="captcha_verified",
+            user=None,
+            organisation=None,
+            ip_address=ip_address,
+            metadata={
+                "action": "register",
+                "score": score,
+            },
+        )
 
         # Find organisation by slug
         try:
@@ -123,7 +164,8 @@ class AuthMutations:
     def login(self, info: Info, input: LoginInput) -> AuthPayload:
         """Login with email and password.
 
-        Enforces email verification (C5) and implements standardised errors (H4).
+        Enforces email verification (C5), implements standardised errors (H4),
+        and CAPTCHA protection (M001).
 
         Args:
             info: GraphQL execution info
@@ -133,11 +175,49 @@ class AuthMutations:
             AuthPayload with token and user data
 
         Raises:
-            AuthenticationError: If credentials invalid or email not verified (H4)
+            AuthenticationError: If credentials invalid, email not verified, or CAPTCHA fails
         """
         # Get client IP and device fingerprint
         ip_address = get_ip_address(info)
         user_agent = get_user_agent(info)
+
+        # Verify CAPTCHA (M001 - Phase 4 requirement)
+        is_valid, score, error = captcha_service.verify_token(
+            token=input.captcha_token,
+            action="login",
+            remote_ip=ip_address,
+        )
+
+        if not is_valid:
+            # Log CAPTCHA failure
+            AuditService.log_event(
+                action="captcha_failed",
+                user=None,
+                organisation=None,
+                ip_address=ip_address,
+                metadata={
+                    "action": "login",
+                    "score": score,
+                    "error": error,
+                    "email": input.email,
+                },
+            )
+            raise AuthenticationError(
+                ErrorCode.CAPTCHA_FAILED,
+                error or "CAPTCHA verification failed",
+            )
+
+        # Log CAPTCHA score for monitoring
+        AuditService.log_event(
+            action="captcha_verified",
+            user=None,
+            organisation=None,
+            ip_address=ip_address,
+            metadata={
+                "action": "login",
+                "score": score,
+            },
+        )
 
         # Authenticate user
         result = AuthService.login(
@@ -177,15 +257,59 @@ class AuthMutations:
         if not user.is_active:
             raise AuthenticationError(ErrorCode.ACCOUNT_DISABLED, "Your account has been disabled")
 
-        # Check if 2FA is required (Phase 4 implementation)
-        requires_two_factor = user.two_factor_enabled and not input.totp_code
-        if requires_two_factor and not input.totp_code:
+        # Check if 2FA is required (Phase 5 implementation)
+        from apps.core.services.totp_service import TOTPService
+
+        has_2fa = TOTPService.has_confirmed_device(user)
+
+        # If user has 2FA enabled but didn't provide a code, require it
+        if has_2fa and not input.totp_code:
             return AuthPayload(
                 token="",  # No token until 2FA verified
                 refresh_token="",
                 user=user_to_graphql_type(user),
                 requires_two_factor=True,
             )
+
+        # If user provided a 2FA code, verify it
+        if has_2fa and input.totp_code:
+            # Try TOTP token first
+            verified = False
+
+            # Get user's confirmed devices
+            devices = list(user.totp_devices.filter(is_confirmed=True))
+
+            # Try each device until one verifies
+            for device in devices:
+                if TOTPService.verify_token(device, input.totp_code):
+                    verified = True
+                    break
+
+            # If TOTP failed, try backup code
+            if not verified:
+                verified = TOTPService.verify_backup_code(user, input.totp_code)
+
+                if verified:
+                    # Log backup code usage
+                    AuditService.log_event(
+                        action="2fa_backup_code_used",
+                        user=user,
+                        organisation=user.organisation,
+                        ip_address=ip_address,
+                    )
+
+            if not verified:
+                # Log failed 2FA attempt
+                AuditService.log_event(
+                    action="2fa_verification_failed",
+                    user=user,
+                    organisation=user.organisation,
+                    ip_address=ip_address,
+                )
+                raise AuthenticationError(
+                    ErrorCode.INVALID_2FA_CODE,
+                    "Invalid two-factor authentication code",
+                )
 
         # Log successful login
         AuditService.log_event(

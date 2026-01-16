@@ -34,6 +34,8 @@ class ErrorCode(str, Enum):
     TOKEN_INVALID = "TOKEN_INVALID"
     TWO_FACTOR_REQUIRED = "TWO_FACTOR_REQUIRED"
     INVALID_TOTP_CODE = "INVALID_TOTP_CODE"
+    INVALID_2FA_CODE = "INVALID_2FA_CODE"  # Alias for INVALID_TOTP_CODE
+    CAPTCHA_FAILED = "CAPTCHA_FAILED"
 
     # Validation errors (VALIDATION_*)
     EMAIL_ALREADY_EXISTS = "EMAIL_ALREADY_EXISTS"
@@ -73,6 +75,8 @@ ERROR_MESSAGES: dict[ErrorCode, str] = {
     ErrorCode.TOKEN_INVALID: "Invalid authentication token",
     ErrorCode.TWO_FACTOR_REQUIRED: "Two-factor authentication code required",
     ErrorCode.INVALID_TOTP_CODE: "Invalid two-factor authentication code",
+    ErrorCode.INVALID_2FA_CODE: "Invalid two-factor authentication code",
+    ErrorCode.CAPTCHA_FAILED: "CAPTCHA verification failed - please try again",
     # Validation
     ErrorCode.EMAIL_ALREADY_EXISTS: "Email address is already registered",
     ErrorCode.INVALID_EMAIL_FORMAT: "Invalid email address format",

@@ -4,11 +4,14 @@ Prevents N+1 query problems when loading organisations in GraphQL resolvers.
 Batches organisation lookups within a single request.
 """
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from strawberry.dataloader import DataLoader
 
 from apps.core.models import Organisation
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 async def load_organisations_batch(keys: Iterable[int]) -> list[Organisation | None]:

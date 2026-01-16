@@ -6,7 +6,8 @@ Provides project structure detection and analysis utilities for Claude Code agen
 Returns structured JSON output for integration with setup, backend, and frontend agents.
 Supports framework detection, directory structure analysis, and technology stack identification.
 """
-import json
+
+import contextlib
 import sys
 from pathlib import Path
 
@@ -66,7 +67,7 @@ def detect_language(directory: str | None = None) -> dict:
         try:
             import json as json_mod
 
-            with open(search_dir / "composer.json") as f:
+            with Path(search_dir / "composer.json").open() as f:
                 data = json_mod.load(f)
                 version = data.get("require", {}).get("php")
         except Exception:
@@ -75,16 +76,12 @@ def detect_language(directory: str | None = None) -> dict:
         for file in [".python-version", "runtime.txt"]:
             path = search_dir / file
             if path.exists():
-                try:
+                with contextlib.suppress(Exception):
                     version = path.read_text().strip()
-                except Exception:
-                    pass
                 break
     elif primary in ["javascript", "typescript"] and (search_dir / ".nvmrc").exists():
-        try:
+        with contextlib.suppress(Exception):
             version = (search_dir / ".nvmrc").read_text().strip()
-        except Exception:
-            pass
 
     return {
         "primary": primary,
@@ -582,47 +579,21 @@ def main():
     """Main entry point for the Project tool."""
     if len(sys.argv) < 2:
         # Default: comprehensive project info
-        print(json.dumps(get_project_info(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
-    if command == "info":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(get_project_info(directory), indent=2))
-
-    elif command == "language":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(detect_language(directory), indent=2))
-
-    elif command == "framework":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(detect_framework(directory), indent=2))
-
-    elif command == "container":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(detect_container_type(directory), indent=2))
-
-    elif command == "structure":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(analyse_structure(directory), indent=2))
+    if (
+        command == "info"
+        or command == "language"
+        or command == "framework"
+        or command == "container"
+        or command == "structure"
+    ):
+        sys.argv[2] if len(sys.argv) > 2 else None
 
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": [
-                        "info",
-                        "language",
-                        "framework",
-                        "container",
-                        "structure",
-                    ],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

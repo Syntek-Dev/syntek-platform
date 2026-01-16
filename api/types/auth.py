@@ -4,6 +4,8 @@ This module defines input and output types for authentication mutations.
 Implementation stub for TDD - tests will fail until fully implemented.
 """
 
+from __future__ import annotations
+
 import strawberry
 
 from api.types.user import UserType
@@ -18,6 +20,7 @@ class RegisterInput:
     first_name: str
     last_name: str
     organisation_slug: str
+    captcha_token: str | None = None  # Required in production (Phase 4)
 
 
 @strawberry.input
@@ -27,6 +30,7 @@ class LoginInput:
     email: str
     password: str
     totp_code: str | None = None  # For 2FA (Phase 4)
+    captcha_token: str | None = None  # Required in production (Phase 4)
 
 
 @strawberry.input

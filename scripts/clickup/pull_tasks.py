@@ -46,12 +46,9 @@ def fetch_all_tasks(client, include_closed: bool = False) -> list[dict[str, Any]
     sprints_folder_id = config["folders"]["sprints"]["id"]
     sprint_lists = client.get_lists_in_folder(sprints_folder_id)
 
-    print(f"Fetching tasks from {len(sprint_lists)} sprint lists...")
-
     for sprint_list in sprint_lists:
         list_id = sprint_list["id"]
         list_name = sprint_list["name"]
-        print(f"  - {list_name}...")
 
         list_tasks = client.get_tasks_in_list(list_id, include_closed=include_closed)
 
@@ -83,7 +80,6 @@ def fetch_all_tasks(client, include_closed: bool = False) -> list[dict[str, Any]
 
     # Fetch from backlog
     backlog_list_id = config["folders"]["backlog"]["list_id"]
-    print("Fetching tasks from backlog...")
 
     backlog_tasks = client.get_tasks_in_list(backlog_list_id, include_closed=include_closed)
 
@@ -132,10 +128,8 @@ def save_tasks(tasks: list[dict[str, Any]], output_file: str):
     output_path = Path(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(output_path, "w", encoding="utf-8") as f:
+    with output_path.open("w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
-
-    print(f"\nSaved {len(tasks)} tasks to {output_file}")
 
 
 def extract_task_id_mapping(tasks: list[dict[str, Any]]) -> dict[str, str]:
@@ -185,25 +179,20 @@ def main():
     # Initialize ClickUp client
     try:
         client = get_client()
-    except ValueError as e:
-        print(f"Error: {e}")
+    except ValueError:
         sys.exit(1)
 
     # Fetch all tasks
-    print("Fetching tasks from ClickUp...")
     tasks = fetch_all_tasks(client, include_closed=args.include_closed)
 
     if args.mapping_only:
         # Output only the story ID mapping
         mapping = extract_task_id_mapping(tasks)
-        print("\nStory ID to ClickUp Task ID Mapping:")
-        print(json.dumps(mapping, indent=2))
 
         # Save mapping to separate file
         mapping_file = Path(args.output).parent / "clickup-story-mapping.json"
-        with open(mapping_file, "w", encoding="utf-8") as f:
+        with mapping_file.open("w", encoding="utf-8") as f:
             json.dump(mapping, f, indent=2)
-        print(f"\nMapping saved to {mapping_file}")
     else:
         # Save all task data
         save_tasks(tasks, args.output)
@@ -211,18 +200,16 @@ def main():
         # Also save mapping
         mapping = extract_task_id_mapping(tasks)
         mapping_file = Path(args.output).parent / "clickup-story-mapping.json"
-        with open(mapping_file, "w", encoding="utf-8") as f:
+        with mapping_file.open("w", encoding="utf-8") as f:
             json.dump(mapping, f, indent=2)
-        print(f"Story ID mapping saved to {mapping_file}")
 
-    print("\nTask summary by status:")
     status_counts = {}
     for task in tasks:
         status = task["status"]
         status_counts[status] = status_counts.get(status, 0) + 1
 
-    for status, count in sorted(status_counts.items()):
-        print(f"  {status}: {count}")
+    for _status, _count in sorted(status_counts.items()):
+        pass
 
 
 if __name__ == "__main__":

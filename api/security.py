@@ -9,13 +9,16 @@ against malicious or resource-intensive queries:
 """
 
 import logging
-from collections.abc import Iterator
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
 
 from strawberry.extensions import SchemaExtension
-from strawberry.types import ExecutionContext
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+    from strawberry.types import ExecutionContext
 
 logger = logging.getLogger(__name__)
 
@@ -113,11 +116,10 @@ class QueryDepthLimitExtension(SchemaExtension):
             for definition in document.definitions:
                 node_depth = self._calculate_query_depth(definition, depth)
                 max_depth = max(max_depth, node_depth)
-        elif hasattr(document, "selection_set"):
-            if document.selection_set:
-                for selection in document.selection_set.selections:
-                    node_depth = self._calculate_query_depth(selection, depth + 1)
-                    max_depth = max(max_depth, node_depth)
+        elif hasattr(document, "selection_set") and document.selection_set:
+            for selection in document.selection_set.selections:
+                node_depth = self._calculate_query_depth(selection, depth + 1)
+                max_depth = max(max_depth, node_depth)
 
         return max_depth
 
@@ -205,36 +207,35 @@ class QueryComplexityLimitExtension(SchemaExtension):
         if hasattr(document, "definitions"):
             for definition in document.definitions:
                 complexity += self._calculate_query_complexity(definition, multiplier)
-        elif hasattr(document, "selection_set"):
-            if document.selection_set:
-                for selection in document.selection_set.selections:
-                    # Determine if this is a list field (more expensive)
-                    # This is a simplified heuristic; in production, you'd check field types
-                    field_multiplier = 1
-                    if hasattr(selection, "name"):
-                        field_name = (
-                            selection.name.value
-                            if hasattr(selection.name, "value")
-                            else str(selection.name)
-                        )
-                        # Common list field naming patterns
-                        if field_name.endswith("s") or field_name in [
-                            "list",
-                            "items",
-                            "results",
-                        ]:
-                            # Assume list fields return 10 items on average
-                            field_multiplier = 10
-
-                    # Each field adds base complexity (with multiplier for list fields)
-                    field_complexity = 1 * multiplier * field_multiplier
-
-                    # Add nested complexity
-                    nested_complexity = self._calculate_query_complexity(
-                        selection, multiplier * field_multiplier
+        elif hasattr(document, "selection_set") and document.selection_set:
+            for selection in document.selection_set.selections:
+                # Determine if this is a list field (more expensive)
+                # This is a simplified heuristic; in production, you'd check field types
+                field_multiplier = 1
+                if hasattr(selection, "name"):
+                    field_name = (
+                        selection.name.value
+                        if hasattr(selection.name, "value")
+                        else str(selection.name)
                     )
+                    # Common list field naming patterns
+                    if field_name.endswith("s") or field_name in [
+                        "list",
+                        "items",
+                        "results",
+                    ]:
+                        # Assume list fields return 10 items on average
+                        field_multiplier = 10
 
-                    complexity += field_complexity + nested_complexity
+                # Each field adds base complexity (with multiplier for list fields)
+                field_complexity = 1 * multiplier * field_multiplier
+
+                # Add nested complexity
+                nested_complexity = self._calculate_query_complexity(
+                    selection, multiplier * field_multiplier
+                )
+
+                complexity += field_complexity + nested_complexity
 
         return complexity
 
@@ -321,10 +322,7 @@ class IntrospectionControlExtension(SchemaExtension):
         Returns:
             True if any definition is an introspection query.
         """
-        for definition in definitions:
-            if self._is_introspection_query(definition):
-                return True
-        return False
+        return any(self._is_introspection_query(definition) for definition in definitions)
 
     def _check_selection_set(self, selection_set: Any) -> bool:
         """Check if selection set contains introspection fields.

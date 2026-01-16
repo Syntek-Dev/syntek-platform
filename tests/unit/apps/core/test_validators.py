@@ -22,8 +22,6 @@ import pytest
 from apps.core.models import Organisation, PasswordHistory
 from config.validators import (
     HIBPPasswordValidator as BreachedPasswordValidator,
-)
-from config.validators import (
     MinimumLengthValidator,
     PasswordComplexityValidator,
     PasswordHistoryValidator,

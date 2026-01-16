@@ -381,7 +381,7 @@ class TestSessionManagementFlow:
         Then: New access token is returned
         And: Session expiry is extended
         """
-        client, user = logged_in_user
+        client, _user = logged_in_user
 
         refresh_mutation = """
         mutation RefreshToken($refreshToken: String!) {
@@ -414,7 +414,7 @@ class TestSessionManagementFlow:
         Then: Current session token is revoked
         And: Subsequent requests with that token fail
         """
-        client, user = logged_in_user
+        client, _user = logged_in_user
 
         logout_mutation = """
         mutation {

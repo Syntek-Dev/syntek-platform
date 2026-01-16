@@ -315,6 +315,7 @@ zero functional changes to the API behaviour.
 **Location**: `api/types/user.py` lines 68-118
 
 **Root Cause**:
+
 - DataLoader classes existed in `api/dataloaders/` but were never integrated into the GraphQL context
 - Field resolvers were still using direct database queries instead of batched DataLoader calls
 - No GraphQL view configuration to instantiate DataLoaders per-request
@@ -322,6 +323,7 @@ zero functional changes to the API behaviour.
 **Solution Implemented**:
 
 1. **Updated organisation field resolver** to async pattern:
+
    ```python
    # Before: Direct query causing N+1
    @strawberry.field
@@ -342,6 +344,7 @@ zero functional changes to the API behaviour.
    ```
 
 2. **Created CustomGraphQLView** in `api/urls.py`:
+
    ```python
    def get_graphql_context(request) -> dict:
        """Create GraphQL context with DataLoaders."""
@@ -363,15 +366,18 @@ zero functional changes to the API behaviour.
    - Type checker (Pylance) caught this error during implementation
 
 **Files Modified**:
+
 - `api/types/user.py` - Updated organisation field to use DataLoader
 - `api/urls.py` - Added CustomGraphQLView and context setup
 
 **Impact**:
+
 - **Before**: 1+N queries (1 query for users + N queries for organisations)
 - **After**: 2 batched queries (1 for users + 1 batched for all organisations)
 - **Performance Improvement**: Eliminated N+1 query problem
 
 **Testing**:
+
 - ✅ All existing GraphQL tests pass (no functionality changes)
 - ✅ Verified DataLoader batching with query logging
 
@@ -380,10 +386,12 @@ zero functional changes to the API behaviour.
 **Problem**: Two separate functions converting User model to GraphQL UserType with duplicated logic.
 
 **Locations**:
+
 - `api/mutations/auth.py` line 39: `_user_to_graphql()`
 - `api/queries/user.py` line 22: `_user_to_graphql_type()`
 
 **Root Cause**:
+
 - Both mutations and queries needed to convert Django User models to GraphQL UserType
 - Functions were implemented independently with slightly different implementations
 - Queries version was more complete (included `_organisation_id`, `_user_instance`)
@@ -391,6 +399,7 @@ zero functional changes to the API behaviour.
 **Solution Implemented**:
 
 1. **Created new `api/utils/` module structure**:
+
    ```
    api/utils/
    ├── __init__.py
@@ -398,6 +407,7 @@ zero functional changes to the API behaviour.
    ```
 
 2. **Created shared converter** in `api/utils/converters.py`:
+
    ```python
    def user_to_graphql_type(user: User) -> UserType:
        """Convert Django User model to GraphQL UserType.
@@ -427,6 +437,7 @@ zero functional changes to the API behaviour.
    ```
 
 3. **Updated both mutations and queries** to use shared converter:
+
    ```python
    # In api/mutations/auth.py and api/queries/user.py
    from api.utils.converters import user_to_graphql_type
@@ -436,14 +447,17 @@ zero functional changes to the API behaviour.
    ```
 
 **Files Modified**:
+
 - `api/mutations/auth.py` - Removed local converter, using shared
 - `api/queries/user.py` - Removed local converter, using shared
 
 **Files Created**:
+
 - `api/utils/__init__.py` - Module initialisation
 - `api/utils/converters.py` - Shared conversion utilities
 
 **Impact**:
+
 - **Lines of Code Reduced**: ~15 lines of duplicate code removed
 - **Maintainability**: Single source of truth for User conversions
 - **Consistency**: All User conversions now use identical logic
@@ -467,6 +481,7 @@ zero functional changes to the API behaviour.
 **Location**: `api/types/user.py` line 117
 
 **Original Code**:
+
 ```python
 try:
     return profile_to_graphql_type(self._user_instance.profile)
@@ -475,6 +490,7 @@ except Exception:
 ```
 
 **Solution**: Updated to catch specific exceptions with explanatory comments:
+
 ```python
 try:
     return profile_to_graphql_type(self._user_instance.profile)
@@ -488,6 +504,7 @@ except (AttributeError, Exception) as e:
 **Files Modified**: `api/types/user.py`
 
 **Impact**:
+
 - More specific error handling without masking unexpected errors
 - Added TODO comment for future logging enhancement
 
@@ -498,6 +515,7 @@ except (AttributeError, Exception) as e:
 **Location**: `api/mutations/auth.py` lines 137-141
 
 **Current Code**:
+
 ```python
 try:
     user = auth_service.login_user(email, password)
@@ -509,6 +527,7 @@ except ValueError as e:
 ```
 
 **Solution**: Added comprehensive TODO comment documenting the issue and future fix:
+
 ```python
 # TODO Phase 4: Replace string matching with custom service exceptions
 # Current implementation matches error messages which is fragile:
@@ -530,21 +549,25 @@ except ValueError as e:
 ### Refactoring Metrics
 
 **Files Modified**: 4
+
 - `api/mutations/auth.py`
 - `api/queries/user.py`
 - `api/types/user.py`
 - `api/urls.py`
 
 **Files Created**: 2
+
 - `api/utils/__init__.py`
 - `api/utils/converters.py`
 
 **Lines of Code**:
+
 - Removed: ~15 (duplicate code)
 - Added: ~30 (new utils module + DataLoader setup)
 - Net: +15 lines (but eliminated 15 lines of duplication = cleaner codebase)
 
 **Code Quality Improvements**:
+
 - ✅ Eliminated all code duplication (DRY principle)
 - ✅ Removed unused/duplicate imports
 - ✅ Improved exception handling specificity
@@ -556,14 +579,15 @@ except ValueError as e:
 
 **Performance Improvements**:
 
-| Scenario            | Before (Queries)                                    | After (Queries)                              | Improvement        |
-| ------------------- | --------------------------------------------------- | -------------------------------------------- | ------------------ |
-| Load 10 users       | 1 + 10 = 11 queries                                 | 2 queries (batched)                          | 82% fewer queries  |
-| Load 100 users      | 1 + 100 = 101 queries                               | 2 queries (batched)                          | 98% fewer queries  |
-| Load user with org  | `SELECT * FROM users` + `SELECT * FROM orgs`        | Same but batched                             | N+1 eliminated     |
-| Organisation loader | N × `SELECT * FROM organisations WHERE id = ?`      | `SELECT * FROM organisations WHERE id IN (?)` | Single batch query |
+| Scenario            | Before (Queries)                               | After (Queries)                               | Improvement        |
+| ------------------- | ---------------------------------------------- | --------------------------------------------- | ------------------ |
+| Load 10 users       | 1 + 10 = 11 queries                            | 2 queries (batched)                           | 82% fewer queries  |
+| Load 100 users      | 1 + 100 = 101 queries                          | 2 queries (batched)                           | 98% fewer queries  |
+| Load user with org  | `SELECT * FROM users` + `SELECT * FROM orgs`   | Same but batched                              | N+1 eliminated     |
+| Organisation loader | N × `SELECT * FROM organisations WHERE id = ?` | `SELECT * FROM organisations WHERE id IN (?)` | Single batch query |
 
 **Testing**:
+
 - ✅ All existing tests pass (no functionality changes)
 - ✅ Code formatted with Black and Ruff
 - ✅ Import order verified with isort
@@ -571,6 +595,7 @@ except ValueError as e:
 - ✅ Manual testing of GraphQL queries and mutations
 
 **Behaviour Preservation**:
+
 - ✅ Zero functionality changes
 - ✅ All GraphQL mutations work identically
 - ✅ All GraphQL queries work identically
@@ -582,6 +607,7 @@ except ValueError as e:
 #### Before/After: DataLoader Integration
 
 **Before** (N+1 problem):
+
 ```python
 @strawberry.field
 def organisation(self) -> Optional[OrganisationType]:
@@ -594,6 +620,7 @@ def organisation(self) -> Optional[OrganisationType]:
 ```
 
 **After** (Batched loading):
+
 ```python
 @strawberry.field
 async def organisation(self, info: Info) -> Optional[OrganisationType]:
@@ -609,6 +636,7 @@ async def organisation(self, info: Info) -> Optional[OrganisationType]:
 #### Before/After: DRY User Conversion
 
 **Before** (Duplication):
+
 ```python
 # In api/mutations/auth.py
 def _user_to_graphql(user: User) -> UserType:
@@ -628,6 +656,7 @@ def _user_to_graphql_type(user: User) -> UserType:
 ```
 
 **After** (Single source of truth):
+
 ```python
 # In api/utils/converters.py
 def user_to_graphql_type(user: User) -> UserType:
@@ -666,27 +695,27 @@ from api.utils.converters import user_to_graphql_type
 
 The following items were identified but deferred to Phase 4 to avoid scope creep:
 
-| Item                         | Priority | Reason for Deferral                  | Target Phase |
-| ---------------------------- | -------- | ------------------------------------ | ------------ |
-| Custom service exceptions    | Low      | Requires service layer changes       | Phase 4      |
-| Unit tests for converters    | Medium   | Test coverage for new utils module   | Phase 4      |
-| Unit tests for DataLoaders   | Medium   | Test coverage for batching logic     | Phase 4      |
-| CSRF protection integration  | High     | Security feature implementation      | Phase 6      |
-| Query depth limiting         | Medium   | GraphQL security feature             | Phase 6      |
-| Query complexity limiting    | Medium   | GraphQL security feature             | Phase 6      |
-| Exception logging            | Low      | Observability enhancement            | Phase 6      |
+| Item                        | Priority | Reason for Deferral                | Target Phase |
+| --------------------------- | -------- | ---------------------------------- | ------------ |
+| Custom service exceptions   | Low      | Requires service layer changes     | Phase 4      |
+| Unit tests for converters   | Medium   | Test coverage for new utils module | Phase 4      |
+| Unit tests for DataLoaders  | Medium   | Test coverage for batching logic   | Phase 4      |
+| CSRF protection integration | High     | Security feature implementation    | Phase 6      |
+| Query depth limiting        | Medium   | GraphQL security feature           | Phase 6      |
+| Query complexity limiting   | Medium   | GraphQL security feature           | Phase 6      |
+| Exception logging           | Low      | Observability enhancement          | Phase 6      |
 
 #### Recommendations
 
 Based on this refactoring work, the following recommendations are provided:
 
-| #   | Recommendation                        | Priority | Rationale                                   |
-| --- | ------------------------------------- | -------- | ------------------------------------------- |
-| 1   | **Proceed to Phase 4**                | High     | Phase 3 code is production-ready            |
-| 2   | **Monitor DataLoader performance**    | Medium   | Verify batching in production with metrics  |
-| 3   | **Add unit tests for utils module**   | Medium   | Ensure converter functions remain tested    |
-| 4   | **Implement custom service exceptions** | Low    | Replace string matching in Phase 4          |
-| 5   | **Document DataLoader patterns**      | Low      | Add examples to developer documentation     |
+| #   | Recommendation                          | Priority | Rationale                                  |
+| --- | --------------------------------------- | -------- | ------------------------------------------ |
+| 1   | **Proceed to Phase 4**                  | High     | Phase 3 code is production-ready           |
+| 2   | **Monitor DataLoader performance**      | Medium   | Verify batching in production with metrics |
+| 3   | **Add unit tests for utils module**     | Medium   | Ensure converter functions remain tested   |
+| 4   | **Implement custom service exceptions** | Low      | Replace string matching in Phase 4         |
+| 5   | **Document DataLoader patterns**        | Low      | Add examples to developer documentation    |
 
 #### Conclusion
 

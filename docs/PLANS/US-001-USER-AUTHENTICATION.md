@@ -5485,18 +5485,18 @@ class AuditService:
 
 ### Phase 4: Security Hardening
 
-**Status**: ⬜ **NOT STARTED**
+**Status**: ✅ **COMPLETED** (09/01/2026)
 
 **Objective:** Address remaining security gaps identified in the Security Implementation Review to achieve production-ready security posture.
 
 **Security Gaps Addressed:**
 
-| Gap ID | Description | Priority | Impact |
-|--------|-------------|----------|--------|
+| Gap ID   | Description                                    | Priority | Impact                              |
+| -------- | ---------------------------------------------- | -------- | ----------------------------------- |
 | **C001** | Password breach detection (HaveIBeenPwned API) | CRITICAL | Weak/compromised passwords accepted |
-| **H004** | Common password blacklist | HIGH | Predictable passwords accepted |
-| **M001** | CAPTCHA for bot protection | MEDIUM | Automated attacks easier |
-| **M007** | Password reset token expiry review | MEDIUM | Token exposure window too long |
+| **H004** | Common password blacklist                      | HIGH     | Predictable passwords accepted      |
+| **M001** | CAPTCHA for bot protection                     | MEDIUM   | Automated attacks easier            |
+| **M007** | Password reset token expiry review             | MEDIUM   | Token exposure window too long      |
 
 #### 4.1 Password Breach Detection (C001)
 
@@ -5601,9 +5601,9 @@ HIBP_BREACH_THRESHOLD = env.int('HIBP_BREACH_THRESHOLD', default=3)
 ```graphql
 # Error response when password is breached
 type AuthError {
-  code: String!  # "PASSWORD_BREACHED"
-  message: String!  # "This password has been found in X data breaches..."
-  field: String  # "password"
+  code: String! # "PASSWORD_BREACHED"
+  message: String! # "This password has been found in X data breaches..."
+  field: String # "password"
 }
 ```
 
@@ -5968,12 +5968,12 @@ RECAPTCHA_SCORE_LOGIN=0.3
 
 **Analysis:**
 
-| Expiry Time | Pros | Cons |
-|-------------|------|------|
-| 5 minutes | Minimal attack window | Users may not check email in time |
-| 10 minutes | Good balance | Slightly larger attack window |
-| 15 minutes | User-friendly | Larger attack window |
-| 30 minutes | Very user-friendly | Unacceptable security risk |
+| Expiry Time | Pros                  | Cons                              |
+| ----------- | --------------------- | --------------------------------- |
+| 5 minutes   | Minimal attack window | Users may not check email in time |
+| 10 minutes  | Good balance          | Slightly larger attack window     |
+| 15 minutes  | User-friendly         | Larger attack window              |
+| 30 minutes  | Very user-friendly    | Unacceptable security risk        |
 
 **Decision:** Reduce to 10 minutes with UX improvements.
 
@@ -6058,7 +6058,9 @@ def send_password_reset_email(self, user: User, token: str) -> None:
 <!-- templates/emails/password_reset.html -->
 <p>Hi {{ user.first_name }},</p>
 
-<p>We received a request to reset your password. Click the button below to create a new password:</p>
+<p>
+  We received a request to reset your password. Click the button below to create a new password:
+</p>
 
 <p style="text-align: center;">
   <a href="{{ reset_url }}" class="button">Reset Password</a>
@@ -6066,7 +6068,9 @@ def send_password_reset_email(self, user: User, token: str) -> None:
 
 <p><strong>⏰ Important:</strong> {{ expiry_warning }}</p>
 
-<p>If you didn't request this, you can safely ignore this email. Your password will remain unchanged.</p>
+<p>
+  If you didn't request this, you can safely ignore this email. Your password will remain unchanged.
+</p>
 ```
 
 **Tests:**
@@ -6114,71 +6118,71 @@ PASSWORD_RESET_TOKEN_EXPIRY_MINUTES=10
 
 **Backend Tasks:**
 
-- [ ] **C001**: Implement HIBPPasswordValidator
-  - [ ] Create validator class with k-anonymity model
-  - [ ] Configure breach threshold setting
-  - [ ] Add to AUTH_PASSWORD_VALIDATORS
-  - [ ] Handle API timeout gracefully (fail open)
-- [ ] **H004**: Implement CommonPasswordValidator
-  - [ ] Create validator class
-  - [ ] Add common_passwords.txt file (10,000 entries)
-  - [ ] Implement pattern blacklist
-  - [ ] Add context-aware validation (email in password)
-- [ ] **M001**: Implement CaptchaService
-  - [ ] Create reCAPTCHA v3 verification service
-  - [ ] Add score thresholds per action
-  - [ ] Integrate with registration mutation
-  - [ ] Integrate with login mutation
-  - [ ] Add CAPTCHA score audit logging
-- [ ] **M007**: Update password reset token expiry
-  - [ ] Reduce expiry from 15 to 10 minutes
-  - [ ] Update email template with expiry warning
-  - [ ] Add expiry_minutes to settings
-- [ ] Add environment variables to .env.example
-- [ ] Update configuration documentation
+- [x] **C001**: Implement HIBPPasswordValidator
+  - [x] Create validator class with k-anonymity model
+  - [x] Configure breach threshold setting
+  - [x] Add to AUTH_PASSWORD_VALIDATORS
+  - [x] Handle API timeout gracefully (fail open)
+- [x] **H004**: Implement CommonPasswordValidator
+  - [x] Create validator class
+  - [x] Add common_passwords.txt file (10,000 entries)
+  - [x] Implement pattern blacklist
+  - [x] Add context-aware validation (email in password)
+- [x] **M001**: Implement CaptchaService
+  - [x] Create reCAPTCHA v3 verification service
+  - [x] Add score thresholds per action
+  - [x] Integrate with registration mutation
+  - [x] Integrate with login mutation
+  - [x] Add CAPTCHA score audit logging
+- [x] **M007**: Update password reset token expiry
+  - [x] Reduce expiry from 15 to 10 minutes
+  - [x] Update email template with expiry warning
+  - [x] Add expiry_minutes to settings
+- [x] Add environment variables to .env.example
+- [x] Update configuration documentation
 
 **Testing Tasks:**
 
-- [ ] Unit tests for HIBPPasswordValidator (mocked API)
-- [ ] Unit tests for CommonPasswordValidator
-- [ ] Unit tests for CaptchaService (mocked API)
-- [ ] Unit tests for password reset token expiry
-- [ ] Integration tests for registration with HIBP check
-- [ ] Integration tests for registration with CAPTCHA
-- [ ] Integration tests for login with CAPTCHA
-- [ ] Integration tests for password reset flow
-- [ ] E2E tests for complete registration flow with all validators
+- [x] Unit tests for HIBPPasswordValidator (mocked API)
+- [x] Unit tests for CommonPasswordValidator
+- [x] Unit tests for CaptchaService (mocked API)
+- [x] Unit tests for password reset token expiry
+- [x] Integration tests for registration with HIBP check
+- [x] Integration tests for registration with CAPTCHA
+- [x] Integration tests for login with CAPTCHA
+- [x] Integration tests for password reset flow
+- [x] E2E tests for complete registration flow with all validators
 
 **Documentation Tasks:**
 
-- [ ] Update API documentation with CAPTCHA requirements
-- [ ] Update security documentation
-- [ ] Add CAPTCHA integration guide for frontend
+- [x] Update API documentation with CAPTCHA requirements
+- [x] Update security documentation
+- [x] Add CAPTCHA integration guide for frontend
 
 ---
 
 #### 4.8 Risks and Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| HIBP API unavailable | Users cannot register | Low | Fail open with logging and alerting |
-| reCAPTCHA service down | Users cannot register/login | Low | Fail open with logging; fallback to rate limiting |
-| False positives blocking legitimate users | User frustration | Medium | Lower CAPTCHA thresholds; monitor scores |
-| Common password list too aggressive | User frustration | Medium | Allow override for specific use cases; provide clear feedback |
-| Token expiry too short for slow email delivery | Users cannot reset password | Medium | Monitor failure rates; provide resend option |
+| Risk                                           | Impact                      | Probability | Mitigation                                                    |
+| ---------------------------------------------- | --------------------------- | ----------- | ------------------------------------------------------------- |
+| HIBP API unavailable                           | Users cannot register       | Low         | Fail open with logging and alerting                           |
+| reCAPTCHA service down                         | Users cannot register/login | Low         | Fail open with logging; fallback to rate limiting             |
+| False positives blocking legitimate users      | User frustration            | Medium      | Lower CAPTCHA thresholds; monitor scores                      |
+| Common password list too aggressive            | User frustration            | Medium      | Allow override for specific use cases; provide clear feedback |
+| Token expiry too short for slow email delivery | Users cannot reset password | Medium      | Monitor failure rates; provide resend option                  |
 
 ---
 
 #### 4.9 Success Criteria
 
-- [ ] All passwords checked against HIBP database before acceptance
-- [ ] Common passwords (top 10,000) blocked at registration
-- [ ] CAPTCHA required for registration and login in production
-- [ ] CAPTCHA scores logged for monitoring and tuning
-- [ ] Password reset token expiry reduced to 10 minutes
-- [ ] All unit tests passing with >90% coverage
-- [ ] Integration tests verifying end-to-end flows
-- [ ] No increase in legitimate user registration failures
+- [x] All passwords checked against HIBP database before acceptance
+- [x] Common passwords (top 10,000) blocked at registration
+- [x] CAPTCHA required for registration and login in production
+- [x] CAPTCHA scores logged for monitoring and tuning
+- [x] Password reset token expiry reduced to 10 minutes
+- [x] All unit tests passing with >90% coverage
+- [x] Integration tests verifying end-to-end flows
+- [x] No increase in legitimate user registration failures
 
 ---
 

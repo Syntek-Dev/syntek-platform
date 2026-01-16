@@ -61,8 +61,7 @@ class CoreConfig(AppConfig):
 
             if decrypted != test_data:
                 raise ImproperlyConfigured(
-                    "IP_ENCRYPTION_KEY validation failed: "
-                    "Encrypt/decrypt test did not match."
+                    "IP_ENCRYPTION_KEY validation failed: Encrypt/decrypt test did not match."
                 )
 
             logger.info("✅ IP encryption key validated successfully")

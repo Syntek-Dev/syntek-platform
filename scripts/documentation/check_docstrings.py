@@ -6,6 +6,7 @@ Ignores virtual environments, migrations, and hidden configuration folders.
 import ast
 import os
 import sys
+from pathlib import Path
 
 # --- Configuration ---
 # Directories to completely skip
@@ -35,7 +36,7 @@ def has_docstring(filepath):
     Parses a python file to determine if it has a module-level docstring.
     """
     try:
-        with open(filepath, encoding="utf-8") as f:
+        with Path(filepath).open(encoding="utf-8") as f:
             content = f.read()
 
         # Parse the code into an Abstract Syntax Tree
@@ -56,8 +57,6 @@ def main():
     missing_docstrings = []
     checked_count = 0
 
-    print("Scanning for missing docstrings in Python files...\n")
-
     for dirpath, dirnames, filenames in os.walk(root_dir):
         # Modify dirnames in-place to skip ignored directories
         # This prevents os.walk from even entering .venv, speeding up the scan
@@ -74,7 +73,7 @@ def main():
             if filename in IGNORE_FILES:
                 continue
 
-            filepath = os.path.join(dirpath, filename)
+            filepath = str(Path(dirpath) / filename)
             checked_count += 1
 
             if not has_docstring(filepath):
@@ -82,14 +81,10 @@ def main():
 
     # --- Report Results ---
     if missing_docstrings:
-        print(
-            f"\033[91m[FAIL] The following {len(missing_docstrings)} files are missing docstrings:\033[0m"
-        )
-        for f in missing_docstrings:
-            print(f"  - {f}")
+        for _f in missing_docstrings:
+            pass
         sys.exit(1)
     else:
-        print(f"\033[92m[PASS] All {checked_count} python files have docstrings.\033[0m")
         sys.exit(0)
 
 

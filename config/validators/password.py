@@ -14,10 +14,15 @@ Note: Django's built-in validators already handle:
 - UserAttributeSimilarityValidator: Prevents passwords similar to username/email
 """
 
+import hashlib
 import re
+from pathlib import Path
+from typing import ClassVar
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+
+import requests
 
 
 class PasswordComplexityValidator:
@@ -68,13 +73,13 @@ class PasswordComplexityValidator:
         # Check for uppercase letters
         if len(re.findall(r"[A-Z]", password)) < self.min_uppercase:
             errors.append(
-                _(f"Password must contain at least {self.min_uppercase} " "uppercase letter(s).")
+                _(f"Password must contain at least {self.min_uppercase} uppercase letter(s).")
             )
 
         # Check for lowercase letters
         if len(re.findall(r"[a-z]", password)) < self.min_lowercase:
             errors.append(
-                _(f"Password must contain at least {self.min_lowercase} " "lowercase letter(s).")
+                _(f"Password must contain at least {self.min_lowercase} lowercase letter(s).")
             )
 
         # Check for digits
@@ -239,7 +244,7 @@ class NoSequentialCharactersValidator:
                 is_descending = all(digits[j] - 1 == digits[j + 1] for j in range(len(digits) - 1))
                 if is_ascending or is_descending:
                     raise ValidationError(
-                        _(f"Password must not contain sequential numbers " f"( {seq} )."),
+                        _(f"Password must not contain sequential numbers ( {seq} )."),
                         code="sequential_numbers",
                     )
 
@@ -257,7 +262,7 @@ class NoSequentialCharactersValidator:
                 )
                 if is_ascending or is_descending:
                     raise ValidationError(
-                        _(f"Password must not contain sequential letters " f"({seq})."),
+                        _(f"Password must not contain sequential letters ({seq})."),
                         code="sequential_letters",
                     )
 
@@ -356,9 +361,6 @@ class HIBPPasswordValidator:
         Raises:
             ValidationError: If password found in breach database above threshold.
         """
-        import hashlib
-
-        import requests
 
         # Calculate SHA-1 hash of password
         sha1_hash = hashlib.sha1(password.encode()).hexdigest().upper()
@@ -402,7 +404,7 @@ class HIBPPasswordValidator:
         Returns:
             Help text string.
         """
-        return _("Your password cannot be one that has been exposed in " "data breaches.")
+        return _("Your password cannot be one that has been exposed in data breaches.")
 
 
 class PasswordHistoryValidator:
@@ -455,6 +457,107 @@ class PasswordHistoryValidator:
         Returns:
             Help text string.
         """
-        return _(
-            f"Your password cannot be one of your previous " f"{self.history_count} passwords."
-        )
+        return _(f"Your password cannot be one of your previous {self.history_count} passwords.")
+
+
+class CommonPasswordValidator:
+    """Validate passwords against a blacklist of common passwords (H004).
+
+    This validator blocks commonly used passwords that pass other validation rules.
+    It includes:
+    - Top 10,000 most common passwords
+    - Common patterns (Password123!, Qwerty123, etc.)
+    - Keyboard walks (qwertyuiop, 1234567890)
+    - Context-aware validation (password cannot contain email)
+
+    Security Review Recommendation H004:
+    "Block commonly used passwords to prevent predictable passwords."
+    """
+
+    PATTERN_BLACKLIST: ClassVar[list[str]] = [
+        # Common patterns that pass complexity rules
+        r"^[A-Z][a-z]+\d+[!@#$%^&*]$",  # Password123!
+        r"^[A-Z][a-z]+[!@#$%^&*]\d+$",  # Password!123
+        r"^[a-z]+[A-Z]+\d+[!@#$%^&*]$",  # passwordABC123!
+        r"^(qwerty|asdf|zxcv)",  # Keyboard walks
+        r"(123456|654321|111111|000000)",  # Sequential/repeated numbers
+    ]
+
+    def __init__(self, password_list_path: str | None = None) -> None:
+        """Initialise with custom password list path.
+
+        Args:
+            password_list_path: Optional path to common passwords file.
+        """
+        # Default to common_passwords.txt in same directory as this file
+        if password_list_path is None:
+            password_list_path = str(Path(__file__).parent / "common_passwords.txt")
+        self.password_list_path = password_list_path
+        self._common_passwords: set[str] | None = None
+
+    @property
+    def common_passwords(self) -> set[str]:
+        """Lazy load common passwords into memory.
+
+        Returns:
+            Set of common passwords in lowercase.
+        """
+        if self._common_passwords is None:
+            try:
+                with Path(self.password_list_path).open(encoding="utf-8") as f:
+                    self._common_passwords = {
+                        line.strip().lower()
+                        for line in f
+                        if line.strip() and not line.startswith("#")
+                    }
+            except FileNotFoundError:
+                # If file doesn't exist, use empty set (validator becomes a no-op)
+                self._common_passwords = set()
+        return self._common_passwords
+
+    def validate(self, password: str, user=None) -> None:
+        """Check password against common password list and patterns.
+
+        Args:
+            password: The plain text password to validate.
+            user: Optional user instance for context-aware validation.
+
+        Raises:
+            ValidationError: If password is too common.
+        """
+        password_lower = password.lower()
+
+        # Check against common passwords list
+        if password_lower in self.common_passwords:
+            raise ValidationError(
+                _("This password is too common. Please choose a more unique password."),
+                code="password_too_common",
+            )
+
+        # Check against pattern blacklist
+        for pattern in self.PATTERN_BLACKLIST:
+            if re.search(pattern, password, re.IGNORECASE):
+                raise ValidationError(
+                    _(
+                        "This password follows a common pattern. "
+                        "Please choose a more unique password."
+                    ),
+                    code="password_common_pattern",
+                )
+
+        # Context-aware: check if password contains username/email
+        if user and hasattr(user, "email"):
+            email_local = user.email.split("@")[0].lower()
+            if email_local and len(email_local) >= 3 and email_local in password_lower:
+                raise ValidationError(
+                    _("Your password cannot contain your email address."),
+                    code="password_contains_email",
+                )
+
+    def get_help_text(self) -> str:
+        """Return help text for this validator.
+
+        Returns:
+            Help text string.
+        """
+        return _("Your password cannot be a commonly used password or follow predictable patterns.")

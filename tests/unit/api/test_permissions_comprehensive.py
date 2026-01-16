@@ -443,7 +443,7 @@ class TestPermissionCombinations:
 
         # Create groups
         owner_group, _ = Group.objects.get_or_create(name="Organisation Owner")
-        admin_group, _ = Group.objects.get_or_create(name="Organisation Admin")
+        _admin_group, _ = Group.objects.get_or_create(name="Organisation Admin")
 
         # Get permissions
         content_type = ContentType.objects.get_for_model(User)

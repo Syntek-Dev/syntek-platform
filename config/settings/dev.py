@@ -4,9 +4,9 @@ This module contains settings specific to the development environment.
 It extends base.py with development-specific configurations.
 """
 
-import socket  # noqa: E402
+import socket
 
-from .base import *  # noqa: F403, F401
+from .base import *  # noqa: F403
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=True)  # noqa: F405

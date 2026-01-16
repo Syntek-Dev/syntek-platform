@@ -157,13 +157,13 @@ Secure login system with optional two-factor authentication (TOTP), JWT token ge
 
 This story addresses the following security gaps from the US-001 Security Implementation Review:
 
-| Gap ID | Description | Implementation |
-|--------|-------------|----------------|
-| **C002** | TOTP secret encryption | Fernet encryption with dedicated key |
-| **C003** | Backup codes incomplete | 8 codes, hashed with HMAC-SHA256, single-use |
-| **C004** | Account lockout mechanism | 5 failed attempts = 15 min lock, progressive duration |
-| **L001** | Disposable email detection | Block throwaway email services at registration/login |
-| **L005** | Absolute session timeout | 90-day maximum session regardless of activity |
+| Gap ID   | Description                | Implementation                                        |
+| -------- | -------------------------- | ----------------------------------------------------- |
+| **C002** | TOTP secret encryption     | Fernet encryption with dedicated key                  |
+| **C003** | Backup codes incomplete    | 8 codes, hashed with HMAC-SHA256, single-use          |
+| **C004** | Account lockout mechanism  | 5 failed attempts = 15 min lock, progressive duration |
+| **L001** | Disposable email detection | Block throwaway email services at registration/login  |
+| **L005** | Absolute session timeout   | 90-day maximum session regardless of activity         |
 
 ---
 

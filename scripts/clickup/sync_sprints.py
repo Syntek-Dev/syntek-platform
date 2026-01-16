@@ -20,6 +20,7 @@ Examples:
 """
 
 import argparse
+import contextlib
 import json
 import re
 import sys
@@ -38,7 +39,7 @@ def parse_sprint_file(file_path: Path) -> dict[str, Any] | None:
     Returns:
         Dictionary containing sprint data, or None if parsing fails.
     """
-    with open(file_path, encoding="utf-8") as f:
+    with Path(file_path).open(encoding="utf-8") as f:
         content = f.read()
 
     # Extract sprint metadata
@@ -53,7 +54,6 @@ def parse_sprint_file(file_path: Path) -> dict[str, Any] | None:
         sprint_data["sprint_id"] = match.group(1).upper()
         sprint_data["sprint_number"] = int(re.search(r"\d+", sprint_data["sprint_id"]).group())
     else:
-        print(f"Warning: Could not extract sprint ID from {file_path.name}")
         return None
 
     # Extract existing ClickUp list ID if present
@@ -174,10 +174,9 @@ def find_or_create_sprint_list(
     if sprint_data.get("clickup_list_id"):
         try:
             list_data = client.get_list(sprint_data["clickup_list_id"])
-            print(f"Found existing sprint list: {sprint_data['sprint_id']} (ID: {list_data['id']})")
             return list_data["id"]
         except Exception:
-            print("ClickUp list ID in file is invalid, will search by name")
+            pass
 
     # Search for existing list by name
     lists = client.get_lists_in_folder(folder_id)
@@ -185,17 +184,12 @@ def find_or_create_sprint_list(
 
     for lst in lists:
         if sprint_data["sprint_id"] in lst["name"]:
-            print(
-                f"Found existing sprint list by name: {sprint_data['sprint_id']} (ID: {lst['id']})"
-            )
             return lst["id"]
 
     if dry_run:
-        print(f"[DRY RUN] Would create sprint list: {sprint_name}")
         return None
 
     # Create new list
-    print(f"Creating new sprint list: {sprint_name}")
 
     try:
         description = build_sprint_description(sprint_data)
@@ -204,10 +198,8 @@ def find_or_create_sprint_list(
             name=sprint_name,
             content=description,
         )
-        print(f"  Created list: {new_list['id']}")
         return new_list["id"]
-    except Exception as e:
-        print(f"  ERROR creating list: {e}")
+    except Exception:
         return None
 
 
@@ -262,25 +254,18 @@ def move_stories_to_sprint(
     if not sprint_data.get("stories"):
         return
 
-    print(f"\n  Moving {len(sprint_data['stories'])} stories to sprint list...")
-
     for story in sprint_data["stories"]:
         story_id = story["story_id"]
         clickup_task_id = story_mapping.get(story_id)
 
         if not clickup_task_id:
-            print(f"    Warning: Story {story_id} not found in mapping, skipping")
             continue
 
         if dry_run:
-            print(f"    [DRY RUN] Would move {story_id} to list {list_id}")
             continue
 
-        try:
+        with contextlib.suppress(Exception):
             client.move_task_to_list(clickup_task_id, list_id)
-            print(f"    Moved {story_id} to sprint")
-        except Exception as e:
-            print(f"    Error moving {story_id}: {e}")
 
 
 def write_clickup_list_id_to_file(file_path: Path, list_id: str):
@@ -290,7 +275,7 @@ def write_clickup_list_id_to_file(file_path: Path, list_id: str):
         file_path: Path to the sprint file.
         list_id: ClickUp list ID to write.
     """
-    with open(file_path, encoding="utf-8") as f:
+    with Path(file_path).open(encoding="utf-8") as f:
         content = f.read()
 
     # Check if ID already exists
@@ -311,7 +296,7 @@ def write_clickup_list_id_to_file(file_path: Path, list_id: str):
             flags=re.MULTILINE,
         )
 
-    with open(file_path, "w", encoding="utf-8") as f:
+    with Path(file_path).open("w", encoding="utf-8") as f:
         f.write(content)
 
 
@@ -339,24 +324,21 @@ def main():
     # Initialize ClickUp client
     try:
         client = get_client()
-    except ValueError as e:
-        print(f"Error: {e}")
+    except ValueError:
         sys.exit(1)
 
     # Load story mapping
     mapping_file = Path("config/clickup-story-mapping.json")
     story_mapping = {}
     if mapping_file.exists():
-        with open(mapping_file, encoding="utf-8") as f:
+        with Path(mapping_file).open(encoding="utf-8") as f:
             story_mapping = json.load(f)
     else:
-        print("Warning: Story mapping file not found, stories won't be linked to sprints")
-        print("Run sync_stories_enhanced.py first to create the mapping")
+        pass
 
     # Check if sprints folder exists
     sprints_path = Path(args.folder_path)
     if not sprints_path.exists():
-        print(f"Error: Sprints folder not found: {sprints_path}")
         sys.exit(1)
 
     # Find all sprint files (only SPRINT-*.md files)
@@ -365,10 +347,7 @@ def main():
     ]
 
     if not sprint_files:
-        print(f"No sprint files found in {sprints_path}")
         sys.exit(0)
-
-    print(f"Found {len(sprint_files)} sprint files")
 
     # Sync each sprint
     success_count = 0
@@ -377,12 +356,8 @@ def main():
 
     for sprint_file in sorted(sprint_files):
         try:
-            print(f"\n{'=' * 60}")
             sprint_data = parse_sprint_file(sprint_file)
             if sprint_data:
-                print(f"Processing: {sprint_data['sprint_id']} - {sprint_data['title']}")
-                print(f"  Stories in sprint: {len(sprint_data.get('stories', []))}")
-
                 list_id = find_or_create_sprint_list(
                     client,
                     sprint_data,
@@ -412,40 +387,31 @@ def main():
                     # Write ClickUp list ID back to file
                     if not args.dry_run:
                         write_clickup_list_id_to_file(sprint_file, list_id)
-                        print("  Updated file with ClickUp list ID")
                 elif args.dry_run:
                     success_count += 1
                 else:
                     error_count += 1
             else:
                 error_count += 1
-        except Exception as e:
-            print(f"Error processing {sprint_file.name}: {e}")
+        except Exception:
             import traceback
 
             traceback.print_exc()
             error_count += 1
-
-    print(f"\n{'=' * 60}")
-    print(f"{'[DRY RUN] ' if args.dry_run else ''}Summary:")
-    print(f"  Success: {success_count}")
-    print(f"  Errors: {error_count}")
 
     if results and not args.dry_run:
         # Save sprint mapping file
         mapping_file = Path("config/clickup-sprint-mapping.json")
         mapping = {}
         if mapping_file.exists():
-            with open(mapping_file, encoding="utf-8") as f:
+            with Path(mapping_file).open(encoding="utf-8") as f:
                 mapping = json.load(f)
 
         for result in results:
             mapping[result["sprint_id"]] = result["clickup_list_id"]
 
-        with open(mapping_file, "w", encoding="utf-8") as f:
+        with Path(mapping_file).open("w", encoding="utf-8") as f:
             json.dump(mapping, f, indent=2)
-
-        print(f"\nUpdated sprint mapping file: {mapping_file}")
 
 
 if __name__ == "__main__":

@@ -5,9 +5,12 @@ not provided by Django's built-in SecurityMiddleware. These headers help protect
 against various web vulnerabilities and comply with modern security best practices.
 """
 
-from collections.abc import Callable
+from typing import TYPE_CHECKING
 
-from django.http import HttpRequest, HttpResponse
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from django.http import HttpRequest, HttpResponse
 
 
 class SecurityHeadersMiddleware:

@@ -5,8 +5,8 @@ feedback-tool.py
 Collects and stores user feedback for agent runs.
 Links feedback to specific runs and supports querying feedback patterns.
 """
+
 import json
-import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -14,7 +14,7 @@ from pathlib import Path
 
 def get_metrics_dir() -> Path:
     """Get the docs/METRICS directory path."""
-    cwd = Path(os.getcwd())
+    cwd = Path.cwd()
     return cwd / "docs" / "METRICS"
 
 
@@ -43,7 +43,7 @@ def get_run(run_id: str) -> dict | None:
         if month_dir.is_dir():
             run_file = month_dir / f"{run_id}.json"
             if run_file.exists():
-                with open(run_file) as f:
+                with Path(run_file).open() as f:
                     return json.load(f)
     return None
 
@@ -57,10 +57,10 @@ def update_run(run_id: str, updates: dict) -> bool:
         if month_dir.is_dir():
             run_file = month_dir / f"{run_id}.json"
             if run_file.exists():
-                with open(run_file) as f:
+                with Path(run_file).open() as f:
                     run_data = json.load(f)
                 run_data.update(updates)
-                with open(run_file, "w") as f:
+                with Path(run_file).open("w") as f:
                     json.dump(run_data, f, indent=2)
                 return True
     return False
@@ -123,7 +123,7 @@ def record_feedback(
     month_dir = get_month_dir(feedback_dir)
     feedback_file = month_dir / f"{feedback_id}.json"
 
-    with open(feedback_file, "w") as f:
+    with Path(feedback_file).open("w") as f:
         json.dump(feedback_data, f, indent=2)
 
     # Also update the run record with feedback
@@ -172,7 +172,7 @@ def query_feedback(
             if len(records) >= limit:
                 break
 
-            with open(fb_file) as f:
+            with Path(fb_file).open() as f:
                 fb_data = json.load(f)
 
             # Parse timestamp
@@ -300,13 +300,12 @@ def get_status() -> dict:
 def main():
     """Main entry point for the feedback tool."""
     if len(sys.argv) < 2:
-        print(json.dumps(get_status(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
     if command == "status":
-        print(json.dumps(get_status(), indent=2))
+        pass
 
     elif command == "record":
         # Parse arguments
@@ -336,7 +335,6 @@ def main():
                 i += 1
 
         result = record_feedback(rating=rating, comment=comment, run_id=run_id)
-        print(json.dumps(result, indent=2))
 
     elif command == "query":
         agent = None
@@ -362,8 +360,7 @@ def main():
             else:
                 i += 1
 
-        feedback = query_feedback(agent=agent, rating=rating, days=days, limit=limit)
-        print(json.dumps({"feedback": feedback, "count": len(feedback)}, indent=2))
+        query_feedback(agent=agent, rating=rating, days=days, limit=limit)
 
     elif command == "analyse":
         agent = sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith("--") else None
@@ -373,26 +370,16 @@ def main():
             if arg == "--days" and i + 1 < len(sys.argv):
                 days = int(sys.argv[i + 1])
 
-        print(json.dumps(analyse_feedback(agent=agent, days=days), indent=2))
-
     elif command == "prompt":
         result = generate_prompt()
         # Print just the prompt text for display
         if result.get("prompt"):
-            print(result["prompt"])
+            pass
         else:
-            print(json.dumps(result, indent=2))
+            pass
 
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": ["status", "record", "query", "analyse", "prompt"],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

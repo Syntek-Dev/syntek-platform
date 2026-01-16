@@ -8,6 +8,7 @@ the factories may fail until models are fully implemented.
 """
 
 from tests.factories.token_factory import (
+    BackupCodeFactory,
     EmailVerificationTokenFactory,
     PasswordHistoryFactory,
     PasswordResetTokenFactory,
@@ -22,13 +23,14 @@ from tests.factories.user_factory import (
 )
 
 __all__ = [
+    "AuditLogFactory",
+    "BackupCodeFactory",
+    "EmailVerificationTokenFactory",
     "OrganisationFactory",
+    "PasswordHistoryFactory",
+    "PasswordResetTokenFactory",
+    "SessionTokenFactory",
+    "TOTPDeviceFactory",
     "UserFactory",
     "UserProfileFactory",
-    "AuditLogFactory",
-    "SessionTokenFactory",
-    "PasswordResetTokenFactory",
-    "EmailVerificationTokenFactory",
-    "TOTPDeviceFactory",
-    "PasswordHistoryFactory",
 ]

@@ -25,6 +25,7 @@ Examples:
 """
 
 import argparse
+import contextlib
 import json
 import re
 import sys
@@ -43,7 +44,7 @@ def parse_story_file(file_path: Path) -> dict[str, Any] | None:
     Returns:
         Dictionary containing story data, or None if parsing fails.
     """
-    with open(file_path, encoding="utf-8") as f:
+    with Path(file_path).open(encoding="utf-8") as f:
         content = f.read()
 
     # Extract story metadata
@@ -57,7 +58,6 @@ def parse_story_file(file_path: Path) -> dict[str, Any] | None:
     if match:
         story_data["story_id"] = match.group(1).upper()
     else:
-        print(f"Warning: Could not extract story ID from {file_path.name}")
         return None
 
     # Extract existing ClickUp ID if present
@@ -272,17 +272,13 @@ def sync_story_to_clickup(
     list_id = find_or_create_list(client, story_data, config)
 
     if not list_id:
-        print(f"Error: Could not determine list for story {story_data['story_id']}")
         return None
 
     # Check if task already exists
     task = None
     if story_data.get("clickup_id"):
-        try:
+        with contextlib.suppress(Exception):
             task = client.get_task(story_data["clickup_id"])
-            print(f"Found existing task: {story_data['story_id']} (ID: {task['id']})")
-        except Exception:
-            print("ClickUp ID in file is invalid, will search by name")
 
     if not task:
         # Search by story ID in task name
@@ -292,7 +288,6 @@ def sync_story_to_clickup(
         )
         if existing_tasks:
             task = existing_tasks[0]
-            print(f"Found existing task by search: {story_data['story_id']} (ID: {task['id']})")
 
     # Build task data
     task_name = f"{story_data['story_id']}: {story_data['title']}"
@@ -305,22 +300,13 @@ def sync_story_to_clickup(
             tags.append(config["labels"][priority_label])
 
     if dry_run:
-        print(f"\n[DRY RUN] Would sync story: {story_data['story_id']}")
-        print(f"  Title: {task_name}")
-        print(f"  List ID: {list_id}")
-        print(f"  Story Points: {story_data.get('points', 'N/A')}")
-        print(f"  MoSCoW Priority: {story_data.get('moscow_priority', 'N/A')}")
-        print(f"  Tags: {tags}")
-        print(f"  Tasks to create: {len(story_data.get('tasks', []))}")
         return None
 
     if task and not force:
-        print(f"Skipping existing task (use --force to update): {story_data['story_id']}")
         return task
 
     if task:
         # Update existing task
-        print(f"Updating task: {story_data['story_id']} (ID: {task['id']})")
 
         task = client.update_task(
             task_id=task["id"],
@@ -330,7 +316,6 @@ def sync_story_to_clickup(
         )
     else:
         # Create new task
-        print(f"Creating new task: {story_data['story_id']}")
 
         task = client.create_task(
             list_id=list_id,
@@ -347,7 +332,6 @@ def sync_story_to_clickup(
             points_field = client.find_custom_field_by_name(list_id, "Story Points")
             if points_field:
                 client.set_custom_field(task["id"], points_field["id"], story_data["points"])
-                print(f"  Set Story Points: {story_data['points']}")
 
         # MoSCoW Priority
         if story_data.get("moscow_priority"):
@@ -358,13 +342,11 @@ def sync_story_to_clickup(
                 )
                 if option_value is not None:
                     client.set_custom_field(task["id"], moscow_field["id"], option_value)
-                    print(f"  Set MoSCoW Priority: {story_data['moscow_priority']}")
-    except Exception as e:
-        print(f"  Warning: Could not set custom fields: {e}")
+    except Exception:
+        pass
 
     # Create subtasks
     if story_data.get("tasks"):
-        print(f"  Creating {len(story_data['tasks'])} subtasks...")
         for task_item in story_data["tasks"]:
             try:
                 subtask_name = task_item["description"]
@@ -376,11 +358,9 @@ def sync_story_to_clickup(
                     name=subtask_name,
                     status="Closed" if task_item.get("completed") else "Open",
                 )
-                print(f"    Created subtask: {subtask_name[:50]}...")
-            except Exception as e:
-                print(f"    Warning: Could not create subtask: {e}")
+            except Exception:
+                pass
 
-    print(f"  ClickUp URL: {task['url']}")
     return task
 
 
@@ -391,7 +371,7 @@ def write_clickup_id_to_file(file_path: Path, clickup_id: str):
         file_path: Path to the story file.
         clickup_id: ClickUp task ID to write.
     """
-    with open(file_path, encoding="utf-8") as f:
+    with Path(file_path).open(encoding="utf-8") as f:
         content = f.read()
 
     # Check if ID already exists
@@ -412,7 +392,7 @@ def write_clickup_id_to_file(file_path: Path, clickup_id: str):
             flags=re.MULTILINE,
         )
 
-    with open(file_path, "w", encoding="utf-8") as f:
+    with Path(file_path).open("w", encoding="utf-8") as f:
         f.write(content)
 
 
@@ -442,14 +422,12 @@ def main():
     # Initialize ClickUp client
     try:
         client = get_client()
-    except ValueError as e:
-        print(f"Error: {e}")
+    except ValueError:
         sys.exit(1)
 
     # Check if stories folder exists
     stories_path = Path(args.folder_path)
     if not stories_path.exists():
-        print(f"Error: Stories folder not found: {stories_path}")
         sys.exit(1)
 
     # Find all story files (only US-*.md files, not README or other docs)
@@ -458,10 +436,7 @@ def main():
     ]
 
     if not story_files:
-        print(f"No story files found in {stories_path}")
         sys.exit(0)
-
-    print(f"Found {len(story_files)} story files")
 
     # Sync each story
     success_count = 0
@@ -492,37 +467,29 @@ def main():
                     # Write ClickUp ID back to file
                     if not args.dry_run:
                         write_clickup_id_to_file(story_file, result["id"])
-                        print("  Updated file with ClickUp ID")
                 elif args.dry_run:
                     success_count += 1
             else:
                 error_count += 1
-        except Exception as e:
-            print(f"Error processing {story_file.name}: {e}")
+        except Exception:
             import traceback
 
             traceback.print_exc()
             error_count += 1
-
-    print(f"\n{'[DRY RUN] ' if args.dry_run else ''}Summary:")
-    print(f"  Success: {success_count}")
-    print(f"  Errors: {error_count}")
 
     if results and not args.dry_run:
         # Save mapping file
         mapping_file = Path("config/clickup-story-mapping.json")
         mapping = {}
         if mapping_file.exists():
-            with open(mapping_file, encoding="utf-8") as f:
+            with Path(mapping_file).open(encoding="utf-8") as f:
                 mapping = json.load(f)
 
         for result in results:
             mapping[result["story_id"]] = result["clickup_id"]
 
-        with open(mapping_file, "w", encoding="utf-8") as f:
+        with Path(mapping_file).open("w", encoding="utf-8") as f:
             json.dump(mapping, f, indent=2)
-
-        print(f"\nUpdated mapping file: {mapping_file}")
 
 
 if __name__ == "__main__":

@@ -27,28 +27,14 @@ repos:
         args: [--pytest-test-first]
       - id: requirements-txt-fixer
 
-  # Python code formatting with Black
-  - repo: https://github.com/psf/black
-    rev: 24.10.0
-    hooks:
-      - id: black
-        language_version: python3.13
-        args: [--config=pyproject.toml]
-
-  # Import sorting with isort
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        args: [--settings-path=pyproject.toml]
-
-  # Linting with Ruff (replaces flake8 and pylint)
+  # Linting and formatting with Ruff (replaces black, isort, flake8)
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.8.6
     hooks:
       - id: ruff
-        args: [--config=pyproject.toml]
+        args: [--fix, --config=pyproject.toml]
       - id: ruff-format
+        args: [--config=pyproject.toml]
 
   # Type checking with mypy
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -124,7 +110,7 @@ default_language_version:
   python: python3.13
 
 # Only run on staged files
-default_stages: [commit]
+default_stages: [pre-commit]
 
 # Fail fast on first error
 fail_fast: false
