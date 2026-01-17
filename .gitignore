@@ -121,7 +121,7 @@ Thumbs.db
 .claude/settings.local.json
 
 # Test Results
-docs/TESTS/RESULTS/*
+docs/TESTS/RESULTS/test-results-*
 
 # Backups
 backups/

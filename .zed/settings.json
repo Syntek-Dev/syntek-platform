@@ -5,19 +5,7 @@
   "diagnostics": {
     "include_warnings": true
   },
-  "file_scan_exclusions": [
-    "**/.git",
-    "**/.venv",
-    "**/venv",
-    "**/__pycache__",
-    "**/node_modules",
-    "**/staticfiles",
-    "**/media",
-    "**/.claude/",
-    "**/scripts/",
-    "**/tests/",
-    "**/migrations"
-  ],
+  "file_scan_exclusions": ["**/.venv", "**/venv", "**/__pycache__", "**/node_modules"],
 
   // ============================================
   // LANGUAGE SETTINGS
@@ -94,36 +82,36 @@
   // ============================================
   "lsp": {
     "pyright": {
-      "settings": {
+      "initialization_options": {
         "python": {
-          "pythonPath": ".venv/bin/python"
-        },
-        "python.analysis": {
-          "typeCheckingMode": "basic",
-          "diagnosticSeverityOverrides": {
-            // Django ORM patterns (managers, DoesNotExist, ForeignKey access, etc.)
-            "reportAttributeAccessIssue": "none",
-            "reportGeneralTypeIssues": "none",
-            "reportArgumentType": "none",
-            "reportAssignmentType": "none",
-            "reportReturnType": "none",
-            "reportMissingImports": "warning",
-            "reportMissingModuleSource": "none",
-            "reportOptionalMemberAccess": "none",
-            "reportCallIssue": "none",
-            "reportInvalidTypeForm": "none"
-          },
-          "exclude": [
-            "**/.claude/**",
-            "**/scripts/**",
-            "**/tests/**",
-            "**/migrations/**",
-            "**/node_modules/**",
-            "**/.venv/**",
-            "**/venv/**",
-            "**/staticfiles/**",
-            "**/media/**"
-          ]
+          "pythonPath": ".venv/bin/python",
+          "analysis": {
+            "typeCheckingMode": "basic",
+            "diagnosticSeverityOverrides": {
+              "reportAttributeAccessIssue": "none",
+              "reportGeneralTypeIssues": "none",
+              "reportArgumentType": "none",
+              "reportAssignmentType": "none",
+              "reportReturnType": "none",
+              "reportMissingImports": "warning",
+              "reportMissingModuleSource": "none",
+              "reportOptionalMemberAccess": "none",
+              "reportCallIssue": "none",
+              "reportInvalidTypeForm": "none"
+            },
+            "exclude": [
+              "**/.claude/**",
+              "**/scripts/**",
+              "**/tests/**/",
+              "**/migrations/**",
+              "**/node_modules/**",
+              "**/.venv/**",
+              "**/venv/**",
+              "**/staticfiles/**",
+              "**/media/**",
+              "**/__pycache__/**"
+            ]
+          }
         }
       }
     },
@@ -171,14 +159,15 @@
             "enable": true
           },
           "exclude": [
+            ".venv",
+            "venv",
+            "__pycache__",
+            "node_modules",
+            "staticfiles",
+            "media",
             ".claude",
             "scripts",
             "tests",
-            "node_modules",
-            ".venv",
-            "venv",
-            "staticfiles",
-            "media",
             "migrations"
           ]
         }
