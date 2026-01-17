@@ -22,7 +22,7 @@ Example:
 import secrets
 import time
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -127,6 +127,11 @@ class AuthService:
         login attempts (H3). Uses constant-time comparison to prevent
         timing attacks (SV1).
 
+        Phase 7 Enhancements:
+        - Failed login tracking with progressive lockout (M9)
+        - Suspicious activity detection for new locations (M10)
+        - Concurrent session limit enforcement (M7)
+
         Args:
             email: User email address
             password: Plain password to verify
@@ -136,6 +141,10 @@ class AuthService:
         Returns:
             Dictionary with tokens and user data if successful, None otherwise
         """
+        from apps.core.services.failed_login_service import FailedLoginService
+        from apps.core.services.session_management_service import SessionManagementService
+        from apps.core.services.suspicious_activity_service import SuspiciousActivityService
+
         # Add small random delay to prevent timing attacks (SV1)
         # Randomize between 0-50ms to mask database query timing differences
         time.sleep(secrets.randbelow(50) / 1000.0)
@@ -151,25 +160,38 @@ class AuthService:
                 user = User()
                 user.set_password("dummy_password_for_timing")
 
+            # Check account lockout BEFORE password check (M9)
+            if user_exists:
+                is_locked, remaining_seconds = FailedLoginService.check_lockout(user)
+                if is_locked:
+                    # Add delay to match successful login timing
+                    time.sleep(secrets.randbelow(50) / 1000.0)
+                    return None
+
             # Always check password (even if user doesn't exist) to prevent timing attack
             password_valid = user.check_password(password)
 
             # If user doesn't exist or password invalid, return None
             if not user_exists or not password_valid:
-                # Record failed login attempt if user exists
-                if user_exists:
-                    AuthService.record_failed_login(user)
+                # Record failed login attempt (M9)
+                FailedLoginService.record_failure(
+                    user=user if user_exists else None,
+                    ip_address=ip_address,
+                    email=email,
+                )
 
                 # Add another small delay to match successful login timing
                 time.sleep(secrets.randbelow(50) / 1000.0)
                 return None
 
-            # Check if account is locked
-            if AuthService.check_account_lockout(user):
-                return None
+            # Clear failed login attempts on successful login (M9)
+            FailedLoginService.clear_failed_attempts(user)
 
-            # Reset failed login attempts on successful login
-            AuthService.reset_failed_login_attempts(user)
+            # Check for suspicious activity - login from new location (M10)
+            SuspiciousActivityService.check_login_location(user, ip_address)
+
+            # Enforce concurrent session limit (M7)
+            SessionManagementService.enforce_session_limit(user)
 
             # Create tokens
             tokens = TokenService.create_tokens(user, device_fingerprint)
@@ -209,39 +231,49 @@ class AuthService:
         return TokenService.revoke_user_tokens(user)
 
     @staticmethod
-    def change_password(user: User, old_password: str, new_password: str) -> bool:
+    def change_password(
+        user: User, old_password: str, new_password: str, ip_address: str = ""
+    ) -> bool:
         """Change user password with validation and token revocation.
 
         Implements password history check and revokes all existing tokens
-        to force re-authentication.
+        to force re-authentication. Triggers security alert (M10).
 
         Args:
             user: User instance
             old_password: Current password for verification
             new_password: New password to set
+            ip_address: IP address where change occurred
 
         Returns:
-            True if successful, False if old password incorrect
+            True if password changed successfully
 
         Raises:
-            ValueError: If new password violates requirements
+            ValueError: If old password is incorrect or new password is invalid
         """
+        from apps.core.services.session_management_service import SessionManagementService
+        from apps.core.services.suspicious_activity_service import SuspiciousActivityService
+
         # Verify old password
         if not user.check_password(old_password):
-            return False
+            raise ValueError("Current password is incorrect")
 
         # Validate new password
         try:
             validate_password(new_password, user=user)
         except ValidationError as e:
-            raise ValueError("; ".join(cast("list[str]", e.messages))) from e
+            raise ValueError(str(e)) from e
 
-        # Set new password
+        # Change password
         user.set_password(new_password)
-        user.save(update_fields=["password"])
+        user.password_changed_at = timezone.now()
+        user.save(update_fields=["password", "password_changed_at"])
 
-        # Revoke all tokens (force re-login)
-        TokenService.revoke_user_tokens(user)
+        # Revoke all existing sessions (H8)
+        SessionManagementService.revoke_all_user_sessions(user)
+
+        # Send security alert (M10)
+        SuspiciousActivityService.alert_password_change(user, ip_address)
 
         return True
 

@@ -11,7 +11,10 @@ Implements security requirements:
 - M6: TOTP time window tolerance (±1 period)
 """
 
+from __future__ import annotations
+
 import io
+from typing import TYPE_CHECKING
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -23,7 +26,10 @@ from qrcode.image.svg import SvgPathImage
 
 from apps.core.models import BackupCode, TOTPDevice
 
-User = get_user_model()
+if TYPE_CHECKING:
+    from apps.core.models import User
+
+UserModel = get_user_model()
 
 
 class TOTPService:

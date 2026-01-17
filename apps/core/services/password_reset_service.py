@@ -8,7 +8,15 @@ SECURITY NOTE (C3):
 - Plain token never persisted, only sent via email once
 - HMAC-SHA256 hashing with TOKEN_SIGNING_KEY
 - Constant-time comparison prevents timing attacks
-- Tokens expire after 10 minutes (M007 - Phase 4)
+- Tokens expire after 15 minutes
+
+SECURITY NOTE (H11):
+- Password history enforced (prevents reuse of last 5 passwords)
+- Password strength validated
+- All sessions revoked on password reset (H8)
+
+SECURITY NOTE (H12):
+- Single-use tokens (marked as used after reset)
 
 Example:
     >>> token = PasswordResetService.create_reset_token(user)
@@ -17,15 +25,14 @@ Example:
     >>> PasswordResetService.reset_password(user, token, new_password)
 """
 
+import re
 from datetime import timedelta
-from typing import cast
 
-from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from apps.core.models import PasswordResetToken, User
+from apps.core.models import PasswordHistory, PasswordResetToken, User
 from apps.core.services.token_service import TokenService
 from apps.core.utils.token_hasher import TokenHasher
 
@@ -39,13 +46,17 @@ class PasswordResetService:
     Security Features:
     - Hash-then-store pattern (C3)
     - HMAC-SHA256 token hashing
-    - 10-minute token expiry (M007 - Phase 4)
-    - Single-use tokens
-    - Rate limiting on reset requests
+    - 15-minute token expiry
+    - Single-use tokens (H12)
+    - Password history enforcement (H11)
+    - Session revocation on reset (H8)
 
     Attributes:
         None - All methods are static
     """
+
+    TOKEN_EXPIRY_MINUTES = 15
+    PASSWORD_HISTORY_COUNT = 5
 
     @staticmethod
     def create_reset_token(user: User, ip_address: str = "") -> str:
@@ -55,11 +66,11 @@ class PasswordResetService:
         HMAC-SHA256, and stores only the hash in the database.
 
         Args:
-            user: User requesting password reset
-            ip_address: IP address of request (for audit log)
+            user: User requesting password reset.
+            ip_address: IP address of request (for audit log).
 
         Returns:
-            Plain reset token (only returned once, not stored)
+            Plain reset token (only returned once, not stored).
         """
         # Generate cryptographically secure token
         plain_token = TokenHasher.generate_token()
@@ -67,9 +78,10 @@ class PasswordResetService:
         # Hash the token for storage
         token_hash = TokenHasher.hash_token(plain_token)
 
-        # Get token expiry from settings (default 10 minutes - M007)
-        expiry_minutes = getattr(settings, "PASSWORD_RESET_TOKEN_EXPIRY_MINUTES", 10)
-        expires_at = timezone.now() + timedelta(minutes=expiry_minutes)
+        # Calculate expiry time (15 minutes)
+        expires_at = timezone.now() + timedelta(minutes=PasswordResetService.TOKEN_EXPIRY_MINUTES)
+
+        # Create token record
         PasswordResetToken.objects.create(
             user=user,
             token_hash=token_hash,
@@ -87,10 +99,10 @@ class PasswordResetService:
         using constant-time comparison to prevent timing attacks.
 
         Args:
-            token: Plain reset token from email link
+            token: Plain reset token from email link.
 
         Returns:
-            User instance if token is valid and not expired, None otherwise
+            User instance if token is valid and not expired, None otherwise.
         """
         # Hash the token
         token_hash = TokenHasher.hash_token(token)
@@ -100,7 +112,7 @@ class PasswordResetService:
                 token_hash=token_hash
             )
 
-            # Check if token is valid
+            # Check if token is valid (not expired, not used)
             if reset_token.is_valid():
                 return reset_token.user
 
@@ -114,28 +126,34 @@ class PasswordResetService:
         """Reset user password using valid token.
 
         Verifies token, validates new password against requirements,
-        marks token as used, and updates password with history tracking.
+        checks password history, marks token as used, and updates password.
 
         Args:
-            user: User whose password to reset
-            token: Plain reset token from email link
-            new_password: New password to set
+            user: User whose password to reset.
+            token: Plain reset token from email link.
+            new_password: New password to set.
 
         Returns:
-            True if successful, False if token invalid
+            True if successful, False if token invalid.
 
         Raises:
-            ValueError: If new password violates requirements or matches history
+            ValueError: If new password violates requirements or matches history.
         """
         # Verify token
-        if PasswordResetService.verify_reset_token(token) != user:
+        verified_user = PasswordResetService.verify_reset_token(token)
+        if verified_user != user:
             return False
 
-        # Validate password
-        try:
-            validate_password(new_password, user=user)
-        except ValidationError as e:
-            raise ValueError("; ".join(cast("list[str]", e.messages))) from e
+        # Validate password strength
+        PasswordResetService._validate_password_strength(new_password, user)
+
+        # Check password history (H11)
+        if PasswordHistory.check_password_reuse(
+            user, new_password, PasswordResetService.PASSWORD_HISTORY_COUNT
+        ):
+            raise ValueError(
+                f"Cannot reuse any of your last {PasswordResetService.PASSWORD_HISTORY_COUNT} passwords"
+            )
 
         # Hash the token to find it
         token_hash = TokenHasher.hash_token(token)
@@ -143,14 +161,18 @@ class PasswordResetService:
         try:
             reset_token = PasswordResetToken.objects.get(token_hash=token_hash)
 
-            # Mark token as used
+            # Mark token as used (H12)
             reset_token.mark_used()
+
+            # Record current password in history before changing
+            if user.password:
+                PasswordHistory.record_password(user, user.password)
 
             # Set new password
             user.set_password(new_password)
             user.save(update_fields=["password"])
 
-            # Revoke all existing tokens (force re-login)
+            # Revoke all existing tokens (force re-login) (H8)
             TokenService.revoke_user_tokens(user)
 
             return True
@@ -159,11 +181,53 @@ class PasswordResetService:
             return False
 
     @staticmethod
+    def _validate_password_strength(password: str, user: User = None) -> None:
+        """Validate password meets strength requirements.
+
+        Requirements:
+        - Minimum 8 characters
+        - At least one uppercase letter
+        - At least one lowercase letter
+        - At least one digit
+        - At least one special character
+
+        Args:
+            password: Password to validate.
+            user: User instance for context (optional).
+
+        Raises:
+            ValueError: If password doesn't meet requirements.
+        """
+        if len(password) < 8:
+            raise ValueError("Password must be at least 8 characters long")
+
+        if not re.search(r"[A-Z]", password):
+            raise ValueError("Password must contain at least one uppercase letter")
+
+        if not re.search(r"[a-z]", password):
+            raise ValueError("Password must contain at least one lowercase letter")
+
+        if not re.search(r"\d", password):
+            raise ValueError("Password must contain at least one digit")
+
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+            raise ValueError("Password must contain at least one special character")
+
+        # Use Django's password validators as well
+        try:
+            validate_password(password, user=user)
+        except ValidationError as e:
+            # If Django validators fail, raise the first error
+            if e.messages:
+                raise ValueError(e.messages[0]) from None
+            raise ValueError("Password does not meet requirements") from None
+
+    @staticmethod
     def cleanup_expired_tokens() -> int:
         """Remove expired password reset tokens (maintenance task).
 
         Returns:
-            Number of expired tokens removed
+            Number of expired tokens removed.
         """
         now = timezone.now()
         expired_tokens = PasswordResetToken.objects.filter(expires_at__lt=now)
