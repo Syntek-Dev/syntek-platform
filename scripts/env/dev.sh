@@ -150,7 +150,7 @@ cmd_bash() {
 
 cmd_migrate() {
     header "Running Database Migrations"
-    dc exec ${WEB_SERVICE} python manage.py migrate
+    dc exec -T ${WEB_SERVICE} python manage.py migrate
     success "Migrations completed."
 }
 
@@ -158,9 +158,9 @@ cmd_makemigrations() {
     local app="${1:-}"
     header "Creating Database Migrations"
     if [[ -n "${app}" ]]; then
-        dc exec ${WEB_SERVICE} python manage.py makemigrations "${app}"
+        dc exec -T ${WEB_SERVICE} python manage.py makemigrations "${app}"
     else
-        dc exec ${WEB_SERVICE} python manage.py makemigrations
+        dc exec -T ${WEB_SERVICE} python manage.py makemigrations
     fi
     success "Migrations created."
 }

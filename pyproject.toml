@@ -92,6 +92,8 @@ dev = [
     "djangorestframework-stubs>=3.15.1",
     # Security
     "bandit>=1.8.0",
+    # Logging
+    "python-json-logger>=3.0.0",
     # Documentation
     "sphinx>=8.1.3",
     "sphinx-rtd-theme>=3.0.2",
@@ -181,6 +183,7 @@ markers = [
     "bdd: marks tests as BDD behaviour tests",
     "e2e: marks tests as end-to-end tests",
     "security: marks tests for security features (CSRF, authentication, authorisation)",
+    "penetration: marks tests as penetration/security testing",
     "performance: marks tests for performance optimisation (N+1 queries, DataLoaders)",
 ]
 filterwarnings = [

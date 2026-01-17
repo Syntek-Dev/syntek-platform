@@ -103,15 +103,55 @@ LOGGING = {
     },
 }
 
-# Sentry error tracking (optional - only initialise if DSN is provided)
+# =============================================================================
+# Sentry Error Tracking, Logging, Profiling, and Metrics
+# =============================================================================
+# Requires: SENTRY_DSN environment variable
+# See: https://docs.sentry.io/platforms/python/integrations/django/
+
 SENTRY_DSN = env("SENTRY_DSN", default="")  # noqa: F405
 if SENTRY_DSN:
+    from sentry_sdk.integrations.logging import LoggingIntegration
+    from sentry_sdk.integrations.redis import RedisIntegration
+
+    # Configure which log levels are captured
+    sentry_logging = LoggingIntegration(
+        level=env.int("SENTRY_LOG_LEVEL", default=20),  # noqa: F405  # INFO=20
+        event_level=env.int("SENTRY_EVENT_LEVEL", default=40),  # noqa: F405  # ERROR=40
+    )
+
     sentry_sdk.init(
         dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration()],
-        environment="production",
-        traces_sample_rate=0.1,
-        send_default_pii=False,
+        integrations=[
+            DjangoIntegration(),
+            sentry_logging,
+            RedisIntegration(),
+        ],
+        # Environment identifier in Sentry dashboard
+        environment=env("SENTRY_ENVIRONMENT", default="production"),  # noqa: F405
+        # Release version for tracking deployments
+        release=env("SENTRY_RELEASE", default=None),  # noqa: F405
+        # Add request headers, IP addresses, and user info to events
+        # See: https://docs.sentry.io/platforms/python/data-management/data-collected/
+        send_default_pii=env.bool("SENTRY_SEND_PII", default=True),  # noqa: F405
+        # Enable sending logs to Sentry
+        _experiments={
+            "enable_logs": env.bool("SENTRY_ENABLE_LOGS", default=True),  # noqa: F405
+        },
+        # Performance Monitoring: capture transactions for tracing
+        # 1.0 = 100% of transactions, 0.1 = 10%
+        traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=1.0),  # noqa: F405
+        # Profiling: sample rate for profile sessions
+        # 1.0 = 100% of sessions profiled
+        profile_session_sample_rate=env.float(  # noqa: F405
+            "SENTRY_PROFILE_SESSION_SAMPLE_RATE", default=1.0
+        ),
+        # Profile lifecycle: "trace" runs profiler during active transactions
+        profile_lifecycle=env("SENTRY_PROFILE_LIFECYCLE", default="trace"),  # noqa: F405
+        # Enable tracing for database queries
+        enable_db_query_source=True,
+        # Set threshold for slow DB query warnings (ms)
+        db_query_source_threshold_ms=100,
     )
 
 # CSP (Content Security Policy) headers

@@ -242,6 +242,23 @@ CORS_ALLOWED_ORIGINS = env.list(
 )
 CORS_ALLOW_CREDENTIALS = True
 
+# Phase 7: Audit Logging and Security Configuration
+
+# Audit log retention period (days)
+# GDPR compliance: 90 days for security logs, 30 days for general logs
+AUDIT_LOG_RETENTION_DAYS = env.int("AUDIT_LOG_RETENTION_DAYS", default=90)
+
+# Session management configuration (M7)
+MAX_CONCURRENT_SESSIONS_PER_USER = env.int("MAX_CONCURRENT_SESSIONS_PER_USER", default=5)
+SESSION_IDLE_TIMEOUT_HOURS = env.int("SESSION_IDLE_TIMEOUT_HOURS", default=24)
+
+# Failed login and account lockout configuration (M9)
+# Progressive lockout thresholds defined in FailedLoginService
+
+# Suspicious activity configuration (M10)
+SECURITY_EMAIL_FROM = env.str("SECURITY_EMAIL_FROM", default="security@example.com")
+KNOWN_IP_RETENTION_DAYS = env.int("KNOWN_IP_RETENTION_DAYS", default=30)
+
 # Cache settings
 CACHES = {
     "default": {

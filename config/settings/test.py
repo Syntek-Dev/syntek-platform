@@ -27,20 +27,9 @@ CACHES = {
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
 
-# Disable migrations for faster tests
-class DisableMigrations:
-    """Disable migrations during tests for faster execution."""
-
-    def __contains__(self, item):
-        """Check if item is in migrations."""
-        return True
-
-    def __getitem__(self, item):
-        """Return None to disable migrations."""
-        return None
-
-
-MIGRATION_MODULES = DisableMigrations()
+# Note: Migrations are enabled for tests to ensure database schema is created.
+# If tests become slow, consider using pytest-django's --reuse-db flag instead
+# of disabling migrations entirely.
 
 # Increase rate limits for tests to avoid test interference
 RATELIMIT_GRAPHQL_MUTATION_REQUESTS_PER_MINUTE = 10000
