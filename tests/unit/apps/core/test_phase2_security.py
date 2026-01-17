@@ -593,17 +593,18 @@ class TestAuthService:
 
         Given: User with incorrect old password
         When: Calling change_password()
-        Then: Returns False
+        Then: Raises ValueError with appropriate message
         """
+        import pytest
+
         user = UserFactory.create(password="C0rr3ctOldP@ss!#")
 
-        result = AuthService.change_password(
-            user,
-            old_password="WrongOldPass",
-            new_password="N3wP@ssw0rd!#",
-        )
-
-        assert result is False
+        with pytest.raises(ValueError, match="Current password is incorrect"):
+            AuthService.change_password(
+                user,
+                old_password="WrongOldPass",
+                new_password="N3wP@ssw0rd!#",
+            )
 
     def test_check_account_lockout_after_failed_attempts(self):
         """Test account lockout after multiple failed logins.
