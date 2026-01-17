@@ -1,7 +1,7 @@
 # Security Policy
 
-**Last Updated**: 08/01/2026
-**Version**: 0.4.1
+**Last Updated**: 17/01/2026
+**Version**: 0.8.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -35,9 +35,10 @@ This security policy outlines how to responsibly report vulnerabilities, which v
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.3.x   | :white_check_mark: |
-| 0.2.x   | :white_check_mark: |
-| < 0.2.0 | :x:                |
+| 0.8.x   | :white_check_mark: |
+| 0.7.x   | :white_check_mark: |
+| 0.6.x   | :white_check_mark: |
+| < 0.6.0 | :x:                |
 
 ## Reporting a Vulnerability
 

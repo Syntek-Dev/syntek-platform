@@ -1,7 +1,7 @@
 # Release Notes
 
-**Last Updated**: 08/01/2026
-**Version**: 0.5.0
+**Last Updated**: 17/01/2026
+**Version**: 0.8.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -69,6 +69,83 @@ This file contains user-facing release notes for all versions of the backend tem
 ---
 
 ## Latest Release
+
+### Version 0.8.0 - 17 January 2026
+
+This release completes US-001 Phases 6 and 7, delivering async email delivery, comprehensive audit logging, session management, and security monitoring. Your application now has enterprise-grade security observability and resilient email delivery.
+
+#### What's New
+
+**Async Email Delivery**
+
+Emails are now sent asynchronously via Celery:
+
+- **Background Processing**: Email sending no longer blocks API requests
+- **Retry Logic**: Failed emails automatically retry with exponential backoff
+- **Dead Letter Queue**: Permanently failed emails are captured for review
+- **Task Monitoring**: Celery Flower dashboard for task visibility
+
+**Structured Logging Service**
+
+A comprehensive logging system inspired by Pino (Node.js):
+
+- **Domain Separation**: Separate log files for auth, mail, database, security, GraphQL, and app logs
+- **Production-Ready**: JSON format for log aggregation (ELK, Splunk, Datadog)
+- **Development-Friendly**: Human-readable format for local debugging
+- **PII Protection**: Automatic redaction of sensitive fields
+- **Sentry Integration**: Error tracking with context enrichment
+
+**Session Management**
+
+Take control of user sessions:
+
+- **Concurrent Session Limits**: Configurable max sessions per user (default: 5)
+- **Auto-Cleanup**: Oldest session terminated when limit exceeded
+- **Device Tracking**: Sessions tied to device fingerprints
+- **GraphQL API**: List, revoke individual, or revoke all sessions
+
+**Security Monitoring**
+
+Proactive security threat detection:
+
+- **Progressive Lockout**: Account locked after repeated failed logins (5min → 15min → 1hr → 24hr)
+- **New Location Alerts**: Email notification when logging in from new IP
+- **Security Change Alerts**: Notifications for password and 2FA changes
+- **Audit Log Retention**: Configurable cleanup of old audit records
+
+#### Why This Matters
+
+- **Faster API Responses**: Email sending no longer blocks requests
+- **Better Debugging**: Structured logs make issues easier to diagnose
+- **Security Visibility**: Know when something suspicious happens
+- **Compliance Ready**: Audit logs support regulatory requirements
+- **Account Protection**: Brute-force attacks are automatically mitigated
+
+#### Technical Details
+
+- 9 new commits with focused, atomic changes
+- 100+ new tests (BDD, E2E, integration, security, unit)
+- New dependencies: Celery, python-json-logger, sentry-sdk
+- Migration 0009 for index optimisation
+- New environment variables for all features
+
+#### Coming Soon
+
+- Phase 8: Complete authentication workflow testing
+- Phase 9: Performance optimisation and caching
+- Design token system implementation
+
+---
+
+## Previous Releases
+
+### Version 0.7.0 - 16 January 2026
+
+Phase 5: Two-Factor Authentication (2FA) implementation with TOTP, backup codes, and multiple device support.
+
+### Version 0.6.0 - 9 January 2026
+
+Phase 3: Complete GraphQL API implementation with DataLoaders, error standardisation, and CSRF protection.
 
 ### Version 0.5.0 - 8 January 2026
 

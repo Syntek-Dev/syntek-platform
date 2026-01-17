@@ -1,7 +1,7 @@
 # Version History
 
-**Last Updated**: 16/01/2026
-**Version**: 0.7.0
+**Last Updated**: 17/01/2026
+**Version**: 0.8.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -220,6 +220,188 @@ This file contains detailed technical version history documenting all file chang
 ### Technical Changes
 
 - Nothing yet
+
+---
+
+## [0.8.0] - 17/01/2026
+
+### Summary
+
+US-001 Phase 6 (Async Email Delivery) and Phase 7 (Audit Logging and Security Monitoring)
+implementation. Adds Celery task queue, structured logging service, session management,
+failed login tracking, and suspicious activity detection.
+
+### Breaking Changes
+
+None - All changes are additive.
+
+### Database Migrations
+
+- `0009_remove_totpdevice_core_totp_d_is_conf_idx_and_more.py` - Index optimisation
+
+### API Changes
+
+New GraphQL mutations:
+
+- `listSessions` - List active sessions for current user
+- `revokeSession` - Revoke a specific session
+- `revokeAllSessions` - Revoke all sessions except current
+
+New GraphQL queries:
+
+- `auditLogs` - Query audit logs with filtering
+
+### Files Changed
+
+#### Core Services (New)
+
+- `apps/core/services/logging_service.py` - Structured logging with domain separation
+- `apps/core/services/session_management_service.py` - Concurrent session control
+- `apps/core/services/session_service.py` - Session CRUD operations
+- `apps/core/services/failed_login_service.py` - Progressive lockout tracking
+- `apps/core/services/suspicious_activity_service.py` - Security monitoring
+
+#### Celery Tasks (New)
+
+- `config/celery.py` - Celery configuration
+- `apps/core/tasks/__init__.py` - Task module
+- `apps/core/tasks/email_tasks.py` - Async email delivery tasks
+
+#### Management Commands (New)
+
+- `apps/core/management/commands/cleanup_audit_logs.py` - Audit log retention
+
+#### API (New)
+
+- `api/mutations/session.py` - Session management mutations
+- `api/queries/audit.py` - Audit log queries
+- `api/types/audit.py` - Audit log GraphQL types
+
+#### Core Services (Updated)
+
+- `apps/core/services/auth_service.py` - Logging and security integration
+- `apps/core/services/email_verification_service.py` - Async email delivery
+- `apps/core/services/password_reset_service.py` - Async email delivery
+- `apps/core/services/totp_service.py` - Logging integration
+
+#### API (Updated)
+
+- `api/mutations/auth.py` - Error handling improvements
+- `api/mutations/totp.py` - Logging integration
+- `api/queries/user.py` - Session info
+- `api/schema.py` - New mutations and queries
+
+#### Configuration (Updated)
+
+- `config/settings/base.py` - Celery and logging settings
+- `config/settings/dev.py` - Sentry and logging config
+- `config/settings/production.py` - Production Sentry config
+- `config/settings/staging.py` - Staging Sentry config
+- `config/settings/test.py` - Test overrides
+- `config/middleware/ratelimit.py` - Structured logging
+- `config/urls.py` - Celery Flower URL
+
+#### Environment Configuration (Updated)
+
+- `.env.dev.example` - Phase 7 settings
+- `.env.example` - Phase 7 settings
+- `.env.production.example` - Sentry and logging config
+- `.env.staging.example` - Sentry and logging config
+- `.env.test.example` - Test settings
+
+#### Admin (Updated)
+
+- `apps/core/admin.py` - Audit log and session management views
+
+#### Tests (New)
+
+- `tests/bdd/features/audit_logging.feature`
+- `tests/bdd/features/authentication_edge_cases.feature`
+- `tests/bdd/features/email_verification.feature`
+- `tests/bdd/features/password_reset.feature`
+- `tests/bdd/step_defs/test_audit_logging_steps.py`
+- `tests/bdd/step_defs/test_authentication_edge_cases_steps.py`
+- `tests/e2e/test_password_reset_hash_verification.py`
+- `tests/e2e/test_registration_2fa_complete_flow.py`
+- `tests/e2e/test_session_management_replay_detection.py`
+- `tests/integration/test_account_recovery_alternatives.py`
+- `tests/integration/test_async_email_delivery.py`
+- `tests/integration/test_email_verification_flow.py`
+- `tests/integration/test_logging_infrastructure.py`
+- `tests/integration/test_password_reset_flow.py`
+- `tests/security/test_token_security.py`
+- `tests/unit/apps/core/test_email_verification_service.py`
+- `tests/unit/apps/core/test_logging_service.py`
+- `tests/unit/apps/core/test_password_reset_service.py`
+
+#### Documentation (New)
+
+- `docs/QA/EXECUTIONS/EXECUTION-PHASE-7-AUDIT-LOGGING-2026-01-17.md`
+- `docs/SPRINTS/LOGS/COMPLETION-2026-01-17-US-001-PHASE-6.md`
+- `docs/SPRINTS/LOGS/COMPLETION-2026-01-17-US-001-PHASE-7.md`
+- `docs/TESTS/MANUAL/MANUAL-PHASE-6-EMAIL-WORKFLOWS.md`
+- `docs/TESTS/MANUAL/MANUAL-PHASE-8-AUTHENTICATION.md`
+- `docs/TESTS/RESULTS/README.md`
+- `docs/TESTS/RESULTS/RESULTS-PHASE-8-TEMPLATE.md`
+
+### Dependencies Updated
+
+- `celery>=5.3.0` - Task queue
+- `python-json-logger>=3.1.0` - JSON log formatting
+- `sentry-sdk>=2.19.0` - Error tracking
+
+### Configuration Changes
+
+New environment variables:
+
+- `SENTRY_DSN` - Sentry Data Source Name
+- `SENTRY_ENVIRONMENT` - Environment identifier
+- `LOG_DIR` - Log file directory
+- `LOG_LEVEL` - Logging level
+- `LOG_JSON_FORMAT` - JSON format toggle
+- `AUDIT_LOG_RETENTION_DAYS` - Retention period
+- `MAX_CONCURRENT_SESSIONS_PER_USER` - Session limit
+- `FAILED_LOGIN_LOCKOUT_ENABLED` - Lockout toggle
+- `ALERT_ON_*` - Security alert toggles
+
+### Performance Notes
+
+- Celery enables async email delivery, reducing request latency
+- Structured logging with rotation prevents log file growth issues
+- Session cleanup prevents database bloat
+
+### Security Notes
+
+- Progressive account lockout protects against brute-force attacks
+- Suspicious activity detection alerts on new location logins
+- Session limit prevents unlimited concurrent sessions
+- Audit logging provides security event visibility
+
+### Documentation Notes
+
+- Phase 6 and Phase 7 completion logs added
+- Manual test documentation for email workflows
+- Test results templates added
+
+### Testing Notes
+
+- 100+ new tests across BDD, E2E, integration, security, and unit categories
+- Security tests validate token entropy and timing attack resistance
+- BDD features cover authentication edge cases
+
+### Migration Notes
+
+1. Run `./scripts/env/dev.sh migrate` to apply index optimisation
+2. Configure Celery broker (Redis) in environment
+3. Start Celery worker: `./scripts/env/dev.sh celery-worker`
+
+### Deployment Notes
+
+1. Ensure Redis is available for Celery broker
+2. Configure Sentry DSN for production error tracking
+3. Create log directory with appropriate permissions
+4. Start Celery worker and beat scheduler
+5. Configure security alert email recipients
 
 ---
 

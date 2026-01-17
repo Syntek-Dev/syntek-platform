@@ -1,7 +1,7 @@
 # Changelog
 
-**Last Updated**: 16/01/2026
-**Version**: 0.7.0
+**Last Updated**: 17/01/2026
+**Version**: 0.8.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -77,6 +77,76 @@ This changelog documents all notable changes to the backend template project in 
 ---
 
 ## [Unreleased]
+
+---
+
+## [0.8.0] - 17/01/2026
+
+### Added
+
+- **Phase 6: Async Email Delivery (H6)** - Celery-based asynchronous email processing
+  - `config/celery.py` - Celery configuration with Django integration
+  - `apps/core/tasks/email_tasks.py` - Async email tasks with retry logic and exponential backoff
+  - Dead letter queue support for failed email delivery
+  - Task result storage in Redis
+
+- **Phase 7: Audit Logging and Security Monitoring**
+  - `apps/core/services/logging_service.py` - Structured logging with Pino-style domain separation
+    - Separate log files: auth.log, mail.log, database.log, security.log, graphql.log, app.log
+    - JSON format in production, human-readable in development
+    - Automatic PII and sensitive field redaction
+    - Sentry integration for error tracking
+  - `apps/core/management/commands/cleanup_audit_logs.py` - Audit log retention management (H7)
+
+- **Session Management (M7)**
+  - `apps/core/services/session_management_service.py` - Concurrent session control
+    - Configurable max sessions per user (default: 5)
+    - Auto-terminate oldest session when limit exceeded
+    - Device fingerprinting for session tracking
+  - `apps/core/services/session_service.py` - Session CRUD operations
+
+- **Security Monitoring Services**
+  - `apps/core/services/failed_login_service.py` - Progressive lockout (M9)
+    - Exponential backoff: 5min (3-5), 15min (6-10), 1hr (11-20), 24hr (21+)
+  - `apps/core/services/suspicious_activity_service.py` - New location detection (M10)
+    - Security alert notifications
+    - Known IP retention tracking
+
+- **GraphQL API Extensions**
+  - `api/mutations/session.py` - Session listing, revocation, bulk revoke
+  - `api/queries/audit.py` - Audit log queries with filtering
+  - `api/types/audit.py` - AuditLogType, AuditLogConnection
+
+- **Comprehensive Test Suite** - 100+ new tests
+  - BDD features for audit logging, email verification, password reset, edge cases
+  - E2E tests for password reset, registration with 2FA, session replay detection
+  - Integration tests for async email, logging infrastructure, account recovery
+  - Security tests for token timing attacks, entropy validation, encryption
+
+### Changed
+
+- Enhanced `apps/core/services/auth_service.py` with logging and security integration
+- Enhanced `apps/core/services/email_verification_service.py` with async delivery
+- Enhanced `apps/core/services/password_reset_service.py` with async delivery
+- Enhanced `apps/core/admin.py` with audit log and session management views
+- Enhanced `config/middleware/ratelimit.py` with structured logging
+- Updated all environment configuration files with Phase 7 settings
+- Added Celery, python-json-logger, sentry-sdk to dependencies
+
+### Security
+
+- **Sentry Integration** - Production error tracking with PII controls
+- **Structured Audit Logging** - All security events logged with correlation IDs
+- **Session Limit Enforcement** - Prevents unlimited concurrent sessions
+- **Progressive Account Lockout** - Brute-force protection with exponential backoff
+- **Suspicious Activity Alerts** - New location and security change notifications
+
+### Documentation
+
+- Added Phase 6 and Phase 7 completion logs
+- Added manual test documentation for email workflows and authentication
+- Updated US-001 implementation plan with Phase 6-7 status
+- Updated Sprint 01 documentation with progress
 
 ---
 
