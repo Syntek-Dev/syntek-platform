@@ -66,8 +66,18 @@ class RateLimitMiddleware(MiddlewareMixin):
         # Determine rate limit based on request path
         rate_limit, period = self._get_rate_limit(request)
 
+        # Get current request count and calculate headers
+        current_count, reset_time = self._get_request_count(client_ip, request.path, period)
+
+        # Store rate limit info in request for process_response
+        request._ratelimit_info = {  # type: ignore[attr-defined]
+            "limit": rate_limit,
+            "remaining": max(0, rate_limit - current_count - 1),
+            "reset": reset_time,
+        }
+
         # Check if rate limit is exceeded
-        if self._is_rate_limited(client_ip, request.path, rate_limit, period):
+        if current_count >= rate_limit:
             logger.warning(
                 f"Rate limit exceeded for IP {client_ip} on path {request.path}",
                 extra={
@@ -76,15 +86,40 @@ class RateLimitMiddleware(MiddlewareMixin):
                     "method": request.method,
                 },
             )
-            return JsonResponse(
+            response = JsonResponse(
                 {
                     "error": "Rate limit exceeded",
                     "message": f"Too many requests. Please try again in {period} seconds.",
                 },
                 status=429,
             )
+            # Add rate limit headers to error response
+            response["X-RateLimit-Limit"] = str(rate_limit)
+            response["X-RateLimit-Remaining"] = "0"
+            response["X-RateLimit-Reset"] = str(reset_time)
+            response["Retry-After"] = str(period)
+            return response
 
         return None
+
+    def process_response(self, request: HttpRequest, response: HttpResponse) -> HttpResponse:
+        """Add rate limit headers to successful responses.
+
+        Args:
+            request: The HTTP request object.
+            response: The HTTP response object.
+
+        Returns:
+            The response with added rate limit headers.
+        """
+        # Add rate limit headers if available
+        if hasattr(request, "_ratelimit_info"):
+            info = request._ratelimit_info  # type: ignore[attr-defined]
+            response["X-RateLimit-Limit"] = str(info["limit"])
+            response["X-RateLimit-Remaining"] = str(info["remaining"])
+            response["X-RateLimit-Reset"] = str(info["reset"])
+
+        return response
 
     def _get_rate_limit(self, request: HttpRequest) -> tuple[int, int]:
         """Determine the appropriate rate limit for the request.
@@ -137,8 +172,8 @@ class RateLimitMiddleware(MiddlewareMixin):
             60,
         )
 
-    def _is_rate_limited(self, client_ip: str, path: str, limit: int, period: int) -> bool:
-        """Check if the client has exceeded the rate limit.
+    def _get_request_count(self, client_ip: str, path: str, period: int) -> tuple[int, int]:
+        """Get current request count and calculate reset time.
 
         Uses a sliding window approach with Redis cache. Each request increments
         a counter that expires after the period duration.
@@ -146,35 +181,41 @@ class RateLimitMiddleware(MiddlewareMixin):
         Args:
             client_ip: The client's IP address.
             path: The request path (for separate rate limits per endpoint type).
-            limit: Maximum number of requests allowed.
             period: Time period in seconds.
 
         Returns:
-            True if the rate limit has been exceeded, False otherwise.
+            Tuple of (current_count, reset_timestamp).
         """
+        import time
+
         # Create a unique cache key based on IP and path prefix
         path_prefix = self._get_path_prefix(path)
         cache_key_base = f"ratelimit:{client_ip}:{path_prefix}"
 
         # Use a hash to keep cache keys short
         cache_key = hashlib.md5(cache_key_base.encode()).hexdigest()
+        reset_key = f"{cache_key}:reset"
 
         try:
             # Get current request count
             current_count = cache.get(cache_key, 0)
 
-            if current_count >= limit:
-                return True
+            # Get or set reset time
+            reset_time = cache.get(reset_key)
+            if reset_time is None:
+                reset_time = int(time.time()) + period
+                cache.set(reset_key, reset_time, period)
 
             # Increment the counter
             cache.set(cache_key, current_count + 1, period)
-            return False
+
+            return current_count, reset_time
 
         except (ConnectionError, TimeoutError, OSError) as e:
             # If cache is unavailable, log the error but don't block the request
             # Fail open - allow requests through if cache is down
             logger.error(f"Rate limiting cache error: {e}")
-            return False
+            return 0, int(time.time()) + period
 
     def _get_path_prefix(self, path: str) -> str:
         """Extract a path prefix for rate limiting grouping.

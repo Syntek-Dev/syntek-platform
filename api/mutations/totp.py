@@ -13,12 +13,16 @@ Implements requirements:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from django.db import transaction
 
 import strawberry
-from strawberry.types import Info
 
 from api.errors import AuthenticationError, ErrorCode, NotFoundError, ValidationError
+
+if TYPE_CHECKING:
+    from strawberry.types import Info
 from api.types.totp import (
     Confirm2FAInput,
     Confirm2FAPayload,

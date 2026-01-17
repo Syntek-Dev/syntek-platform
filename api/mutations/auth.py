@@ -6,14 +6,18 @@ for Phase 3 including security requirements C4, C5, H2, H4, H10, M1.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone as tz
 
 import strawberry
-from strawberry.types import Info
 
 from api.errors import AuthenticationError, ErrorCode, ValidationError
+
+if TYPE_CHECKING:
+    from strawberry.types import Info
 from api.types.auth import (
     AuthPayload,
     EnableTwoFactorInput,
@@ -287,7 +291,7 @@ class AuthMutations:
 
             # If TOTP failed, try backup code
             if not verified:
-                verified = TOTPService.verify_backup_code(user, input.totp_code)
+                verified = TOTPService.verify_backup_code(user, input.totp_code)  # type: ignore[arg-type]
 
                 if verified:
                     # Log backup code usage

@@ -23,7 +23,9 @@ Phase 5 Implementation:
 import strawberry
 
 from api.mutations.auth import AuthMutations
+from api.mutations.session import SessionMutation
 from api.mutations.totp import TOTPMutations, TOTPQueries
+from api.queries.audit import AuditQuery
 from api.queries.user import UserQueries
 from api.security import (
     IntrospectionControlExtension,
@@ -33,12 +35,13 @@ from api.security import (
 
 
 @strawberry.type
-class Query(UserQueries, TOTPQueries):
+class Query(UserQueries, TOTPQueries, AuditQuery):
     """Root query type for the GraphQL API.
 
     Inherits from:
     - UserQueries: user-related queries
     - TOTPQueries: 2FA status and device queries (H13)
+    - AuditQuery: audit log queries with organisation boundaries (Phase 7)
 
     Security features:
     - Query depth limiting (max 10 levels by default)
@@ -58,12 +61,13 @@ class Query(UserQueries, TOTPQueries):
 
 
 @strawberry.type
-class Mutation(AuthMutations, TOTPMutations):
+class Mutation(AuthMutations, TOTPMutations, SessionMutation):
     """Root mutation type for the GraphQL API.
 
     Inherits from:
     - AuthMutations: authentication operations
     - TOTPMutations: 2FA setup, verification, and management (Phase 5)
+    - SessionMutation: session management operations (Phase 7)
 
     Security features:
     - Rate limiting (30 mutations per minute by default)

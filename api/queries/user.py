@@ -6,12 +6,16 @@ All queries respect multi-tenancy isolation.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from django.contrib.auth import get_user_model
 
 import strawberry
-from strawberry.types import Info
 
 from api.errors import AuthenticationError, ErrorCode, PermissionError
+
+if TYPE_CHECKING:
+    from strawberry.types import Info
 from api.types.user import AuditLogType, UserType
 from api.utils.context import get_request
 from api.utils.converters import user_to_graphql_type

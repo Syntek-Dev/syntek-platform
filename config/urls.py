@@ -7,6 +7,7 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import HttpRequest, HttpResponse
 from django.urls import include, path
 
 urlpatterns = [
@@ -28,3 +29,19 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls)), *urlpatterns]
+
+    # Sentry debug endpoint - triggers an error to verify Sentry is working
+    # Only available in DEBUG mode for security
+    def trigger_sentry_error(request: HttpRequest) -> HttpResponse:
+        """Trigger a test error to verify Sentry integration.
+
+        Visit /sentry-debug/ to trigger a ZeroDivisionError that will be
+        captured by Sentry if configured correctly.
+
+        Returns:
+            Never returns - always raises ZeroDivisionError
+        """
+        _ = 1 / 0
+        return HttpResponse("This will never be reached")
+
+    urlpatterns += [path("sentry-debug/", trigger_sentry_error)]
