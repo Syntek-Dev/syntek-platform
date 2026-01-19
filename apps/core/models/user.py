@@ -219,6 +219,27 @@ class User(AbstractBaseUser, PermissionsMixin):
     email_verification_token = models.CharField(max_length=255, null=True, blank=True)
     email_verification_token_created = models.DateTimeField(null=True, blank=True)
 
+    # GDPR compliance fields (Article 18 - Right to Restriction of Processing)
+    processing_restricted = models.BooleanField(
+        default=False,
+        help_text="User has restricted processing of their data (GDPR Article 18)",
+    )
+    restriction_reason = models.TextField(
+        blank=True,
+        default="",
+        help_text="Reason for processing restriction",
+    )
+    restricted_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Timestamp when processing was restricted",
+    )
+    deletion_requested_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Timestamp when account deletion was requested",
+    )
+
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -142,7 +142,6 @@ class AuthService:
             Dictionary with tokens and user data if successful, None otherwise
         """
         from apps.core.services.failed_login_service import FailedLoginService
-        from apps.core.services.session_management_service import SessionManagementService
         from apps.core.services.suspicious_activity_service import SuspiciousActivityService
 
         # Add small random delay to prevent timing attacks (SV1)
@@ -162,7 +161,7 @@ class AuthService:
 
             # Check account lockout BEFORE password check (M9)
             if user_exists:
-                is_locked, remaining_seconds = FailedLoginService.check_lockout(user)
+                is_locked, _ = FailedLoginService.check_lockout(user)
                 if is_locked:
                     # Add delay to match successful login timing
                     time.sleep(secrets.randbelow(50) / 1000.0)
@@ -190,10 +189,7 @@ class AuthService:
             # Check for suspicious activity - login from new location (M10)
             SuspiciousActivityService.check_login_location(user, ip_address)
 
-            # Enforce concurrent session limit (M7)
-            SessionManagementService.enforce_session_limit(user)
-
-            # Create tokens
+            # Create tokens (TokenService enforces concurrent session limit internally)
             tokens = TokenService.create_tokens(user, device_fingerprint)
 
             return {
@@ -201,6 +197,7 @@ class AuthService:
                 "access_token": tokens["access_token"],
                 "refresh_token": tokens["refresh_token"],
                 "family_id": tokens["family_id"],
+                "oldest_session_revoked": tokens.get("oldest_session_revoked", False),
             }
 
     @staticmethod

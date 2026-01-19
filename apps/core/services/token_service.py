@@ -44,8 +44,11 @@ class TokenService:
     """
 
     @staticmethod
-    def create_tokens(user: User, device_fingerprint: str = "") -> dict[str, str]:
+    def create_tokens(user: User, device_fingerprint: str = "") -> dict[str, str | bool]:
         """Create JWT access and refresh tokens for user.
+
+        Enforces concurrent session limit (H12) before creating new tokens.
+        If limit is exceeded, oldest session is automatically revoked.
 
         Args:
             user: User instance to create tokens for
@@ -56,7 +59,21 @@ class TokenService:
                 - access_token: JWT access token (24h expiry)
                 - refresh_token: JWT refresh token (30d expiry)
                 - family_id: Token family UUID for replay detection
+                - oldest_session_revoked: True if session limit hit and oldest revoked
         """
+        # Check session count BEFORE creating new token
+        from apps.core.services.session_management_service import SessionManagementService
+
+        current_session_count = SessionManagementService.get_session_count(user)
+        max_sessions = SessionManagementService.get_max_sessions_per_user()
+        oldest_session_revoked = False
+
+        # If we're at the limit, we'll exceed it after creating this token
+        # So enforce the limit now (will revoke oldest session)
+        if current_session_count >= max_sessions:
+            enforcement_result = SessionManagementService.enforce_session_limit(user)
+            oldest_session_revoked = enforcement_result["sessions_revoked"] > 0
+
         # Generate random tokens
         access_token = TokenHasher.generate_token()
         refresh_token = TokenHasher.generate_token()
@@ -83,6 +100,7 @@ class TokenService:
             "access_token": access_token,
             "refresh_token": refresh_token,
             "family_id": str(family_id),
+            "oldest_session_revoked": oldest_session_revoked,
         }
 
     @staticmethod
