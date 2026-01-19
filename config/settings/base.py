@@ -317,3 +317,26 @@ RECAPTCHA_SCORE_LOGIN = env.float("RECAPTCHA_SCORE_LOGIN", default=0.3)
 # Password Reset Token Configuration (M007 - Phase 4)
 # Token expiry reduced from 15 to 10 minutes for improved security
 PASSWORD_RESET_TOKEN_EXPIRY_MINUTES = env.int("PASSWORD_RESET_TOKEN_EXPIRY_MINUTES", default=10)
+
+# Celery Configuration (H6 - Async Email Delivery)
+# Redis/Valkey as message broker and result backend
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://127.0.0.1:6379/1")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://127.0.0.1:6379/1")
+
+# Celery serialization settings
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TIMEZONE = TIME_ZONE
+
+# Celery task settings
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes hard limit
+CELERY_TASK_SOFT_TIME_LIMIT = 25 * 60  # 25 minutes soft limit
+
+# Celery result settings
+CELERY_RESULT_EXPIRES = 60 * 60 * 24  # 24 hours
+
+# Celery worker settings
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_WORKER_CONCURRENCY = env.int("CELERY_WORKER_CONCURRENCY", default=4)
