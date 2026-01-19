@@ -34,9 +34,9 @@ def get_graphql_context(request: HttpRequest) -> dict[str, Any]:
     """
     return {
         "request": request,
-        "organisation_loader": OrganisationLoader,
-        "user_loader": UserLoader,
-        "audit_log_loader": AuditLogLoader,
+        "organisation_loader": OrganisationLoader(),
+        "user_loader": UserLoader(),
+        "audit_log_loader": AuditLogLoader(),
     }
 
 
