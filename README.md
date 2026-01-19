@@ -208,6 +208,109 @@ backend_template/
 
 For more detailed setup instructions, see [docs/DEVELOPER-SETUP.md](docs/DEVELOPER-SETUP.md).
 
+## Authentication
+
+The platform includes enterprise-grade authentication with comprehensive security features:
+
+### Features
+
+- **User Registration**: Email-based registration with verification
+- **Email Verification**: Required before account access
+- **Two-Factor Authentication (2FA)**: TOTP-based with backup codes
+- **Password Management**: Reset, change, and history tracking
+- **Session Management**: Multi-device support with token revocation
+- **Security Features**:
+  - Password breach checking (HaveIBeenPwned)
+  - Account lockout after failed attempts
+  - Rate limiting on authentication endpoints
+  - Encrypted IP address tracking
+  - Comprehensive audit logging
+  - CSRF protection for GraphQL mutations
+
+### Quick Start
+
+```bash
+# Create a test user (development)
+./scripts/env/dev.sh shell
+
+>>> from apps.core.models import User, Organisation
+>>> org = Organisation.objects.first()
+>>> user = User.objects.create_user(
+...     email='test@example.com',
+...     password='SecureP@ss123!',
+...     first_name='Test',
+...     last_name='User',
+...     organisation=org,
+...     email_verified=True
+... )
+>>> exit()
+
+# Access GraphQL playground
+# Navigate to: http://localhost:8000/graphql/
+
+# Login mutation example
+mutation Login {
+  login(input: {
+    email: "test@example.com"
+    password: "SecureP@ss123!"
+  }) {
+    token
+    user {
+      id
+      email
+      hasTwoFactor
+    }
+  }
+}
+```
+
+### Documentation
+
+- **[User Guide](docs/USER-GUIDES/AUTHENTICATION-USER-GUIDE.md)** - End-user authentication guide
+- **[API Documentation](docs/API/AUTHENTICATION-API.md)** - Complete API reference with examples
+- **[Implementation Plan](docs/PLANS/US-001-USER-AUTHENTICATION.md)** - Detailed technical plan
+- **[Security Architecture](docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md#security-architecture)** - Security design
+
+### Testing
+
+```bash
+# Run authentication tests
+./scripts/env/test.sh run tests/unit/apps/core/
+./scripts/env/test.sh run tests/integration/test_graphql_auth_flow.py
+./scripts/env/test.sh run tests/e2e/test_registration_2fa_complete_flow.py
+
+# Run security penetration tests
+./scripts/env/test.sh run tests/security/ -m penetration
+
+# Run BDD feature tests
+./scripts/env/test.sh run tests/bdd/ -k authentication
+```
+
+### GraphQL API Endpoints
+
+**Mutations:**
+
+- `register` - Create new user account
+- `verifyEmail` - Verify email address
+- `login` - Authenticate user
+- `verifyLogin2FA` - Complete 2FA login
+- `logout` - End current session
+- `logoutAllDevices` - End all sessions
+- `requestPasswordReset` - Request password reset
+- `resetPassword` - Reset password with token
+- `changePassword` - Change password (authenticated)
+- `enable2FA` - Enable two-factor authentication
+- `verify2FA` - Confirm 2FA setup
+- `disable2FA` - Disable two-factor authentication
+- `regenerateBackupCodes` - Generate new backup codes
+
+**Queries:**
+
+- `me` - Get current authenticated user
+- `activeSessions` - List all active sessions
+
+See [API Documentation](docs/API/AUTHENTICATION-API.md) for complete details including request/response examples, error codes, and rate limits.
+
 ## Documentation
 
 The documentation is organized by topic in the `docs/` folder. Here's a quick index:
