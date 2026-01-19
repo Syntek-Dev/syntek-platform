@@ -26,6 +26,16 @@ CACHES = {
 # Email backend for tests
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
+# Use simple static files storage for tests (no manifest required)
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
 
 # Note: Migrations are enabled for tests to ensure database schema is created.
 # If tests become slow, consider using pytest-django's --reuse-db flag instead
