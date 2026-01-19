@@ -29,6 +29,7 @@ dependencies = [
     # Cache & Queue
     "redis>=5.2.1",
     "hiredis>=3.0.0",
+    "celery[redis]>=5.4.0",  # Async task queue for email delivery (H6)
 
     # GraphQL
     "strawberry-graphql[debug-server]>=0.252.3",
@@ -185,6 +186,7 @@ markers = [
     "security: marks tests for security features (CSRF, authentication, authorisation)",
     "penetration: marks tests as penetration/security testing",
     "performance: marks tests for performance optimisation (N+1 queries, DataLoaders)",
+    "celery: marks tests that require Celery task queue",
 ]
 filterwarnings = [
     "error",
