@@ -74,13 +74,13 @@ class TestRegisterMutation:
         Given: Valid registration input (email, password, name, org)
         When: register mutation is called
         Then: User is created with correct attributes
-        And: AuthPayload is returned with token
+        And: AuthPayload is returned with access_token
         And: Email verification token is created
         """
         mutation = """
         mutation Register($input: RegisterInput!) {
             register(input: $input) {
-                token
+                accessToken
                 refreshToken
                 user {
                     id
@@ -90,6 +90,9 @@ class TestRegisterMutation:
                     emailVerified
                 }
                 requiresTwoFactor
+                sessionCount
+                sessionLimit
+                oldestSessionRevoked
             }
         }
         """
@@ -105,7 +108,7 @@ class TestRegisterMutation:
 
         data = response.json()
         assert "errors" not in data or data["errors"] is None
-        assert data["data"]["register"]["token"] is not None
+        assert data["data"]["register"]["accessToken"] is not None
         assert data["data"]["register"]["refreshToken"] is not None
         assert data["data"]["register"]["user"]["email"] == "newuser@example.com"
         assert data["data"]["register"]["user"]["firstName"] == "New"
@@ -131,7 +134,7 @@ class TestRegisterMutation:
         mutation = """
         mutation Register($input: RegisterInput!) {
             register(input: $input) {
-                token
+                accessToken
             }
         }
         """
@@ -173,7 +176,7 @@ class TestRegisterMutation:
         mutation = """
         mutation Register($input: RegisterInput!) {
             register(input: $input) {
-                token
+                accessToken
             }
         }
         """
@@ -215,7 +218,7 @@ class TestRegisterMutation:
         mutation = """
         mutation Register($input: RegisterInput!) {
             register(input: $input) {
-                token
+                accessToken
             }
         }
         """
@@ -253,7 +256,7 @@ class TestRegisterMutation:
         mutation = """
         mutation Register($input: RegisterInput!) {
             register(input: $input) {
-                token
+                accessToken
             }
         }
         """
@@ -317,13 +320,13 @@ class TestLoginMutation:
 
         Given: User with valid credentials and verified email
         When: login mutation is called with correct email/password
-        Then: AuthPayload is returned with token and user data
+        Then: AuthPayload is returned with accessToken and user data
         And: SessionToken is created in database
         """
         mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
                 refreshToken
                 user {
                     id
@@ -331,6 +334,9 @@ class TestLoginMutation:
                     emailVerified
                 }
                 requiresTwoFactor
+                sessionCount
+                sessionLimit
+                oldestSessionRevoked
             }
         }
         """
@@ -351,7 +357,7 @@ class TestLoginMutation:
 
         data = response.json()
         assert "errors" not in data or data["errors"] is None
-        assert data["data"]["login"]["token"] is not None
+        assert data["data"]["login"]["accessToken"] is not None
         assert data["data"]["login"]["refreshToken"] is not None
         assert data["data"]["login"]["user"]["email"] == "user@example.com"
         assert data["data"]["login"]["user"]["emailVerified"] is True
@@ -368,7 +374,7 @@ class TestLoginMutation:
         mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
             }
         }
         """
@@ -402,7 +408,7 @@ class TestLoginMutation:
         mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
             }
         }
         """
@@ -437,7 +443,7 @@ class TestLoginMutation:
         mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
             }
         }
         """

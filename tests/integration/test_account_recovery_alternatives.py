@@ -11,7 +11,6 @@ Tests cover:
 These tests verify alternative account recovery methods.
 """
 
-
 from django.utils import timezone
 
 import pytest
@@ -152,7 +151,7 @@ class TestAccountRecoveryAlternatives:
 
         # Create TOTP device
         TOTPDevice.objects.create(
-            user=user, device_name="Lost Device", secret=b"encrypted_secret", confirmed=True
+            user=user, name="Lost Device", secret=b"encrypted_secret", is_confirmed=True
         )
 
         # Create backup code

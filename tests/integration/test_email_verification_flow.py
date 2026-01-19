@@ -185,9 +185,10 @@ class TestEmailVerificationFlow:
         first_token.created_at = timezone.now() - timedelta(minutes=6)
         first_token.save()
 
-        # Resend should work
+        # Resend should work - returns plain token on success
         result = EmailVerificationService.resend_verification_email(user)
-        assert result is True
+        assert result is not None
+        assert len(result) > 0  # Returns plain token string
 
         # Should have new token
         tokens = EmailVerificationToken.objects.filter(user=user).order_by("-created_at")
@@ -270,13 +271,14 @@ class TestEmailVerificationFlow:
 
         Given: Invalid token format
         When: Attempting to verify
-        Then: Verification fails gracefully
+        Then: Verification fails gracefully (returns None or raises ValueError for empty)
         """
         result = EmailVerificationService.verify_email("short")
         assert result is None
 
-        result = EmailVerificationService.verify_email("")
-        assert result is None
+        # Empty token raises ValueError from TokenHasher
+        with pytest.raises(ValueError, match="Token cannot be empty"):
+            EmailVerificationService.verify_email("")
 
     def test_email_verification_cleans_up_old_tokens(self, user) -> None:
         """Test old verification tokens can be cleaned up.

@@ -67,7 +67,7 @@ class TestLoginWith2FA:
         mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
                 refreshToken
                 user {
                     email
@@ -96,7 +96,7 @@ class TestLoginWith2FA:
 
         result = data["data"]["login"]
         assert result["requiresTwoFactor"] is True
-        assert result["token"] == ""  # No token until 2FA verified
+        assert result["accessToken"] == ""  # No token until 2FA verified
         assert result["user"]["email"] == "2fa_user@example.com"
 
     def test_login_with_valid_totp_code(self, client, user_with_2fa) -> None:
@@ -114,7 +114,7 @@ class TestLoginWith2FA:
         mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
                 refreshToken
                 user {
                     email
@@ -144,7 +144,7 @@ class TestLoginWith2FA:
 
         result = data["data"]["login"]
         assert result["requiresTwoFactor"] is False
-        assert result["token"] != ""
+        assert result["accessToken"] != ""
         assert result["refreshToken"] != ""
         assert result["user"]["email"] == "2fa_user@example.com"
 
@@ -165,7 +165,7 @@ class TestLoginWith2FA:
         mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
                 requiresTwoFactor
             }
         }
@@ -188,7 +188,7 @@ class TestLoginWith2FA:
 
         data = response.json()
         assert "errors" not in data or data["errors"] is None
-        assert data["data"]["login"]["token"] != ""
+        assert data["data"]["login"]["accessToken"] != ""
 
         # Verify backup code was consumed
         remaining = TOTPService.count_remaining_backup_codes(user)
@@ -206,7 +206,7 @@ class TestLoginWith2FA:
         mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
             }
         }
         """
@@ -244,7 +244,7 @@ class TestLoginWith2FA:
         mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
             }
         }
         """
@@ -317,7 +317,7 @@ class TestMultipleDeviceVerification:
         mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
                 requiresTwoFactor
             }
         }
@@ -340,7 +340,7 @@ class TestMultipleDeviceVerification:
 
         data = response.json()
         assert "errors" not in data or data["errors"] is None
-        assert data["data"]["login"]["token"] != ""
+        assert data["data"]["login"]["accessToken"] != ""
 
 
 @pytest.mark.integration
@@ -459,7 +459,7 @@ class TestComplete2FASetupFlow:
         login_mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
                 requiresTwoFactor
             }
         }
@@ -482,5 +482,5 @@ class TestComplete2FASetupFlow:
 
         login_data = login_response.json()
         assert "errors" not in login_data or login_data["errors"] is None
-        assert login_data["data"]["login"]["token"] != ""
+        assert login_data["data"]["login"]["accessToken"] != ""
         assert login_data["data"]["login"]["requiresTwoFactor"] is False

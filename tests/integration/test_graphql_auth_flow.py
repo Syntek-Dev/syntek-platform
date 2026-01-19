@@ -112,7 +112,7 @@ class TestCompleteRegistrationFlow:
         login_mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
                 refreshToken
                 user {
                     email
@@ -143,7 +143,7 @@ class TestCompleteRegistrationFlow:
 
         login_data = login_response.json()
         if "errors" not in login_data:
-            assert login_data["data"]["login"]["token"] is not None
+            assert login_data["data"]["login"]["accessToken"] is not None
             assert login_data["data"]["login"]["user"]["emailVerified"] is True
 
     def test_registration_blocks_duplicate_email(self, client, organisation) -> None:
@@ -163,7 +163,7 @@ class TestCompleteRegistrationFlow:
         mutation = """
         mutation Register($input: RegisterInput!) {
             register(input: $input) {
-                token
+                accessToken
             }
         }
         """
@@ -279,7 +279,7 @@ class TestCompletePasswordResetFlow:
         login_mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
             }
         }
         """
@@ -300,7 +300,7 @@ class TestCompletePasswordResetFlow:
 
         # New password should work
         if "errors" not in login_new_response.json():
-            assert login_new_response.json()["data"]["login"]["token"] is not None
+            assert login_new_response.json()["data"]["login"]["accessToken"] is not None
 
         # Step 6: Login with old password fails
         login_old_response = client.post(
@@ -386,7 +386,7 @@ class TestSessionManagementFlow:
         refresh_mutation = """
         mutation RefreshToken($refreshToken: String!) {
             refreshToken(refreshToken: $refreshToken) {
-                token
+                accessToken
                 refreshToken
             }
         }
@@ -404,7 +404,7 @@ class TestSessionManagementFlow:
         data = response.json()
         # Should return new tokens
         if "errors" not in data:
-            assert data["data"]["refreshToken"]["token"] is not None
+            assert data["data"]["refreshToken"]["accessToken"] is not None
 
     def test_logout_revokes_current_session(self, logged_in_user) -> None:
         """Test logout revokes current session token.
@@ -482,7 +482,7 @@ class TestMultiDeviceLoginFlow:
         login_mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
                 refreshToken
             }
         }
@@ -509,7 +509,7 @@ class TestMultiDeviceLoginFlow:
 
             data = response.json()
             if "errors" not in data:
-                tokens[device] = data["data"]["login"]["token"]
+                tokens[device] = data["data"]["login"]["accessToken"]
 
         # Each device should have its own token
         assert len(tokens) == 3
@@ -570,7 +570,7 @@ class TestAccountLockoutFlow:
         login_mutation = """
         mutation Login($input: LoginInput!) {
             login(input: $input) {
-                token
+                accessToken
             }
         }
         """

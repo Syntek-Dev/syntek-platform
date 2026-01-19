@@ -74,7 +74,7 @@ class TestPasswordResetFlow:
         Then: Password is updated successfully
         """
         original_password = "OldPassword123!@"
-        new_password = "NewSecurePass456!@"
+        new_password = "NewSecur3P@ss8147!#"
 
         # Step 1 & 2: Request reset (generate token)
         plain_token = PasswordResetService.create_reset_token(user, ip_address="192.168.1.1")
@@ -145,12 +145,12 @@ class TestPasswordResetFlow:
         plain_token = PasswordResetService.create_reset_token(user)
 
         # First use succeeds
-        first_result = PasswordResetService.reset_password(user, plain_token, "FirstPassword456!@")
+        first_result = PasswordResetService.reset_password(user, plain_token, "N3wP@ssw0rd8147!#")
         assert first_result is True
 
         # Second use fails
         second_result = PasswordResetService.reset_password(
-            user, plain_token, "SecondPassword789!@"
+            user, plain_token, "S3condP@ssw0rd9258!#"
         )
         assert second_result is False
 
@@ -234,7 +234,7 @@ class TestPasswordResetFlow:
         with patch(
             "apps.core.services.password_reset_service.TokenService.revoke_user_tokens"
         ) as mock_revoke:
-            PasswordResetService.reset_password(user, plain_token, "NewPassword456!@")
+            PasswordResetService.reset_password(user, plain_token, "NewSecur3P@ss8147!#")
             mock_revoke.assert_called_once_with(user)
 
     def test_password_reset_email_template_rendering(self, user) -> None:
@@ -336,13 +336,13 @@ class TestPasswordResetFlow:
         token2 = PasswordResetService.create_reset_token(user2)
 
         # Reset user1 password
-        PasswordResetService.reset_password(user1, token1, "NewPassword1!@")
+        PasswordResetService.reset_password(user1, token1, "N3wP@ssw0rd1847!#")
 
         # Check results
         user1.refresh_from_db()
         user2.refresh_from_db()
 
-        assert user1.check_password("NewPassword1!@") is True
+        assert user1.check_password("N3wP@ssw0rd1847!#") is True
         assert user2.check_password("Password2!@") is True  # Unchanged
 
     def test_password_reset_with_ip_address_tracking(self, user) -> None:
