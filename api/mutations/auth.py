@@ -136,6 +136,20 @@ class AuthMutations:
                 # Send verification email
                 EmailService.send_verification_email(user, token)
 
+                # Record legal document acceptances if provided (Phase 8b)
+                user_agent = get_user_agent(info)
+                if input.accepted_document_ids:
+                    LegalDocumentService.record_registration_acceptances(
+                        user=user,
+                        document_ids=input.accepted_document_ids,
+                        ip_address=ip_address,
+                        user_agent=user_agent,
+                        metadata={
+                            "registration": True,
+                            "organisation_slug": input.organisation_slug,
+                        },
+                    )
+
                 # Create session tokens
                 tokens = TokenService.create_tokens(user)
 
@@ -145,13 +159,26 @@ class AuthMutations:
                     user=user,
                     organisation=organisation,
                     ip_address=ip_address,
+                    metadata={
+                        "legal_documents_accepted": len(input.accepted_document_ids or []),
+                    },
                 )
 
+                # Get session count for user (should be 1 for new registration)
+                from apps.core.models import SessionToken
+
+                session_count = SessionToken.objects.filter(
+                    user=user, is_revoked=False, expires_at__gt=tz.now()
+                ).count()
+
                 return AuthPayload(
-                    token=tokens["access_token"],
+                    access_token=tokens["access_token"],
                     refresh_token=tokens["refresh_token"],
                     user=user_to_graphql_type(user),
                     requires_two_factor=False,
+                    session_count=session_count,
+                    session_limit=5,  # H12 requirement
+                    oldest_session_revoked=tokens.get("oldest_session_revoked", False),
                 )
 
         except ValueError as e:
@@ -269,10 +296,13 @@ class AuthMutations:
         # If user has 2FA enabled but didn't provide a code, require it
         if has_2fa and not input.totp_code:
             return AuthPayload(
-                token="",  # No token until 2FA verified
+                access_token="",  # No token until 2FA verified
                 refresh_token="",
                 user=user_to_graphql_type(user),
                 requires_two_factor=True,
+                session_count=None,
+                session_limit=5,
+                oldest_session_revoked=False,
             )
 
         # If user provided a 2FA code, verify it
@@ -323,11 +353,21 @@ class AuthMutations:
             ip_address=ip_address,
         )
 
+        # Get session count for user
+        from apps.core.models import SessionToken
+
+        session_count = SessionToken.objects.filter(
+            user=user, is_revoked=False, expires_at__gt=tz.now()
+        ).count()
+
         return AuthPayload(
-            token=result["access_token"],
+            access_token=result["access_token"],
             refresh_token=result["refresh_token"],
             user=user_to_graphql_type(user),
             requires_two_factor=False,
+            session_count=session_count,
+            session_limit=5,  # H12 requirement
+            oldest_session_revoked=result.get("oldest_session_revoked", False),
         )
 
     @strawberry.mutation
@@ -408,11 +448,21 @@ class AuthMutations:
         if not tokens:
             raise AuthenticationError(ErrorCode.TOKEN_INVALID, "Invalid or expired refresh token")
 
+        # Get session count for user
+        from apps.core.models import SessionToken
+
+        session_count = SessionToken.objects.filter(
+            user=user, is_revoked=False, expires_at__gt=tz.now()
+        ).count()
+
         return AuthPayload(
-            token=tokens["access_token"],
+            access_token=tokens["access_token"],
             refresh_token=tokens["refresh_token"],
             user=user_to_graphql_type(user),
             requires_two_factor=False,
+            session_count=session_count,
+            session_limit=5,
+            oldest_session_revoked=tokens.get("oldest_session_revoked", False),
         )
 
     @strawberry.mutation

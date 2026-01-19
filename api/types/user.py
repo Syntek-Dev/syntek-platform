@@ -6,8 +6,10 @@ Implements H2 requirement for N+1 query prevention using DataLoaders.
 
 from datetime import datetime
 from typing import Any
+from uuid import UUID
 
 import strawberry
+from strawberry.types import Info
 
 
 @strawberry.type
@@ -60,16 +62,22 @@ class UserType:
     updated_at: datetime
 
     # Store organisation_id for lazy loading (Private fields are not exposed in schema)
-    _organisation_id: strawberry.Private[int | None] = None
+    _organisation_id: strawberry.Private[UUID | None] = None
     _organisation_data: strawberry.Private[OrganisationType | None] = None
     _user_instance: strawberry.Private[Any] = None
 
     @strawberry.field
-    def organisation(self) -> OrganisationType | None:
-        """Get organisation for the user.
+    async def organisation(self, info: Info) -> OrganisationType | None:
+        """Get organisation for the user using DataLoader.
 
-        Returns pre-loaded organisation data if available (from select_related),
-        otherwise returns None. DataLoader usage can be added in future phases.
+        Uses DataLoader to batch organisation lookups, preventing N+1 queries
+        when accessing organisations for multiple users (H2 requirement).
+
+        If organisation data is pre-loaded (from select_related), returns it
+        directly. Otherwise uses DataLoader to batch the lookup.
+
+        Args:
+            info: GraphQL resolver info containing request context
 
         Returns:
             OrganisationType for the user's organisation or None
@@ -78,11 +86,13 @@ class UserType:
         if self._organisation_data is not None:
             return self._organisation_data
 
-        # Try to get organisation from user instance if available
-        if self._user_instance is not None:
+        # If organisation_id is not available, try to get from user instance
+        organisation_id = self._organisation_id
+        if organisation_id is None and self._user_instance is not None:
             try:
                 org = getattr(self._user_instance, "organisation", None)
                 if org is not None:
+                    # Organisation is already loaded, return it directly
                     return OrganisationType(
                         id=strawberry.ID(str(org.id)),
                         name=org.name,
@@ -92,38 +102,92 @@ class UserType:
                         created_at=org.created_at,
                         updated_at=org.updated_at,
                     )
+                # Try to get organisation_id
+                organisation_id = getattr(self._user_instance, "organisation_id", None)
             except (AttributeError, Exception):
                 pass
 
-        return None
+        # If no organisation_id available, return None
+        if organisation_id is None:
+            return None
+
+        # Use DataLoader to batch organisation lookup
+        from api.dataloaders import get_dataloaders
+
+        loaders = get_dataloaders(info.context)
+        org = await loaders.organisation.load(organisation_id)
+
+        if org is None:
+            return None
+
+        return OrganisationType(
+            id=strawberry.ID(str(org.id)),
+            name=org.name,
+            slug=org.slug,
+            industry=org.industry,
+            is_active=org.is_active,
+            created_at=org.created_at,
+            updated_at=org.updated_at,
+        )
 
     @strawberry.field
-    def profile(self) -> UserProfileType | None:
-        """Load user profile.
+    async def profile(self, info: Info) -> UserProfileType | None:
+        """Load user profile using DataLoader.
+
+        Uses DataLoader to batch profile lookups, preventing N+1 queries
+        when accessing profiles for multiple users.
+
+        Args:
+            info: GraphQL resolver info containing request context
 
         Returns:
             UserProfileType for the user's profile or None
         """
-        if self._user_instance is None:
+        # Try to get user_id
+        user_id = None
+        if self._user_instance is not None:
+            try:
+                # Check if profile is already loaded
+                profile = getattr(self._user_instance, "profile", None)
+                if profile is not None:
+                    # Profile is already loaded, return it directly
+                    return UserProfileType(
+                        id=strawberry.ID(str(profile.id)),
+                        phone=profile.phone,
+                        avatar=str(profile.avatar) if profile.avatar else None,
+                        timezone=profile.timezone,
+                        language=profile.language,
+                        bio=profile.bio,
+                    )
+                # Get user_id for DataLoader lookup
+                user_id = getattr(self._user_instance, "id", None)
+            except (AttributeError, Exception):
+                pass
+
+        # If no user_id, try to extract from self.id
+        if user_id is None:
+            try:
+                user_id = UUID(str(self.id))
+            except (ValueError, TypeError):
+                return None
+
+        # Use DataLoader to batch profile lookup
+        from api.dataloaders import get_dataloaders
+
+        loaders = get_dataloaders(info.context)
+        profile = await loaders.user_profile.load(user_id)
+
+        if profile is None:
             return None
 
-        try:
-            # Access profile through related manager
-            profile = getattr(self._user_instance, "profile", None)
-            if profile is None:
-                return None
-            return UserProfileType(
-                id=strawberry.ID(str(profile.id)),
-                phone=profile.phone,
-                avatar=str(profile.avatar) if profile.avatar else None,
-                timezone=profile.timezone,
-                language=profile.language,
-                bio=profile.bio,
-            )
-        except (AttributeError, Exception):
-            # Handle AttributeError when profile doesn't exist
-            # or any other unexpected database/model issues
-            return None
+        return UserProfileType(
+            id=strawberry.ID(str(profile.id)),
+            phone=profile.phone,
+            avatar=str(profile.avatar) if profile.avatar else None,
+            timezone=profile.timezone,
+            language=profile.language,
+            bio=profile.bio,
+        )
 
 
 @strawberry.type

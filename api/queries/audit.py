@@ -9,6 +9,9 @@ from typing import TYPE_CHECKING
 import strawberry
 from strawberry.types import Info
 
+if TYPE_CHECKING:
+    from apps.core.models import User
+
 from api.permissions import IsAuthenticated
 from api.types.audit import (
     AuditLogConnection,
@@ -18,9 +21,6 @@ from api.types.audit import (
     SessionManagementInfo,
     SessionTokenType,
 )
-
-if TYPE_CHECKING:
-    from apps.core.models import User
 
 
 @strawberry.type

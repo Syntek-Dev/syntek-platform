@@ -4,7 +4,7 @@ This module defines input and output types for authentication mutations.
 Implementation stub for TDD - tests will fail until fully implemented.
 """
 
-from __future__ import annotations
+from uuid import UUID
 
 import strawberry
 
@@ -13,7 +13,12 @@ from api.types.user import UserType
 
 @strawberry.input
 class RegisterInput:
-    """Input for user registration mutation."""
+    """Input for user registration mutation.
+
+    Legal document acceptance is optional but recommended. If accepted_document_ids
+    is provided, the registration will record acceptance of those documents.
+    Clients should fetch registration_requirements query first to get document IDs.
+    """
 
     email: str
     password: str
@@ -21,6 +26,7 @@ class RegisterInput:
     last_name: str
     organisation_slug: str
     captcha_token: str | None = None  # Required in production (Phase 4)
+    accepted_document_ids: list[UUID] | None = None  # Legal documents accepted (Phase 8b)
 
 
 @strawberry.input
@@ -65,12 +71,21 @@ class EnableTwoFactorInput:
 
 @strawberry.type
 class AuthPayload:
-    """Response payload for authentication mutations."""
+    """Response payload for authentication mutations.
 
-    token: str
+    Updated to include session management fields for H12 (concurrent session limit).
+    Field names use snake_case for consistency with GraphQL conventions.
+    """
+
+    access_token: str
     refresh_token: str
     user: UserType
     requires_two_factor: bool = False
+
+    # Session management fields (H12 - Concurrent session limit)
+    session_count: int | None = None
+    session_limit: int | None = None
+    oldest_session_revoked: bool = False
 
 
 @strawberry.type

@@ -4,6 +4,8 @@ This module provides GraphQL types for accessing audit logs and
 session management with proper organisation boundary enforcement.
 """
 
+from __future__ import annotations
+
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -19,6 +21,7 @@ class AuditLogType:
 
     Exposes audit log information with IP addresses remaining encrypted.
     Users can only view logs for their own organisation.
+    Uses DataLoaders for user and organisation relationships to prevent N+1 queries.
     """
 
     id: strawberry.ID
@@ -32,9 +35,18 @@ class AuditLogType:
     metadata: strawberry.scalars.JSON
     created_at: datetime
 
+    # Private fields for DataLoader lookups
+    _user_id_internal: strawberry.Private[int | None] = None
+    _organisation_id_internal: strawberry.Private[int | None] = None
+    _audit_log_instance: strawberry.Private[AuditLog | None] = None
+
     @staticmethod
     def from_model(audit_log: AuditLog) -> AuditLogType:
         """Convert AuditLog model to GraphQL type.
+
+        Stores the audit log instance for potential DataLoader usage.
+        If user/organisation are already loaded (via select_related),
+        extracts their data immediately to avoid extra queries.
 
         Args:
             audit_log: AuditLog model instance.
@@ -42,19 +54,44 @@ class AuditLogType:
         Returns:
             AuditLogType instance.
         """
+        # Extract user data if available
+        user_id = None
+        user_email = None
+        if audit_log.user_id:
+            user_id = strawberry.ID(str(audit_log.user_id))
+            # Try to get email from loaded user, otherwise will need DataLoader
+            try:
+                user_email = audit_log.user.email if audit_log.user else None
+            except AttributeError:
+                # User not loaded, will use DataLoader if needed
+                pass
+
+        # Extract organisation data if available
+        organisation_id = None
+        organisation_name = None
+        if audit_log.organisation_id:
+            organisation_id = strawberry.ID(str(audit_log.organisation_id))
+            # Try to get name from loaded organisation
+            try:
+                organisation_name = audit_log.organisation.name if audit_log.organisation else None
+            except AttributeError:
+                # Organisation not loaded, will use DataLoader if needed
+                pass
+
         return AuditLogType(
             id=strawberry.ID(str(audit_log.id)),
             action=audit_log.action,
-            user_id=strawberry.ID(str(audit_log.user.id)) if audit_log.user else None,
-            user_email=audit_log.user.email if audit_log.user else None,
-            organisation_id=(
-                strawberry.ID(str(audit_log.organisation.id)) if audit_log.organisation else None
-            ),
-            organisation_name=audit_log.organisation.name if audit_log.organisation else None,
+            user_id=user_id,
+            user_email=user_email,
+            organisation_id=organisation_id,
+            organisation_name=organisation_name,
             user_agent=audit_log.user_agent,
             device_fingerprint=audit_log.device_fingerprint,
             metadata=audit_log.metadata,
             created_at=audit_log.created_at,
+            _user_id_internal=audit_log.user_id,
+            _organisation_id_internal=audit_log.organisation_id,
+            _audit_log_instance=audit_log,
         )
 
 

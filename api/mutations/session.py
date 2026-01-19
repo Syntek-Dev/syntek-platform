@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING
 import strawberry
 from strawberry.types import Info
 
-from api.permissions import IsAuthenticated
-
 if TYPE_CHECKING:
     from apps.core.models import User
+
+from api.permissions import IsAuthenticated
 
 
 @strawberry.type
