@@ -40,15 +40,16 @@ Stories should be implemented in the following sequence based on dependencies an
 
 Essential for all other features to function.
 
-| Week | Story                      | Points | Notes                                      |
-| ---- | -------------------------- | ------ | ------------------------------------------ |
-| 1-2  | US-001: User Auth          | 5      | Start immediately, unblocks other features |
-| 1-2  | US-002: 2FA                | 8      | Parallel with US-001                       |
-| 2    | US-003: Password Reset     | 5      | Parallel with US-001                       |
-| 2-3  | US-004: Organisation Setup | 8      | Requires US-001 complete                   |
-| 3-4  | US-013: Caching System     | 8      | Needed for performance                     |
+| Week | Story                      | Points | Notes                                      | Backend Status |
+| ---- | -------------------------- | ------ | ------------------------------------------ | -------------- |
+| 1-2  | US-001: User Auth          | 5      | Start immediately, unblocks other features | ✅ Complete    |
+| 1-2  | US-002: 2FA                | 8      | Parallel with US-001                       | ✅ Complete    |
+| 2    | US-003: Password Reset     | 5      | Parallel with US-001                       | ✅ Complete    |
+| 2-3  | US-004: Organisation Setup | 8      | Requires US-001 complete                   | ⬜ Planned     |
+| 3-4  | US-013: Caching System     | 8      | Needed for performance                     | ⬜ Planned     |
 
 **Cumulative:** 5 stories, 34 points (4 weeks)
+**Backend Progress:** 3/5 stories complete (US-001, US-002, US-003)
 
 ### Tier 2: Content Management (Weeks 5-11)
 

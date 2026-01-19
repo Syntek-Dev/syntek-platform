@@ -10,8 +10,8 @@ Quick lookup tables and story selection guide for the Syntek CMS Platform user s
 
 ### Small Stories (5 points) - 2-3 days per person
 
-- US-001: User Authentication
-- US-003: Password Reset
+- US-001: User Authentication (✅ Backend Complete)
+- US-003: Password Reset (✅ Backend Complete)
 
 ### Medium Stories (8 points) - 4-5 days per person
 

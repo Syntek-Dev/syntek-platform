@@ -4,8 +4,8 @@
 
 **Sprint Duration:** 06/01/2026 - 20/01/2026 (2 weeks)
 **Capacity:** 10/11 points
-**Status:** 🔄 In Progress (Phases 1-7 Complete)
-**Last Updated:** 17/01/2026
+**Status:** ✅ Complete (Backend)
+**Last Updated:** 19/01/2026
 **Phase 1 Status:** ✅ Complete (07/01/2026)
 **Phase 2 Status:** ✅ Complete (08/01/2026)
 **Phase 3 Status:** ✅ Complete (09/01/2026)
@@ -95,12 +95,12 @@ required for all subsequent features.
 
 ### Must Have (10 points)
 
-| Story ID                                           | Title               | Points | Backend Status       | Overall Status |
-| -------------------------------------------------- | ------------------- | ------ | -------------------- | -------------- |
-| [US-001](../STORIES/US-001-USER-AUTHENTICATION.md) | User Authentication | 5      | 🔄 Phases 1 & 2 Done | 🔄 In Progress |
-| [US-003](../STORIES/US-003-PASSWORD-RESET.md)      | Password Reset      | 5      | ⬜ Not Started       | ⬜ Not Started |
+| Story ID                                           | Title               | Points | Backend Status | Overall Status      |
+| -------------------------------------------------- | ------------------- | ------ | -------------- | ------------------- |
+| [US-001](../STORIES/US-001-USER-AUTHENTICATION.md) | User Authentication | 5      | ✅ Complete    | 🔄 Frontend Pending |
+| [US-003](../STORIES/US-003-PASSWORD-RESET.md)      | Password Reset      | 5      | ✅ Complete    | 🔄 Frontend Pending |
 
-**Progress:** 1/2 stories have backend Phases 1 & 2 complete (~75% backend complete for US-001, GraphQL API pending)
+**Progress:** 2/2 stories have backend complete (100% backend work done, frontend implementations pending)
 
 ### Should Have (0 points)
 
@@ -152,17 +152,17 @@ _None in this sprint_
 
 ## Repository Breakdown
 
-| Story  | Backend              | Frontend Web   | Frontend Mobile | Shared UI      |
-| ------ | -------------------- | -------------- | --------------- | -------------- |
-| US-001 | 🔄 Phases 1 & 2 Done | ⬜ Not Started | ⬜ Not Started  | ⬜ Not Started |
-| US-003 | ⬜ Not Started       | ⬜ Not Started | ⬜ Not Started  | ⬜ Not Started |
+| Story  | Backend     | Frontend Web   | Frontend Mobile | Shared UI      |
+| ------ | ----------- | -------------- | --------------- | -------------- |
+| US-001 | ✅ Complete | ⬜ Not Started | ⬜ Not Started  | ⬜ Not Started |
+| US-003 | ✅ Complete | ⬜ Not Started | ⬜ Not Started  | ⬜ Not Started |
 
 **Repository Status:**
 
-- **Backend:** Phases 1 & 2 complete for US-001 (models, services, validators, tests)
-- **Frontend Web:** Waiting for backend Phase 3 (GraphQL API)
-- **Frontend Mobile:** Waiting for backend Phase 3 (GraphQL API)
-- **Shared UI:** Waiting for design system foundation
+- **Backend:** ✅ Complete - All phases 1-7 done (models, services, GraphQL API, 2FA, password reset, audit logging, security hardening)
+- **Frontend Web:** ⬜ Not Started - Ready to begin implementation
+- **Frontend Mobile:** ⬜ Not Started - Ready to begin implementation
+- **Shared UI:** ⬜ Not Started - Waiting for design system foundation
 
 ---
 
@@ -245,16 +245,16 @@ _None in this sprint_
 - [x] Timezone-aware datetime handling throughout
 - [x] Comprehensive unit tests (~95% coverage for services)
 
-**Backend Phase 3 (Pending - GraphQL API):**
+**Backend Phase 3 (✅ Completed 09/01/2026):**
 
-- [ ] GraphQL registration mutation
-- [ ] GraphQL login mutation
-- [ ] GraphQL email verification mutation
-- [ ] Email verification workflow GraphQL integration
-- [ ] Rate limiting on GraphQL endpoints
-- [ ] CSRF protection for GraphQL mutations
-- [ ] Email verification link generation and sending
-- [ ] Integration and E2E tests
+- [x] GraphQL registration mutation
+- [x] GraphQL login mutation
+- [x] GraphQL email verification mutation
+- [x] Email verification workflow GraphQL integration
+- [x] Rate limiting on GraphQL endpoints
+- [x] CSRF protection for GraphQL mutations
+- [x] Email verification link generation and sending
+- [x] Integration and E2E tests
 
 **Frontend (Pending):**
 
@@ -262,43 +262,50 @@ _None in this sprint_
 - [ ] Password strength indicator shows requirements
 - [ ] Real-time validation feedback
 
-### US-003: Password Reset
+### US-003: Password Reset (✅ Backend Complete)
 
-- [ ] User can request password reset via email
-- [ ] Password reset link is valid for 24 hours
-- [ ] New password cannot be one of last 5 passwords
-- [ ] Password reset link can only be used once
-- [ ] Multiple reset requests invalidate previous links
-- [ ] Successful reset sends confirmation email
+- [x] User can request password reset via email
+- [x] Password reset link is valid for 24 hours
+- [x] New password cannot be one of last 5 passwords
+- [x] Password reset link can only be used once
+- [x] Multiple reset requests invalidate previous links
+- [x] Successful reset sends confirmation email
 
 ---
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met for US-001 and US-003
-- [ ] Unit tests pass (>80% coverage)
-- [ ] Integration tests pass for email flows
-- [ ] Code reviewed and merged to main
-- [ ] Documentation updated (API docs, README)
-- [ ] Deployed to development environment
-- [ ] QA tested on dev environment
+**Backend:**
+
+- [x] All acceptance criteria met for US-001 and US-003
+- [x] Unit tests pass (>95% coverage)
+- [x] Integration tests pass for email flows
+- [x] Code reviewed and approved
+- [x] Documentation updated (API docs, README)
+- [x] Deployed to development environment
+- [x] QA tested on dev environment
+
+**Frontend (Pending):**
+
+- [ ] Frontend implementations for US-001 and US-003
+- [ ] E2E tests for complete user flows
 - [ ] Demo prepared for sprint review
 
 ---
 
 ## Sprint Metrics
 
-| Metric                     | Target | Actual                |
-| -------------------------- | ------ | --------------------- |
-| Points Committed           | 10     | 10                    |
-| Points Completed (Phase 1) | -      | 5 (US-001)            |
-| Stories Completed          | 2      | 0 (1 in progress)     |
-| Stories In Progress        | -      | 1 (US-001)            |
-| Velocity (Phase 1)         | -      | 8 points              |
-| Test Coverage (Backend)    | >80%   | 95%+ (US-001 Phase 1) |
-| Models Implemented         | -      | 11/11 (100%)          |
-| Unit Tests Written         | -      | 85+ tests             |
-| Documentation Pages        | -      | 7 reports             |
+| Metric                     | Target | Actual                    |
+| -------------------------- | ------ | ------------------------- |
+| Points Committed           | 10     | 10                        |
+| Points Completed (Backend) | 10     | 10 (US-001: 5, US-003: 5) |
+| Stories Completed          | 2      | 2 (Backend only)          |
+| Stories In Progress        | -      | 0 (Backend complete)      |
+| Velocity (Backend)         | -      | 10 points                 |
+| Test Coverage (Backend)    | >80%   | 95%+ (all phases)         |
+| Models Implemented         | -      | 11/11 (100%)              |
+| Unit Tests Written         | -      | 150+ tests                |
+| Documentation Pages        | -      | 20+ reports               |
 
 ---
 
@@ -404,7 +411,7 @@ _None in this sprint_
 
 ---
 
-_Last Updated: 08/01/2026 09:40 Europe/London_
+_Last Updated: 19/01/2026 Europe/London_
 _Sprint Owner: Development Team_
-_Phase 1 Status: ✅ Complete_
-_Overall Sprint Status: 🔄 In Progress_
+_Backend Status: ✅ Complete (All Phases 1-7)_
+_Overall Sprint Status: 🔄 Frontend Pending_
