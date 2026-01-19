@@ -99,8 +99,8 @@ multi-tenancy, SaaS integrations, and enterprise-grade security features.
 **Platform Vision:** This backend is part of the Syntek CMS Platform - a comprehensive system
 enabling businesses to build and manage websites/apps with integrated business tools, consistent
 branding, and multi-platform deployment.
-See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the
-complete architectural plan.
+See [CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the
+complete architectural plan. And the language versions are in [VERSIONS.md](../docs/VERSIONS.md)
 
 ### Architecture
 
@@ -152,13 +152,13 @@ complete 16-phase development roadmap.
 
 ```bash
 # Start development containers
-docker compose -f docker/dev/docker-compose.yml up -d
+./scripts/env/dev.sh start
 
 # Run migrations
-docker compose -f docker/dev/docker-compose.yml exec web python manage.py migrate
+./scripts/env/dev.sh migrate
 
 # Create superuser
-docker compose -f docker/dev/docker-compose.yml exec web python manage.py createsuperuser
+./scripts/env/dev.sh createsuperuser
 
 # Access the application
 # Web: http://localhost:8000
@@ -170,10 +170,7 @@ docker compose -f docker/dev/docker-compose.yml exec web python manage.py create
 
 ```bash
 # Run all tests
-docker compose -f docker/test/docker-compose.yml run --rm web pytest
-
-# Run with coverage
-docker compose -f docker/test/docker-compose.yml run --rm web pytest --cov=apps
+./scripts/env/test.sh run
 ```
 
 ## Environment Configuration
