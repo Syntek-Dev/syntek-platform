@@ -184,7 +184,7 @@ class TestCSRFMutationDetection:
 
         Given: Request with invalid JSON body
         When: _is_mutation() is called
-        Then: Returns False and does not raise exception
+        Then: Returns True (treats as mutation for security) and does not raise exception
         """
         request = factory.post(
             "/graphql/",
@@ -192,15 +192,15 @@ class TestCSRFMutationDetection:
             content_type="application/json",
         )
 
-        # Should not raise exception, should return False
-        assert middleware._is_mutation(request) is False
+        # Should not raise exception, returns True for security (fail-safe)
+        assert middleware._is_mutation(request) is True
 
     def test_handles_missing_query_field(self, middleware, factory) -> None:
         """Test middleware handles missing 'query' field.
 
         Given: Request with valid JSON but no 'query' field
         When: _is_mutation() is called
-        Then: Returns False
+        Then: Returns True (treats empty/missing query as mutation for security)
         """
         request = factory.post(
             "/graphql/",
@@ -208,14 +208,15 @@ class TestCSRFMutationDetection:
             content_type="application/json",
         )
 
-        assert middleware._is_mutation(request) is False
+        # Empty query treated as mutation for security (fail-safe)
+        assert middleware._is_mutation(request) is True
 
     def test_handles_non_json_content_type(self, middleware, factory) -> None:
         """Test middleware handles non-JSON content type.
 
         Given: Request with non-JSON content type
         When: _is_mutation() is called
-        Then: Returns False
+        Then: Returns True (non-JSON treated as mutation for security)
         """
         request = factory.post(
             "/graphql/",
@@ -223,14 +224,15 @@ class TestCSRFMutationDetection:
             content_type="text/plain",
         )
 
-        assert middleware._is_mutation(request) is False
+        # Non-JSON content type treated as mutation for security (fail-safe)
+        assert middleware._is_mutation(request) is True
 
     def test_handles_empty_request_body(self, middleware, factory) -> None:
         """Test middleware handles empty request body.
 
         Given: Request with empty body
         When: _is_mutation() is called
-        Then: Returns False and does not crash
+        Then: Returns True (empty body treated as mutation for security) and does not crash
         """
         request = factory.post(
             "/graphql/",
@@ -238,7 +240,8 @@ class TestCSRFMutationDetection:
             content_type="application/json",
         )
 
-        assert middleware._is_mutation(request) is False
+        # Empty body treated as mutation for security (fail-safe)
+        assert middleware._is_mutation(request) is True
 
 
 @pytest.mark.unit
@@ -416,30 +419,32 @@ class TestCSRFErrorHandling:
 
         Given: Request with no body
         When: _is_mutation() is called
-        Then: Returns False without exception
+        Then: Returns True (empty body treated as mutation for security) without exception
         """
         request = factory.post("/graphql/", content_type="application/json")
         # Manually set empty body
         request._body = b""
 
-        assert middleware._is_mutation(request) is False
+        # Empty body treated as mutation for security (fail-safe)
+        assert middleware._is_mutation(request) is True
 
     def test_handles_request_with_none_body(self, middleware, factory) -> None:
         """Test middleware handles request with None body.
 
         Given: Request with body that might be None
         When: _is_mutation() is called
-        Then: Returns False or raises appropriate exception
+        Then: Returns True (treated as mutation for security) or raises appropriate exception
         """
         request = factory.post("/graphql/", content_type="application/json")
 
         # Manually set None body to simulate edge case
         request._body = None
 
-        # Should either handle None gracefully or raise appropriate exception
+        # Should either handle None gracefully (returning True for security) or raise exception
         try:
             result = middleware._is_mutation(request)
-            assert result is False
+            # If it handles None, it should return True for security (fail-safe)
+            assert result is True
         except (TypeError, AttributeError, json.JSONDecodeError):
             # Acceptable to raise exception for malformed request
             pass
@@ -510,7 +515,7 @@ class TestCSRFMultipartRequests:
 
         Given: Request with multipart/form-data content type
         When: _is_mutation() is called
-        Then: Returns False (cannot parse as JSON)
+        Then: Returns True (non-JSON treated as mutation for security)
         """
         request = factory.post(
             "/graphql/",
@@ -518,8 +523,8 @@ class TestCSRFMultipartRequests:
             # Multipart form data
         )
 
-        # Should return False for non-JSON content type
-        assert middleware._is_mutation(request) is False
+        # Non-JSON content type treated as mutation for security (fail-safe)
+        assert middleware._is_mutation(request) is True
 
 
 @pytest.mark.unit
