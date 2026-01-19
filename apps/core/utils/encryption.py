@@ -107,18 +107,24 @@ class IPEncryption:
         return decrypted.decode()
 
     @staticmethod
-    def rotate_key(old_key: bytes, new_key: bytes) -> dict:
+    def rotate_key(old_key: bytes, new_key: bytes, batch_size: int = 1000) -> dict:
         """Rotate encryption key and re-encrypt all IP addresses.
 
         This method handles the key rotation process:
         1. Decrypt all IPs with old key
         2. Re-encrypt with new key
-        3. Update database records
+        3. Update database records using bulk_update() for performance
         4. Return statistics
+
+        Performance Note:
+        Uses bulk_update() instead of individual save() calls to significantly
+        improve performance on large datasets. Processes records in batches
+        to avoid memory issues.
 
         Args:
             old_key: Current encryption key
             new_key: New encryption key to use
+            batch_size: Number of records to process per batch (default: 1000)
 
         Returns:
             Dictionary with rotation statistics:
@@ -134,7 +140,8 @@ class IPEncryption:
         session_tokens_updated = 0
         errors = []
 
-        # Rotate AuditLog IPs
+        # Rotate AuditLog IPs using bulk_update
+        logs_to_update = []
         for log in AuditLog.objects.filter(ip_address__isnull=False):
             try:
                 # Decrypt with old key (ip_address guaranteed non-null by filter)
@@ -142,12 +149,24 @@ class IPEncryption:
                 decrypted_ip = IPEncryption.decrypt_ip(log.ip_address, old_key)
                 # Re-encrypt with new key
                 log.ip_address = IPEncryption.encrypt_ip(decrypted_ip, new_key)
-                log.save(update_fields=["ip_address"])
-                audit_logs_updated += 1
+                logs_to_update.append(log)
+
+                # Bulk update when batch size reached
+                if len(logs_to_update) >= batch_size:
+                    AuditLog.objects.bulk_update(logs_to_update, ["ip_address"])
+                    audit_logs_updated += len(logs_to_update)
+                    logs_to_update = []
+
             except (ValueError, TypeError) as e:
                 errors.append(f"AuditLog {log.id}: {e!s}")
 
-        # Rotate SessionToken IPs
+        # Update remaining AuditLog records
+        if logs_to_update:
+            AuditLog.objects.bulk_update(logs_to_update, ["ip_address"])
+            audit_logs_updated += len(logs_to_update)
+
+        # Rotate SessionToken IPs using bulk_update
+        tokens_to_update = []
         for token in SessionToken.objects.filter(ip_address__isnull=False):
             try:
                 # Decrypt with old key (ip_address guaranteed non-null by filter)
@@ -155,10 +174,21 @@ class IPEncryption:
                 decrypted_ip = IPEncryption.decrypt_ip(token.ip_address, old_key)
                 # Re-encrypt with new key
                 token.ip_address = IPEncryption.encrypt_ip(decrypted_ip, new_key)
-                token.save(update_fields=["ip_address"])
-                session_tokens_updated += 1
+                tokens_to_update.append(token)
+
+                # Bulk update when batch size reached
+                if len(tokens_to_update) >= batch_size:
+                    SessionToken.objects.bulk_update(tokens_to_update, ["ip_address"])
+                    session_tokens_updated += len(tokens_to_update)
+                    tokens_to_update = []
+
             except (ValueError, TypeError) as e:
                 errors.append(f"SessionToken {token.id}: {e!s}")
+
+        # Update remaining SessionToken records
+        if tokens_to_update:
+            SessionToken.objects.bulk_update(tokens_to_update, ["ip_address"])
+            session_tokens_updated += len(tokens_to_update)
 
         return {
             "audit_logs_updated": audit_logs_updated,
