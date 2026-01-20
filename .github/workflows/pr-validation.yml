@@ -142,9 +142,21 @@ jobs:
       - name: Start database
         run: |
           docker compose -f docker/test/docker-compose.yml up -d db
-          # Wait for database to be ready using pg_isready
+          # Wait for database to be ready using Python
           docker compose -f docker/test/docker-compose.yml run --rm web \
-            bash -c "until pg_isready -h db -p 5432 -U backend_template; do sleep 1; done"
+            python -c "
+          import time, socket
+          for _ in range(30):
+              try:
+                  s = socket.create_connection(('db', 5432), timeout=1)
+                  s.close()
+                  print('Database is ready')
+                  break
+              except (socket.error, socket.timeout):
+                  time.sleep(1)
+          else:
+              raise Exception('Database not ready after 30 seconds')
+          "
 
       - name: Check for missing migrations
         run: |
