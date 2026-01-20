@@ -15,6 +15,7 @@ on:
       - edited
 
 permissions:
+  contents: read
   pull-requests: read
 
 jobs:
@@ -203,6 +204,8 @@ jobs:
 
       - name: Validate commit messages
         uses: wagoid/commitlint-github-action@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           configFile: .commitlintrc.json
 
