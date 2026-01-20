@@ -1,7 +1,7 @@
 # Backend Template - Django Project
 
-**Last Updated**: 06/01/2026
-**Version**: 0.3.2
+**Last Updated**: 19/01/2026
+**Version**: 0.9.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -11,7 +11,7 @@
 > **Stack:** Django + PostgreSQL + GraphQL
 > **Container:** Docker Compose
 > **Package:** backend-template
-> **Last Updated:** 2026-01-03
+> **Last Updated:** 2026-01-08
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@
   - [Project Overview](#project-overview)
     - [Architecture](#architecture)
     - [Platform Components](#platform-components)
-  - [Project Structure](#project-structure)
+  - [Structures to Gain Context](#structures-to-gain-context)
   - [Development Workflow](#development-workflow)
     - [Starting Development](#starting-development)
     - [Running Tests](#running-tests)
@@ -29,6 +29,12 @@
     - [Django Apps](#django-apps)
     - [GraphQL API](#graphql-api)
     - [CMS Content Management](#cms-content-management)
+  - [Code Quality Principles](#code-quality-principles)
+    - [Import Rules](#import-rules)
+    - [Minimal Code Philosophy](#minimal-code-philosophy)
+    - [DRY (Don't Repeat Yourself)](#dry-dont-repeat-yourself)
+    - [Code Quality Checklist](#code-quality-checklist)
+    - [Refactoring Guidelines](#refactoring-guidelines)
   - [Line Length Standards](#line-length-standards)
     - [Exceptions](#exceptions)
     - [Running Lint Checks](#running-lint-checks)
@@ -67,6 +73,7 @@
     - [Markdown Formatting Rules](#markdown-formatting-rules)
     - [Link Validation](#link-validation)
   - [Command Execution Requirements](#command-execution-requirements)
+    - [Claude Agent Instructions](#claude-agent-instructions)
     - [Environment Scripts](#environment-scripts)
     - [Script Command Examples](#script-command-examples)
       - [Development (`scripts/env/dev.sh`)](#development-scriptsenvdevsh)
@@ -76,6 +83,7 @@
     - [Docker Container Access](#docker-container-access)
     - [Quick Reference](#quick-reference)
   - [Syntek Dev Suite Agents](#syntek-dev-suite-agents)
+    - [Versioning Requirements](#versioning-requirements)
   - [Project Management](#project-management)
   - [Platform Architecture](#platform-architecture)
     - [Key Platform Features](#key-platform-features)
@@ -91,8 +99,8 @@ multi-tenancy, SaaS integrations, and enterprise-grade security features.
 **Platform Vision:** This backend is part of the Syntek CMS Platform - a comprehensive system
 enabling businesses to build and manage websites/apps with integrated business tools, consistent
 branding, and multi-platform deployment.
-See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the
-complete architectural plan.
+See [CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the
+complete architectural plan. And the language versions are in [VERSIONS.md](../docs/VERSIONS.md)
 
 ### Architecture
 
@@ -115,48 +123,24 @@ This backend integrates with:
 
 For complete platform architecture and phase breakdown, see [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md).
 
-## Project Structure
+## Structures to Gain Context
 
-```
-backend-template/
-├── .claude/                 # Claude configuration
-│   ├── CLAUDE.md           # This file
-│   ├── SYNTEK-GUIDE.md     # Plugin usage guide
-│   ├── settings.local.json # Local settings
-│   ├── commands/           # Custom commands
-│   └── plugins/            # Syntek Dev Suite agent plugins (*.py)
-├── config/                  # Django settings
-│   ├── settings/
-│   │   ├── base.py
-│   │   ├── dev.py
-│   │   ├── test.py
-│   │   ├── staging.py
-│   │   └── production.py
-│   ├── urls.py
-│   └── wsgi.py
-├── apps/                    # Django applications
-│   ├── core/               # Users, organisations, auth (Phase 1)
-│   ├── design/             # Design tokens (Phase 2)
-│   ├── cms/                # Pages, content, media (Phase 3)
-│   ├── templates/          # Site templates (Phase 4)
-│   ├── integrations/       # Third-party integrations (Phase 11)
-│   ├── ai/                 # AI integration (Phase 12)
-│   ├── secrets/            # Environment variable management (Phase 13)
-│   └── setup/              # Initial setup wizard (Phase 14)
-├── api/                     # GraphQL API
-├── docker/                  # Docker configurations
-│   ├── dev/
-│   ├── test/
-│   ├── staging/
-│   └── production/
-├── docs/                    # Documentation
-│   ├── ARCHITECTURE/       # Platform architecture plans
-│   │   └── CMS-PLATFORM-PLAN.md  # Comprehensive platform plan
-│   └── METRICS/            # Self-learning metrics
-├── manage.py
-├── pyproject.toml            # Python dependencies and project config
-└── docker-compose.yml
-```
+Look at the root `README.md` for the full project structure before carrying out any tasks.
+
+Each directory and sub-directory has a `README.md` with the directory and sub-directory structures.
+Read these structures to identify what needs accessing.
+
+Each .md file should have an overview or executive summary near the start to allow you to gain an
+understanding as to whether this `*.md` file is relevant to the agents task.
+
+Each coding file should have a `docstring` at the very top explaining the overview of the code file. This will help the agent understand if the file needs updating.
+
+Before each agent runs to gain the understanding do the following:
+
+1. Read root `README.md` project structure tree to find all relevant files for the task
+2. Read a directories `README.md` for the directories structure tree
+3. Read the relevant sub-directories `README.md` for the sub-directories structure tree
+4. If a `*.md` file read the `Overview` or `Executive Summary` to gain context of the file, if a code file read the `docstring` at the top of the file to gain context of the file
 
 **Note:** The apps structure reflects the phased implementation plan. See
 [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the
@@ -168,13 +152,13 @@ complete 16-phase development roadmap.
 
 ```bash
 # Start development containers
-docker compose -f docker/dev/docker-compose.yml up -d
+./scripts/env/dev.sh start
 
 # Run migrations
-docker compose -f docker/dev/docker-compose.yml exec web python manage.py migrate
+./scripts/env/dev.sh migrate
 
 # Create superuser
-docker compose -f docker/dev/docker-compose.yml exec web python manage.py createsuperuser
+./scripts/env/dev.sh createsuperuser
 
 # Access the application
 # Web: http://localhost:8000
@@ -186,10 +170,7 @@ docker compose -f docker/dev/docker-compose.yml exec web python manage.py create
 
 ```bash
 # Run all tests
-docker compose -f docker/test/docker-compose.yml run --rm web pytest
-
-# Run with coverage
-docker compose -f docker/test/docker-compose.yml run --rm web pytest --cov=apps
+./scripts/env/test.sh run
 ```
 
 ## Environment Configuration
@@ -230,21 +211,528 @@ docker compose -f docker/test/docker-compose.yml run --rm web pytest --cov=apps
 See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](../docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md)
 for detailed CMS architecture.
 
+## Code Quality Principles
+
+This project enforces strict code quality standards to maintain a clean, maintainable codebase.
+
+### Import Rules
+
+**CRITICAL:** All imports must be organised at the top of the file following PEP 8 import order.
+
+**Import Order (enforced by Ruff):**
+
+1. **Standard library imports** - Python built-in modules
+2. **Third-party imports** - Installed packages (Django, etc.)
+3. **Local application imports** - Your project modules
+
+**Principles:**
+
+- Imports at the top of the file are the default
+- Group imports by type with blank lines between groups
+- Sort imports alphabetically within each group
+- Use absolute imports for clarity (`from apps.core.models import User`)
+- Only import inside functions for specific cases (see exceptions below)
+
+**Examples:**
+
+```python
+# ✅ GOOD - Correct import order and grouping
+"""User authentication service.
+
+Handles user login, logout, and session management.
+"""
+
+# Standard library imports
+import json
+import logging
+from datetime import datetime, timedelta
+from typing import Optional, Dict, Any
+
+# Third-party imports
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.utils import timezone
+import redis
+import strawberry
+
+# Local application imports
+from apps.core.models import User, Organisation, AuditLog
+from apps.core.services.encryption import encrypt_data
+from apps.core.utils.validators import validate_email
+from api.types import UserType
+
+logger = logging.getLogger(__name__)
+
+
+class AuthService:
+    """Service for user authentication operations."""
+
+    def login_user(self, email: str, password: str) -> Optional[User]:
+        """Authenticate user with email and password."""
+        pass
+```
+
+```python
+# ❌ BAD - Mixed import order, no grouping
+"""User authentication service."""
+
+from apps.core.models import User
+import json
+from django.contrib.auth import authenticate
+from apps.core.services.encryption import encrypt_data
+import logging
+from django.utils import timezone
+from typing import Optional
+import redis
+from apps.core.utils.validators import validate_email
+
+class AuthService:
+    def login_user(self, email: str, password: str) -> Optional[User]:
+        pass
+```
+
+**Django-Specific Import Conventions:**
+
+```python
+# ✅ GOOD - Django imports following conventions
+"""Django model definitions."""
+
+# Standard library
+from typing import Optional
+
+# Third-party - Django core first, then contrib packages
+from django.db import models
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+# Local
+from apps.core.managers import UserManager
+from apps.core.validators import validate_username
+
+
+class User(AbstractUser):
+    """Custom user model."""
+    pass
+```
+
+**GraphQL Schema Imports:**
+
+```python
+# ✅ GOOD - GraphQL imports
+"""GraphQL schema for user queries and mutations."""
+
+# Standard library
+from typing import List, Optional
+
+# Third-party - Strawberry
+import strawberry
+from strawberry.types import Info
+
+# Third-party - Django
+from django.contrib.auth import get_user_model
+from django.db import transaction
+
+# Local
+from apps.core.models import Organisation
+from apps.core.services.auth_service import AuthService
+from api.types import UserType, OrganisationType
+from api.permissions import IsAuthenticated
+
+User = get_user_model()
+```
+
+**When to Import Inside Functions (Exceptions):**
+
+Only import inside functions in these specific cases:
+
+1. **Circular Import Resolution** - When two modules import each other
+2. **Optional Dependencies** - When imports are conditionally needed
+3. **Performance Optimisation** - Expensive imports only when needed
+4. **Type Checking Only** - Imports only used for type hints
+
+```python
+# ✅ GOOD - Import inside function to resolve circular dependency
+"""User service module."""
+
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+def get_user_organisation(user_id: int):
+    """Get organisation for a user.
+
+    Import Organisation inside function to avoid circular import
+    since Organisation model also imports User.
+    """
+    # Import here to avoid circular dependency
+    from apps.core.models import Organisation
+
+    user = User.objects.select_related('organisation').get(id=user_id)
+    return user.organisation
+```
+
+```python
+# ✅ GOOD - Optional dependency import
+"""Data export service."""
+
+from django.http import HttpResponse
+
+
+def export_to_excel(data: list) -> HttpResponse:
+    """Export data to Excel format.
+
+    Only import openpyxl if Excel export is actually used.
+    """
+    try:
+        # Import only when needed (openpyxl is optional dependency)
+        import openpyxl
+        from openpyxl.styles import Font
+    except ImportError:
+        raise ImportError(
+            "openpyxl is required for Excel export. "
+            "Install it with: pip install openpyxl"
+        )
+
+    # Excel export logic here
+    workbook = openpyxl.Workbook()
+    return HttpResponse(content_type='application/vnd.ms-excel')
+```
+
+```python
+# ✅ GOOD - Expensive import only when needed
+"""Background task processing."""
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def process_video(video_path: str) -> None:
+    """Process video file.
+
+    Import heavy video processing library only when task runs,
+    not when module is imported.
+    """
+    # Import expensive library only when function is called
+    import cv2
+    import numpy as np
+
+    logger.info(f"Processing video: {video_path}")
+    # Video processing logic here
+```
+
+```python
+# ✅ GOOD - Type checking only import (TYPE_CHECKING)
+"""User service with type hints."""
+
+from typing import TYPE_CHECKING, Optional
+
+from django.contrib.auth import get_user_model
+
+# Import only for type checking, not at runtime
+if TYPE_CHECKING:
+    from apps.core.models import Organisation
+
+User = get_user_model()
+
+
+def get_user_with_org(user_id: int) -> tuple[User, Optional['Organisation']]:
+    """Get user with their organisation.
+
+    Organisation is only imported for type hints, avoiding circular import.
+    """
+    user = User.objects.select_related('organisation').get(id=user_id)
+    return user, user.organisation
+```
+
+**Import Aliasing Best Practices:**
+
+```python
+# ✅ GOOD - Clear, conventional aliases
+"""GraphQL types and queries."""
+
+import strawberry
+from django.contrib.auth import get_user_model
+from django.db.models import Q, QuerySet
+
+# Conventional alias for user model
+User = get_user_model()
+
+# Avoid naming conflicts
+from apps.core.models import User as CoreUser
+from apps.api.types import User as UserType
+
+
+@strawberry.type
+class Query:
+    """GraphQL queries."""
+    pass
+```
+
+```python
+# ❌ BAD - Confusing or unnecessary aliases
+"""Confusing import aliases."""
+
+import json as j
+from django.db import models as m
+from django.utils import timezone as t
+
+# Too short, unclear
+from apps.core.models import User as U
+
+
+class Article(m.Model):
+    created_at = m.DateTimeField(default=t.now)
+```
+
+**Wildcard Imports (Avoid):**
+
+```python
+# ❌ BAD - Never use wildcard imports
+"""Bad import practices."""
+
+from django.contrib.auth.models import *
+from apps.core.utils import *
+
+# Unclear where User comes from, pollutes namespace
+user = User.objects.get(id=1)
+```
+
+```python
+# ✅ GOOD - Explicit imports
+"""Explicit imports."""
+
+from django.contrib.auth.models import AbstractUser, Group, Permission
+from apps.core.utils import validate_email, hash_password
+
+user = AbstractUser.objects.get(id=1)
+```
+
+**Multi-line Imports:**
+
+```python
+# ✅ GOOD - Multi-line import formatting
+"""Long import lists."""
+
+from django.contrib.auth.models import (
+    AbstractUser,
+    Group,
+    Permission,
+    AnonymousUser,
+)
+
+from apps.core.services import (
+    AuthService,
+    PasswordService,
+    TokenService,
+    NotificationService,
+)
+```
+
+```python
+# ❌ BAD - Long single-line imports (exceeds 100 char limit)
+"""Single line imports."""
+
+from django.contrib.auth.models import AbstractUser, Group, Permission, AnonymousUser, UserManager, BaseUserManager
+```
+
+### Minimal Code Philosophy
+
+**CRITICAL:** Always write the minimum amount of code necessary to achieve the requirement.
+
+**Principles:**
+
+1. **No speculative code** - Only implement what is explicitly required
+2. **No "just in case" features** - Don't add functionality that might be needed later
+3. **No premature abstractions** - Three similar lines of code are better than a premature helper
+4. **No extra configurability** - A simple feature doesn't need extra options
+5. **No unnecessary validation** - Only validate at system boundaries (user input, external APIs)
+
+**Examples:**
+
+```python
+# ❌ BAD - Over-engineered with unnecessary abstraction
+class UserEmailValidator:
+    """Validates user email addresses."""
+
+    def __init__(self, allow_subdomains: bool = True, blocked_domains: list = None):
+        self.allow_subdomains = allow_subdomains
+        self.blocked_domains = blocked_domains or []
+
+    def validate(self, email: str) -> bool:
+        # ... 50 lines of validation logic
+        pass
+
+def validate_user_email(email: str) -> bool:
+    """Validate email using the validator class."""
+    validator = UserEmailValidator()
+    return validator.validate(email)
+
+
+# ✅ GOOD - Simple, direct implementation
+def validate_user_email(email: str) -> bool:
+    """Validate email format."""
+    return bool(re.match(r'^[^@]+@[^@]+\.[^@]+$', email))
+```
+
+```python
+# ❌ BAD - Unnecessary helper function for one-time operation
+def get_active_user_emails(users: list[User]) -> list[str]:
+    """Extract emails from active users."""
+    return [u.email for u in users if u.is_active]
+
+def send_newsletter():
+    users = User.objects.all()
+    emails = get_active_user_emails(users)
+    send_bulk_email(emails)
+
+
+# ✅ GOOD - Inline the simple logic
+def send_newsletter():
+    """Send newsletter to active users."""
+    emails = User.objects.filter(is_active=True).values_list('email', flat=True)
+    send_bulk_email(list(emails))
+```
+
+### DRY (Don't Repeat Yourself)
+
+**CRITICAL:** Eliminate code duplication, but only when there's actual repetition.
+
+**When to apply DRY:**
+
+- Same logic appears in 3+ places
+- Copy-pasting code between functions/classes
+- Similar validation rules across multiple models
+- Repeated query patterns
+
+**When NOT to apply DRY:**
+
+- Two pieces of code happen to look similar but serve different purposes
+- Extracting code would require many parameters to handle variations
+- The "shared" code is trivial (1-2 lines)
+
+**Examples:**
+
+```python
+# ❌ BAD - Repeated logic across multiple views
+class UserListView(ListView):
+    def get_queryset(self):
+        return User.objects.filter(
+            organisation=self.request.user.organisation,
+            is_active=True
+        ).select_related('organisation')
+
+class UserDetailView(DetailView):
+    def get_queryset(self):
+        return User.objects.filter(
+            organisation=self.request.user.organisation,
+            is_active=True
+        ).select_related('organisation')
+
+class UserUpdateView(UpdateView):
+    def get_queryset(self):
+        return User.objects.filter(
+            organisation=self.request.user.organisation,
+            is_active=True
+        ).select_related('organisation')
+
+
+# ✅ GOOD - Extract to mixin when pattern repeats 3+ times
+class OrganisationFilterMixin:
+    """Filter queryset by user's organisation."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            organisation=self.request.user.organisation,
+            is_active=True
+        ).select_related('organisation')
+
+class UserListView(OrganisationFilterMixin, ListView):
+    model = User
+
+class UserDetailView(OrganisationFilterMixin, DetailView):
+    model = User
+
+class UserUpdateView(OrganisationFilterMixin, UpdateView):
+    model = User
+```
+
+```python
+# ❌ BAD - Forced DRY creating unnecessary complexity
+def process_entity(entity_type: str, entity_id: int, action: str) -> dict:
+    """Generic entity processor."""
+    if entity_type == 'user':
+        model = User
+        serializer = UserSerializer
+    elif entity_type == 'organisation':
+        model = Organisation
+        serializer = OrganisationSerializer
+    # ... more conditionals
+
+    instance = model.objects.get(id=entity_id)
+    if action == 'serialize':
+        return serializer(instance).data
+    # ... more action handling
+
+
+# ✅ GOOD - Keep separate when logic differs meaningfully
+def get_user_data(user_id: int) -> dict:
+    """Get serialised user data."""
+    user = User.objects.select_related('organisation').get(id=user_id)
+    return UserSerializer(user).data
+
+def get_organisation_data(org_id: int) -> dict:
+    """Get serialised organisation data."""
+    org = Organisation.objects.prefetch_related('users').get(id=org_id)
+    return OrganisationSerializer(org).data
+```
+
+### Code Quality Checklist
+
+Before committing code, verify:
+
+- [ ] **Minimal:** No unnecessary code, abstractions, or features
+- [ ] **DRY:** No duplicated logic (3+ occurrences)
+- [ ] **Single Responsibility:** Each function/class does one thing
+- [ ] **No Dead Code:** No commented-out code, unused imports, or unreachable branches
+- [ ] **No Magic Numbers:** Constants are named and documented
+- [ ] **Clear Intent:** Code is self-documenting with meaningful names
+
+### Refactoring Guidelines
+
+**Only refactor when:**
+
+1. There's measurable code duplication (3+ occurrences)
+2. A function exceeds 50 lines
+3. A class has more than 10 public methods
+4. Cyclomatic complexity exceeds 10
+5. The change is explicitly requested
+
+**Never refactor:**
+
+- Working code "just to improve it"
+- Code that's not part of the current task
+- To add "future-proofing" abstractions
+
 ## Line Length Standards
 
 All files in this project must adhere to consistent line length limits. These are enforced by
 linters and formatters in CI/CD pipelines.
 
-| File Type          | Max Line Length | Enforced By  | Configuration File   |
-| ------------------ | --------------- | ------------ | -------------------- |
-| Python (`.py`)     | 100 characters  | Black, isort | `pyproject.toml`     |
-| Markdown (`.md`)   | 120 characters  | markdownlint | `.markdownlint.json` |
-| JavaScript (`.js`) | 100 characters  | Prettier     | `.prettierrc`        |
-| TypeScript (`.ts`) | 100 characters  | Prettier     | `.prettierrc`        |
-| HTML (`.html`)     | 120 characters  | Prettier     | `.prettierrc`        |
-| CSS (`.css`)       | 100 characters  | Prettier     | `.prettierrc`        |
-| YAML (`.yml`)      | 100 characters  | Prettier     | `.prettierrc`        |
-| JSON (`.json`)     | 100 characters  | Prettier     | `.prettierrc`        |
+| File Type        | Max Line Length | Enforced By  | Configuration File   |
+| ---------------- | --------------- | ------------ | -------------------- |
+| Python (`.py`)   | 100 characters  | Ruff         | `pyproject.toml`     |
+| Markdown (`.md`) | 120 characters  | markdownlint | `.markdownlint.json` |
+| HTML (`.html`)   | 120 characters  | Prettier     | `.prettierrc`        |
+| CSS (`.css`)     | 100 characters  | Prettier     | `.prettierrc`        |
+| YAML (`.yml`)    | 100 characters  | Prettier     | `.prettierrc`        |
+| JSON (`.json`)   | 100 characters  | Prettier     | `.prettierrc`        |
+| GraphQL (`.gql`) | 100 characters  | Prettier     | `.prettierrc`        |
 
 ### Exceptions
 
@@ -255,11 +743,16 @@ linters and formatters in CI/CD pipelines.
 ### Running Lint Checks
 
 ```bash
-# Check all formatting and linting
-npm run lint
+# Run all pre-commit hooks
+pre-commit run --all-files
 
-# Check Python formatting
-npm run lint:prettier
+# Check Python linting and formatting
+ruff check .
+ruff format --check .
+
+# Auto-fix Python issues
+ruff check --fix .
+ruff format .
 
 # Check Markdown linting
 npm run lint:markdown
@@ -1694,6 +2187,31 @@ Before committing, validate all internal links:
 
 **CRITICAL:** All commands MUST be run inside Docker containers, NOT on the host machine.
 
+### Claude Agent Instructions
+
+**MANDATORY:** When executing any Django or Docker commands, Claude MUST:
+
+1. **ALWAYS use the `scripts/env/*.sh` helper scripts** - Never run `python manage.py` directly
+2. **Select the correct environment script** based on the task:
+   - `./scripts/env/dev.sh` - For development work
+   - `./scripts/env/test.sh` - For running tests
+   - `./scripts/env/staging.sh` - For staging operations
+   - `./scripts/env/production.sh` - For production (extreme caution)
+3. **Never run Docker commands directly** unless the environment script doesn't support the operation
+4. **Check script help first** if unsure: `./scripts/env/dev.sh help`
+
+```bash
+# ❌ WRONG - Never do this
+python manage.py migrate
+python manage.py makemigrations
+docker compose exec web python manage.py shell
+
+# ✅ CORRECT - Always use environment scripts
+./scripts/env/dev.sh migrate
+./scripts/env/dev.sh makemigrations
+./scripts/env/dev.sh shell
+```
+
 ### Environment Scripts
 
 Use the environment-specific helper scripts in `scripts/env/` for all operations:
@@ -1712,6 +2230,10 @@ Use the environment-specific helper scripts in `scripts/env/` for all operations
 ```bash
 # Start development environment
 ./scripts/env/dev.sh start
+
+# Create new migrations
+./scripts/env/dev.sh makemigrations           # All apps
+./scripts/env/dev.sh makemigrations core      # Specific app
 
 # Run Django migrations inside container
 ./scripts/env/dev.sh migrate
@@ -1763,6 +2285,10 @@ Use the environment-specific helper scripts in `scripts/env/` for all operations
 
 # Full CI pipeline
 ./scripts/env/test.sh ci
+
+# Database migrations (test environment)
+./scripts/env/test.sh makemigrations
+./scripts/env/test.sh migrate
 ```
 
 #### Staging (`scripts/env/staging.sh`)
@@ -1771,8 +2297,9 @@ Use the environment-specific helper scripts in `scripts/env/` for all operations
 # Deploy to staging
 ./scripts/env/staging.sh deploy
 
-# Run migrations
-./scripts/env/staging.sh migrate
+# Database migrations (requires confirmation)
+./scripts/env/staging.sh makemigrations       # Create migrations
+./scripts/env/staging.sh migrate              # Apply migrations
 
 # Create database backup
 ./scripts/env/staging.sh backup
@@ -1791,6 +2318,10 @@ Use the environment-specific helper scripts in `scripts/env/` for all operations
 ```bash
 # Deploy to production (requires confirmation)
 ./scripts/env/production.sh deploy
+
+# Database migrations (requires "PRODUCTION" confirmation)
+./scripts/env/production.sh migrate           # Auto-backup before migration
+./scripts/env/production.sh makemigrations    # Not recommended in production
 
 # Create production backup
 ./scripts/env/production.sh backup
@@ -1840,15 +2371,27 @@ docker compose -f docker/dev/docker-compose.yml exec web python manage.py migrat
 
 ## Syntek Dev Suite Agents
 
-Use these agents for development tasks:
+When an agent from `syntek-marketplace` within `syntek-dev-suite` calls a plugin, remember
+plugins are located in `.claude/plugins/*.py`.
 
-| Agent                           | Purpose               |
-| ------------------------------- | --------------------- |
-| `/syntek-dev-suite:backend`     | API and database work |
-| `/syntek-dev-suite:database`    | Database optimisation |
-| `/syntek-dev-suite:test-writer` | Generate tests        |
-| `/syntek-dev-suite:security`    | Security hardening    |
-| `/syntek-dev-suite:docs`        | Documentation         |
+### Versioning Requirements
+
+When updating version numbers, the following files MUST be updated:
+
+| File                 | Update Required                      |
+| -------------------- | ------------------------------------ |
+| `VERSION`            | Semantic version number              |
+| `CHANGELOG.md`       | Release notes and changes            |
+| `SECURITY.md`        | Supported versions table (root file) |
+| `VERSION-HISTORY.md` | Version history documentation        |
+| `RELEASES.md`        | Release documentation                |
+| `.claude/CLAUDE.md`  | Version in header metadata           |
+| `pyproject.toml`     | Package version                      |
+| `package.json`       | Package version                      |
+
+**CRITICAL:** Always update `SECURITY.md` in the project root when releasing new versions to keep
+the "Supported Versions" table accurate. This ensures users know which versions receive security
+updates.
 
 ## Project Management
 

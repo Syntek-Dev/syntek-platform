@@ -6,11 +6,11 @@ Provides Git repository status and information utilities for Claude Code agents.
 Returns structured JSON output for integration with cicd, setup, and code-reviewer agents.
 Supports repository status, branch info, remote detection, and commit history.
 """
-import json
-import os
+
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 
 def is_git_installed() -> bool:
@@ -29,7 +29,7 @@ def is_git_repo(path: str | None = None) -> bool:
         True if the path is inside a Git repository
     """
     try:
-        cwd = path or os.getcwd()
+        cwd = path or str(Path.cwd())
         result = subprocess.run(
             ["git", "rev-parse", "--is-inside-work-tree"],
             capture_output=True,
@@ -58,7 +58,7 @@ def run_git_command(
     """
     try:
         result = subprocess.run(
-            ["git"] + args, capture_output=True, text=True, cwd=cwd, timeout=timeout
+            ["git", *args], capture_output=True, text=True, cwd=cwd, timeout=timeout
         )
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
@@ -392,52 +392,21 @@ def main():
     """Main entry point for the Git tool."""
     if len(sys.argv) < 2:
         # Default: return repository status
-        print(json.dumps(get_git_status(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
-    if command == "status":
-        print(json.dumps(get_git_status(), indent=2))
-    elif command == "branches":
-        include_remote = "--all" in sys.argv or "-a" in sys.argv
-        print(json.dumps(get_branches(include_remote), indent=2))
-    elif command == "remotes":
-        print(json.dumps(get_remotes(), indent=2))
+    if command == "status" or command == "branches" or command == "remotes":
+        pass
     elif command == "commits":
-        count = 10
         for arg in sys.argv[2:]:
             if arg.isdigit():
-                count = int(arg)
+                int(arg)
                 break
-        print(json.dumps(get_recent_commits(count), indent=2))
-    elif command == "tags":
-        print(json.dumps(get_tags(), indent=2))
-    elif command == "stash":
-        print(json.dumps(get_stash_list(), indent=2))
-    elif command == "host":
-        print(json.dumps(detect_git_host(), indent=2))
-    elif command == "installed":
-        print(json.dumps({"installed": is_git_installed(), "is_repo": is_git_repo()}, indent=2))
+    elif command == "tags" or command == "stash" or command == "host" or command == "installed":
+        pass
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": [
-                        "status",
-                        "branches",
-                        "remotes",
-                        "commits",
-                        "tags",
-                        "stash",
-                        "host",
-                        "installed",
-                    ],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

@@ -1,16 +1,23 @@
 # Versions and Dependencies
 
-**Last Updated**: 06/01/2026
-**Version**: 0.3.2
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
 
 ---
 
+## Overview
+
+This document provides comprehensive version information for the Django/PostgreSQL/GraphQL project including core framework versions, system requirements, development tools, Docker base images, version management configuration, and procedures for updating versions across the project while maintaining consistency across all configuration files.
+
+---
+
 ## Table of Contents
 
 - [Versions and Dependencies](#versions-and-dependencies)
+  - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Core Framework Versions](#core-framework-versions)
   - [System Requirements](#system-requirements)

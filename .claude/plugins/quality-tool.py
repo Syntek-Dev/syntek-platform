@@ -6,8 +6,8 @@ Measures code quality metrics by running linters and analysing code.
 Supports PHP (phpstan/pint), Python (ruff/black), and JavaScript/TypeScript (eslint).
 Used to track quality changes before and after agent modifications.
 """
+
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -15,7 +15,7 @@ from pathlib import Path
 
 def detect_stack() -> dict:
     """Detect the project stack based on configuration files."""
-    cwd = Path(os.getcwd())
+    cwd = Path.cwd()
 
     stack = {
         "language": None,
@@ -56,7 +56,7 @@ def detect_stack() -> dict:
     elif (cwd / "package.json").exists():
         stack["language"] = "javascript"
         pkg_json = cwd / "package.json"
-        with open(pkg_json) as f:
+        with Path(pkg_json).open() as f:
             pkg = json.load(f)
         deps = {**pkg.get("dependencies", {}), **pkg.get("devDependencies", {})}
 
@@ -111,7 +111,7 @@ def run_linter(files: list | None = None) -> dict:
             capture_output=True,
             text=True,
             timeout=120,
-            cwd=os.getcwd(),
+            cwd=str(Path.cwd()),
         )
 
         # Parse output based on linter
@@ -282,37 +282,26 @@ def get_status() -> dict:
 def main():
     """Main entry point for the quality tool."""
     if len(sys.argv) < 2:
-        print(json.dumps(get_status(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
     if command == "status":
-        print(json.dumps(get_status(), indent=2))
+        pass
 
     elif command == "check":
         files = sys.argv[2:] if len(sys.argv) > 2 else None
-        result = check_quality(files)
-        print(json.dumps(result, indent=2))
+        check_quality(files)
 
     elif command == "lint":
         files = sys.argv[2:] if len(sys.argv) > 2 else None
-        result = run_linter(files)
-        print(json.dumps(result, indent=2))
+        run_linter(files)
 
     elif command == "stack":
-        print(json.dumps(detect_stack(), indent=2))
+        pass
 
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": ["status", "check", "lint", "stack"],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

@@ -2,6 +2,12 @@
 
 <!-- CLICKUP_ID: 86c7d2qz1 -->
 
+## Overview
+
+Platform administrators need to integrate with popular third-party services (payment processors, email services, CRM, analytics) through a flexible adapter pattern. This story covers the integration adapter system, encrypted credential storage, webhook support, sync logging, and management of multiple integration categories including payments, email, CRM, and AI services.
+
+---
+
 ## Story
 
 **As a** platform administrator

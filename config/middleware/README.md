@@ -1,7 +1,7 @@
 # Custom Middleware
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -40,6 +40,20 @@ Custom Django middleware for security, rate limiting, and audit logging.
 Middleware components that process requests and responses for the entire Django application.
 
 **Key Point:** Middleware runs on every request in the order it's registered in `settings.MIDDLEWARE`.
+
+---
+
+## Directory Tree
+
+```
+config/middleware/
+├── README.md                  # This file - Middleware overview and guide
+├── __init__.py                # Package initialisation
+├── security.py                # Security headers middleware
+├── audit.py                   # Audit logging middleware
+├── ratelimit.py               # Rate limiting middleware
+└── ip_allowlist.py            # IP allowlist middleware
+```
 
 ---
 

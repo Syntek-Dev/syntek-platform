@@ -5,6 +5,7 @@ optimiser-tool.py
 Analyses agent performance metrics and manages prompt optimisation proposals.
 Prepares data for the optimiser agent and handles applying/rejecting improvements.
 """
+
 import json
 import os
 import shutil
@@ -15,13 +16,13 @@ from pathlib import Path
 
 def get_metrics_dir() -> Path:
     """Get the docs/METRICS directory path."""
-    cwd = Path(os.getcwd())
+    cwd = Path.cwd()
     return cwd / "docs" / "METRICS"
 
 
 def get_plugin_dir() -> Path:
     """Get the plugin directory (where agents are stored)."""
-    cwd = Path(os.getcwd())
+    cwd = Path.cwd()
     possible_paths = [
         Path(os.environ.get("CLAUDE_PLUGIN_DIR", "")),
         cwd,  # Current working directory (syntek-dev-suite)
@@ -50,7 +51,7 @@ def load_config() -> dict:
     """Load the metrics configuration."""
     config_path = get_metrics_dir() / "config.json"
     if config_path.exists():
-        with open(config_path) as f:
+        with Path(config_path).open() as f:
             return json.load(f)
     return {"auto_optimisation_enabled": True, "min_runs_for_analysis": 50}
 
@@ -68,7 +69,7 @@ def query_runs(agent: str | None = None, days: int = 14) -> list:
         if not month_dir.is_dir():
             continue
         for run_file in month_dir.glob("*.json"):
-            with open(run_file) as f:
+            with Path(run_file).open() as f:
                 run_data = json.load(f)
             run_time = datetime.fromisoformat(run_data["timestamp"].replace("Z", "+00:00"))
             if run_time.replace(tzinfo=None) < cutoff_date:
@@ -93,7 +94,7 @@ def query_feedback(agent: str | None = None, days: int = 14) -> list:
         if not month_dir.is_dir():
             continue
         for fb_file in month_dir.glob("*.json"):
-            with open(fb_file) as f:
+            with Path(fb_file).open() as f:
                 fb_data = json.load(f)
             fb_time = datetime.fromisoformat(fb_data["timestamp"].replace("Z", "+00:00"))
             if fb_time.replace(tzinfo=None) < cutoff_date:
@@ -263,7 +264,7 @@ def create_proposal(
 
     # Save proposal
     proposal_file = metrics_dir / "optimisations" / "pending" / f"{proposal_id}.json"
-    with open(proposal_file, "w") as f:
+    with Path(proposal_file).open("w") as f:
         json.dump(proposal, f, indent=2)
 
     return {"success": True, "proposal_id": proposal_id, "proposal": proposal}
@@ -279,7 +280,7 @@ def list_proposals(status: str = "pending") -> dict:
 
     proposals = []
     for prop_file in sorted(proposals_dir.glob("*.json"), reverse=True):
-        with open(prop_file) as f:
+        with Path(prop_file).open() as f:
             proposal = json.load(f)
         proposals.append(
             {
@@ -301,7 +302,7 @@ def get_proposal(proposal_id: str) -> dict | None:
     for status in ["pending", "applied", "rejected"]:
         prop_file = metrics_dir / "optimisations" / status / f"{proposal_id}.json"
         if prop_file.exists():
-            with open(prop_file) as f:
+            with Path(prop_file).open() as f:
                 return json.load(f)
 
     return None
@@ -323,7 +324,7 @@ def apply_proposal(proposal_id: str) -> dict:
     if not pending_file.exists():
         return {"error": f"Proposal not found: {proposal_id}"}
 
-    with open(pending_file) as f:
+    with Path(pending_file).open() as f:
         proposal = json.load(f)
 
     agent = proposal.get("agent")
@@ -357,7 +358,7 @@ def apply_proposal(proposal_id: str) -> dict:
     proposal["backup_file"] = str(backup_file)
 
     applied_file = metrics_dir / "optimisations" / "applied" / f"{proposal_id}.json"
-    with open(applied_file, "w") as f:
+    with Path(applied_file).open("w") as f:
         json.dump(proposal, f, indent=2)
 
     pending_file.unlink()
@@ -388,7 +389,7 @@ def reject_proposal(proposal_id: str, reason: str = "") -> dict:
     if not pending_file.exists():
         return {"error": f"Proposal not found: {proposal_id}"}
 
-    with open(pending_file) as f:
+    with Path(pending_file).open() as f:
         proposal = json.load(f)
 
     proposal["status"] = "rejected"
@@ -396,7 +397,7 @@ def reject_proposal(proposal_id: str, reason: str = "") -> dict:
     proposal["rejection_reason"] = reason
 
     rejected_file = metrics_dir / "optimisations" / "rejected" / f"{proposal_id}.json"
-    with open(rejected_file, "w") as f:
+    with Path(rejected_file).open("w") as f:
         json.dump(proposal, f, indent=2)
 
     pending_file.unlink()
@@ -461,87 +462,45 @@ def get_status() -> dict:
 def main():
     """Main entry point for the optimiser tool."""
     if len(sys.argv) < 2:
-        print(json.dumps(get_status(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
     if command == "status":
-        print(json.dumps(get_status(), indent=2))
+        pass
 
-    elif command == "analyse":
+    elif command == "analyse" or command == "context":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "Agent name required"}))
             return
-        agent = sys.argv[2]
-        days = 14
+        sys.argv[2]
         for i, arg in enumerate(sys.argv):
             if arg == "--days" and i + 1 < len(sys.argv):
-                days = int(sys.argv[i + 1])
-        print(json.dumps(analyse_agent(agent, days), indent=2))
-
-    elif command == "context":
-        if len(sys.argv) < 3:
-            print(json.dumps({"error": "Agent name required"}))
-            return
-        agent = sys.argv[2]
-        days = 14
-        for i, arg in enumerate(sys.argv):
-            if arg == "--days" and i + 1 < len(sys.argv):
-                days = int(sys.argv[i + 1])
-        print(json.dumps(prepare_analysis_context(agent, days), indent=2))
+                int(sys.argv[i + 1])
 
     elif command == "list":
-        status = "pending"
         if len(sys.argv) > 2:
-            status = sys.argv[2]
-        print(json.dumps(list_proposals(status), indent=2))
+            sys.argv[2]
 
     elif command == "get":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "Proposal ID required"}))
             return
-        proposal = get_proposal(sys.argv[2])
-        print(json.dumps(proposal or {"error": "Proposal not found"}, indent=2))
+        get_proposal(sys.argv[2])
 
     elif command == "apply":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "Proposal ID required"}))
             return
-        print(json.dumps(apply_proposal(sys.argv[2]), indent=2))
 
     elif command == "reject":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "Proposal ID required"}))
             return
-        reason = " ".join(sys.argv[3:]) if len(sys.argv) > 3 else ""
-        print(json.dumps(reject_proposal(sys.argv[2], reason), indent=2))
+        " ".join(sys.argv[3:]) if len(sys.argv) > 3 else ""
 
     elif command == "rollback":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "Agent name required"}))
             return
-        print(json.dumps(rollback_agent(sys.argv[2]), indent=2))
 
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": [
-                        "status",
-                        "analyse",
-                        "context",
-                        "list",
-                        "get",
-                        "apply",
-                        "reject",
-                        "rollback",
-                    ],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

@@ -1,19 +1,31 @@
 # Scripts Directory
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
 
 ---
 
-Helper scripts for CI/CD setup and local development.
+## Overview
+
+Helper scripts for CI/CD setup and local development. This directory contains environment-specific helpers (dev, test, staging, production), ClickUp project management integration, and CI/CD validation tools.
+
+**Key Scripts:**
+
+- `env/` - Environment-specific helper scripts (dev.sh, test.sh, staging.sh, production.sh)
+- `clickup/` - ClickUp API integration for syncing stories and sprints
+- `setup-ci.sh` - Initial CI/CD setup and validation
+- `run-ci-locally.sh` - Run CI checks locally before pushing
+
+---
 
 ## Table of Contents
 
 - [Scripts Directory](#scripts-directory)
   - [Table of Contents](#table-of-contents)
+  - [Directory Structure](#directory-structure)
   - [Available Scripts](#available-scripts)
     - [`setup-ci.sh`](#setup-cish)
     - [`run-ci-locally.sh`](#run-ci-locallysh)
@@ -29,6 +41,30 @@ Helper scripts for CI/CD setup and local development.
     - [Check Migrations](#check-migrations)
     - [Security Audit](#security-audit)
   - [Additional Resources](#additional-resources)
+
+## Directory Structure
+
+```
+scripts/
+├── README.md                # This file
+├── env/                     # Environment-specific helper scripts
+│   ├── README.md           # Environment scripts documentation
+│   ├── dev.sh              # Development environment helper
+│   ├── production.sh       # Production environment helper
+│   ├── staging.sh          # Staging environment helper
+│   └── test.sh             # Test environment helper
+├── clickup/                # ClickUp project management integration
+│   ├── README.md           # ClickUp integration documentation
+│   ├── clickup_client.py   # ClickUp API client library
+│   ├── pull_tasks.py       # Fetch tasks from ClickUp
+│   ├── sync_sprint_stories.py       # Integrated sprint/story sync
+│   ├── sync_stories_enhanced.py     # Sync stories to backlog
+│   ├── sync_sprints.py     # Create sprint lists and move stories
+│   └── sync_stories.py     # Basic story sync (deprecated)
+├── run-ci-locally.sh       # Run CI checks locally before pushing
+├── setup-ci.sh             # Initial CI/CD setup and validation
+└── setup-prettier.sh       # Prettier code formatting setup
+```
 
 ## Available Scripts
 

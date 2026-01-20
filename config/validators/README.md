@@ -1,7 +1,7 @@
 # Custom Validators
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -44,6 +44,17 @@ Custom form and field validators for data validation.
 This directory contains custom validators for Django forms and model fields.
 
 **Purpose:** Validate incoming data and provide user-friendly error messages.
+
+---
+
+## Directory Tree
+
+```
+config/validators/
+├── README.md                  # This file - Validators overview and guide
+├── __init__.py                # Package initialisation and exports
+└── password.py                # Password validation rules and strength checking
+```
 
 ---
 

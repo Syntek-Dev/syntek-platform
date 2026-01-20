@@ -1,11 +1,17 @@
 # Quick Reference Guide - Syntek User Stories
 
+## Overview
+
+Quick lookup tables and story selection guide for the Syntek CMS Platform user stories. Organises 22 stories by effort level, repository, phase, and team role. Use this guide for sprint planning, resource allocation, and understanding story dependencies.
+
+---
+
 ## Stories by Effort Level
 
 ### Small Stories (5 points) - 2-3 days per person
 
-- US-001: User Authentication
-- US-003: Password Reset
+- US-001: User Authentication (✅ Backend Complete)
+- US-003: Password Reset (✅ Backend Complete)
 
 ### Medium Stories (8 points) - 4-5 days per person
 

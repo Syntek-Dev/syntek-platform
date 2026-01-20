@@ -1,10 +1,36 @@
 # Staging Commands
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
+
+---
+
+## Overview
+
+This document provides quick reference commands for deploying to staging, running migrations, managing logs, and monitoring staging environment health checks using Docker Compose.
+
+**Key Commands:**
+
+- Deploy to staging environment
+- Run database migrations
+- View logs and monitor health
+- Check environment configuration
+
+---
+
+## Table of Contents
+
+- [Staging Commands](#staging-commands)
+  - [Overview](#overview)
+  - [Table of Contents](#table-of-contents)
+  - [Deploy to Staging](#deploy-to-staging)
+  - [Run Migrations on Staging](#run-migrations-on-staging)
+  - [View Staging Logs](#view-staging-logs)
+  - [Staging Environment Variables](#staging-environment-variables)
+  - [Health Check](#health-check)
 
 ---
 

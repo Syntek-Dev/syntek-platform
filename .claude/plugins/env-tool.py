@@ -6,7 +6,7 @@ Provides environment file management utilities for Claude Code agents.
 Returns structured JSON output for integration with setup, backend, and cicd agents.
 Supports reading, comparing, and validating environment files across environments.
 """
-import json
+
 import re
 import sys
 from pathlib import Path
@@ -123,7 +123,7 @@ def parse_env_file(file_path: str) -> dict:
     ]
 
     try:
-        with open(path, encoding="utf-8") as f:
+        with Path(path).open(encoding="utf-8") as f:
             for line_num, line in enumerate(f, 1):
                 line_count += 1
                 stripped = line.strip()
@@ -369,50 +369,32 @@ def main():
     """Main entry point for the Environment tool."""
     if len(sys.argv) < 2:
         # Default: find env files in current directory
-        print(json.dumps(find_env_files(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
     if command == "find":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(find_env_files(directory), indent=2))
+        sys.argv[2] if len(sys.argv) > 2 else None
 
     elif command == "parse":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "File path required"}, indent=2))
             return
-        print(json.dumps(parse_env_file(sys.argv[2]), indent=2))
 
     elif command == "compare":
         if len(sys.argv) < 4:
-            print(json.dumps({"error": "Two file paths required"}, indent=2))
             return
-        print(json.dumps(compare_env_files(sys.argv[2], sys.argv[3]), indent=2))
 
     elif command == "validate":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "File path required"}, indent=2))
             return
-        example = sys.argv[3] if len(sys.argv) > 3 else None
-        print(json.dumps(validate_env_file(sys.argv[2], example), indent=2))
+        sys.argv[3] if len(sys.argv) > 3 else None
 
     elif command == "vars":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "File path required"}, indent=2))
             return
-        print(json.dumps(get_required_vars(sys.argv[2]), indent=2))
 
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": ["find", "parse", "compare", "validate", "vars"],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

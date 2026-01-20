@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint implements the core CMS page creation system with block-based content editing. User story **US-006 (Part 1)** establishes Page and ContentBlock models with JSON-based block storage, GraphQL CRUD operations, and an intuitive drag-and-drop editor UI. Eight core block types are implemented: Text (rich text), Heading (h1-h6), Image (URL input), Button, Card, Feature, CTA, and Spacer. The block system is designed for extensibility to support additional block types in Sprint 8 and beyond. Features include autosave every 30 seconds, responsive previews (desktop/tablet/mobile), design token integration for consistent styling, and comprehensive block validation. The foundation prioritises editor usability as this interface will be heavily used by content creators and designers.
+
+---
+
 ## Sprint Goal
 
 Implement the core CMS page creation system with block-based content editing. This sprint

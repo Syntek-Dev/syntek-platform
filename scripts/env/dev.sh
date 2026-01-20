@@ -120,8 +120,10 @@ cmd_rebuild() {
 cmd_logs() {
     local service="${1:-}"
     if [[ -n "${service}" ]]; then
+        header "Viewing Logs: ${service}"
         dc logs -f "${service}"
     else
+        header "Viewing Logs: All Services"
         dc logs -f
     fi
 }
@@ -129,6 +131,8 @@ cmd_logs() {
 cmd_status() {
     header "Development Environment Status"
     dc ps
+    echo ""
+    info "Use './scripts/env/dev.sh health' for detailed health checks"
 }
 
 # -----------------------------------------------------------------------------
@@ -146,7 +150,7 @@ cmd_bash() {
 
 cmd_migrate() {
     header "Running Database Migrations"
-    dc exec ${WEB_SERVICE} python manage.py migrate
+    dc exec -T ${WEB_SERVICE} python manage.py migrate
     success "Migrations completed."
 }
 
@@ -154,9 +158,9 @@ cmd_makemigrations() {
     local app="${1:-}"
     header "Creating Database Migrations"
     if [[ -n "${app}" ]]; then
-        dc exec ${WEB_SERVICE} python manage.py makemigrations "${app}"
+        dc exec -T ${WEB_SERVICE} python manage.py makemigrations "${app}"
     else
-        dc exec ${WEB_SERVICE} python manage.py makemigrations
+        dc exec -T ${WEB_SERVICE} python manage.py makemigrations
     fi
     success "Migrations created."
 }
@@ -231,21 +235,16 @@ cmd_test_cov() {
 
 cmd_lint() {
     header "Running Linters"
-    info "Running Ruff..."
+    info "Running Ruff check..."
     dc exec ${WEB_SERVICE} ruff check .
-    info "Running Black (check mode)..."
-    dc exec ${WEB_SERVICE} black --check .
-    info "Running isort (check mode)..."
-    dc exec ${WEB_SERVICE} isort --check-only .
-    success "Linting completed."
+    info "Running Ruff format check..."
+    dc exec ${WEB_SERVICE} ruff format --check .
 }
 
 cmd_format() {
     header "Formatting Code"
-    info "Running Black..."
-    dc exec ${WEB_SERVICE} black .
-    info "Running isort..."
-    dc exec ${WEB_SERVICE} isort .
+    info "Running Ruff format..."
+    dc exec ${WEB_SERVICE} ruff format .
     info "Running Ruff fix..."
     dc exec ${WEB_SERVICE} ruff check --fix .
     success "Code formatted."
@@ -253,7 +252,12 @@ cmd_format() {
 
 cmd_typecheck() {
     header "Running Type Checker"
-    dc exec ${WEB_SERVICE} mypy .
+    if dc exec ${WEB_SERVICE} mypy .; then
+        success "Type checking completed."
+    else
+        error "Type checking failed."
+        exit 1
+    fi
 }
 
 # -----------------------------------------------------------------------------
@@ -295,8 +299,20 @@ cmd_backup() {
 
     mkdir -p "${backup_dir}"
     header "Creating Database Backup"
-    dc exec -T ${DB_SERVICE} pg_dump -U backend_template backend_template_dev > "${backup_file}"
-    success "Backup created: ${backup_file}"
+
+    if dc exec -T ${DB_SERVICE} pg_dump -U backend_template backend_template_dev > "${backup_file}" 2>&1; then
+        if [[ -s "${backup_file}" ]]; then
+            success "Backup created: ${backup_file}"
+        else
+            error "Backup file is empty. Backup may have failed."
+            rm -f "${backup_file}"
+            exit 1
+        fi
+    else
+        error "Database backup failed."
+        rm -f "${backup_file}"
+        exit 1
+    fi
 }
 
 cmd_restore() {
@@ -314,8 +330,13 @@ cmd_restore() {
     read -p "Are you sure? Type 'yes' to confirm: " confirm
     if [[ "${confirm}" == "yes" ]]; then
         header "Restoring Database from Backup"
-        dc exec -T ${DB_SERVICE} psql -U backend_template -d backend_template_dev < "${backup_file}"
-        success "Database restored from: ${backup_file}"
+
+        if dc exec -T ${DB_SERVICE} psql -U backend_template -d backend_template_dev < "${backup_file}" 2>&1; then
+            success "Database restored from: ${backup_file}"
+        else
+            error "Database restore failed. Please check the backup file and database status."
+            exit 1
+        fi
     else
         info "Operation cancelled."
     fi
@@ -336,26 +357,49 @@ cmd_urls() {
 
 cmd_health() {
     header "Health Check"
+    local all_healthy=0
 
     info "Checking PostgreSQL..."
-    if dc exec -T ${DB_SERVICE} pg_isready -U backend_template &> /dev/null; then
+    local pg_output
+    if pg_output=$(dc exec -T ${DB_SERVICE} pg_isready -U backend_template 2>&1); then
         success "PostgreSQL is healthy"
     else
         error "PostgreSQL is not responding"
+        echo "  Details: ${pg_output}"
+        all_healthy=1
     fi
 
     info "Checking Redis..."
-    if dc exec -T ${REDIS_SERVICE} redis-cli ping &> /dev/null; then
+    local redis_output
+    if redis_output=$(dc exec -T ${REDIS_SERVICE} redis-cli ping 2>&1); then
         success "Redis is healthy"
     else
         error "Redis is not responding"
+        echo "  Details: ${redis_output}"
+        all_healthy=1
     fi
 
     info "Checking Web Service..."
-    if curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/admin/ | grep -q "200\|301\|302"; then
-        success "Web service is healthy"
+    local http_code
+    local curl_output
+    http_code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/admin/ 2>&1)
+    if echo "${http_code}" | grep -q "200\|301\|302"; then
+        success "Web service is healthy (HTTP ${http_code})"
     else
-        warning "Web service may not be ready yet"
+        if [[ -z "${http_code}" ]] || [[ "${http_code}" == "000" ]]; then
+            error "Web service is not responding (connection failed)"
+        else
+            warning "Web service returned HTTP ${http_code}"
+        fi
+        all_healthy=1
+    fi
+
+    echo ""
+    if [[ ${all_healthy} -eq 0 ]]; then
+        success "All services are healthy"
+    else
+        error "One or more services are unhealthy"
+        exit 1
     fi
 }
 
@@ -391,7 +435,7 @@ cmd_help() {
     echo -e "${YELLOW}Testing & Quality:${NC}"
     echo "  test [args]        Run pytest tests"
     echo "  test-cov           Run tests with coverage report"
-    echo "  lint               Run linters (ruff, black, isort)"
+    echo "  lint               Run linters (ruff check + format)"
     echo "  format             Auto-format code"
     echo "  typecheck          Run mypy type checker"
     echo ""

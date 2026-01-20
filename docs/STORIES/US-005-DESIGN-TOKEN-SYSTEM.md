@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2mpz -->
 
+## Overview
+
+This user story implements a comprehensive design token system for managing consistent branding across all platforms. Users can define and manage colour tokens, font tokens, spacing, breakpoints, and typography systems. Tokens are stored in the database, versioned with history tracking, exported to multiple formats (CSS, JSON, Tailwind), and consumed by frontend applications via GraphQL with real-time updates.
+
 ## Story
 
 **As a** brand manager

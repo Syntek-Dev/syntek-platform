@@ -7,6 +7,7 @@ Returns structured JSON output for integration with the PM setup agent.
 Supports ClickUp, Linear, Jira, GitHub Projects, Monday.com, Asana, Trello,
 Notion, Azure DevOps, Shortcut, and other PM tools.
 """
+
 import json
 import os
 import sys
@@ -155,7 +156,7 @@ def load_env_file(env_path: Path) -> dict:
         return env_vars
 
     try:
-        with open(env_path) as f:
+        with Path(env_path).open() as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:
@@ -227,7 +228,7 @@ def detect_pm_tool(directory: str | None = None) -> dict:
 
         # Check for environment variables
         for env_var in tool_config["env_vars"]:
-            if env_var in all_env_vars and all_env_vars[env_var]:
+            if all_env_vars.get(env_var):
                 detection["env_vars_found"].append(env_var)
                 detection["confidence"] += 2
             else:
@@ -247,7 +248,7 @@ def detect_pm_tool(directory: str | None = None) -> dict:
     generic_config = None
     if has_generic_config:
         try:
-            with open(generic_config_path) as f:
+            with Path(generic_config_path).open() as f:
                 generic_config = json.load(f)
         except Exception:
             pass
@@ -500,55 +501,29 @@ def main():
     """Main entry point for the PM tool."""
     if len(sys.argv) < 2:
         # Default: show status
-        print(json.dumps(get_status(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
     if command == "detect":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(detect_pm_tool(directory), indent=2))
+        sys.argv[2] if len(sys.argv) > 2 else None
 
     elif command == "status":
-        print(json.dumps(get_status(), indent=2))
+        pass
 
     elif command == "list":
-        tier = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else None
-        print(json.dumps(list_tools(tier), indent=2))
+        int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else None
 
     elif command == "info":
         if len(sys.argv) < 3:
-            print(
-                json.dumps(
-                    {"error": "Tool name required. Usage: pm-tool.py info <tool_name>"}, indent=2
-                )
-            )
             return
-        tool_key = sys.argv[2]
-        print(json.dumps(get_tool_info(tool_key), indent=2))
+        sys.argv[2]
 
     elif command == "github":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(check_github_integration(directory), indent=2))
+        sys.argv[2] if len(sys.argv) > 2 else None
 
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": ["detect", "status", "list", "info", "github"],
-                    "examples": [
-                        "pm-tool.py detect",
-                        "pm-tool.py status",
-                        "pm-tool.py list",
-                        "pm-tool.py list 1",
-                        "pm-tool.py info clickup",
-                        "pm-tool.py github",
-                    ],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

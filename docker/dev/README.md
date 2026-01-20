@@ -1,7 +1,7 @@
 # Development Docker Configuration
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -28,6 +28,16 @@ Docker setup for local development environment.
 ## Overview
 
 Development Docker configuration with hot-reloading, debug tools, and convenient features for local development.
+
+---
+
+## Directory Tree
+
+```
+docker/dev/
+├── README.md                  # This file - Development Docker setup
+└── docker-compose.yml         # Docker Compose configuration for development
+```
 
 ---
 

@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint implements the site template system providing 9 pre-built templates (e-commerce, blog, corporate, church, charity, SaaS, sole trader, estate agent, single page). Each template includes industry-specific page structures, default design tokens, and placeholder content. Users can browse a template gallery with previews, select a template that matches their business type, and the system automatically initialises pages, navigation structure, and design tokens. This sprint enables rapid website creation with professional starting points tailored to different industries.
+
+---
+
 ## Sprint Goal
 
 Implement the site template system providing 9 pre-built templates (e-commerce, blog, corporate,

@@ -1,7 +1,7 @@
 # GraphQL API
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -47,6 +47,19 @@ This directory contains the GraphQL API implementation for the backend template 
 **Features:** Type-safe schema, authentication support, audit logging
 
 The API provides a single endpoint that can be queried from frontend applications, mobile apps, and third-party integrations.
+
+---
+
+## Directory Tree
+
+```
+api/
+├── README.md                  # This file - GraphQL API overview
+├── __init__.py                # Package initialisation
+├── schema.py                  # Root GraphQL schema definition (Query, Mutation types)
+├── security.py                # Security extensions and request validation
+└── urls.py                    # URL routing configuration for GraphQL endpoint
+```
 
 ---
 

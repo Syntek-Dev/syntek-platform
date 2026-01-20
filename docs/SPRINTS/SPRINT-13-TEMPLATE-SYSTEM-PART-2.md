@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint completes the template system by implementing the customisation wizard, template preview refinements, and additional template features. Before template initialisation, users progress through a guided 5-step wizard to customise site name, design tokens, initial content, and social media links. This personalisation ensures templates reflect each business's branding and details. The sprint also enables template switching post-initialisation and provides comparison tools to help users select the right template. A large point buffer allows flexibility for additional template types, video tutorials, and extended testing.
+
+---
+
 ## Sprint Goal
 
 Complete the template system by implementing the customisation wizard, template preview refinements,

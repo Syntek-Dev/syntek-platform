@@ -1,24 +1,18 @@
 # backend_template
 
-**Last Updated**: 06/01/2026
-**Version**: 0.3.2
+**Last Updated**: 08/01/2026
+**Version**: 0.5.0
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
 
+## Overview
+
+This is a comprehensive Django CMS platform backend providing content management, design tokens, multi-tenancy, SaaS integrations, and enterprise-grade security. It's part of the Syntek CMS Platform architecture supporting web and mobile applications. All development happens inside Docker containers - no local Python or PostgreSQL installation needed. Use the environment scripts in `scripts/env/` to run everything inside Docker.
+
+**Platform Architecture:** This backend is one component of a multi-repository CMS platform. See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the complete architectural plan including all 16 development phases.
+
 ---
-
-A comprehensive Django CMS platform backend providing content management, design tokens,
-multi-tenancy, SaaS integrations, and enterprise-grade security. Part of the Syntek CMS Platform
-architecture supporting web and mobile applications.
-
-**Platform Architecture:** This backend is one component of a multi-repository CMS platform.
-See [docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md](docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md) for the
-complete architectural plan including all 16 development phases.
-
-**Important:** All development happens inside Docker containers. You do not need to install Python,
-PostgreSQL, or any other dependencies locally. Simply use the environment scripts in `scripts/env/`
-to run everything inside Docker.
 
 ## Table of Contents
 
@@ -26,12 +20,15 @@ to run everything inside Docker.
   - [Table of Contents](#table-of-contents)
   - [Stack](#stack)
   - [Features](#features)
+    - [Core Platform Features](#core-platform-features)
+    - [Infrastructure \& Security](#infrastructure--security)
   - [Project Structure](#project-structure)
   - [Quick Start](#quick-start)
     - [Prerequisites](#prerequisites)
     - [Development](#development)
     - [Testing](#testing)
   - [Documentation](#documentation)
+    - [Platform Architecture](#platform-architecture)
     - [Getting Started](#getting-started)
     - [Code Quality \& Reviews](#code-quality--reviews)
     - [Architecture \& Operations](#architecture--operations)
@@ -90,29 +87,80 @@ complete platform architecture and phased development plan.
 backend_template/
 ├── .claude/                 # Claude Code configuration
 ├── .github/                 # GitHub configuration (workflows, templates, CodeQL)
-├── .husky/                  # Git hooks
+├── .pre-commit-config.yaml  # Pre-commit hooks configuration
 ├── .vscode/                 # VS Code workspace settings
 ├── api/                     # GraphQL API
 ├── apps/                    # Django applications
+│   └── core/                # Core auth and user management (Phase 1)
+│       ├── managers/        # Custom model managers
+│       ├── migrations/      # Database migrations
+│       ├── models/          # Django models
+│       ├── services/        # Business logic services
+│       ├── utils/           # Utility functions
+│       └── views/           # Views and ViewSets
 ├── config/                  # Django project configuration
 │   ├── middleware/          # Custom middleware
 │   ├── settings/            # Environment-specific settings
 │   └── validators/          # Custom validators
 ├── docker/                  # Docker configuration per environment
 │   ├── dev/                 # Development containers
-│   ├── test/                # Test containers
+│   ├── production/          # Production containers
 │   ├── staging/             # Staging containers
-│   └── production/          # Production containers
+│   └── test/                # Test containers
 ├── docs/                    # Project documentation
+│   ├── ARCHITECTURE/        # Platform architecture and design
+│   ├── AUTH/                # Authentication documentation
+│   ├── BACKEND/             # Backend implementation guides
+│   ├── DATABASE/            # Database schema and migrations
+│   ├── DEBUG/               # Debugging guides
+│   ├── DEVOPS/              # DevOps and CI/CD
+│   ├── GDPR/                # GDPR compliance
+│   ├── GUIDES/              # Contributing, testing, etc.
+│   ├── LOGGING/             # Logging implementation
+│   ├── METRICS/             # Self-learning metrics
+│   ├── PLANS/               # Project plans
+│   ├── PM-INTEGRATION/      # Project management integration
+│   ├── PRETTIER/            # Code formatting
+│   ├── QA/                  # Quality assurance
+│   ├── REFACTORING/         # Refactoring documentation
+│   ├── REVIEWS/             # Code review reports
+│   ├── SECURITY/            # Security documentation
+│   ├── SPRINTS/             # Sprint documentation and logs
+│   ├── STORIES/             # User stories
+│   ├── SYNTAX/              # Code syntax and linting
+│   └── TESTS/               # Testing documentation
 ├── media/                   # User-uploaded media files
 ├── scripts/                 # Helper scripts and utilities
+│   ├── clickup/             # ClickUp project management integration
 │   ├── env/                 # Environment-specific run scripts
-│   └── clickup/             # ClickUp project management integration
+│   ├── run-ci-locally.sh    # Run CI checks locally
+│   ├── setup-ci.sh          # Initial CI/CD setup
+│   └── setup-prettier.sh    # Prettier configuration setup
 ├── static/                  # Static files (CSS, JS, images)
 ├── templates/               # Django HTML templates
 ├── tests/                   # Test suite
+│   ├── bdd/                 # BDD behaviour tests
+│   │   ├── conftest.py      # BDD-specific fixtures
+│   │   ├── features/        # Gherkin feature files
+│   │   └── step_defs/       # Step definitions
+│   ├── conftest.py          # pytest configuration and global fixtures
+│   ├── e2e/                 # End-to-end tests
+│   ├── factories/           # Test data factories
+│   │   ├── token_factory.py # Token factory
+│   │   └── user_factory.py  # User factory
+│   ├── fixtures/            # Test fixtures and sample data
+│   ├── graphql/             # GraphQL API tests
+│   ├── integration/         # Integration tests
+│   └── unit/                # Unit tests
+│       └── apps/            # Tests for each Django app
+│           └── core/        # Core app tests
+├── .env.dev.example         # Development environment example
+├── .env.test.example        # Test environment example
+├── .gitignore               # Git ignore rules
+├── docker-compose.yml       # Docker Compose configuration
 ├── manage.py                # Django management script
 ├── pyproject.toml           # Python project configuration
+├── pytest.ini               # pytest configuration
 ├── Makefile                 # Quick commands reference
 └── README.md                # This file
 ```
@@ -159,6 +207,109 @@ backend_template/
 ```
 
 For more detailed setup instructions, see [docs/DEVELOPER-SETUP.md](docs/DEVELOPER-SETUP.md).
+
+## Authentication
+
+The platform includes enterprise-grade authentication with comprehensive security features:
+
+### Features
+
+- **User Registration**: Email-based registration with verification
+- **Email Verification**: Required before account access
+- **Two-Factor Authentication (2FA)**: TOTP-based with backup codes
+- **Password Management**: Reset, change, and history tracking
+- **Session Management**: Multi-device support with token revocation
+- **Security Features**:
+  - Password breach checking (HaveIBeenPwned)
+  - Account lockout after failed attempts
+  - Rate limiting on authentication endpoints
+  - Encrypted IP address tracking
+  - Comprehensive audit logging
+  - CSRF protection for GraphQL mutations
+
+### Quick Start
+
+```bash
+# Create a test user (development)
+./scripts/env/dev.sh shell
+
+>>> from apps.core.models import User, Organisation
+>>> org = Organisation.objects.first()
+>>> user = User.objects.create_user(
+...     email='test@example.com',
+...     password='SecureP@ss123!',
+...     first_name='Test',
+...     last_name='User',
+...     organisation=org,
+...     email_verified=True
+... )
+>>> exit()
+
+# Access GraphQL playground
+# Navigate to: http://localhost:8000/graphql/
+
+# Login mutation example
+mutation Login {
+  login(input: {
+    email: "test@example.com"
+    password: "SecureP@ss123!"
+  }) {
+    token
+    user {
+      id
+      email
+      hasTwoFactor
+    }
+  }
+}
+```
+
+### Documentation
+
+- **[User Guide](docs/USER-GUIDES/AUTHENTICATION-USER-GUIDE.md)** - End-user authentication guide
+- **[API Documentation](docs/API/AUTHENTICATION-API.md)** - Complete API reference with examples
+- **[Implementation Plan](docs/PLANS/US-001-USER-AUTHENTICATION.md)** - Detailed technical plan
+- **[Security Architecture](docs/ARCHITECTURE/CMS-PLATFORM-PLAN.md#security-architecture)** - Security design
+
+### Testing
+
+```bash
+# Run authentication tests
+./scripts/env/test.sh run tests/unit/apps/core/
+./scripts/env/test.sh run tests/integration/test_graphql_auth_flow.py
+./scripts/env/test.sh run tests/e2e/test_registration_2fa_complete_flow.py
+
+# Run security penetration tests
+./scripts/env/test.sh run tests/security/ -m penetration
+
+# Run BDD feature tests
+./scripts/env/test.sh run tests/bdd/ -k authentication
+```
+
+### GraphQL API Endpoints
+
+**Mutations:**
+
+- `register` - Create new user account
+- `verifyEmail` - Verify email address
+- `login` - Authenticate user
+- `verifyLogin2FA` - Complete 2FA login
+- `logout` - End current session
+- `logoutAllDevices` - End all sessions
+- `requestPasswordReset` - Request password reset
+- `resetPassword` - Reset password with token
+- `changePassword` - Change password (authenticated)
+- `enable2FA` - Enable two-factor authentication
+- `verify2FA` - Confirm 2FA setup
+- `disable2FA` - Disable two-factor authentication
+- `regenerateBackupCodes` - Generate new backup codes
+
+**Queries:**
+
+- `me` - Get current authenticated user
+- `activeSessions` - List all active sessions
+
+See [API Documentation](docs/API/AUTHENTICATION-API.md) for complete details including request/response examples, error codes, and rate limits.
 
 ## Documentation
 

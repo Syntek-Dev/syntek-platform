@@ -2,16 +2,25 @@
 
 <!-- CLICKUP_ID: 86c7d2mcd -->
 
+**Last Updated**: 07/01/2026
+**Version**: 1.1
+
+## Overview
+
+This user story implements the organisation creation and multi-tenancy foundation. Users can create organisations during registration, set up custom domains, and manage team members through an email-based invitation system with role-based access control. Multi-tenancy is enforced at the database and GraphQL levels to ensure data isolation between organisations.
+
 ## Story
 
-**As a** new user
-**I want** to create an organisation during registration or afterwards
-**So that** I can manage my websites/apps under a single organisational entity with multi-user support
+**As a** new user or organisation admin
+**I want** to create an organisation and manage team members through invitations
+**So that** I can manage websites/apps with multi-user support and self-service team onboarding
 
 ## MoSCoW Priority
 
-- **Must Have:** Organisation model, multi-tenancy enforcement, domain assignment, basic setup
-- **Should Have:** Organisation branding (logo, name), subscription plan selection, team member invitations
+- **Must Have:** Organisation model, multi-tenancy enforcement, domain assignment, team member
+  invitations (email, accept/decline, role assignment)
+- **Should Have:** Organisation branding (logo, name), subscription plan selection, invitation
+  management (resend, revoke)
 - **Could Have:** Sub-organisations, custom domain CNAMEs, white-label setup
 - **Won't Have:** Organisation hierarchy in Phase 1
 
@@ -58,23 +67,49 @@
   **And** custom domains require DNS verification
   **And** the domain is stored in the database
 
-### Scenario 4: Team Member Invitation
-
-**Given** a user is the organisation owner
-**When** they invite a team member by email
-**Then** an invitation email is sent
-**And** the invitation includes a setup link valid for 7 days
-**And** the invited user can accept/decline
-**And** upon acceptance, they are added to the organisation
-**And** a role (Admin/Editor/Viewer) is assigned
-
-### Scenario 5: Multi-Tenancy Enforcement
+### Scenario 4: Verify Multi-Tenancy Enforcement
 
 **Given** a user is querying organisation data
 **When** they request data through GraphQL
 **Then** the query is automatically filtered to their organisation
 **And** cross-organisation data access returns an error
 **And** audit logging tracks all cross-organisation access attempts
+
+### Scenario 5: Invite User to Organisation
+
+**Given** I am an organisation admin
+**When** I send an invitation to a new team member with role "Editor"
+**Then** the invitation is created with status "pending"
+**And** an invitation email is sent to the team member's email address
+**And** the invitation expires in 7 days
+**And** an audit log entry is created for the invitation
+
+### Scenario 6: Accept Organisation Invitation
+
+**Given** I received an invitation to join an organisation
+**When** I click the invitation link in the email
+**And** I complete registration or link an existing account
+**Then** I am added to the organisation
+**And** I am assigned the specified role from the invitation
+**And** the invitation status changes to "accepted"
+**And** an audit log entry records the acceptance
+
+### Scenario 7: Decline Organisation Invitation
+
+**Given** I received an invitation to join an organisation
+**When** I click the decline link in the email
+**Then** the invitation status is marked as "declined"
+**And** the user who sent the invitation receives a notification
+**And** an audit log entry records the decline
+
+### Scenario 8: Manage Pending Invitations
+
+**Given** I am an organisation admin
+**When** I view the pending invitations list
+**Then** I can see all pending invitations with status and recipient email
+**And** I can resend an invitation (if still valid)
+**And** I can revoke an invitation (before acceptance)
+**And** I can view the user who created each invitation
 
 ## Dependencies
 
@@ -87,55 +122,100 @@
 
 ### Backend Tasks
 
+**Organisation Models:**
+
 - [ ] Create Organisation model with fields: name, slug, domain, logo_url, is_active
 - [ ] Create subscription tracking (plan: free/starter/professional/enterprise)
-- [ ] Create Team model for members
-- [ ] Create TeamInvitation model with expiry
 - [ ] Implement organisation-based data filtering in GraphQL middleware
 - [ ] Create multi-tenant cache isolation key structure
 - [ ] Implement database signal to create default design tokens on org creation
-- [ ] Create createOrganisation GraphQL mutation
-- [ ] Create inviteTeamMember GraphQL mutation
-- [ ] Create acceptTeamInvitation GraphQL mutation
+
+**Invitation System:**
+
+- [ ] Create OrganisationInvitation model with fields: id, organisation, email, invited_by,
+      token, groups, status, expires_at, accepted_at, accepted_by, created_at
+- [ ] Implement invitation token generation and validation
+- [ ] Create invitation email templates (invitation, reminder, notification)
+- [ ] Implement invitation expiry checking (7 day window)
+- [ ] Create GraphQL mutation: inviteToOrganisation (requires admin role)
+- [ ] Create GraphQL mutation: acceptInvitation (with token)
+- [ ] Create GraphQL mutation: declineInvitation (with token)
+- [ ] Create GraphQL mutation: revokeInvitation (requires admin)
+- [ ] Create GraphQL mutation: resendInvitation (requires admin)
+- [ ] Create GraphQL query: pendingInvitations (organisation admins only)
+- [ ] Create GraphQL query: myInvitations (current user)
+- [ ] Add audit logging for all invitation events
+- [ ] Implement role/group assignment from invitation on acceptance
+
+**Domain and DNS:**
+
 - [ ] Implement custom domain DNS verification
 - [ ] Create GraphQL queries for organisation data
-- [ ] Add audit logging for all organisation operations
+
+**Testing:**
+
 - [ ] Add unit tests for multi-tenancy isolation
-- [ ] Add integration tests for team invitation flow
+- [ ] Add unit tests for invitation token validation
+- [ ] Add integration tests for invitation workflow
+- [ ] Add integration tests for role assignment on acceptance
+- [ ] Add BDD tests for all invitation scenarios (5-8)
 
 ### Frontend Web Tasks
 
+**Organisation Setup:**
+
 - [ ] Create organisation setup form in registration flow
 - [ ] Create organisation dashboard
-- [ ] Create team management interface
-- [ ] Implement invitation email sending
-- [ ] Display invitation acceptance/rejection flow
 - [ ] Show organisation domain settings
 - [ ] Create custom domain DNS setup guide
 - [ ] Add organisation branding settings (logo, name)
+
+**Invitation Management:**
+
+- [ ] Create "Invite Team Member" form
+- [ ] Implement team member invitation sending via GraphQL
+- [ ] Create pending invitations management interface
+- [ ] Implement resend invitation functionality
+- [ ] Implement revoke invitation functionality
+- [ ] Create invitation email preview (for admins)
+
+**Invitation Acceptance:**
+
+- [ ] Create invitation acceptance page (accessible via email token)
+- [ ] Implement registration flow for new users accepting invitations
+- [ ] Implement account linking flow for existing users accepting invitations
+- [ ] Create invitation decline flow
+- [ ] Add success confirmation after acceptance
 
 ### Shared UI Tasks
 
 - [ ] Create FormInput for organisation name
 - [ ] Create SlugGenerator component
 - [ ] Create DomainInput component
-- [ ] Create UserInvitationForm component
+- [ ] Create UserInvitationForm component (email, role selection)
+- [ ] Create InvitationStatusBadge component
 - [ ] Create AlertBox for validation messages
 
 ## Story Points (Fibonacci)
 
-**Estimate:** 8
+**Estimate:** 13
 
 **Complexity factors:**
 
 - Multi-tenancy architecture implementation
 - Database isolation enforcement
 - Domain and subdomain management
-- Email invitation system
+- Invitation token generation and validation
+- Email invitation system with expiry handling
+- Accept/decline workflow for invitations
+- Role assignment from invitations
+- Invitation management (resend, revoke)
 - DNS verification for custom domains
 - Subscription plan tracking
 - Team management features
 - Data filtering middleware
+- Audit logging for invitations
+- BDD test scenarios (5-8)
 
 ---
 

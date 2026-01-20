@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2u9m -->
 
+## Overview
+
+This story covers the creation of a comprehensive shared React component library accessible to both web and mobile development teams. The library includes base components, form components, layout components, navigation elements, and data display components. All components are documented in Storybook, styled with design tokens, support light/dark theming, and include NativeWind versions for React Native applications.
+
 ## Story
 
 **As a** frontend developer

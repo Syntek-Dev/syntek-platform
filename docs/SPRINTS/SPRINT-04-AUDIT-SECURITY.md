@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint implements comprehensive audit logging with IP encryption and completes remaining caching strategies from Sprint 3. The single user story **US-012 (Audit Logging System)** creates an automated logging framework that tracks all CRUD operations, authentication events, and GraphQL queries with encrypted IP storage. Administrators gain visibility through filterable audit log viewers with change comparison and export capabilities. The 3-point buffer provides flexibility for security hardening, performance optimisation of caching strategies from Sprint 3, and technical debt. Critical security focus: IP encryption keys must be securely stored, sensitive data (passwords, tokens) must be excluded from logs, and log retention policies must align with compliance requirements.
+
+---
+
 ## Sprint Goal
 
 Implement comprehensive audit logging system with IP encryption and complete remaining caching

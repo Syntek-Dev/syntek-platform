@@ -8,6 +8,22 @@
 
 ---
 
+## Overview
+
+This sprint integrates Anthropic Claude AI throughout the platform, enabling intelligent content generation, real-time chat assistance, and advanced features with budget controls. The first part of the AI integration focuses on establishing the Claude API connection, implementing conversation management, and building a real-time chat interface. This foundation enables all downstream AI-powered features across the content creation, SEO optimisation, and user support workflows.
+
+**Key Deliverables:**
+
+- Anthropic Claude API integration with secure configuration
+- AI conversation and message models for persistence
+- Real-time chat interface with streaming responses
+- Usage tracking and token accounting per organisation
+- Budget controls and spending limits with warnings
+- Content generation capabilities in page editor
+- Mobile-optimised AI chat interface
+
+---
+
 ## Sprint Goal
 
 Integrate Anthropic Claude AI throughout the platform enabling AI chat, content generation,

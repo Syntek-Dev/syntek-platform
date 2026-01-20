@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint establishes the SaaS email service foundation with email account management, SMTP integration, custom domain configuration, and inbox functionality. Users can set up custom email domains with DNS verification, compose and send emails, manage folders, and synchronise incoming messages. The implementation includes contact autocomplete, rich text composition, and mobile email viewing. All features integrate with the design token system for consistent branding and leverage the integrations framework for extensible email provider support.
+
+---
+
 ## Table of Contents
 
 - [Sprint Goal](#sprint-goal)

@@ -8,6 +8,21 @@
 
 ---
 
+## Overview
+
+This sprint completes the AI integration by adding specialised AI features that enhance content quality and optimisation. Building on the core Claude API and chat interface from Sprint 24, this iteration focuses on SEO optimisation assistance, image alt text generation, and comprehensive usage analytics. With a substantial buffer of 9 points, this sprint provides flexibility for additional AI-powered features, bug fixes, and polish to ensure a comprehensive AI-enhanced platform experience.
+
+**Key Deliverables:**
+
+- SEO suggestion engine using Claude AI
+- Meta title and description generation
+- Image alt text auto-generation
+- Usage statistics dashboard
+- Conversation search and history management
+- Additional AI-powered features (buffer available)
+
+---
+
 ## Sprint Goal
 
 Complete the AI integration by adding SEO suggestions, image alt text generation, and additional AI-powered features.

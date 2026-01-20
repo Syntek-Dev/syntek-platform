@@ -1,7 +1,7 @@
 # Logging Implementation
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 08/01/2026
+**Version**: 0.4.1
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -50,17 +50,41 @@
 
 This folder contains the logging system design and implementation plan for the Django backend.
 
-**Current Status:** Basic logging configuration
-**Proposed Status:** Structured JSON logging with request context tracking
-**Timeline:** 3-4 weeks to implement
+**Current Status:** Phase 1 + 2 Complete (Database audit trail with IP encryption)
+**Next Phase:** Phase 3 - GraphQL integration with audit logging
+**Future Phase:** Phase 6 - Structured application logging with file rotation
 
 ---
 
 ## Available Documents
 
+### US-001/LOGGING-REPORT-US-001.md
+
+**Status**: ✅ Phase 1 + 2 Complete
+
+Comprehensive logging and audit implementation report for US-001 User Authentication.
+
+**Covers**:
+
+- Phase 1: Database audit trail implementation
+- Phase 2: Service layer with IP encryption and token security
+- AuditService with encrypted IP storage
+- IPEncryption utility with key rotation
+- TokenHasher with HMAC-SHA256 and hash-then-store pattern
+- Security best practices and GDPR compliance
+- Testing status and gap analysis
+
+**Key Achievements**:
+
+- ✅ `AuditLog` model with encrypted IP addresses
+- ✅ `AuditService` for centralised audit logging
+- ✅ `IPEncryption` with Fernet encryption and key rotation
+- ✅ `TokenHasher` with HMAC-SHA256 hashing
+- ✅ Comprehensive unit tests (30+ test cases)
+
 ### IMPLEMENTATION-PLAN-2026-01-03.md
 
-Complete implementation guide for structured logging.
+Complete implementation guide for structured application logging (Phase 6 - Deferred).
 
 **Includes:**
 
@@ -174,40 +198,50 @@ Request: GET /api/users/123/
 
 ## Implementation Status
 
-### Phase 1: Core Structure (Not Started)
+### Phase 1: Core Models and Database (✅ Complete)
 
-- [ ] Create `config/logging/` package
-- [ ] Implement formatters (JSON, colored)
-- [ ] Implement filters (sensitive data, environment)
-- [ ] Implement handlers (rotating files)
-- [ ] Implement context tracking
-- [ ] Update settings
+- [x] `AuditLog` model with encrypted IP storage
+- [x] Composite indexes for multi-tenant queries
+- [x] Django Admin configuration (read-only)
+- [x] `SecurityAuditMiddleware` for HTTP events
+- [x] Unit tests (30+ test cases)
 
-**Timeline:** Week 1-2
-**Effort:** 20-25 hours
+**Status:** ✅ Complete
+**Branch:** `us001/user-authentication`
 
-### Phase 2: Decorators & Utils (Not Started)
+### Phase 2: Authentication Service Layer (✅ Complete)
 
-- [ ] Implement logging decorators
-- [ ] Create GraphQL logging decorator
-- [ ] Add request ID middleware
-- [ ] Create utility functions
-- [ ] Add context middleware
-- [ ] Document usage
+- [x] `AuditService` - Centralised audit logging
+- [x] `IPEncryption` - Fernet encryption with key rotation
+- [x] `TokenHasher` - HMAC-SHA256 token hashing
+- [x] `AuthService` - Authentication with race condition prevention
+- [x] `TokenService` - Token management with replay detection
+- [x] `PasswordResetService` - Hash-then-store pattern
+- [x] Comprehensive unit tests for services and utilities
 
-**Timeline:** Week 2-3
-**Effort:** 15-20 hours
+**Status:** ✅ Complete
+**Branch:** `us001/user-authentication`
 
-### Phase 3: Integration (Not Started)
+### Phase 3: GraphQL Integration (⚠️ In Progress)
 
-- [ ] Update existing code
-- [ ] Add context to views
-- [ ] Add request IDs to responses
-- [ ] Configure Sentry
-- [ ] Deploy to staging
-- [ ] Production verification
+- [ ] Integrate `AuditService` in GraphQL mutations
+- [ ] Device fingerprinting utility
+- [ ] GraphQL queries for viewing audit logs
+- [ ] Organisation boundary enforcement
+- [ ] Integration tests for audit flow
 
-**Timeline:** Week 3-4
+**Status:** Next phase
+**Branch:** `us001/user-authentication`
+
+### Phase 6: Production Logging (🔴 Deferred)
+
+- [ ] File-based logging with rotation
+- [ ] Audit log retention policy (90 days)
+- [ ] Request ID tracking middleware
+- [ ] Performance logging decorators
+- [ ] Centralised log aggregation
+
+**Status:** Deferred to Phase 6
 **Effort:** 20-25 hours
 
 ---
@@ -348,17 +382,29 @@ Logs are automatically sent to Sentry for:
 
 ## Next Steps
 
-1. Read [IMPLEMENTATION-PLAN-2026-01-03.md](IMPLEMENTATION-PLAN-2026-01-03.md)
-2. Review proposed architecture
-3. Schedule implementation sprints
-4. Create tasks in ClickUp
-5. Start Phase 1
+1. Read [US-001/LOGGING-REPORT-US-001.md](US-001/LOGGING-REPORT-US-001.md) for current implementation
+2. **Phase 3 (GraphQL):**
+   - Integrate `AuditService` calls in GraphQL mutations
+   - Implement device fingerprinting utility
+   - Add GraphQL queries for audit logs
+3. **Phase 6 (Production):**
+   - Read [IMPLEMENTATION-PLAN-2026-01-03.md](IMPLEMENTATION-PLAN-2026-01-03.md) for file logging architecture
+   - Implement file rotation and retention policies
+   - Add request ID tracking
 
 ---
 
 ## Related Documents
 
-- [Code Review - IP Extraction](../REVIEWS/CODE-REVIEW-2026-01-03.md)
-- [GDPR Compliance - Audit Logging](../GDPR/COMPLIANCE-ASSESSMENT-2026-01-03.md)
-- [Syntax/Linting Report](../SYNTAX/LINTING-REPORT-2026-01-03.md)
+**US-001 User Authentication**:
+
+- [Logging Report - US-001](US-001/LOGGING-REPORT-US-001.md) - Phase 1 + 2 implementation
+- [User Authentication Plan](../PLANS/US-001-USER-AUTHENTICATION.md) - Complete plan
+- [QA Report - US-001](../QA/US-001/QA-US-001-REPORT.md) - Security requirements
+- [Security Implementation - US-001](../SECURITY/US-001/SECURITY-US-001-IMPLEMENTATION.md)
+
+**General Logging**:
+
+- [Implementation Plan](IMPLEMENTATION-PLAN-2026-01-03.md) - File logging (Phase 6)
+- [GDPR Compliance](../GDPR/COMPLIANCE-ASSESSMENT-2026-01-03.md)
 - [Security Guidelines](../SECURITY/SECURITY.md)

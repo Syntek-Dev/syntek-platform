@@ -1,20 +1,36 @@
 # Project Documentation
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 08/01/2026
+**Version**: 0.4.1
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
 
 ---
 
-> **Backend Template - Django Documentation**
+## Overview
+
+This directory contains comprehensive documentation for the Django/PostgreSQL/GraphQL backend template project. Documentation is organised by topic including testing strategies, sprint planning, architecture design, security implementation, code quality reviews, and deployment procedures. Each subdirectory has its own README.md with navigation and quick reference guides for common tasks.
+
+---
 
 ## Table of Contents
 
 - [Project Documentation](#project-documentation)
   - [Table of Contents](#table-of-contents)
   - [Documentation Structure](#documentation-structure)
+  - [Implementation and Planning](#implementation-and-planning)
+    - [PLANS/README.md](#plansreadmemd)
+  - [Quality Assurance](#quality-assurance)
+    - [QA/README.md](#qareadmemd)
+  - [Refactoring and Code Quality](#refactoring-and-code-quality)
+    - [REFACTORING/README.md](#refactoringreadmemd)
+  - [Sprint Management](#sprint-management)
+    - [SPRINTS/LOGS/README.md](#sprintslogsreadmemd)
+  - [Testing Documentation](#testing-documentation)
+    - [TESTS/README.md](#testsreadmemd)
+    - [TESTS/MANUAL/README.md](#testsmanualreadmemd)
+    - [TESTS/RESULTS/README.md](#testsresultsreadmemd)
   - [Security Documentation](#security-documentation)
     - [SECURITY.md](#securitymd)
     - [SECURITY-QUICK-REFERENCE.md](#security-quick-referencemd)
@@ -29,6 +45,7 @@
     - [For Team Leads / Project Managers](#for-team-leads--project-managers)
     - [For Operations/DevOps](#for-operationsdevops)
     - [For Security Auditors](#for-security-auditors)
+  - [Overview](#overview)
 
 ## Documentation Structure
 
@@ -40,24 +57,73 @@ docs/
 ├── DEVELOPER-SETUP.md                  # Developer environment setup
 ├── VERSIONS.md                         # Version history and changelog
 │
-├── SECURITY/                           # Security guidelines and implementation
-│   ├── SECURITY.md                     # Comprehensive security documentation
-│   ├── SECURITY-QUICK-REFERENCE.md     # Quick reference for security tasks
-│   └── SECURITY-IMPLEMENTATION-SUMMARY.md
+├── TESTS/                              # Testing strategy, results and reviews
+│   ├── README.md                       # Testing documentation index
+│   ├── MANUAL/                         # Manual testing guides
+│   │   ├── README.md                   # How to run manual tests
+│   │   └── MANUAL-US-001-PHASE-1.md    # Manual test procedures for US-001
+│   ├── RESULTS/                        # Test execution results
+│   │   ├── README.md                   # Test results analysis guide
+│   │   ├── test-results-20260108-*.json # Structured test data
+│   │   └── test-results-20260108-*.md  # Test summary reports
+│   └── REVIEWS/
+│       ├── README.md                   # Testing reviews index
+│       └── US-001-TESTING-REVIEW-CONSOLIDATED.md
 │
-├── REVIEWS/                            # Code review reports (NEW)
+├── SPRINTS/                            # Sprint planning and tracking
+│   ├── README.md                       # Sprint roadmap
+│   ├── SPRINT-*.md                     # Individual sprint details
+│   ├── SPRINT-SUMMARY.md               # Overall sprint progress
+│   └── LOGS/                           # Sprint completion logs
+│       └── README.md                   # Completion log guide
+│
+├── STORIES/                            # User stories and requirements
+│   ├── README.md                       # User stories index
+│   └── US-*.md                         # Individual user stories
+│
+├── PLANS/                              # Implementation plans (NEW)
+│   ├── README.md                       # Implementation plans index
+│   └── US-001-USER-AUTHENTICATION.md   # Phase 1 implementation plan
+│
+├── ARCHITECTURE/                       # System architecture and design
+│   ├── README.md                       # Architecture overview
+│   ├── CMS-PLATFORM-PLAN.md            # 16-phase platform plan
+│   └── US-001/                         # US-001 architecture docs
+│
+├── DATABASE/                           # Database schema and migrations
+│   ├── README.md                       # Database documentation
+│   └── US-001/                         # US-001 database schema
+│
+├── QA/                                 # Quality assurance reports (NEW)
+│   ├── README.md                       # QA documentation index
+│   └── US-001/                         # US-001 QA findings
+│       └── QA-US-001-REPORT.md
+│
+├── REFACTORING/                        # Code refactoring analysis (NEW)
+│   ├── README.md                       # Refactoring documentation
+│   └── US-001/                         # US-001 refactoring report
+│       └── REFACTORING-US-001-REPORT.md
+│
+├── SECURITY/                           # Security guidelines and implementation
+│   ├── README.md                       # Security overview
+│   ├── SECURITY.md                     # Comprehensive security docs
+│   ├── SECURITY-QUICK-REFERENCE.md     # Quick reference for security
+│   ├── SECURITY-IMPLEMENTATION-SUMMARY.md
+│   └── US-001/                         # US-001 security implementation
+│
+├── REVIEWS/                            # Code review reports
 │   ├── README.md                       # Review index and how to use
 │   └── CODE-REVIEW-2026-01-03.md       # Security and code quality review
 │
-├── SYNTAX/                             # Code quality and linting (NEW)
+├── SYNTAX/                             # Code quality and linting
 │   ├── README.md                       # Syntax check overview
 │   └── LINTING-REPORT-2026-01-03.md    # Detailed linting analysis
 │
-├── GDPR/                               # Data protection and compliance (NEW)
+├── GDPR/                               # Data protection and compliance
 │   ├── README.md                       # GDPR overview and status
 │   └── COMPLIANCE-ASSESSMENT-2026-01-03.md
 │
-├── LOGGING/                            # Logging system design (NEW)
+├── LOGGING/                            # Logging system design
 │   ├── README.md                       # Logging architecture overview
 │   └── IMPLEMENTATION-PLAN-2026-01-03.md
 │
@@ -68,6 +134,160 @@ docs/
 ├── PM-INTEGRATION/                     # Project management integration docs
 └── DOTFILES.md                         # Configuration files documentation
 ```
+
+## Implementation and Planning
+
+### [PLANS/README.md](./PLANS/README.md)
+
+**Implementation plans index** containing detailed plans for each user story and feature,
+including:
+
+- Feature overview and context
+- Acceptance criteria and success metrics
+- Technical architecture and design decisions
+- Database schema design
+- API endpoint specifications
+- Security considerations
+- Implementation tasks and breakdowns
+- Testing strategy and coverage
+
+**Use this when:**
+
+- Starting development on a user story
+- Understanding technical approach and design decisions
+- Planning implementation phases and effort
+- Reviewing acceptance criteria
+
+---
+
+## Quality Assurance
+
+### [QA/README.md](./QA/README.md)
+
+**Quality assurance documentation** containing:
+
+- Test case execution results and coverage
+- Identified bugs with severity levels (Critical, High, Medium, Low)
+- Code quality issues and recommendations
+- Security vulnerabilities found
+- Performance testing results
+- Sign-off criteria and status
+
+**Use this when:**
+
+- Understanding quality issues in a feature
+- Reviewing bug reports and severity
+- Planning QA testing activities
+- Assessing code quality
+
+---
+
+## Refactoring and Code Quality
+
+### [REFACTORING/README.md](./REFACTORING/README.md)
+
+**Refactoring analysis and recommendations** containing:
+
+- Code quality metrics and assessment
+- Duplication analysis (identifying repeated code)
+- Complexity analysis (cyclomatic complexity, etc.)
+- Performance improvement opportunities
+- Technical debt inventory and prioritisation
+- Refactoring guidelines and when to refactor
+- Before/after code examples
+
+**Use this when:**
+
+- Planning refactoring work
+- Understanding code quality issues
+- Identifying technical debt
+- Improving code maintainability
+
+---
+
+## Sprint Management
+
+### [SPRINTS/LOGS/README.md](./SPRINTS/LOGS/README.md)
+
+**Sprint completion logs** documenting:
+
+- User story phase completions
+- Story point progress
+- Database migrations applied
+- Documentation updates
+- Sprint velocity metrics
+- Next steps and dependencies
+
+**Use this when:**
+
+- Reviewing sprint progress
+- Understanding completed work
+- Planning upcoming sprints
+- Conducting retrospectives
+
+---
+
+## Testing Documentation
+
+This project uses comprehensive testing standards with TDD, BDD, and E2E approaches:
+
+### [TESTS/README.md](./TESTS/README.md)
+
+**Testing documentation index** containing:
+
+- [TESTS/REVIEWS/US-001-TESTING-REVIEW-CONSOLIDATED.md](./TESTS/REVIEWS/US-001-TESTING-REVIEW-CONSOLIDATED.md)
+  - Executive summary with 8.5/10 assessment score
+  - Detailed test pyramid and framework analysis
+  - TDD, BDD, Integration, E2E, and GraphQL testing strategies
+  - Coverage analysis by component
+  - Critical gaps and missing tests
+  - Recommended additional tests by type
+  - Action items organised by phase
+
+**Use this when:**
+
+- Planning test implementation for a user story
+- Understanding the testing strategy and approach
+- Identifying test coverage gaps
+- Reviewing test quality and recommendations
+
+### [TESTS/MANUAL/README.md](./TESTS/MANUAL/README.md)
+
+**Manual testing guides and procedures** containing:
+
+- Test case format and structure
+- Manual test procedures for each user story
+- Test data requirements and environment setup
+- Cross-browser testing requirements
+- Test result documentation format
+- Test execution checklist
+
+**Use this when:**
+
+- Preparing to perform manual testing
+- Understanding test procedures and expected results
+- Documenting manual test findings
+- Planning QA testing activities
+
+### [TESTS/RESULTS/README.md](./TESTS/RESULTS/README.md)
+
+**Test execution results analysis guide** containing:
+
+- How to read and interpret test results (JSON and Markdown formats)
+- Test metrics and targets (pass rate, coverage, speed)
+- Code coverage analysis
+- Performance analysis and benchmarking
+- Failure pattern analysis
+- CI/CD integration and status
+
+**Use this when:**
+
+- Analysing test results and metrics
+- Understanding test coverage gaps
+- Investigating test failures
+- Tracking quality metrics over time
+
+---
 
 ## Security Documentation
 
@@ -178,6 +398,8 @@ The following comprehensive reports were generated from automated code reviews:
 
 ### For Developers
 
+- **Testing Strategy:** [TESTS/REVIEWS/US-001-TESTING-REVIEW-CONSOLIDATED.md](./TESTS/REVIEWS/US-001-TESTING-REVIEW-CONSOLIDATED.md)
+  - Testing approach and coverage
 - **Code Quality:** [REVIEWS/README.md](./REVIEWS/README.md) - Code review index
 - **Code Issues:** [SYNTAX/README.md](./SYNTAX/README.md) - Linting and syntax
 - **Security Setup:** [SECURITY.md](./SECURITY/SECURITY.md) → Security Checklist
@@ -201,12 +423,12 @@ The following comprehensive reports were generated from automated code reviews:
 ### For Security Auditors
 
 - **Security Overview:** [SECURITY.md](./SECURITY/SECURITY.md)
-- **Code Review Findings:** [REVIEWS/CODE-REVIEW-2026-01-03.md](./REVIEWS/CODE-REVIEW-2026-01-03.md)
+- **Code Review Findings:** [CODE-REVIEWS/CODE-REVIEW-2026-01-03.md](./CODE-REVIEW/CODE-REVIEW-2026-01-03.md)
 - **Compliance Status:** [GDPR/COMPLIANCE-ASSESSMENT-2026-01-03.md](./GDPR/COMPLIANCE-ASSESSMENT-2026-01-03.md)
 - **Implementation Details:** [SECURITY-IMPLEMENTATION-SUMMARY.md](./SECURITY/SECURITY-IMPLEMENTATION-SUMMARY.md)
 
 ---
 
 **Project:** Backend Template
-**Framework:** Django 5.2
-**Last Updated:** 2026-01-03
+**Framework:** Django 6.0
+**Last Updated:** 07/01/2026

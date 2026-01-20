@@ -13,6 +13,7 @@ Functions:
 import json
 import os
 import re
+from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin
 
@@ -81,11 +82,11 @@ class ClickUpClient:
         self.session.headers.update({"Authorization": self.api_key})
 
         if config_path is None:
-            config_path = os.path.join(
-                os.path.dirname(__file__), "../../config/clickup-config.json"
-            )
+            config_path = Path(__file__).parent / "../../config/clickup-config.json"
+        else:
+            config_path = Path(config_path)
 
-        with open(config_path, encoding="utf-8") as f:
+        with config_path.open(encoding="utf-8") as f:
             raw_config = json.load(f)
 
         # Resolve environment variable placeholders in config
@@ -501,7 +502,7 @@ def get_client(api_key: str | None = None) -> ClickUpClient:
 
     if not api_key:
         raise ValueError(
-            "ClickUp API key must be provided or set in CLICKUP_API_TOKEN " "environment variable"
+            "ClickUp API key must be provided or set in CLICKUP_API_TOKEN environment variable"
         )
 
     return ClickUpClient(api_key)

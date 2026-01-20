@@ -1,7 +1,7 @@
 # Production Docker Configuration
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -29,6 +29,16 @@ Docker setup for production deployment environment.
 ## Overview
 
 Production environment configuration with maximum reliability, security, and performance.
+
+---
+
+## Directory Tree
+
+```
+docker/production/
+├── README.md                  # This file - Production Docker setup
+└── docker-compose.yml         # Docker Compose configuration for production
+```
 
 ---
 

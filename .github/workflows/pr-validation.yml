@@ -7,6 +7,16 @@ on:
       - synchronize
       - reopened
       - edited
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+
+permissions:
+  contents: read
+  pull-requests: read
 
 jobs:
   validate-pr-title:
@@ -116,11 +126,37 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Create test environment file
+        run: |
+          cp .env.test.example .env.test
+          # Generate required secrets for CI
+          SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_urlsafe(50))")
+          TOKEN_SIGNING_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
+          FERNET_KEY=$(python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
+          # Update .env.test with generated values
+          sed -i "s|^SECRET_KEY=.*|SECRET_KEY=${SECRET_KEY}|" .env.test
+          sed -i "s|^TOKEN_SIGNING_KEY=.*|TOKEN_SIGNING_KEY=${TOKEN_SIGNING_KEY}|" .env.test
+          sed -i "s|^TOTP_ENCRYPTION_KEY=.*|TOTP_ENCRYPTION_KEY=${FERNET_KEY}|" .env.test
+          sed -i "s|^IP_ENCRYPTION_KEY=.*|IP_ENCRYPTION_KEY=${FERNET_KEY}|" .env.test
+
       - name: Start database
         run: |
           docker compose -f docker/test/docker-compose.yml up -d db
+          # Wait for database to be ready using Python
           docker compose -f docker/test/docker-compose.yml run --rm web \
-            bash -c "while ! nc -z db 5432; do sleep 1; done"
+            python -c "
+          import time, socket
+          for _ in range(30):
+              try:
+                  s = socket.create_connection(('db', 5432), timeout=1)
+                  s.close()
+                  print('Database is ready')
+                  break
+              except (socket.error, socket.timeout):
+                  time.sleep(1)
+          else:
+              raise Exception('Database not ready after 30 seconds')
+          "
 
       - name: Check for missing migrations
         run: |
@@ -194,6 +230,8 @@ jobs:
 
       - name: Validate commit messages
         uses: wagoid/commitlint-github-action@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           configFile: .commitlintrc.json
 

@@ -1,7 +1,7 @@
 # Test Suite
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -49,19 +49,45 @@ quality, prevent regressions, and document expected behavior.
 
 ## Test Organization
 
-Tests are organized by module being tested:
+Tests are organized by test type and module being tested:
 
 ```
 tests/
-├── conftest.py              # pytest configuration and fixtures
-├── test_models.py           # Model tests
-├── test_views.py            # View tests
-├── test_serializers.py      # Serializer tests
-├── test_api.py              # GraphQL API tests
-├── api/                     # API-specific tests
-├── middleware/              # Middleware tests
-├── validators/              # Validator tests
-└── integration/             # Integration tests
+├── README.md                # This file
+├── conftest.py              # pytest configuration and global fixtures
+├── bdd/                     # BDD behaviour tests (Gherkin)
+│   ├── conftest.py         # BDD-specific fixtures
+│   ├── features/           # Gherkin feature files
+│   │   └── user_registration.feature
+│   └── step_defs/          # Step definitions for features
+│       └── test_user_registration_steps.py
+├── e2e/                     # End-to-end tests (complete workflows)
+│   └── __init__.py
+├── factories/               # Test data factories
+│   ├── token_factory.py    # Token factory for tests
+│   └── user_factory.py     # User factory for tests
+├── fixtures/                # Test fixtures and sample data
+│   └── __init__.py
+├── graphql/                 # GraphQL API tests
+│   └── __init__.py
+├── integration/             # Integration tests (multiple components)
+│   └── __init__.py
+└── unit/                    # Unit tests (TDD - fast, isolated)
+    ├── apps/               # Tests for each Django app
+    │   └── core/           # Core app tests
+    │       ├── test_audit_log_model.py
+    │       ├── test_base_token_model.py
+    │       ├── test_email_verification_token_model.py
+    │       ├── test_organisation_model.py
+    │       ├── test_password_history_model.py
+    │       ├── test_password_reset_token_model.py
+    │       ├── test_session_token_model.py
+    │       ├── test_totp_device_model.py
+    │       ├── test_user_manager.py
+    │       ├── test_user_model.py
+    │       ├── test_user_profile_model.py
+    │       └── test_validators.py
+    └── __init__.py
 ```
 
 ---

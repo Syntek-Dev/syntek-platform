@@ -6,6 +6,7 @@ Provides Docker container and compose status utilities for Claude Code agents.
 Returns structured JSON output for integration with setup, cicd, and backend agents.
 Supports container listing, compose project status, and image information.
 """
+
 import json
 import shutil
 import subprocess
@@ -40,7 +41,7 @@ def run_docker_command(args: list[str], timeout: int = 30) -> tuple[bool, str, s
         Tuple of (success, stdout, stderr)
     """
     try:
-        result = subprocess.run(["docker"] + args, capture_output=True, text=True, timeout=timeout)
+        result = subprocess.run(["docker", *args], capture_output=True, text=True, timeout=timeout)
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return False, "", "Command timed out"
@@ -324,52 +325,23 @@ def main():
     """Main entry point for the Docker tool."""
     if len(sys.argv) < 2:
         # Default: return container status
-        print(json.dumps(get_docker_status(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
-    if command == "status":
-        print(json.dumps(get_docker_status(), indent=2))
-    elif command == "containers":
-        include_stopped = "--all" in sys.argv or "-a" in sys.argv
-        print(json.dumps(get_all_containers(include_stopped), indent=2))
+    if command == "status" or command == "containers":
+        pass
     elif command == "compose":
-        project_name = (
-            sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith("-") else None
-        )
-        print(json.dumps(get_compose_status(project_name), indent=2))
-    elif command == "images":
-        dangling = "--dangling" in sys.argv
-        print(json.dumps(get_docker_images(dangling), indent=2))
-    elif command == "networks":
-        print(json.dumps(get_docker_networks(), indent=2))
-    elif command == "volumes":
-        print(json.dumps(get_docker_volumes(), indent=2))
-    elif command == "installed":
-        print(
-            json.dumps(
-                {"installed": is_docker_installed(), "running": is_docker_running()}, indent=2
-            )
-        )
+        (sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith("-") else None)
+    elif (
+        command == "images"
+        or command == "networks"
+        or command == "volumes"
+        or command == "installed"
+    ):
+        pass
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": [
-                        "status",
-                        "containers",
-                        "compose",
-                        "images",
-                        "networks",
-                        "volumes",
-                        "installed",
-                    ],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

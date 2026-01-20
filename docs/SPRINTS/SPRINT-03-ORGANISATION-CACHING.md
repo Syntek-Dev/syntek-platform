@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint establishes the organisational structure for multi-tenancy and implements Redis/Valkey caching infrastructure. Two user stories are tackled: **US-004 (Organisation Setup)** introduces organisation models, team management, and invitations with email workflows; **US-013 (Caching System)** configures Redis with multi-tenant cache isolation using organisation-based key prefixing. Together, these create the foundational multi-tenancy isolation layer and performance optimisation infrastructure required for all subsequent features. Key security focus: all queries must filter by organisation ID to prevent cross-tenant data leakage.
+
+---
+
 ## Sprint Goal
 
 Implement organisation-based multi-tenancy with team management and establish Redis/Valkey caching

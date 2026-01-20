@@ -1,7 +1,7 @@
 # ClickUp Integration Scripts
 
-**Last Updated**: 06/01/2026
-**Version**: 0.2.1
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 
 ---
@@ -376,7 +376,7 @@ python scripts/clickup/sync_sprints.py
 
 ```
 scripts/clickup/
-├── README.MD                      # This file
+├── README.md                      # This file
 ├── clickup_client.py              # ClickUp API client library
 ├── sync_sprint_stories.py         # Integrated sync (recommended)
 ├── sync_stories_enhanced.py       # Sync stories to backlog
@@ -401,4 +401,4 @@ docs/
 
 ---
 
-For complete documentation, see `docs/PM-INTEGRATION/README.MD`.
+For complete documentation, see `docs/PM-INTEGRATION/README.md`.

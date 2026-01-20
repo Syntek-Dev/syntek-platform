@@ -1,14 +1,18 @@
 # Dotfiles Documentation
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
 
 ---
 
-This document explains all configuration files (dotfiles) in this Django/PostgreSQL/GraphQL project.
+## Overview
+
+This document explains all configuration files (dotfiles) in this Django/PostgreSQL/GraphQL project. It provides a comprehensive reference for understanding and configuring development tools, code quality standards, testing frameworks, Docker containers, and environment variables. This guide covers Python configuration (Black, isort, mypy, pytest), linting tools (flake8, pylint, bandit), pre-commit hooks, editor setup (VS Code, PyCharm), and build automation with Make.
+
+---
 
 ## Table of Contents
 

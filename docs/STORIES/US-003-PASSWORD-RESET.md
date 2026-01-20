@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2m6g -->
 
+## Overview
+
+This user story implements a secure, email-based password reset and recovery flow that allows users to regain access to their accounts if they forget their password. The system uses time-limited reset tokens, validates new passwords against password history, and maintains audit logs of all reset events.
+
 ## Story
 
 **As a** user who has forgotten their password

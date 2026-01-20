@@ -1,7 +1,7 @@
 # Test Docker Configuration
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -27,6 +27,16 @@ Docker setup for test environment and CI/CD pipeline.
 ## Overview
 
 Test environment Docker configuration for automated testing, code quality checks, and continuous integration.
+
+---
+
+## Directory Tree
+
+```
+docker/test/
+├── README.md                  # This file - Test Docker setup
+└── docker-compose.yml         # Docker Compose configuration for testing
+```
 
 ---
 

@@ -2,6 +2,12 @@
 
 <!-- CLICKUP_ID: 86c7d2pe6 -->
 
+## Overview
+
+Content editors need the ability to publish pages to make them live on the public website with proper routing, display, and metadata handling. This story covers publication workflows, URL routing, public rendering, 404 handling, sitemap generation, redirects, and publication notifications.
+
+---
+
 ## Story
 
 **As a** content editor

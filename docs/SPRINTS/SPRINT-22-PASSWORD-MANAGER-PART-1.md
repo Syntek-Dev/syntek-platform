@@ -8,6 +8,22 @@
 
 ---
 
+## Overview
+
+This sprint establishes the foundation for the Password Manager application by integrating Vaultwarden as a secure password vault service. Building on the authentication and organisation frameworks from earlier sprints, this iteration focuses on password vault models, Vaultwarden integration, SSO connection, password storage/retrieval, password generation, and basic permission controls. The goal is to provide users with a secure, integrated password management solution within the platform.
+
+**Key Deliverables:**
+
+- Password vault models (PasswordEntry, PasswordCategory, PasswordPermission)
+- Vaultwarden server integration and configuration
+- SSO integration with main platform authentication
+- Secure password storage and retrieval
+- Password generation tool
+- Password vault interface (list, view, create)
+- Copy-to-clipboard functionality with security
+
+---
+
 ## Table of Contents
 
 - [Sprint Goal](#sprint-goal)

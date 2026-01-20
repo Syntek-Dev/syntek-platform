@@ -1,0 +1,387 @@
+[
+  // ============================================
+  // DJANGO SERVER
+  // ============================================
+  {
+    "label": "Django: Runserver (Dev)",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "${ZED_WORKTREE_ROOT}/manage.py",
+    "args": ["runserver", "0.0.0.0:8000", "--noreload"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "django": true,
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+  {
+    "label": "Django: Runserver (Test Settings)",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "${ZED_WORKTREE_ROOT}/manage.py",
+    "args": ["runserver", "0.0.0.0:8000", "--noreload"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "django": true,
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+
+  // ============================================
+  // DJANGO SHELL
+  // ============================================
+  {
+    "label": "Django: Shell Plus",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "${ZED_WORKTREE_ROOT}/manage.py",
+    "args": ["shell_plus", "--ipython"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "django": true,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+  {
+    "label": "Django: Shell",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "${ZED_WORKTREE_ROOT}/manage.py",
+    "args": ["shell"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "django": true,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+
+  // ============================================
+  // DJANGO MANAGEMENT COMMANDS
+  // ============================================
+  {
+    "label": "Django: Migrate",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "${ZED_WORKTREE_ROOT}/manage.py",
+    "args": ["migrate"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "django": true,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+  {
+    "label": "Django: Make Migrations",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "${ZED_WORKTREE_ROOT}/manage.py",
+    "args": ["makemigrations"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "django": true,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+  {
+    "label": "Django: Rotate IP Keys",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "${ZED_WORKTREE_ROOT}/manage.py",
+    "args": ["rotate_ip_keys"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "django": true,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+  {
+    "label": "Django: Custom Command",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "${ZED_WORKTREE_ROOT}/manage.py",
+    "args": ["$COMMAND_NAME"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "django": true,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+  {
+    "label": "Django: Create Superuser",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "${ZED_WORKTREE_ROOT}/manage.py",
+    "args": ["createsuperuser"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "django": true,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+  {
+    "label": "Django: Collect Static",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "${ZED_WORKTREE_ROOT}/manage.py",
+    "args": ["collectstatic", "--noinput"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "django": true,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+
+  // ============================================
+  // GRAPHQL
+  // ============================================
+  {
+    "label": "Strawberry: GraphQL Server",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "strawberry",
+    "args": ["server", "api.schema:schema", "--host", "0.0.0.0", "--port", "8001"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+
+  // ============================================
+  // PYTEST - ALL TESTS
+  // ============================================
+  {
+    "label": "Pytest: All Tests",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--no-cov"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+  {
+    "label": "Pytest: All Tests with Coverage",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--cov=.", "--cov-report=term-missing"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+  {
+    "label": "Pytest: Current File",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--no-cov", "$ZED_FILE"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+  {
+    "label": "Pytest: Current File with Coverage",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--cov=.", "--cov-report=term-missing", "$ZED_FILE"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+
+  // ============================================
+  // PYTEST - BY TEST TYPE
+  // ============================================
+  {
+    "label": "Pytest: Unit Tests Only",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--no-cov", "-m", "unit", "tests/unit/"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+  {
+    "label": "Pytest: Integration Tests Only",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--no-cov", "-m", "integration", "tests/integration/"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+  {
+    "label": "Pytest: E2E Tests Only",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--no-cov", "-m", "e2e", "tests/e2e/"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+  {
+    "label": "Pytest: GraphQL Tests Only",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--no-cov", "-m", "graphql", "tests/graphql/"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+  {
+    "label": "Pytest: BDD Tests Only",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--no-cov", "-m", "bdd", "tests/bdd/"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+  {
+    "label": "Pytest: Security Tests Only",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--no-cov", "-m", "security"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+  {
+    "label": "Pytest: Exclude Slow Tests",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--no-cov", "-m", "not slow"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+
+  // ============================================
+  // PYTEST - SPECIFIC APP TESTS
+  // ============================================
+  {
+    "label": "Pytest: Core App Tests",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "pytest",
+    "args": ["-v", "-s", "--no-cov", "tests/unit/apps/core/"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "justMyCode": false,
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.test"
+    }
+  },
+
+  // ============================================
+  // PYTHON FILES
+  // ============================================
+  {
+    "label": "Python: Active File",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "program": "$ZED_FILE",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+  {
+    "label": "Python: Module",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "module": "$ZED_STEM",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "console": "integratedTerminal",
+    "env": {
+      "DJANGO_SETTINGS_MODULE": "config.settings.dev"
+    }
+  },
+
+  // ============================================
+  // ATTACH TO RUNNING PROCESS
+  // ============================================
+  {
+    "label": "Python: Attach to Remote Debugger",
+    "adapter": "Debugpy",
+    "request": "attach",
+    "host": "localhost",
+    "port": 5678,
+    "pathMappings": [
+      {
+        "localRoot": "$ZED_WORKTREE_ROOT",
+        "remoteRoot": "/app"
+      }
+    ]
+  },
+  {
+    "label": "Python: Attach to Docker Container",
+    "adapter": "Debugpy",
+    "request": "attach",
+    "host": "localhost",
+    "port": 5678,
+    "pathMappings": [
+      {
+        "localRoot": "$ZED_WORKTREE_ROOT",
+        "remoteRoot": "/app"
+      }
+    ],
+    "justMyCode": false
+  }
+]

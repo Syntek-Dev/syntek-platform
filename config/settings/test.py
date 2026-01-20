@@ -4,7 +4,7 @@ This module contains settings specific to the test environment.
 It extends base.py with test-specific configurations.
 """
 
-from .base import *  # noqa: F403, F401
+from .base import *  # noqa: F403
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)  # noqa: F405
@@ -26,21 +26,47 @@ CACHES = {
 # Email backend for tests
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
-
-# Disable migrations for faster tests
-class DisableMigrations:
-    """Disable migrations during tests for faster execution."""
-
-    def __contains__(self, item):
-        """Check if item is in migrations."""
-        return True
-
-    def __getitem__(self, item):
-        """Return None to disable migrations."""
-        return None
+# Use simple static files storage for tests (no manifest required)
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 
-MIGRATION_MODULES = DisableMigrations()
+# Note: Migrations are enabled for tests to ensure database schema is created.
+# If tests become slow, consider using pytest-django's --reuse-db flag instead
+# of disabling migrations entirely.
+
+# Increase rate limits for tests to avoid test interference
+RATELIMIT_GRAPHQL_MUTATION_REQUESTS_PER_MINUTE = 10000
+RATELIMIT_GRAPHQL_QUERY_REQUESTS_PER_MINUTE = 10000
+RATELIMIT_AUTH_REQUESTS_PER_MINUTE = 10000
+RATELIMIT_API_REQUESTS_PER_MINUTE = 10000
+RATELIMIT_DEFAULT_REQUESTS_PER_MINUTE = 10000
+
+# Remove rate limiting middleware for tests (keep IP allowlist for security tests)
+MIDDLEWARE = [
+    m
+    for m in MIDDLEWARE  # noqa: F405
+    if m
+    not in [
+        "config.middleware.ratelimit.RateLimitMiddleware",
+    ]
+]
+
+# IP allowlist for admin access - test environment allows localhost only
+# Tests run locally, so restrict to localhost addresses
+ADMIN_ALLOWED_IPS = [
+    "127.0.0.1",  # localhost IPv4
+    "::1",  # localhost IPv6
+    "172.16.0.0/12",  # Docker networks (for CI/CD containers)
+    "10.0.0.0/8",  # Private network range
+    "192.168.0.0/16",  # Private network range
+]
 
 # Logging configuration (minimal for tests)
 LOGGING = {

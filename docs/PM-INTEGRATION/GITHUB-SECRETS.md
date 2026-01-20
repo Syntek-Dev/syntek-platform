@@ -1,18 +1,21 @@
 # GitHub Repository Secrets for ClickUp Integration
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
 
 ---
 
-This document lists all GitHub repository secrets required for ClickUp integration to work properly.
+## Overview
+
+This document lists all GitHub repository secrets required for ClickUp integration to work properly, including required secrets (CLICKUP_API_TOKEN), optional secrets, environment variables, verification procedures, security best practices, and troubleshooting guides.
 
 ## Table of Contents
 
 - [GitHub Repository Secrets for ClickUp Integration](#github-repository-secrets-for-clickup-integration)
+  - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Required Secrets](#required-secrets)
     - [CLICKUP_API_KEY](#clickup_api_key)

@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint completes the third-party integrations system by adding OAuth flow support and Anthropic Claude integration, enabling AI-powered features throughout the platform. With significant buffer capacity (9 points), the sprint includes usage tracking, statistics dashboards, and health monitoring to provide visibility into integration performance. The sprint also includes comprehensive end-to-end integration testing and documentation to ensure system stability and maintainability.
+
+---
+
 ## Sprint Goal
 
 Complete the third-party integrations system by adding OAuth support, additional integrations

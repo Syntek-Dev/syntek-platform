@@ -1,20 +1,23 @@
 # Developer Setup Guide
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
 
 ---
 
-This guide helps new developers get started with the Django/PostgreSQL/GraphQL backend project.
+## Overview
 
-All development happens inside Docker containers. No local Python virtual environment is needed.
+This guide helps new developers get started with the Django/PostgreSQL/GraphQL backend project. All development happens inside Docker containers with no local Python virtual environment needed. It covers prerequisites, quick start steps, development workflows, editor setup, Git workflow, Docker configuration, common tasks, troubleshooting, and environment variable reference.
+
+---
 
 ## Table of Contents
 
 - [Developer Setup Guide](#developer-setup-guide)
+  - [Overview](#overview)
   - [Table of Contents](#table-of-contents)
   - [Prerequisites](#prerequisites)
   - [Quick Start](#quick-start)

@@ -1,7 +1,7 @@
 # Django Settings
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -43,6 +43,21 @@ This directory contains Django settings organized by environment. Each environme
 base settings with environment-specific overrides.
 
 **Pattern:** Single settings module per environment extending shared base configuration.
+
+---
+
+## Directory Tree
+
+```
+config/settings/
+├── README.md                  # This file - Settings overview and guide
+├── __init__.py                # Package initialisation
+├── base.py                    # Shared base settings for all environments
+├── dev.py                     # Development environment settings
+├── test.py                    # Test environment settings
+├── staging.py                 # Staging environment settings
+└── production.py              # Production environment settings
+```
 
 ---
 

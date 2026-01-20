@@ -2,6 +2,12 @@
 
 <!-- CLICKUP_ID: 86c7d2p2c -->
 
+## Overview
+
+Content editors need a robust media management system to upload, organise, and manage media files (images, videos, documents) for use across pages. This story covers file upload, storage, retrieval, folder organisation, metadata management, and integration with page editors through a media picker component.
+
+---
+
 ## Story
 
 **As a** content editor

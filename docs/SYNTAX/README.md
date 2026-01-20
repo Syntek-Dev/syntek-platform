@@ -1,7 +1,7 @@
 # Syntax and Code Quality
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -41,6 +41,18 @@
 This folder contains syntax analysis, code quality assessments, and linting reports for the codebase.
 
 **Current Status:** A (85/100) - Good code quality with minor improvements needed
+
+---
+
+## Directory Tree
+
+```
+docs/SYNTAX/
+├── README.md                              # This file - Overview and quick reference
+├── LINTING-REPORT-2026-01-03.md           # Detailed linting and syntax analysis
+└── US-001/
+    └── LINTING-REPORT-US-001.md           # US-001 specific syntax and linting findings
+```
 
 ---
 

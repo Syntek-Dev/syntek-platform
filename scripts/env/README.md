@@ -6,6 +6,7 @@ Helper scripts for running commands in environment-specific Docker containers.
 
 - [Environment Scripts](#environment-scripts)
   - [Table of Contents](#table-of-contents)
+  - [Directory Structure](#directory-structure)
   - [Overview](#overview)
   - [Available Scripts](#available-scripts)
     - [dev.sh](#devsh)
@@ -17,6 +18,19 @@ Helper scripts for running commands in environment-specific Docker containers.
     - [Testing](#testing)
     - [Staging/Production](#stagingproduction)
   - [Related Documentation](#related-documentation)
+
+---
+
+## Directory Structure
+
+```
+scripts/env/
+├── README.md                # This file
+├── dev.sh                   # Development environment helper
+├── production.sh            # Production environment helper
+├── staging.sh               # Staging environment helper
+└── test.sh                  # Test environment helper
+```
 
 ---
 

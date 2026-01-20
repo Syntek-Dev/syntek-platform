@@ -5,6 +5,7 @@ ab-test-tool.py
 Manages A/B testing of agent prompt variants.
 Creates tests, randomly selects variants, tracks results, and calculates statistical significance.
 """
+
 import hashlib
 import json
 import os
@@ -17,14 +18,14 @@ from pathlib import Path
 
 def get_metrics_dir() -> Path:
     """Get the docs/METRICS directory path."""
-    cwd = Path(os.getcwd())
+    cwd = Path.cwd()
     return cwd / "docs" / "METRICS"
 
 
 def get_plugin_dir() -> Path:
     """Get the plugin directory (where agents are stored)."""
     # Try to find the plugin directory
-    cwd = Path(os.getcwd())
+    cwd = Path.cwd()
     possible_paths = [
         Path(os.environ.get("CLAUDE_PLUGIN_DIR", "")),
         cwd,  # Current working directory (syntek-dev-suite)
@@ -52,7 +53,7 @@ def load_config() -> dict:
     """Load the metrics configuration."""
     config_path = get_metrics_dir() / "config.json"
     if config_path.exists():
-        with open(config_path) as f:
+        with config_path.open() as f:
             return json.load(f)
     return {"ab_testing_enabled": True}
 
@@ -117,7 +118,7 @@ def create_test(
 
     if test_file.exists():
         # Add variant to existing test
-        with open(test_file) as f:
+        with test_file.open() as f:
             test_config = json.load(f)
         test_config["variants"].append(
             {
@@ -159,7 +160,7 @@ def create_test(
             },
         }
 
-    with open(test_file, "w") as f:
+    with test_file.open("w") as f:
         json.dump(test_config, f, indent=2)
 
     return {
@@ -192,7 +193,7 @@ def select_variant(agent: str, session_id: str | None = None) -> dict:
     if not test_file.exists():
         return {"variant": None, "reason": "No active test for this agent"}
 
-    with open(test_file) as f:
+    with test_file.open() as f:
         test_config = json.load(f)
 
     if test_config.get("status") != "active":
@@ -254,7 +255,7 @@ def update_results(agent: str, variant: str, satisfaction: int | None = None) ->
     if not test_file.exists():
         return {"error": "No active test for this agent"}
 
-    with open(test_file) as f:
+    with test_file.open() as f:
         test_config = json.load(f)
 
     results = test_config.get("results", {})
@@ -280,7 +281,7 @@ def update_results(agent: str, variant: str, satisfaction: int | None = None) ->
     test_config["results"] = results
     test_config["updated"] = datetime.now().isoformat()
 
-    with open(test_file, "w") as f:
+    with test_file.open("w") as f:
         json.dump(test_config, f, indent=2)
 
     return {"success": True, "results": results}
@@ -302,7 +303,7 @@ def get_test_status(agent: str) -> dict:
     if not test_file.exists():
         return {"error": f"No active test for agent: {agent}"}
 
-    with open(test_file) as f:
+    with Path(test_file).open() as f:
         test_config = json.load(f)
 
     # Calculate satisfaction rates
@@ -430,7 +431,7 @@ def conclude_test(agent: str, winner: str | None = None) -> dict:
     if not test_file.exists():
         return {"error": f"No active test for agent: {agent}"}
 
-    with open(test_file) as f:
+    with Path(test_file).open() as f:
         test_config = json.load(f)
 
     # Update status
@@ -443,7 +444,7 @@ def conclude_test(agent: str, winner: str | None = None) -> dict:
     archive_dir.mkdir(parents=True, exist_ok=True)
     archive_file = archive_dir / f"{agent}-test-{datetime.now().strftime('%Y%m%d')}.json"
 
-    with open(archive_file, "w") as f:
+    with Path(archive_file, "w").open() as f:
         json.dump(test_config, f, indent=2)
 
     # Remove active test
@@ -484,7 +485,7 @@ def list_tests() -> dict:
 
     tests = []
     for test_file in active_dir.glob("*.json"):
-        with open(test_file) as f:
+        with Path(test_file).open() as f:
             test_config = json.load(f)
         tests.append(
             {
@@ -502,28 +503,23 @@ def list_tests() -> dict:
 def main():
     """Main entry point for the A/B test tool."""
     if len(sys.argv) < 2:
-        print(json.dumps(list_tests(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
     if command == "list":
-        print(json.dumps(list_tests(), indent=2))
+        pass
 
     elif command == "status":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "Agent name required"}))
             return
         agent = sys.argv[2]
-        print(json.dumps(get_test_status(agent), indent=2))
 
     elif command == "select":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "Agent name required"}))
             return
         agent = sys.argv[2]
-        session_id = sys.argv[3] if len(sys.argv) > 3 else None
-        print(json.dumps(select_variant(agent, session_id), indent=2))
+        sys.argv[3] if len(sys.argv) > 3 else None
 
     elif command == "create":
         # Parse arguments
@@ -547,31 +543,20 @@ def main():
                 i += 1
 
         if not agent or not variant_name:
-            print(json.dumps({"error": "Required: --agent <name> --variant <name>"}))
             return
 
         # Read variant content from stdin
-        print(
-            json.dumps(
-                {
-                    "message": "Provide variant content via stdin or use the command to create manually"
-                }
-            )
-        )
 
     elif command == "conclude":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "Agent name required"}))
             return
         agent = sys.argv[2]
-        winner = sys.argv[3] if len(sys.argv) > 3 else None
-        print(json.dumps(conclude_test(agent, winner), indent=2))
+        sys.argv[3] if len(sys.argv) > 3 else None
 
     elif command == "update":
         # Update results with a run
         agent = None
         variant = None
-        satisfaction = None
 
         i = 2
         while i < len(sys.argv):
@@ -583,34 +568,16 @@ def main():
                 variant = sys.argv[i + 1]
                 i += 2
             elif arg == "--satisfaction" and i + 1 < len(sys.argv):
-                satisfaction = int(sys.argv[i + 1])
+                int(sys.argv[i + 1])
                 i += 2
             else:
                 i += 1
 
         if not agent or not variant:
-            print(json.dumps({"error": "Required: --agent <name> --variant <name>"}))
             return
 
-        print(json.dumps(update_results(agent, variant, satisfaction), indent=2))
-
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": [
-                        "list",
-                        "status",
-                        "select",
-                        "create",
-                        "conclude",
-                        "update",
-                    ],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

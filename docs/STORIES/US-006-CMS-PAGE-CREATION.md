@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2n36 -->
 
+## Overview
+
+This user story implements a block-based content editor that enables content editors to create and edit dynamic website pages without coding knowledge. The system supports multiple block types (text, headings, images, buttons, cards, CTAs, videos), rich text editing, drag-and-drop reordering, real-time preview, and autosave functionality with version history tracking.
+
 ## Story
 
 **As a** content editor

@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2ugy -->
 
+## Overview
+
+This story covers an automated CI/CD deployment pipeline using GitHub Actions that ensures consistent, tested releases across backend, frontend web, frontend mobile, and shared UI repositories. Features include automated testing on pull requests, staging deployment on merge, blue-green production deployments, database migration management, health checks, automatic rollback capability, and deployment notifications.
+
 ## Story
 
 **As a** operations team member
@@ -243,6 +247,31 @@
 - [ ] Add performance regression tests
 - [ ] Create security scanning in CI
 
+### Security Gap Remediation Tasks (from Security Review)
+
+- [ ] **H005**: Implement comprehensive security headers middleware:
+  - [ ] HSTS (Strict-Transport-Security) with preload
+  - [ ] X-Content-Type-Options: nosniff
+  - [ ] X-Frame-Options: DENY
+  - [ ] X-XSS-Protection: 1; mode=block
+  - [ ] Content-Security-Policy (CSP) with strict directives
+  - [ ] Referrer-Policy: strict-origin-when-cross-origin
+  - [ ] Permissions-Policy (disable unnecessary browser features)
+  - [ ] Cache-Control headers for sensitive endpoints
+  - [ ] Create environment-specific CSP configurations (dev vs prod)
+  - [ ] Add security headers verification in deployment health checks
+- [ ] **L003**: Implement dependency scanning in CI/CD:
+  - [ ] Integrate Safety or Snyk for Python dependency scanning
+  - [ ] Integrate npm audit for JavaScript dependencies
+  - [ ] Configure automatic PR creation for vulnerable dependencies
+  - [ ] Set up vulnerability severity thresholds (fail build on HIGH/CRITICAL)
+  - [ ] Create weekly scheduled dependency scans
+  - [ ] Add Dependabot configuration for automatic updates
+  - [ ] Create vulnerability notification workflow
+- [ ] Add unit tests for security headers middleware
+- [ ] Add integration tests for dependency scanning workflow
+- [ ] Create security headers compliance report
+
 ### Monitoring and Rollback
 
 - [ ] Implement deployment status tracking
@@ -269,6 +298,17 @@
 - Multi-platform testing requirements
 - Notification system integration
 - Credential management
+
+---
+
+## Security Gaps Addressed
+
+This story addresses the following security gaps from the US-001 Security Implementation Review:
+
+| Gap ID   | Description                          | Implementation                                                           |
+| -------- | ------------------------------------ | ------------------------------------------------------------------------ |
+| **H005** | Security headers not fully specified | HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Permissions-Policy   |
+| **L003** | No dependency scanning               | Safety/Snyk integration, npm audit, Dependabot, vulnerability thresholds |
 
 ---
 

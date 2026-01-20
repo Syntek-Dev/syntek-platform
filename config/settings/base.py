@@ -41,8 +41,11 @@ INSTALLED_APPS = [
     "corsheaders",
     "strawberry.django",
     # Project apps (add your apps here)
-    # "apps.core",
+    "apps.core",
 ]
+
+# Custom user model
+AUTH_USER_MODEL = "core.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -55,9 +58,13 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Custom security middleware
+    "config.middleware.ip_allowlist.IPAllowlistMiddleware",
     "config.middleware.security.SecurityHeadersMiddleware",
     "config.middleware.ratelimit.RateLimitMiddleware",
     "config.middleware.audit.SecurityAuditMiddleware",
+    # GraphQL middleware (C4 - CSRF, Authentication)
+    "api.middleware.csrf.GraphQLCSRFMiddleware",
+    "api.middleware.auth.GraphQLAuthenticationMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -135,7 +142,57 @@ AUTH_PASSWORD_VALIDATORS = [
             "max_repeated": 3,
         },
     },
+    {
+        "NAME": "config.validators.password.HIBPPasswordValidator",
+        "OPTIONS": {
+            "threshold": 1,
+            "timeout": 2,
+        },
+    },
+    {
+        "NAME": "config.validators.password.PasswordHistoryValidator",
+        "OPTIONS": {
+            "history_count": 5,
+        },
+    },
+    {
+        "NAME": "config.validators.password.CommonPasswordValidator",
+        "OPTIONS": {
+            "password_list_path": None,  # Uses default common_passwords.txt
+        },
+    },
 ]
+
+# Password hashing configuration
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+]
+
+# Token signing key for HMAC-SHA256 hashing - C1 security requirement
+# Generate with: python -c "import secrets; print(secrets.token_hex(32))"
+# This key is separate from SECRET_KEY for defense-in-depth
+TOKEN_SIGNING_KEY = env(
+    "TOKEN_SIGNING_KEY",
+    default="",  # Must be set in production
+)
+
+# TOTP encryption key (Fernet) - C2 security requirement
+# Generate with: python -c "from cryptography.fernet import Fernet;
+# print(Fernet.generate_key().decode())"
+TOTP_ENCRYPTION_KEY = env(
+    "TOTP_ENCRYPTION_KEY",
+    default="",  # Must be set in production
+)
+
+# IP address encryption key (Fernet) - for audit logs and session tracking
+# Generate with: python -c "from cryptography.fernet import Fernet;
+# print(Fernet.generate_key().decode())"
+IP_ENCRYPTION_KEY = env(
+    "IP_ENCRYPTION_KEY",
+    default="",  # Must be set in production
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -149,7 +206,14 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Media files
 MEDIA_URL = "/media/"
@@ -177,6 +241,23 @@ CORS_ALLOWED_ORIGINS = env.list(
     default=["http://localhost:3000"],
 )
 CORS_ALLOW_CREDENTIALS = True
+
+# Phase 7: Audit Logging and Security Configuration
+
+# Audit log retention period (days)
+# GDPR compliance: 90 days for security logs, 30 days for general logs
+AUDIT_LOG_RETENTION_DAYS = env.int("AUDIT_LOG_RETENTION_DAYS", default=90)
+
+# Session management configuration (M7)
+MAX_CONCURRENT_SESSIONS_PER_USER = env.int("MAX_CONCURRENT_SESSIONS_PER_USER", default=5)
+SESSION_IDLE_TIMEOUT_HOURS = env.int("SESSION_IDLE_TIMEOUT_HOURS", default=24)
+
+# Failed login and account lockout configuration (M9)
+# Progressive lockout thresholds defined in FailedLoginService
+
+# Suspicious activity configuration (M10)
+SECURITY_EMAIL_FROM = env.str("SECURITY_EMAIL_FROM", default="security@example.com")
+KNOWN_IP_RETENTION_DAYS = env.int("KNOWN_IP_RETENTION_DAYS", default=30)
 
 # Cache settings
 CACHES = {
@@ -217,3 +298,45 @@ SESSION_COOKIE_AGE = env.int("SESSION_COOKIE_AGE", default=1209600)  # 2 weeks
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_USE_SESSIONS = False  # Store CSRF token in cookie for API compatibility
+
+# Phase 4: Security Hardening Configuration
+
+# HaveIBeenPwned Integration (C001 - Phase 4)
+# Checks passwords against known data breaches using k-anonymity model
+HIBP_API_ENABLED = env.bool("HIBP_API_ENABLED", default=True)
+HIBP_BREACH_THRESHOLD = env.int("HIBP_BREACH_THRESHOLD", default=3)
+
+# reCAPTCHA v3 Configuration (M001 - Phase 4)
+# Bot protection for registration and login endpoints
+RECAPTCHA_ENABLED = env.bool("RECAPTCHA_ENABLED", default=False)
+RECAPTCHA_SITE_KEY = env("RECAPTCHA_SITE_KEY", default="")
+RECAPTCHA_SECRET_KEY = env("RECAPTCHA_SECRET_KEY", default="")
+RECAPTCHA_SCORE_REGISTER = env.float("RECAPTCHA_SCORE_REGISTER", default=0.5)
+RECAPTCHA_SCORE_LOGIN = env.float("RECAPTCHA_SCORE_LOGIN", default=0.3)
+
+# Password Reset Token Configuration (M007 - Phase 4)
+# Token expiry reduced from 15 to 10 minutes for improved security
+PASSWORD_RESET_TOKEN_EXPIRY_MINUTES = env.int("PASSWORD_RESET_TOKEN_EXPIRY_MINUTES", default=10)
+
+# Celery Configuration (H6 - Async Email Delivery)
+# Redis/Valkey as message broker and result backend
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://127.0.0.1:6379/1")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://127.0.0.1:6379/1")
+
+# Celery serialization settings
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TIMEZONE = TIME_ZONE
+
+# Celery task settings
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes hard limit
+CELERY_TASK_SOFT_TIME_LIMIT = 25 * 60  # 25 minutes soft limit
+
+# Celery result settings
+CELERY_RESULT_EXPIRES = 60 * 60 * 24  # 24 hours
+
+# Celery worker settings
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_WORKER_CONCURRENCY = env.int("CELERY_WORKER_CONCURRENCY", default=4)

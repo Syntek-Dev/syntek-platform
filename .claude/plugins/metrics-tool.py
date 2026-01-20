@@ -6,9 +6,9 @@ Records and queries agent performance metrics for the self-learning system.
 Stores run data in docs/METRICS/runs/ as JSON files organised by month.
 Supports recording runs, querying history, and generating aggregates.
 """
+
 import hashlib
 import json
-import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -16,7 +16,7 @@ from pathlib import Path
 
 def get_metrics_dir() -> Path:
     """Get the docs/METRICS directory path."""
-    cwd = Path(os.getcwd())
+    cwd = Path.cwd()
     metrics_dir = cwd / "docs" / "METRICS"
     return metrics_dir
 
@@ -58,7 +58,7 @@ def load_config() -> dict:
     """Load the metrics configuration."""
     config_path = get_metrics_dir() / "config.json"
     if config_path.exists():
-        with open(config_path) as f:
+        with Path(config_path).open() as f:
             return json.load(f)
     return {"enabled": True}
 
@@ -124,12 +124,12 @@ def record_run(
     month_dir = get_month_dir(runs_dir)
     run_file = month_dir / f"{run_id}.json"
 
-    with open(run_file, "w") as f:
+    with Path(run_file).open("w") as f:
         json.dump(run_data, f, indent=2)
 
     # Store run_id for feedback linking
     last_run_file = get_metrics_dir() / ".last_run"
-    with open(last_run_file, "w") as f:
+    with Path(last_run_file).open("w") as f:
         f.write(run_id)
 
     return run_data
@@ -151,7 +151,7 @@ def get_run(run_id: str) -> dict | None:
         if month_dir.is_dir():
             run_file = month_dir / f"{run_id}.json"
             if run_file.exists():
-                with open(run_file) as f:
+                with Path(run_file).open() as f:
                     return json.load(f)
     return None
 
@@ -163,10 +163,10 @@ def update_run(run_id: str, updates: dict) -> dict | None:
         if month_dir.is_dir():
             run_file = month_dir / f"{run_id}.json"
             if run_file.exists():
-                with open(run_file) as f:
+                with Path(run_file).open() as f:
                     run_data = json.load(f)
                 run_data.update(updates)
-                with open(run_file, "w") as f:
+                with Path(run_file).open("w") as f:
                     json.dump(run_data, f, indent=2)
                 return run_data
     return None
@@ -207,7 +207,7 @@ def query_runs(
             if len(runs) >= limit:
                 break
 
-            with open(run_file) as f:
+            with Path(run_file).open() as f:
                 run_data = json.load(f)
 
             # Parse timestamp
@@ -311,7 +311,7 @@ def aggregate_daily(date: str | None = None) -> dict:
 
     if month_dir.exists():
         for run_file in month_dir.glob("*.json"):
-            with open(run_file) as f:
+            with Path(run_file).open() as f:
                 run_data = json.load(f)
             run_time = datetime.fromisoformat(run_data["timestamp"].replace("Z", "+00:00"))
             run_time = run_time.replace(tzinfo=None)
@@ -352,7 +352,7 @@ def aggregate_daily(date: str | None = None) -> dict:
     # Save aggregate
     ensure_directories()
     aggregate_file = get_metrics_dir() / "aggregates" / "daily" / f"{date}.json"
-    with open(aggregate_file, "w") as f:
+    with Path(aggregate_file).open("w") as f:
         json.dump(aggregate, f, indent=2)
 
     return aggregate
@@ -389,13 +389,12 @@ def get_status() -> dict:
 def main():
     """Main entry point for the metrics tool."""
     if len(sys.argv) < 2:
-        print(json.dumps(get_status(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
     if command == "status":
-        print(json.dumps(get_status(), indent=2))
+        pass
 
     elif command == "record":
         # Parse arguments
@@ -427,13 +426,9 @@ def main():
                 i += 1
 
         if not agent:
-            print(json.dumps({"error": "Agent name required (--agent)"}))
             return
 
-        result = record_run(
-            agent=agent, command=cmd, variant=variant, status=status, duration=duration
-        )
-        print(json.dumps(result, indent=2))
+        record_run(agent=agent, command=cmd, variant=variant, status=status, duration=duration)
 
     elif command == "query":
         agent = None
@@ -455,8 +450,7 @@ def main():
             else:
                 i += 1
 
-        runs = query_runs(agent=agent, days=days, limit=limit)
-        print(json.dumps({"runs": runs, "count": len(runs)}, indent=2))
+        query_runs(agent=agent, days=days, limit=limit)
 
     elif command == "summary":
         agent = sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith("--") else None
@@ -466,40 +460,20 @@ def main():
             if arg == "--days" and i + 1 < len(sys.argv):
                 days = int(sys.argv[i + 1])
 
-        print(json.dumps(get_agent_summary(agent=agent, days=days), indent=2))
-
     elif command == "aggregate":
-        date = None
         for i, arg in enumerate(sys.argv):
             if arg == "--date" and i + 1 < len(sys.argv):
-                date = sys.argv[i + 1]
-        print(json.dumps(aggregate_daily(date=date), indent=2))
+                sys.argv[i + 1]
 
     elif command == "last":
         run_id = get_last_run_id()
         if run_id:
-            run = get_run(run_id)
-            print(json.dumps(run or {"error": "Run not found"}, indent=2))
+            get_run(run_id)
         else:
-            print(json.dumps({"error": "No runs recorded yet"}))
+            pass
 
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": [
-                        "status",
-                        "record",
-                        "query",
-                        "summary",
-                        "aggregate",
-                        "last",
-                    ],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

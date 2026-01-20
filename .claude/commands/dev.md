@@ -1,10 +1,24 @@
 # Development Commands
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
+
+---
+
+## Overview
+
+This document provides quick reference commands for starting, managing, and interacting with the
+development environment using Docker Compose and Django management scripts.
+
+**Key Commands:**
+
+- Start/stop containers
+- Run migrations and create superusers
+- Access Django shell and logs
+- Health checks and database backups
 
 ---
 

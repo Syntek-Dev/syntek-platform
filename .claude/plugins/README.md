@@ -1,7 +1,7 @@
 # Plugins
 
-**Last Updated**: 29/12/2025
-**Version**: 1.3.1
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London

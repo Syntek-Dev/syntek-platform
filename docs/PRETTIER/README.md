@@ -1,7 +1,7 @@
 # Prettier Documentation
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -26,6 +26,19 @@ Prettier handles formatting for all non-Python files (JSON, YAML, Markdown, HTML
 JavaScript, GraphQL).
 
 **Python files** are formatted with **Black** (separate configuration).
+
+---
+
+## Directory Tree
+
+```
+docs/PRETTIER/
+├── README.md                              # This file - Overview and quick start
+├── PRETTIER-SETUP.md                      # Complete setup guide and configuration
+└── PRETTIER-IMPLEMENTATION-SUMMARY.md     # Implementation details and decisions
+```
+
+---
 
 ## Documents
 

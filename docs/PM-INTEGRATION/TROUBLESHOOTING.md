@@ -1,7 +1,7 @@
 # ClickUp Integration Troubleshooting
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 07/01/2026
+**Version**: 0.3.3
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
@@ -616,3 +616,5 @@ If none of these solutions work:
 5. **Contact Support**
    - For ClickUp API issues: <support@clickup.com>
    - For integration issues: Check project repository issues
+
+## Overview

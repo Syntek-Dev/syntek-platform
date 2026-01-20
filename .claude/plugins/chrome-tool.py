@@ -6,12 +6,13 @@ Detects Google Chrome installation across different operating systems (Linux, ma
 Returns structured JSON output for integration with Claude Code agents.
 Automatically finds the Chrome binary path and can generate environment variable configurations.
 """
-import json
+
 import os
 import platform
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 from typing import Any
 
 # Chrome binary paths by operating system
@@ -71,7 +72,7 @@ def find_chrome_binary() -> dict[str, Any]:
     # Check each known path
     for path in paths_to_check:
         expanded_path = os.path.expandvars(path)
-        if os.path.isfile(expanded_path) and os.access(expanded_path, os.X_OK):
+        if Path(expanded_path).is_file() and os.access(expanded_path, os.X_OK):
             binary_info = {
                 "path": expanded_path,
                 "exists": True,
@@ -108,9 +109,9 @@ def find_chrome_binary() -> dict[str, Any]:
             found_binaries.append(binary_info)
 
             # Set primary (prefer stable over beta over others)
-            if primary_binary is None:
-                primary_binary = binary_info
-            elif binary_info["type"] == "stable" and primary_binary["type"] != "stable":
+            if primary_binary is None or (
+                binary_info["type"] == "stable" and primary_binary["type"] != "stable"
+            ):
                 primary_binary = binary_info
 
     # Also check using 'which' command on Unix-like systems
@@ -135,9 +136,9 @@ def find_chrome_binary() -> dict[str, Any]:
 
                 found_binaries.append(binary_info)
 
-                if primary_binary is None:
-                    primary_binary = binary_info
-                elif binary_info["type"] == "stable" and primary_binary["type"] != "stable":
+                if primary_binary is None or (
+                    binary_info["type"] == "stable" and primary_binary["type"] != "stable"
+                ):
                     primary_binary = binary_info
 
     return {
@@ -210,7 +211,7 @@ def write_env_file(env_vars: dict[str, str], file_path: str = ".env.chrome") -> 
     """
     try:
         content = generate_env_file_content(env_vars)
-        with open(file_path, "w") as f:
+        with Path(file_path).open("w") as f:
             f.write(content)
         return {
             "success": True,
@@ -240,7 +241,8 @@ def check_claude_chrome_extension() -> dict[str, Any]:
         ),
         "requirements": {
             "google_chrome": chrome_info.get("found", False),
-            "extension_note": "Install 'Claude in Chrome' extension (v1.0.36+) from Chrome Web Store",
+            "extension_note": "Install 'Claude in Chrome' extension (v1.0.36+) from Chrome "
+            "Web Store ",
             "claude_code_note": "Run 'claude update' to ensure Claude Code CLI v2.0.73+",
         },
         "setup_commands": [
@@ -253,41 +255,13 @@ def check_claude_chrome_extension() -> dict[str, Any]:
 
 def print_help():
     """Print help message."""
-    help_text = """
-chrome-tool.py - Chrome Detection Utility for Claude Code
-
-Usage: ./plugins/chrome-tool.py <command>
-
-Commands:
-  detect      Detect Chrome installation on this system
-  env         Generate environment variable configuration
-  write       Write Chrome env vars to .env.chrome file
-  extension   Check Claude in Chrome extension requirements
-  status      Quick status check (alias for detect)
-  help        Show this help message
-
-Examples:
-  ./plugins/chrome-tool.py detect
-  ./plugins/chrome-tool.py env
-  ./plugins/chrome-tool.py write
-  ./plugins/chrome-tool.py extension
-
-Output:
-  All commands return JSON for easy parsing by agents.
-"""
-    print(help_text.strip())
 
 
 def main():
-    if len(sys.argv) < 2:
-        # Default to status/detect
-        command = "detect"
-    else:
-        command = sys.argv[1].lower()
+    command = "detect" if len(sys.argv) < 2 else sys.argv[1].lower()
 
     if command in ["detect", "status"]:
         result = find_chrome_binary()
-        print(json.dumps(result, indent=2))
 
     elif command == "env":
         chrome_info = find_chrome_binary()
@@ -297,7 +271,6 @@ def main():
             "env_vars": env_vars,
             "env_content": generate_env_file_content(env_vars) if env_vars else None,
         }
-        print(json.dumps(result, indent=2))
 
     elif command == "write":
         chrome_info = find_chrome_binary()
@@ -313,25 +286,13 @@ def main():
             result = write_env_file(env_vars, file_path)
             result["env_vars"] = env_vars
 
-        print(json.dumps(result, indent=2))
-
     elif command == "extension":
         result = check_claude_chrome_extension()
-        print(json.dumps(result, indent=2))
 
     elif command in ["help", "-h", "--help"]:
         print_help()
 
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": ["detect", "env", "write", "extension", "status", "help"],
-                },
-                indent=2,
-            )
-        )
         sys.exit(1)
 
 

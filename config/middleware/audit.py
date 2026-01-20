@@ -15,8 +15,8 @@ GDPR Compliance:
 - Recommended retention: 90 days for security logs, 30 days for general logs
 """
 
-import ipaddress
 import logging
+from typing import TYPE_CHECKING
 
 from django.contrib.auth.signals import (
     user_logged_in,
@@ -25,74 +25,18 @@ from django.contrib.auth.signals import (
 )
 from django.core.exceptions import PermissionDenied
 from django.dispatch import receiver
-from django.http import HttpRequest, HttpResponse
 from django.utils.deprecation import MiddlewareMixin
+
+from config.utils.request import anonymise_ip, get_client_ip
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest, HttpResponse
 
 # Security audit logger (configured separately from application logs)
 security_logger = logging.getLogger("security.audit")
 
-
-def anonymise_ip(ip_address: str) -> str:
-    """Anonymise an IP address for GDPR-compliant non-security logging.
-
-    For IPv4: Zeros the last octet (e.g., 192.168.1.45 -> 192.168.1.0)
-    For IPv6: Zeros the last 80 bits (keeps /48 prefix)
-
-    This follows Google Analytics' IP anonymisation approach and is
-    accepted as GDPR-compliant by most EU DPAs.
-
-    Args:
-        ip_address: The IP address to anonymise.
-
-    Returns:
-        The anonymised IP address, or 'unknown' if parsing fails.
-
-    Example:
-        >>> anonymise_ip('192.168.1.45')
-        '192.168.1.0'
-        >>> anonymise_ip('2001:db8:85a3::8a2e:370:7334')
-        '2001:db8:85a3::'
-    """
-    if not ip_address or ip_address == "unknown":
-        return "unknown"
-
-    try:
-        ip = ipaddress.ip_address(ip_address)
-        if isinstance(ip, ipaddress.IPv4Address):
-            # Zero the last octet for IPv4
-            ipv4_network = ipaddress.IPv4Network(f"{ip_address}/24", strict=False)
-            return str(ipv4_network.network_address)
-        else:
-            # Zero the last 80 bits for IPv6 (keep /48 prefix)
-            ipv6_network = ipaddress.IPv6Network(f"{ip_address}/48", strict=False)
-            return str(ipv6_network.network_address)
-    except ValueError:
-        # Invalid IP address format
-        return "unknown"
-
-
-def get_client_ip(request: HttpRequest, anonymise: bool = False) -> str:
-    """Extract the client IP address from the request.
-
-    Handles X-Forwarded-For header from reverse proxies (nginx, load balancers).
-
-    Args:
-        request: The HTTP request object.
-        anonymise: If True, return GDPR-compliant anonymised IP.
-
-    Returns:
-        The client's IP address (full or anonymised based on parameter).
-    """
-    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-    if x_forwarded_for:
-        # Take the first IP in the chain (client's real IP)
-        ip = str(x_forwarded_for).split(",")[0].strip()
-    else:
-        ip = str(request.META.get("REMOTE_ADDR", "unknown"))
-
-    if anonymise:
-        return anonymise_ip(ip)
-    return ip
+# Re-export for backwards compatibility
+__all__ = ["SecurityAuditMiddleware", "anonymise_ip", "get_client_ip"]
 
 
 class SecurityAuditMiddleware(MiddlewareMixin):
@@ -173,8 +117,8 @@ class SecurityAuditMiddleware(MiddlewareMixin):
                 "method": request.method,
                 "user": str(request.user) if request.user.is_authenticated else "anonymous",
                 "user_id": request.user.id if request.user.is_authenticated else None,
-                "user_agent": request.META.get("HTTP_USER_AGENT", ""),
-                "referer": request.META.get("HTTP_REFERER", ""),
+                "user_agent": request.headers.get("user-agent", ""),
+                "referer": request.headers.get("referer", ""),
             },
         )
 
@@ -194,7 +138,7 @@ class SecurityAuditMiddleware(MiddlewareMixin):
                 "client_ip": get_client_ip(request),  # Full IP for security
                 "path": request.path,
                 "method": request.method,
-                "user_agent": request.META.get("HTTP_USER_AGENT", ""),
+                "user_agent": request.headers.get("user-agent", ""),
             },
         )
 
@@ -214,15 +158,17 @@ def log_user_login(sender, request: HttpRequest, user, **kwargs) -> None:
         user: The user who logged in.
         **kwargs: Additional keyword arguments from the signal.
     """
+    # Use email as identifier for custom User model (no username field)
+    user_identifier = getattr(user, "email", str(user))
     security_logger.info(
-        f"User login successful: {user.username}",
+        f"User login successful: {user_identifier}",
         extra={
             "event_type": "login_success",
             "user": str(user),
             "user_id": user.id,
-            "username": user.username,
+            "email": user_identifier,
             "client_ip": get_client_ip(request),  # Full IP for security
-            "user_agent": request.META.get("HTTP_USER_AGENT", ""),
+            "user_agent": request.headers.get("user-agent", ""),
         },
     )
 
@@ -242,13 +188,15 @@ def log_user_logout(sender, request: HttpRequest, user, **kwargs) -> None:
     if user is None:
         return
 
+    # Use email as identifier for custom User model (no username field)
+    user_identifier = getattr(user, "email", str(user))
     security_logger.info(
-        f"User logout: {user.username}",
+        f"User logout: {user_identifier}",
         extra={
             "event_type": "logout",
             "user": str(user),
             "user_id": user.id,
-            "username": user.username,
+            "email": user_identifier,
             "client_ip": get_client_ip(request),  # Full IP for security
         },
     )
@@ -273,14 +221,15 @@ def log_user_login_failed(
 
     client_ip = get_client_ip(request)  # Full IP for security
 
-    username = credentials.get("username", "unknown")
+    # Support both username and email fields for custom User model
+    user_identifier = credentials.get("email") or credentials.get("username", "unknown")
 
     security_logger.warning(
-        f"Failed login attempt for username: {username}",
+        f"Failed login attempt for: {user_identifier}",
         extra={
             "event_type": "login_failure",
-            "username": username,
+            "email": user_identifier,
             "client_ip": client_ip,
-            "user_agent": request.META.get("HTTP_USER_AGENT", ""),
+            "user_agent": request.headers.get("user-agent", ""),
         },
     )

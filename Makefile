@@ -93,21 +93,21 @@ test-cov: ## Run tests with coverage report
 # Code Quality
 lint: ## Run all linters
 	@echo "$(COLOR_BLUE)Running linters...$(COLOR_RESET)"
-	flake8 .
+	ruff check .
+	ruff format --check .
 	mypy .
-	bandit -r . -c pyproject.toml
 	@echo "$(COLOR_GREEN)Linting completed!$(COLOR_RESET)"
 
 lint-fix: ## Run linters and auto-fix issues
 	@echo "$(COLOR_BLUE)Running linters with auto-fix...$(COLOR_RESET)"
-	isort .
-	black .
+	ruff check --fix .
+	ruff format .
 	@echo "$(COLOR_GREEN)Auto-fix completed!$(COLOR_RESET)"
 
-format: ## Format code with black and isort
+format: ## Format code with ruff
 	@echo "$(COLOR_BLUE)Formatting code...$(COLOR_RESET)"
-	black .
-	isort .
+	ruff format .
+	ruff check --fix .
 	@echo "$(COLOR_GREEN)Code formatted!$(COLOR_RESET)"
 
 check: ## Run pre-commit checks on all files
@@ -210,6 +210,6 @@ ci-test: ## Run tests for CI/CD
 
 ci-lint: ## Run linting for CI/CD
 	@echo "$(COLOR_BLUE)Running CI linting...$(COLOR_RESET)"
-	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+	ruff check . --output-format=github
+	ruff format --check .
 	@echo "$(COLOR_GREEN)CI linting completed!$(COLOR_RESET)"

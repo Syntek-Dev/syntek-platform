@@ -119,3 +119,9 @@ Thumbs.db
 
 # Claude Code
 .claude/settings.local.json
+
+# Test Results
+docs/TESTS/RESULTS/test-results-*
+
+# Backups
+backups/

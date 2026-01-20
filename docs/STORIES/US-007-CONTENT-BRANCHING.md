@@ -2,6 +2,10 @@
 
 <!-- CLICKUP_ID: 86c7d2ngn -->
 
+## Overview
+
+This user story implements a Git-like branching system for content that enables safe content development and testing. Content moves through five branches (feature → testing → dev → staging → production) with separate version history per branch. The system supports branch promotion, version comparison, rollback capability, and enforces read-only protection on the production branch.
+
 ## Story
 
 **As a** content team lead

@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint implements a comprehensive media library system for uploading, organising, and managing images and documents. Users will be able to maintain a centralised asset repository with search, folders, and metadata management. The media library integrates directly with the page editor, allowing content editors to select and insert images into pages with ease. Full support for bulk uploads, thumbnail generation, WebP conversion, and mobile camera integration ensures a seamless experience across all platforms.
+
+---
+
 ## Sprint Goal
 
 Implement a comprehensive media library system for uploading, organising, and managing images

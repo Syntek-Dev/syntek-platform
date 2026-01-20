@@ -8,16 +8,28 @@
 
 ---
 
+## Overview
+
+This sprint completes the SaaS email service with advanced features including email templates (integrated with design tokens), contact management with CSV import, email analytics, spam filtering, full-text search, and attachment virus scanning. The mobile interface gains email composition capabilities, completing the feature set across all platforms. Performance optimisations and comprehensive testing ensure the email service is production-ready with robust handling of edge cases and security considerations.
+
+---
+
 ## Table of Contents
 
-- [Sprint Goal](#sprint-goal)
-- [MoSCoW Breakdown](#moscow-breakdown)
-- [Dependencies](#dependencies)
-- [Implementation Order](#implementation-order)
-- [Repository Breakdown](#repository-breakdown)
-- [Risks and Mitigations](#risks-and-mitigations)
-- [Sprint Metrics](#sprint-metrics)
-- [Retrospective Notes](#retrospective-notes)
+- [Sprint 19: SaaS Email Service (Part 2)](#sprint-19-saas-email-service-part-2)
+  - [Table of Contents](#table-of-contents)
+  - [Sprint Goal](#sprint-goal)
+  - [MoSCoW Breakdown](#moscow-breakdown)
+    - [Must Have (10 points)](#must-have-10-points)
+    - [Should Have (0 points)](#should-have-0-points)
+    - [Could Have (0 points)](#could-have-0-points)
+  - [Dependencies](#dependencies)
+  - [Implementation Order](#implementation-order)
+  - [Repository Breakdown](#repository-breakdown)
+  - [Risks and Mitigations](#risks-and-mitigations)
+  - [Sprint Metrics (Post-Sprint)](#sprint-metrics-post-sprint)
+  - [Retrospective Notes](#retrospective-notes)
+  - [Overview](#overview)
 
 ---
 

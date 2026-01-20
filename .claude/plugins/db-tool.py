@@ -6,7 +6,7 @@ Provides database detection and configuration utilities for Claude Code agents.
 Returns structured JSON output for integration with database, backend, and setup agents.
 Supports detection of database type, connection info, and ORM/migration framework.
 """
-import json
+
 import re
 import sys
 from pathlib import Path
@@ -134,7 +134,7 @@ def detect_database_from_env(env_path: str | None = None) -> dict:
         if path.exists():
             source_file = str(path)
             try:
-                with open(path, encoding="utf-8") as f:
+                with Path(path).open(encoding="utf-8") as f:
                     for line in f:
                         line = line.strip()
                         if not line or line.startswith("#"):
@@ -400,40 +400,18 @@ def main():
     """Main entry point for the Database tool."""
     if len(sys.argv) < 2:
         # Default: comprehensive detection
-        print(json.dumps(detect_database_type(), indent=2))
         return
 
     command = sys.argv[1].lower()
 
     if command == "detect":
-        print(json.dumps(detect_database_type(), indent=2))
+        pass
 
-    elif command == "config":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(find_config_files(directory), indent=2))
-
-    elif command == "env":
-        env_path = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(detect_database_from_env(env_path), indent=2))
-
-    elif command == "orm":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(detect_orm_framework(directory), indent=2))
-
-    elif command == "migrations":
-        directory = sys.argv[2] if len(sys.argv) > 2 else None
-        print(json.dumps(find_migrations(directory), indent=2))
+    elif command == "config" or command == "env" or command == "orm" or command == "migrations":
+        sys.argv[2] if len(sys.argv) > 2 else None
 
     else:
-        print(
-            json.dumps(
-                {
-                    "error": f"Unknown command: {command}",
-                    "available_commands": ["detect", "config", "env", "orm", "migrations"],
-                },
-                indent=2,
-            )
-        )
+        pass
 
 
 if __name__ == "__main__":

@@ -58,10 +58,11 @@ docs/
 .circleci/
 
 # Docker
-docker/
 docker-compose*.yml
 Dockerfile*
 .dockerignore
+# Keep docker/ directory but exclude compose files already listed above
+# Entrypoint scripts in docker/*/entrypoint.sh are needed for builds
 
 # Other
 .editorconfig

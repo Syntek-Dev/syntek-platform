@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint implements the cloud documents SaaS application using OnlyOffice as the document editor and S3/DigitalOcean Spaces for storage. Users can create text documents, spreadsheets, and presentations within the OnlyOffice interface with auto-save functionality. The implementation includes document organisation through a folder hierarchy, version control, and basic mobile document viewing. Integration with the design token system enables custom branding in the OnlyOffice interface, and the integration framework provides extensible storage adapter support.
+
+---
+
 ## Table of Contents
 
 - [Sprint Goal](#sprint-goal)

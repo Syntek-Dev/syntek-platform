@@ -7,6 +7,25 @@
 
 ---
 
+## Overview
+
+This comprehensive architectural plan describes the complete Syntek CMS Platform, a multi-repository system designed to enable businesses to build and manage websites and applications with integrated business tools, consistent branding, and multi-platform deployment.
+
+The plan covers:
+
+- Multi-repository architecture (backend, UI library, frontend web, mobile)
+- 16-phase development roadmap from core authentication through deployment infrastructure
+- Multi-tenancy design with organisation-based isolation
+- Design token system for consistent branding
+- Content management system with branching workflows
+- 9 site templates for different business models
+- SaaS product integrations (email, cloud documents, password manager)
+- AI integration using Anthropic Claude
+- Deployment and upgrade strategies
+- GraphQL API contracts and database schema
+
+---
+
 ## Table of Contents
 
 - [Syntek CMS Platform - Comprehensive Architectural Plan](#syntek-cms-platform---comprehensive-architectural-plan)

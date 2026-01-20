@@ -1,17 +1,15 @@
 {
   "name": "backend-template",
-  "version": "0.3.1",
+  "version": "0.9.0",
   "description": "Django backend with PostgreSQL and GraphQL API",
   "private": true,
   "scripts": {
     "format": "prettier --write .",
-    "format:check": "prettier --check . && markdownlint-cli2 '**/*.md' '#node_modules'",
-    "format:staged": "prettier --write $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\\.(json|yaml|yml|md|html|css|js|graphql)$' | xargs)",
+    "format:check": "prettier --check . && markdownlint-cli2 '**/*.md' '#node_modules' '#.venv'",
     "lint": "npm run lint:prettier && npm run lint:markdown",
     "lint:prettier": "prettier --check .",
-    "lint:markdown": "markdownlint-cli2 '**/*.md' '#node_modules'",
-    "lint:markdown:fix": "markdownlint-cli2 --fix '**/*.md' '#node_modules'",
-    "precommit": "npm run format:staged"
+    "lint:markdown": "markdownlint-cli2 '**/*.md' '#node_modules' '#.venv'",
+    "lint:markdown:fix": "markdownlint-cli2 --fix '**/*.md' '#node_modules' '#.venv'"
   },
   "devDependencies": {
     "markdownlint-cli2": "^0.20.0",
@@ -33,7 +31,7 @@
     "url": "https://github.com/syntek-studio/backend-template"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=10.0.0"
+    "node": ">=24.0.0",
+    "npm": ">=11.7.0"
   }
 }

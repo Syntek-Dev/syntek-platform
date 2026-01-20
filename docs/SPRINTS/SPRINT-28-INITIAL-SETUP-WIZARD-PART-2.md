@@ -8,6 +8,12 @@
 
 ---
 
+## Overview
+
+This sprint completes the setup wizard implementation by adding verification checks, completion workflows, and success pages with next steps. Building on Sprint 27's core wizard steps (domain, template, design tokens, admin, secrets), this sprint adds final validation checks for system connectivity, template initialisation, and provides users with a success page and completion checklist. The small 2-point allocation reflects that most wizard infrastructure is complete from Part 1, with this sprint focusing on finalisation and polishing.
+
+---
+
 ## Sprint Goal
 
 Complete the setup wizard by implementing verification checks, completion flow, and success page with next steps.

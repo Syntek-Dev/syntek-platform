@@ -1,14 +1,16 @@
 # Django Templates
 
-**Last Updated**: 03/01/2026
-**Version**: 0.2.0
+**Last Updated**: 08/01/2026
+**Version**: 0.4.1
 **Maintained By**: Development Team
 **Language**: British English (en_GB)
 **Timezone**: Europe/London
 
 ---
 
-Django HTML templates and template files.
+## Overview
+
+Django HTML templates and template files used for server-side rendering and email templates. Templates are organised by app and include base templates for inheritance, model-specific templates for CRUD operations, and email templates for transactional messages.
 
 ## Table of Contents
 
@@ -16,15 +18,6 @@ Django HTML templates and template files.
 - [Template Organization](#template-organization)
 - [Template Tags and Filters](#template-tags-and-filters)
 - [Best Practices](#best-practices)
-
----
-
-## Overview
-
-This directory contains Django HTML templates used for server-side rendering and email templates.
-
-**Engine:** Django Template Language (DTL)
-**Static File Management:** Via `static` template tag
 
 ---
 

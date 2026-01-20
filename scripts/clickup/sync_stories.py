@@ -37,7 +37,7 @@ def parse_story_file(file_path: Path) -> dict[str, Any] | None:
     Returns:
         Dictionary containing story data, or None if parsing fails.
     """
-    with open(file_path, encoding="utf-8") as f:
+    with Path(file_path).open(encoding="utf-8") as f:
         content = f.read()
 
     # Extract story metadata
@@ -51,7 +51,6 @@ def parse_story_file(file_path: Path) -> dict[str, Any] | None:
     if match:
         story_data["story_id"] = match.group(1)
     else:
-        print(f"Warning: Could not extract story ID from {file_path.name}")
         return None
 
     # Extract title (first # heading)
@@ -123,7 +122,6 @@ def find_or_create_sprint_list(client, sprint_name: str, folder_id: str) -> str 
             return lst["id"]
 
     # Sprint not found - would need to create it
-    print(f"Warning: Sprint list '{sprint_name}' not found in folder {folder_id}")
     return None
 
 
@@ -192,7 +190,6 @@ def sync_story_to_clickup(
         list_id = config["folders"]["backlog"]["list_id"]
 
     if not list_id:
-        print(f"Error: Could not determine list for story {story_data['story_id']}")
         return None
 
     # Check if task already exists by searching for story ID
@@ -213,18 +210,11 @@ def sync_story_to_clickup(
     tags = [t for t in tags if t]  # Remove None values
 
     if dry_run:
-        print(f"\n[DRY RUN] Would sync story: {story_data['story_id']}")
-        print(f"  Title: {task_name}")
-        print(f"  List ID: {list_id}")
-        print(f"  Priority: {priority}")
-        print(f"  Tags: {tags}")
-        print(f"  Status: {story_data.get('status', 'Open')}")
         return None
 
     if existing_tasks:
         # Update existing task
         task_id = existing_tasks[0]["id"]
-        print(f"Updating existing task: {story_data['story_id']} (ID: {task_id})")
 
         task = client.update_task(
             task_id=task_id,
@@ -235,7 +225,6 @@ def sync_story_to_clickup(
         )
     else:
         # Create new task
-        print(f"Creating new task: {story_data['story_id']}")
 
         task = client.create_task(
             list_id=list_id,
@@ -246,7 +235,6 @@ def sync_story_to_clickup(
             tags=tags,
         )
 
-    print(f"  ClickUp URL: {task['url']}")
     return task
 
 
@@ -269,23 +257,18 @@ def main():
     # Initialize ClickUp client
     try:
         client = get_client()
-    except ValueError as e:
-        print(f"Error: {e}")
+    except ValueError:
         sys.exit(1)
 
     # Check if stories folder exists
     stories_path = Path(args.folder_path)
     if not stories_path.exists():
-        print(f"Error: Stories folder not found: {stories_path}")
         sys.exit(1)
 
     # Find all story files
     story_files = list(stories_path.glob("**/*.md"))
     if not story_files:
-        print(f"No story files found in {stories_path}")
         sys.exit(0)
-
-    print(f"Found {len(story_files)} story files")
 
     # Sync each story
     success_count = 0
@@ -305,13 +288,8 @@ def main():
                     success_count += 1
             else:
                 error_count += 1
-        except Exception as e:
-            print(f"Error processing {story_file.name}: {e}")
+        except Exception:
             error_count += 1
-
-    print(f"\n{'[DRY RUN] ' if args.dry_run else ''}Summary:")
-    print(f"  Success: {success_count}")
-    print(f"  Errors: {error_count}")
 
 
 if __name__ == "__main__":

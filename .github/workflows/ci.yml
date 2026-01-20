@@ -44,20 +44,15 @@ jobs:
       - name: Create test environment file
         run: cp .env.test.example .env.test
 
-      - name: Run Black formatting check
-        run: |
-          docker compose -f docker/test/docker-compose.yml run --rm web \
-            black --check --diff .
-
-      - name: Run isort import sorting check
-        run: |
-          docker compose -f docker/test/docker-compose.yml run --rm web \
-            isort --check-only --diff .
-
       - name: Run Ruff linting
         run: |
           docker compose -f docker/test/docker-compose.yml run --rm web \
-            ruff check .
+            ruff check . --output-format=github
+
+      - name: Run Ruff format check
+        run: |
+          docker compose -f docker/test/docker-compose.yml run --rm web \
+            ruff format --check --diff .
 
   type-check:
     name: Type Checking
