@@ -142,8 +142,9 @@ jobs:
       - name: Start database
         run: |
           docker compose -f docker/test/docker-compose.yml up -d db
+          # Wait for database to be ready using pg_isready
           docker compose -f docker/test/docker-compose.yml run --rm web \
-            bash -c "while ! nc -z db 5432; do sleep 1; done"
+            bash -c "until pg_isready -h db -p 5432 -U backend_template; do sleep 1; done"
 
       - name: Check for missing migrations
         run: |
