@@ -66,3 +66,6 @@ coverage/
 # direnv
 .envrc
 .envrc.*
+
+# Claude files
+.claude/settings.local.json

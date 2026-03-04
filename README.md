@@ -236,20 +236,23 @@ syntek-infrastructure (Deployment & Hosting)
 
 ## Technology Stack
 
+> **Note**: We use the latest stable versions of all languages and frameworks to ensure optimal performance, security, and access to the newest features.
+
 ### Backend Infrastructure
 
-- **Framework**: Django 5.2 with Python 3.14
-- **API Layer**: GraphQL (Strawberry Django)
-- **Database**: PostgreSQL 18.1 with Redis caching
+- **Framework**: Django 6.0.4 with Python 3.14.3
+- **API Layer**: GraphQL (Strawberry 0.307.1) - September 2025 specification
+- **Database**: PostgreSQL 18.3 with Redis caching
 - **Authentication**: Multi-factor authentication (MFA) with JWT tokens
 - **Security**: GDPR compliance, audit logging, encrypted data storage
 
 ### Frontend Applications
 
-- **Web Application**: React 18+ with TypeScript and Tailwind CSS
-- **Mobile Application**: React Native with TypeScript and NativeWind
+- **Web Application**: React 19.2 with TypeScript 5.9 and Tailwind CSS 4.2
+- **Mobile Application**: React Native 0.84.x with TypeScript 5.9 and NativeWind 4
 - **Admin Interface**: Django Admin with custom CMS interface
 - **Editor Integration**: Monaco Editor (VS Code) for code editing
+- **Framework**: Next.js 16.1.6 with Node.js 24.14.0 and npm 11.11.0
 
 ### Development Tools
 
