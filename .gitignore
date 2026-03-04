@@ -1,0 +1,68 @@
+# Syntek Platform Documentation Repository
+# This repository contains only documentation and markdown files
+
+# Editor files
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+*.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+
+# Logs
+*.log
+
+# Documentation build artifacts (if we add docs building later)
+_build/
+build/
+dist/
+
+# Node modules (if we add any markdown processing tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (if any are needed for documentation tools)
+.env
+.env.local
+.env.*.local
+
+# Local documentation tools
+.markdownlint-cli2-config.js
+.markdownlintrc
+
+# Any personal notes or drafts
+NOTES.md
+DRAFT-*.md
+notes/
+drafts/
+
+# Cache directories
+.cache/
+.parcel-cache/
+
+# Coverage reports (if we add any documentation testing)
+coverage/
+.nyc_output/
+
+# IDE specific files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# direnv
+.envrc
+.envrc.*
